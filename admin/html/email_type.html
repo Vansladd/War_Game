@@ -1,0 +1,63 @@
+<html>
+<!-- $Id: email_type.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Email Type</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=9 class=title>
+	Email Type
+	</th>
+</tr>
+<form action="##TP_CGI_URL##" method="get" onSubmit="return validate(this);" name=email_type_form>
+<tr>
+	<td class=caption>Name</td>
+	<td>
+	<select name="name">
+	##TP_LOOP type_idx {[tpGetVar NumTypes]}##
+	<option value='##TP_type_name##'>##TP_type_name##</option>
+	##TP_ENDLOOP##
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Description</td>
+	<td><input type=text name="desc" value="##TP_desc##" size=60 maxlength=60></td>
+
+</tr>
+
+<tr>
+	<th colspan=9 class=buttons>
+	##TP_IF {[op_allowed ManageEmails]}##
+			<input type=button value="Add Email Type" onClick="return fs(this,'EmailTypeAdd')">
+			<input type=hidden name=action value="ADMIN::EMAILS::DoEmail">
+	##TP_ENDIF##
+	<input type=button value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+</form>
+</table>
+
+</body>
+</html>

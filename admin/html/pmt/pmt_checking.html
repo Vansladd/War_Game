@@ -1,0 +1,141 @@
+  <html>
+	<!-- $Id: pmt_checking.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	<head>
+	  <meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		  <script language="javascript">
+			var options = ['US', 'non-US', 'unknown'];
+
+		
+
+			function clear_details() {
+			  document.getElementById('ip_addr').innerHTML='';
+			  document.getElementById('card_bin').innerHTML='';
+			  document.getElementById('postcode').innerHTML='';
+			  document.getElementById('status').innerHTML='';
+			}
+
+			function show_details(t,r,c) {
+			var x='C'+t+r+c;
+			  if (document.getElementById(x).checked) {
+			    document.getElementById('status').innerHTML='<font color="#FF0000"><b>BLOCKED</b></font>';
+			    document.getElementById('ip_addr').innerHTML=options[t];
+			    document.getElementById('card_bin').innerHTML=options[r];
+			    document.getElementById('postcode').innerHTML=options[c];
+			  } else {
+			    document.getElementById('status').innerHTML='<font color="#00FF00"><b>NOT BLOCKED</b></font>';
+			    document.getElementById('ip_addr').innerHTML=options[t];
+			    document.getElementById('card_bin').innerHTML=options[r];
+			    document.getElementById('postcode').innerHTML=options[c];
+			  }
+			}
+		  </script>
+	</head>
+	<body>
+	  ##TP_PLAY error_rpt.html##
+	  ##TP_PLAY msg_rpt.html##
+	  <form method=post action="##TP_CGI_URL##" name="fm_pmt_chk">
+
+		<table cellspacing="0" cellpadding="4" border="2">
+		  <tr>
+			<th colspan="5" class=title align=center>Payment US-Checking</th>
+		  </tr>
+		  <tr>
+			<td width="100" align=center class="uschk" bgcolor="#660000">IP ADDRESS</td>
+			<td width="100" align=center class="uschk" bgcolor="#660000" >US</td>
+			<td width="100" align=center class="uschk" bgcolor="#660000">non-US</td>
+			<td width="100" align=center class="uschk" bgcolor="#660000" >unknown</td>
+			<td width="100" align=center class="uschk"></td>
+		  </tr>		
+		  <tr>
+			<td valign="bottom" align="right">
+			  <table cellspacing="0" cellpadding="3" border="1">
+				<tr class="uschk">
+				  <td bgcolor="#000066" valign="top" class="uschk"><b>POSTCODE</b></td>
+				</tr>
+				<tr>
+				  <td bgcolor="#000066" valign="top" class="uschk"><b>US</b></td>
+				</tr>
+				<tr>
+				  <td bgcolor="#000066" valign="top" class="uschk" ><b>non-US</b></td>
+				</tr>
+				<tr>
+				  <td bgcolor="#000066" valign="top" class="uschk"><b>unknown</b></td>
+				</tr>
+			  </table>
+			</td>
+			##TP_LOOP table_idx 3##
+			<td>
+			  <table cellspacing="0" cellpadding="2" border="1">
+				<tr bgcolor="##006600">
+				  <td class="uschk">US</th>
+				  <td class="uschk">n-US</th>
+				  <td class="uschk">n-k</th>
+				</tr>
+				##TP_LOOP row_idx 3##
+				<tr>
+				  ##TP_LOOP col_idx 3##
+				  <td align=center><input type="checkbox" name="C##TP_TCL {tpBufWrite [tpGetVar table_idx][tpGetVar row_idx][tpGetVar col_idx]}##" 
+										  id="C##TP_TCL {tpBufWrite [tpGetVar table_idx][tpGetVar row_idx][tpGetVar col_idx]}##" 
+										  onmouseover="show_details(##TP_TCL {tpBufWrite [tpGetVar table_idx],[tpGetVar row_idx],[tpGetVar col_idx]}##)"
+										  onmouseout="clear_details();" onclick="show_details(##TP_TCL {tpBufWrite [tpGetVar table_idx],[tpGetVar row_idx],[tpGetVar col_idx]}##);"##TP_CHECK_BOX##></td>
+				  ##TP_ENDLOOP col_idx ##
+				</tr>
+				##TP_ENDLOOP row_idx ##
+			  </table>
+			</td>
+			##TP_ENDLOOP table_idx ##
+			<td valign="top">
+			  <table cellspacing="0" cellpadding="2" border="1">
+				<tr>
+				  <td bgcolor="#006600" valign="top" class="uschk">CARD BIN</td>
+				</tr>
+			  </table>
+			</td>			  
+		  </tr>
+		  <tr>
+			<td align="right"colspan="5" >
+			  <input type="button" class="btn_def" value="Update Checks" onclick="javascript:fm_pmt_chk.submit();">
+			</td>
+		  </tr>
+		</table>
+		
+		<br>
+		<br>
+		
+		<table>
+			<tr>
+				<th class=title align=center>Config Style</th>
+			</tr>
+			<tr>
+				<td>##TP_block_list##</td>
+			</tr>
+		</table>
+		
+		<input type="hidden" name="action" value="ADMIN::PMT::DoUpdatePmtChecking">
+	  </form>
+	  <br><br>
+	  <table>
+	  	<tr>
+			<th class=title colspan=2 align=center>Key</th>
+		</tr>
+		<tr>
+		  <td width="125" class=uschk bgcolor="#660000">IP Address</td>
+		  <td width="150" class=uschk bgcolor="#660000" id="ip_addr"></td>
+		</tr>
+		<tr>
+		  <td class=uschk bgcolor="#006600">Card Bin</td>
+		  <td class=uschk bgcolor="#006600" id="postcode"></td>
+		</tr>
+		<tr>
+		  <td class=uschk bgcolor="#000066">Postcode</td>
+		  <td class=uschk bgcolor="#000066" id="card_bin"></td>
+		</tr>
+		<tr>
+		  <td><b>STATUS</b></td>
+		  <td id="status" bgcolor="#000000"></td>
+		</tr>
+	  </table>
+	  <div name="a_name" id="a_name"></div>
+	</body>
+  </html>

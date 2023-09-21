@@ -1,0 +1,87 @@
+<html>
+	<!-- $Id: search.html,v 1.1 2011/10/04 12:41:14 xbourgui Exp $ -->
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		##TP_PLAY header_cal.html##
+		<script language=javascript>
+			function displayCalendars() {
+				new Calendar(document.forms.vrfSearch.from_date,null,false,"lo")
+				new Calendar(document.forms.vrfSearch.to_date,null,false,"lo")
+			}
+
+			function fs(b,t)
+			{
+				b.disabled = true;
+				b.value = "Busy...";
+				b.form.SubmitName.value = t;
+				b.form.submit();
+				return true;
+			}
+		</script>
+		##TP_PLAY JS_WriteSelect.html##
+	</head>
+	<body onload="displayCalendars()">
+		##TP_PLAY error_rpt.html##
+		##TP_PLAY msg_rpt.html##
+		<form name="vrfSearch" action="##TP_CGI_URL##" method="post">
+			<input type="hidden" name="SubmitName">
+			<input type="hidden" name="action" value="ADMIN::VERIFICATION::DoSearch">
+			<table cellspacing="0" cellpadding="2" border="0">
+				<tr>
+					<th colspan="2" class=title>Verification Check Search Criteria</th>
+				</tr>
+				<tr>
+					<td>Profile Type</td>
+					<td>
+						<select name="profile_def_id">
+							<script>write_select("", "", "n/a"##TP_LOOP idx {[tpGetVar count]}##, "##TP_id##", "##TP_desc##"##TP_ENDLOOP##)</script>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Status</td>
+					<td>
+						<select name="status">
+							<option value="" selected="true">n/a</option>
+							<option value="P">Pending</option>
+							<option value="C">Confirmed</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Date Range</td>
+					<td>
+						<input type="text" name="from_date" value="" size=10>
+						&nbsp;and&nbsp;
+						<input type="text" name="to_date" value="" size=10> (yyyy-mm-dd)
+					</td>
+				</tr>
+				<tr>
+					<td>or</td>
+					<td>
+						<select name="date_range">
+							<option value="">n/a</option>
+							<option value="TD" selected="true">Today</option>
+							<option value="YD">Yesterday</option>
+							<option value="L3">Last 3 days</option>
+							<option value="L7">Last 7 days</option>
+							<option value="CM">Current month</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Account Number</td>
+					<td>
+						<input name="acct_no" type="text" value="##TP_acct_no##">
+					</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="buttons">
+						<input type="button" value="Search" onClick="return fs(this,'DoSearch')">
+					</th>
+				</tr>
+			</table>
+		</form>
+	</body>
+</html>

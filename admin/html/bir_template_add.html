@@ -1,0 +1,77 @@
+<html>
+<head> 
+	<title> Add new Bir Template </title>  
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##"></meta>
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet"></link>
+
+	<script language=JavaScript>
+
+	function validate(f)
+	{
+		error_text = ""
+
+	
+		if (error_text != "") 
+		{
+			alert('There has been errors :'+error_text);
+			return 0; 
+		}
+
+		return 1;
+	}
+
+	
+	function fs(b,t)
+	{
+		if (!validate(b.form)) {
+			return false;
+		}
+
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+
+		return true;
+	}
+
+	
+	function GoBack()
+	{
+		parent.MainArea.location.href= "##TP_CGI_URL##?action=ADMIN::BIR::go_bir_tab_detail&TabId=##TP_TabId##";
+	}
+	
+
+	function clear_vals()
+	{
+	}
+
+	</script>
+
+</head>
+<body>
+
+
+<form name="BIRTemplate" action="##TP_CGI_URL##" method=get>
+	<table>
+			<tr>
+			<td class=caption>Display Order</td>
+			<td>
+				<input type="field" name="DispOrder" value="##TP_templm_DispOrder##" size=3> 
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<th class="buttons" colspan=2>
+			<input type=button value="Save" OnClick="return fs(this,'BIRTemplMapUpdate')">
+			<input type=button value="Back" OnClick="return GoBack()">
+		</th>
+
+	</table>
+
+<input type=hidden name=TabId value="##TP_TabId##">
+<input type=hidden name=TemplId value="##TP_TemplId##">
+
+<input type=hidden name="action" value="ADMIN::BIR::do_bir">
+<input type=hidden name=SubmitName value="">
+</form>

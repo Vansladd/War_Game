@@ -1,0 +1,75 @@
+<html>
+<!-- $Id: sitecustom.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Site Customisation</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<form action="##TP_CGI_URL##" method=get>
+<tr>
+	<th colspan=2 class=title>
+	Site Customisation
+	</th>
+</tr>
+
+
+##TP_TCL {tpSetVar last_sname "first"}##
+
+
+##TP_LOOP sc_idx {$SCDATA(num)}##
+	##TP_IF { ($SCDATA([tpGetVar sc_idx],num_vals) == 0) }##
+		<tr>
+			<td class=caption width=150 valign=top>##TP_Desc##</td>
+			<td valign=top>
+			<input type=text name="##TP_Name##" size=64 value="##TP_CurVal##">
+			</td>
+		</tr>						
+	##TP_ELSE##
+		##TP_IF {$SCDATA([tpGetVar sc_idx],setting_name) != [tpGetVar last_sname]}##
+			<tr>
+				<td class=caption width=150 valign=top>##TP_Desc##</td>
+				<td valign=top>
+				<select name="##TP_Name##">
+				<script>
+				write_select('##TP_CurVal##'
+		##TP_ENDIF##
+				,'##TP_PosVal##','##TP_PosVal##'
+		##TP_IF { ([expr {$SCDATA(num) - 1}] == [tpGetVar sc_idx]) || ($SCDATA([expr {[tpGetVar sc_idx] + 1}],setting_name) != $SCDATA([tpGetVar sc_idx],setting_name) )}##
+				)
+				</script>
+				</select>
+				</td>
+			</tr>						
+		##TP_ENDIF##
+		##TP_TCL {tpSetVar last_sname $SCDATA([tpGetVar sc_idx],setting_name)}##
+	##TP_ENDIF##
+##TP_ENDLOOP##
+
+##TP_IF {[op_allowed UpdSiteCustom]}##
+<tr>
+	<th colspan=2 class=buttons>
+	<input type=button class="btn_def" value="Update" onClick="return fs(this,'Update')">
+	</th>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::SITECUSTOM::DoSiteCustom>
+</tr>
+##TP_ENDIF##
+</form>
+</table>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<html>
+<!-- $Id: session_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+
+<script language=javascript>
+function terminate (f, sess, cust) {
+	f.form.SessionId.value = sess;
+	f.form.CustId.value    = cust;
+	f.form.submit();
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+function write_tr (status) {
+	if (status == 'A') {
+		style = "active";
+	} else if (status == 'S') {
+		style = "suspended";
+	} else if (status == 'L') {
+		style = "loggedout";
+	} else if (status == 'P') {
+		style = "sess_time_limit";
+	} else if (status == 'C') {
+		style = "cumm_sess_time_limit";
+	} else {
+		style = "standard";
+	}
+
+	document.writeln("<tr class="+style+">");
+}
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+<form action="##TP_CGI_URL##">
+
+<input type=hidden name=action value=ADMIN::SESSION::DoUpdSession>
+
+<input type=hidden name=FILT_CustId value="##TP_FILT_CustId##">
+<input type=hidden name=FILT_Status value="##TP_FILT_Status##">
+<input type=hidden name=FILT_Source value="##TP_FILT_Source##">
+<input type=hidden name=FILT_StartTime value="##TP_FILT_StartTime##">
+<input type=hidden name=FILT_StartOp value="##TP_FILT_StartOp##">
+<input type=hidden name=FILT_EndTime value="##TP_FILT_EndTime##">
+<input type=hidden name=FILT_EndOp value="##TP_FILT_EndOp##">
+
+<input type=hidden name=SessionId  value="">
+<input type=hidden name=CustId     value="##TP_CustId##">
+<input type=hidden name=SubmitName value="">
+
+<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th colspan=9 class=title>Sessions</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>Session ID</th>
+		<th nowrap class=colhead>Username</th>
+		<th nowrap class=colhead>Admin User</th>
+		<th nowrap class=colhead>Start Time</th>
+		<th nowrap class=colhead>End Time</th>
+		<th nowrap class=colhead>Source</th>
+		<th nowrap class=colhead>Status</th>
+		<th nowrap class=colhead>Cancel Code</th>
+		<th nowrap class=colhead>&nbsp;</th>
+	</tr>
+
+	##TP_IF {[tpGetVar NumSess 0] == 0}##
+	<tr>
+		<td colspan=9 align=center>
+			No sessions found
+		</td>
+	</tr>
+	##TP_ELSE##
+
+	##TP_LOOP sess_idx {[tpGetVar NumSess]}##
+	<script>write_tr("##TP_Status##");</script>
+		<td nowrap align=center>
+			<a href="##TP_CGI_URL##?action=ADMIN::SESSION::GoSess&sess_id=##TP_SessionId##">##TP_SessionId##</a>
+		</td>
+		<td nowrap align=center><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_Username##</a></td>
+		<td nowrap align=center>##TP_AdminUser##</td>
+		<td nowrap align=right>##TP_SessStart##</td>
+		<td nowrap align=right>##TP_SessEnd##</td>
+		<td nowrap align=center>##TP_Source##</td>
+		<td nowrap align=center>
+			<script>
+				write_which('##TP_Status##',
+					'A', 'Active',
+					'S', 'Suspended',
+					'L', 'Logged Out',
+					'T', 'Timeout',
+					'O', 'Overwritten',
+					'P', 'Session Time Limit Exceeded',
+					'C', 'Cummulative Session Time Limit Exceeded'
+				);
+			</script>
+		</td>
+		<td nowrap align=left>##TP_CancelCode##</td>
+		<td nowrap>
+			<script>
+				if ("##TP_Status##" == "A") {
+					document.write("<input type=button class='btn_def' onClick='terminate(this,##TP_SessionId##, ##TP_CustId##)' value=Terminate>");
+				} else {
+					document.write("&nbsp;");
+				}
+			</script>
+		</td>
+	</tr>
+
+	##TP_ENDLOOP##
+
+##TP_ENDIF##
+
+<tr>
+	<th colspan="9" class="rightButtons">
+		<input type="button" value="Back" onClick="history.back ();"></th>
+</tr>
+
+</table>
+##TP_Warning##
+</form>
+</body>
+</html>

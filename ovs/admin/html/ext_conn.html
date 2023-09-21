@@ -1,0 +1,93 @@
+<html>
+	<!-- $Id: ext_conn.html,v 1.1 2011/10/04 12:41:14 xbourgui Exp $ -->
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<title>OpenBet Administration</title>
+		<script language=javascript>
+			function fs(b,t)
+			{
+				b.form.action.value = t;
+				b.form.submit();
+				return true;
+			}
+			function wr_tr(status) {
+				if (status == "A") {
+					document.write('<tr class=active>');
+				} else if (status == "S") {
+					document.write('<tr class=suspended>');
+				} else {
+					document.write('<tr>');
+				}
+			}
+		</script>
+	</head>
+
+	<body>
+
+##TP_PLAY error_rpt.html##
+
+		<form method="post" action="##TP_CGI_URL##">
+		<input type="hidden" name="action" value="">
+		<input type="hidden" name="prov_id" value="##TP_prov_id##">
+		<input type="hidden" name="conn_id" value="##TP_conn_id##">
+		<table cellspacing="0" cellpadding="4" border="0">
+			<tr>
+				<th colspan="4" class="title">Verification External Provider Connection</th>
+			</tr>
+			<tr>
+				<th>Provider</th>
+				<td><a href="##TP_CGI_URL##?action=ADMIN::VERIFICATION::PROVIDER::GoProvider&prov_id=##TP_prov_id##">##TP_prov_name##</a></td>
+			</tr>
+			<tr>
+				<th>Action</th>
+				<td><input type="text" name="caction" value="##TP_conn_action##" size="50" maxlength="255"></td>
+			</tr>
+			<tr>
+				<th>Status</th>
+				<td>
+					<select name="status">
+						<option value="A" ##TP_IF {[tpGetVar conn_status] == "A"}##selected##TP_ENDIF##>Active</option>
+						<option value="S" ##TP_IF {[tpGetVar conn_status] == "S"}##selected##TP_ENDIF##>Suspended</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th>Type</th>
+				<td>
+					<select name="type">
+						<option value="A" ##TP_IF {[tpGetVar conn_type] == "A"}##selected##TP_ENDIF##>Authentication</option>
+						<option value="L" ##TP_IF {[tpGetVar conn_type] == "L"}##selected##TP_ENDIF##>Log</option>
+						<option value="O" ##TP_IF {[tpGetVar conn_type] == "O"}##selected##TP_ENDIF##>Other</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th>URL</th>
+				<td><input type="text" name="uri" value="##TP_conn_uri##" size="70" maxlength="255"></td>
+			</tr>
+			<tr>
+				<th>Username</th>
+				<td><input type="text" name="uname" value="##TP_conn_uname##" size="25" maxlength="50"></td>
+			</tr>
+			##TP_IF {[tpGetVar conn_id] == ""}##
+			<tr>
+				<th>Password</th>
+				<td><input type="text" name="password" value="##TP_conn_passwd##" size="25" maxlength="50"></td>
+			</tr>
+			##TP_ENDIF##
+			<tr>
+				<th colspan="4" class="buttons">
+	##TP_IF {[tpGetVar conn_id] == ""}##
+					<input type="button" value="Add Connection" onclick="return fs(this, 'ADMIN::VERIFICATION::PROVIDER::DoAddConn');">
+	##TP_ELSE##
+					<input type="button" value="Update Connection" onclick="return fs(this, 'ADMIN::VERIFICATION::PROVIDER::DoUpdConn');">
+	##TP_ENDIF##
+					<input type="button" value="Back" onclick="return fs(this, 'ADMIN::VERIFICATION::PROVIDER::GoProvider');">
+				</th>
+			</tr>
+		</table>
+		</form>
+
+	</body>
+</html>

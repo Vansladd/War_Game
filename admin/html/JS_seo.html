@@ -1,0 +1,163 @@
+<!-- JS_seo.html -->
+
+<script language="Javascript">
+	
+	function changeMode() {
+		var checkbox = document.getElementById('static_edit_checkbox');
+	
+		if (checkbox.checked) {
+			document.getElementById('static_select').disabled = false;
+			document.dkiform.static_edit.value = "Y";
+			var lang = document.dkiform.language.options[document.dkiform.language.selectedIndex].value;
+			var channel_id = document.dkiform.channel_id.value;
+			var html = '<a href="##TP_CGI_URL##?action=ADMIN::SEO::GoSEOMain&amp;SubmitName=deleteTag&amp;level=##TP_LEVEL##&amp;level_id=##TP_LEVEL_ID##&amp;language=' + lang + '&amp;channel_id=' + channel_id + '&amp;from=##TP_FROM##">Delete Tag</a>';
+		} else {
+			document.getElementById('static_select').disabled = true;
+			document.dkiform.level_id.value = "";
+			document.dkiform.static_edit.value = "N";
+			var html = '<u>Delete Tag</u>';
+		}
+	
+		document.getElementById('delete_tag').innerHTML = html;
+	}
+
+
+	function updateLastFocus(text_area) {
+		document.getElementById('last_focus').value = text_area;
+	}
+
+
+	function addDKI() {
+		var dki      = document.getElementById('dki_sel').value;
+		var textarea = document.getElementById('last_focus').value;
+		var ta_value = document.getElementById(textarea).value;
+
+		var text = '';
+
+		var optional_dki = document.getElementById('optional_dki');
+
+		if (optional_dki.checked) {
+			text = '[<>' + dki + '<>] ';
+		} else {
+			text = '<>' + dki + '<> ';
+		}
+
+		var num_dki = ta_value.split(text).length;
+
+		if ( num_dki <= 3 ) {
+
+			insertAtCursor(document.getElementById(textarea), text);
+		
+			update_char_remaining(textarea);
+		
+			document.getElementById(textarea).focus();
+
+		} else {
+
+			alert ("You cannot insert any more " + dki + " placeholders. The maximum per tag is 3");
+
+		}
+	}
+
+
+	function insertAtCursor(myField, myValue) {
+		//IE support
+		if (document.selection) {
+			myField.focus();
+			sel = document.selection.createRange();
+			sel.text = myValue;
+		}
+		//MOZILLA/NETSCAPE support
+		else if (myField.selectionStart || myField.selectionStart == 0) {
+			var startPos = myField.selectionStart;
+			var endPos = myField.selectionEnd;
+			myField.value = myField.value.substring(0, startPos)
+				+ myValue
+				+ myField.value.substring(endPos, myField.value.length);
+		} else {
+			myField.value += myValue;
+		}
+	}
+
+
+	function update_all_char_remaining() {
+
+		var err     = false;
+		var err_str = ''
+
+		if (update_char_remaining('_title_tag') == false) {
+			err = true;
+			err_str = err_str + '\nTitle';
+		}
+		if (update_char_remaining('_desc_tag')  == false) {
+			err = true;
+			err_str = err_str + '\nDescription';
+		}
+		if (update_char_remaining('_key_tag')   == false) {
+			err = true;
+			err_str = err_str + '\nKeywords';
+		}
+		if (update_char_remaining('_h1h2_tag')   == false) {
+			err = true;
+			err_str = err_str + '\nH1H2';
+		}
+
+		if (err) {
+			alert ('Alert - maximum tag length of ' + 765 + ' characters has been reached in the following fields:' + err_str);
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	function update_char_remaining(tag) {
+	
+		var tag_text  = document.getElementById(tag).value;
+		var tag_rem   = tag + "_rem";
+	
+		var foreign_chars = 0;
+
+		// Identify foreign characters
+		for (var i = 0; i < tag_text.length; i++) {
+			if (tag_text.charCodeAt(i) > 127) {
+				foreign_chars++;
+			}
+		}
+	
+		var rem = 765 -  tag_text.length - foreign_chars;
+	
+		if (rem < 0) {
+			document.getElementById(tag_rem).style.backgroundColor = "red";
+			var ret = false;
+		} else {
+			document.getElementById(tag_rem).style.backgroundColor = "white";
+			var ret = true;
+		}
+	
+		document.getElementById(tag_rem).value = rem;
+
+		update_hidden_fields();
+
+		return ret;
+	}
+
+
+	function update_hidden_fields() {
+		document.getElementById('title_tag').value = document.getElementById('_title_tag').value;
+		document.getElementById('desc_tag').value = document.getElementById('_desc_tag').value;
+		document.getElementById('key_tag').value = document.getElementById('_key_tag').value;
+		document.getElementById('h1h2_tag').value = document.getElementById('_h1h2_tag').value;
+	}
+	
+	function show_hide_seo() {
+	
+		if (document.getElementById('seo_text_boxes').style.display == "none") {
+			document.getElementById('seo_text_boxes').style.display = "inline";
+			update_all_char_remaining();
+		} else {
+			document.getElementById('seo_text_boxes').style.display = "none";
+		}
+
+	}
+
+</script>

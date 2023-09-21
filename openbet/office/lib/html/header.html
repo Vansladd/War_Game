@@ -1,0 +1,211 @@
+##TP_COMMENT $Id: header.html,v 1.1 2011/10/04 12:37:26 xbourgui Exp $##
+##TP_COMMENT Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.##
+
+##TP_IF {[tpGetVar OFFICE_HEADER_CSS 1]}##
+	<!-- OpenBet Office CSS -->
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_HTML_CHARSET##" />
+	<link rel="icon" href="##TP_OFFICE_STATIC_URL##/images/favicon.ico" type="image/x-icon">
+	<link rel="shortcut icon" href="##TP_OFFICE_STATIC_URL##/images/favicon.ico" type="image/x-icon">
+
+	<link href="##TP_OFFICE_STATIC_URL##/css/data.css##TP_OFFICE_STATIC_VERSION##" type="text/css" rel="stylesheet" />
+	<link href="##TP_OFFICE_STATIC_URL##/css/base.css##TP_OFFICE_STATIC_VERSION##" type="text/css" rel="stylesheet" />
+	##TP_IF {[tpGetVar OFFICE_CALENDAR 0]}##
+		<link href="##TP_OFFICE_STATIC_URL##/css/calendar.css##TP_OFFICE_STATIC_VERSION##" type="text/css" rel="stylesheet" />
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar OFFICE_APP_MENU 0]}##
+		<link href="##TP_OFFICE_STATIC_URL##/css/menu.css##TP_OFFICE_STATIC_VERSION##" type="text/css" rel="stylesheet" />
+		<!--[if lt IE 8]>
+			<link href="##TP_OFFICE_STATIC_URL##/css/menu_ie7.css##TP_OFFICE_STATIC_VERSION##" type="text/css" rel="stylesheet" />
+		<![endif]-->
+	##TP_ENDIF##
+
+	<link href="##TP_OFFICE_STATIC_URL##/css/div_popup2.css##TP_OFFICE_STATIC_VERSION##" type="text/css" rel="stylesheet" />
+
+	<style type="text/css">
+		##TP_IF {[tpGetVar OFFICE_BACKGROUND 0]}##
+			body {
+				background: #FFFFFF url("##TP_OFFICE_STATIC_URL##/images/swoosh.jpg##TP_OFFICE_STATIC_VERSION##") no-repeat scroll left top;
+				background-position:top center;
+			}
+
+		##TP_ENDIF##
+		div.popupTabList {
+			background: url("##TP_OFFICE_STATIC_URL##/images/menu/bg.gif##TP_OFFICE_STATIC_VERSION##") repeat-x bottom;
+		}
+
+		##TP_IF {[tpGetVar OFFICE_APP_MENU 0]}##
+			#hmenu a, #hmenu span
+			{
+				background-image: url(##TP_OFFICE_STATIC_URL##/images/menu/sub_header_ond.gif##TP_OFFICE_STATIC_VERSION##);
+				background-repeat: no-repeat;
+				background-position: right;
+			}
+		##TP_ENDIF##
+	</style>
+	##TP_IF {[tpGetVar USE_ALTERNATIVE_STYLE 0]}##
+		<!--Alternative CSS-->
+		<link href="##TP_ALTERNATIVE_STYLE_URL##" type="text/css" rel="stylesheet" />
+		##TP_IF {[tpGetVar OFFICE_BACKGROUND 0] && [tpBindGet ALTERNATIVE_STYLE_IMAGE] != 0}##
+			<style type="text/css">
+			body {
+				background: #FFFFFF url("##TP_ALTERNATIVE_STYLE_IMAGE##") no-repeat scroll left top;
+			}
+			</style>
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<!-- /OpenBet Office CSS -->
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar ADD_WINDOW_CVS_ID 0]}##
+	<script type="text/javascript">
+
+		// Store CVS Id within a global
+		function cvsID(_fname, _id, _prefix)
+		{
+			if(typeof window.__cvs_id === 'undefined') window.__cvs_id = {};
+			if(typeof _prefix !== 'undefined') {
+				if(typeof window.__cvs_id[_prefix] === 'undefined') {
+					window.__cvs_id[_prefix] = {};
+				}
+				window.__cvs_id[_prefix][_fname] = _id;
+			}
+			else {
+				window.__cvs_id[_fname] = _id;
+			}
+		}
+
+	</script>
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar OFFICE_HEADER_JS 1]}##
+	<!-- OpenBet Office JavaScript -->
+	##TP_IF {[tpGetVar OFFICE_JS_PACKAGE 1]}##
+		<script src="##TP_OFFICE_JS_STATIC_URL##/package.js##TP_OFFICE_STATIC_VERSION##" type="text/javascript"></script>
+		<script type="text/javascript">
+			document.Package.mapURL('office', '##TP_OFFICE_JS_STATIC_URL##', '##TP_OFFICE_STATIC_VERSION##');
+		</script>
+	##TP_ENDIF##
+	<script src="##TP_OFFICE_JS_STATIC_URL##/base.js##TP_OFFICE_STATIC_VERSION##"  type="text/javascript"></script>
+	<script src="##TP_OFFICE_JS_STATIC_URL##/onload.js##TP_OFFICE_STATIC_VERSION##" type="text/javascript"></script>
+
+	##TP_IF {![tpGetVar OFFICE_JS_PACKAGE 1] && [tpGetVar OFFICE_CALENDAR 0]}##
+		<script src="##TP_OFFICE_JS_STATIC_URL##/date.js##TP_OFFICE_STATIC_VERSION##" type="text/javascript"></script>
+		<script src="##TP_OFFICE_JS_STATIC_URL##/calendar.js##TP_OFFICE_STATIC_VERSION##" type="text/javascript"></script>
+	##TP_ENDIF##
+
+	<script src="##TP_OFFICE_JS_STATIC_URL##/div_popup2.js##TP_OFFICE_STATIC_VERSION##" type="text/javascript"></script>
+	<script src="##TP_OFFICE_JS_STATIC_URL##/alert2.js##TP_OFFICE_STATIC_VERSION##" type="text/javascript"></script>
+	<script src="##TP_OFFICE_JS_STATIC_URL##/request_broker.js##TP_OFFICE_STATIC_VERSION##" type="text/javascript"></script>
+
+	##TP_IF {[tpGetVar FIREBUG_LITE 0]}##
+		<script src="##TP_FIREBUG_LITE_URL##/firebug.js##TP_OFFICE_STATIC_VERSION##" type="text/javascript"></script>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar OFFICE_APP_MENU 0]}##
+		<script src="##TP_OFFICE_JS_STATIC_URL##/menu.js##TP_OFFICE_STATIC_VERSION##" type="text/javascript"></script>
+	##TP_ENDIF##
+
+	<script type="text/javascript">
+		document.cgiURL = '##TP_CGI_URL##';
+		document.gifURL = '##TP_OFFICE_STATIC_URL##/images';
+		document.staticURL  = '##TP_OFFICE_STATIC_URL##/html';
+		document.staticVersion = '##TP_OFFICE_STATIC_VERSION##';
+
+		document.tocPlus      = new Image();
+		document.tocPlus.src  = '##TP_OFFICE_STATIC_URL##/images/toc-plus.gif##TP_OFFICE_STATIC_VERSION##';
+		document.tocMinus     = new Image();
+		document.tocMinus.src = '##TP_OFFICE_STATIC_URL##/images/toc-minus.gif##TP_OFFICE_STATIC_VERSION##';
+
+		document.ajaxIndicator = new Image();
+		document.ajaxIndicator.src = '##TP_OFFICE_STATIC_URL##/images/ajax-indicator.gif##TP_OFFICE_STATIC_VERSION##';
+
+		document.bodyOnLoad = new MultiOnLoad();
+
+		##TP_IF {[tpGetVar OFFICE_CALENDAR 0]}##
+			document.calendarPng  = '##TP_OFFICE_STATIC_URL##/images/calendar.png##TP_OFFICE_STATIC_VERSION##';
+			##TP_IF {[tpGetVar OFFICE_CALENDAR_AUTOLOAD 1]}##
+				document.bodyOnLoad.push(Calendar._load);
+			##TP_ENDIF##
+			##TP_IF {[tpGetVar OFFICE_JS_PACKAGE 1]}##
+				document.Package.require('office', 'calendar');
+			##TP_ENDIF##
+		##TP_ENDIF##
+
+		##TP_IF {[tpGetVar FIREBUG_EXTENSION 0] || [tpGetVar FIREBUG_LITE 0]}##
+			// firefox extension FireBug
+			var fn, ver;
+			if(
+				!window.console ||
+				(!browser.ie && !browser.chrome &&
+				 (typeof window.console.firebug == 'undefined' || !window.console.firebug.length)) ||
+				(browser.chrome && typeof window.console === 'undefined') ||
+				(typeof window.enable_firebug != 'undefined' && !window.enable_firebug)
+			) {
+				fn = [function() { }, function() { }, function() { }, function() { }];
+			}
+			else if (
+				browser.chrome ||
+				(typeof (ver = window.console.firebug) === 'string' && parseFloat(ver) >= 1.6)
+			) {
+				fn = [function() {console.info.apply(console, arguments);},
+				      function() {console.debug.apply(console, arguments);},
+					  function() {console.warn.apply(console, arguments);},
+					  function() {console.error.apply(console, arguments);}];
+			}
+			else {
+				fn = [console.info,
+					  console.debug,
+					  console.warn,
+					  console.error];
+			}
+			infofire  = fn[0];
+			if (browser.ie){
+				printfire = fn[0];
+				debugfire = fn[0];
+			}
+			else {
+				printfire = fn[1];
+				debugfire = fn[1];
+			}
+			warnfire  = fn[2];
+			errorfire = fn[3];
+
+			try { delete fn; }
+			catch(_e) { fn = null; }
+
+		##TP_ELSE##
+
+			function infofire() { }
+			function printfire() { }
+			function debugfire() { }
+			function warnfire() { }
+			function errorfire() { }
+
+		##TP_ENDIF##
+
+		##TP_IF {[tpGetVar OFFICE_APP_MENU 0]}##
+			restoreTabLocation();
+		##TP_ENDIF##
+
+		function OfficeInit() {
+			var r = (document.request_broker = new RequestBroker(
+						{
+							'url'         : document.cgiURL,
+							'indicator_cb': null,
+							'max_priority': 2
+						}
+					));
+
+			DivPopup2.init(
+				{
+					'requestBroker'  : r,
+					'getAction'      : 'util::H_get_popup'
+				});
+		}
+		document.bodyOnLoad.push(OfficeInit);
+
+	</script>
+	<!-- End of OpenBet Office JavaScript -->
+##TP_ENDIF##
+

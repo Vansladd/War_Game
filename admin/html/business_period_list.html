@@ -1,0 +1,221 @@
+##TP_COMMENT {<!--
+	$Id: business_period_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $
+	Copyright (c) 2009 Orbis Technology Ltd. All rights reserved.
+//-->}##
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<title>Business Periods</title>
+
+	<script language="Javascript" type="text/javascript">
+	/* <![CDATA[ */
+
+	// form submitting actions
+	function fs(b,t) {
+
+	// if we are not editing (i.e. adding)
+	if (t!="BPShowEdit"){
+		if(!validate_date(document.addbp.bp_date_from)) return false;
+		if(!validate_date(document.addbp.bp_date_to)) return false;
+	}
+
+		// if we are editing ...
+		if (t=="BPShowEdit"){
+			// ... if no selection has been made ...
+			if (b.form.EditID.value == "") {
+				// ... display error
+				alert ("You must select a Business Period to edit");
+				return false;
+			}
+		}
+
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+
+	// update user selection for editing
+	function update_selection(b) {
+		b.form.EditID.value = b.value;
+	}
+
+	// Data validation before submitting
+	// Checks if is a informix date or dd/mm/yy date
+	// Checks if the date is a really existing date (i.e no 30 Feb 2001)
+	function validate_date(date){
+
+		var informix_re = /[0-9]{4}-[0-9]{2}-[0-9]{2}/
+		var display_re = /[0-9]{2}\/[0-9]{2}\/[0-9]{2}/
+		var date_components = false;
+		var day = null, month = null, year = null;
+
+		if (date.value.match(informix_re) != null) {
+			// informix date yyyy-mm-dd
+			date_components = date.value.split('-');
+			day   = date_components.pop();
+			month = date_components.pop();
+			year  = date_components.pop();
+
+		} else if (date.value.match(display_re) != null){
+			// dd/mm/yy date
+			date_components = date.value.split('/');
+			// reverse order
+			year   = date_components.pop();
+			month = date_components.pop();
+			day  = date_components.pop();
+			year = "20"+year;
+		} else {
+			alert ("Date not well formed");
+			return false;
+		} 
+		
+		if (!check_date_validity(month,day,year)) {
+			alert("Date "+day+"/"+month+"/"+year+" is not valid");
+		} else {
+			return true;
+		}
+	} 
+
+	// Checks if the date really exists. We do this by creating a Date object
+	// and checking if the returned month is the same as the passed one, as well
+	// as the year
+	function check_date_validity(mm,dd,yyyy) {
+		if (mm == null || dd == null || yyyy == null) return false;
+		var d = new Date(mm + "/" + dd + "/" + yyyy);
+		return d.getMonth() + 1 == mm && d.getDate() == dd && d.getFullYear() == yyyy;
+	}
+
+
+	/* ]]> */
+	</script>
+
+	<style type="text/css">
+	/* <![CDATA[ */
+	div.error_hili  {
+			margin:5px;
+			padding:5px;
+			border:1px solid #650709;
+			background-color: #cc6666; 
+			color: white;
+			width:265px;
+		}
+
+	div.info_hili   {
+			margin:5px; 
+			padding:5px;
+			border:1px solid #CCCCCC;
+			background-color: #DDDDDD; 
+			color: black;
+			width:265px;
+		}
+
+	/* ]]> */
+	</style>
+
+<body>
+##TP_COMMENT {<!-- Operator Error Highlight //-->}##
+	##TP_IF {[tpGetVar ErrorFlag 0]}##
+	<div class="error_hili">
+		<strong>ERROR</strong>: <em>##TP_ErrorMsg##</em>
+	</div>
+	##TP_ENDIF##
+##TP_COMMENT {<!-- END Operator Error Highlight //-->}##
+
+##TP_COMMENT {<!-- Operator Info Highlight //-->}##
+##TP_IF {[tpGetVar InfoFlag 0]}##
+	<div class="info_hili">
+		<strong>INFO</strong>: <em>##TP_InfoMsg##</em>
+	</div>
+##TP_ENDIF##
+##TP_COMMENT {<!-- END Operator Info Highlight //-->}##
+
+##TP_COMMENT {<!-- Business Periods listing table //-->}##
+	<table border="0" cellspacing="0" cellpadding="3">
+	<form action="##TP_CGI_URL##" method="post">
+	<tr>
+		<th class="title" colspan="5">
+		Business Periods
+		</th>
+	</tr>
+	<tr>
+		<th nowrap class="colhead">&#8855;</th>
+		<th nowrap class="colhead">Period</th>
+		<th nowrap class="colhead">Year</th>
+		<th nowrap class="colhead">Date From</th>
+		<th nowrap class="colhead">Date To</th>
+	</tr>
+	##TP_IF {[tpGetVar NumBP 0]>0}##
+		##TP_LOOP bp_idx {[tpGetVar NumBP]}##
+			<tr>
+				<td>
+					<input type="radio" name="bp_selected" value="##TP_BpId##" onClick="update_selection(this);"/>
+				</td>
+				<td>
+					<label id="month_##TP_BpId##">##TP_Month##</label>
+					<input type="hidden" name="t_month_##TP_BpId##" value="##TP_Month##" />
+				</td>
+				<td>
+					<label id="year_##TP_BpId##">##TP_Year##</label>
+					<input type="hidden" name="t_year_##TP_BpId##" value="##TP_Year##" />
+				</td>
+				<td>
+					<label id="period_date_from_##TP_BpId##">##TP_PeriodDateFrom##</label>
+					<input type="hidden" name="t_period_date_from_##TP_BpId##" value="##TP_PeriodDateFrom##" />
+				</td>
+				<td>
+					<label id="period_date_to_##TP_BpId##">##TP_PeriodDateTo##</label>
+					<input type="hidden" name="t_period_date_to_##TP_BpId##" value="##TP_PeriodDateTo##" />
+				</td>
+			</tr>
+		##TP_ENDLOOP##
+			<tr>
+				<th class="buttons" colspan="5">
+					<input type="button" class="btn_def" value="Edit Business Period" onClick="return fs(this,'BPShowEdit')"/>
+					<input type="hidden" name="SubmitName" value=""/>
+					<input type="hidden" name="EditID" value=""/>
+					<input type="hidden" name="action" value="ADMIN::BUSINESSPERIOD::DoBusinessPeriodSetup"/>
+				</th>
+			</tr>
+	</form>
+	##TP_ELSE##
+		<tr>
+			<td colspan="5">
+				<strong>There are no business period defined</strong>
+			</td>
+		</tr>
+	##TP_ENDIF##
+	</table>
+##TP_COMMENT {<!-- END Business Periods listing table //-->}##
+
+##TP_COMMENT {<!-- Business Periods Add New Form //-->}##
+	<table border="0" cellspacing="0" cellpadding="3">
+		<form name="addbp" action="##TP_CGI_URL##" method="get" id="addBPForm">
+			<tr>
+				<th colspan="2" class="title">Add a business period</th> 
+			</tr>
+			<tr>
+				<td class="caption"><label>Date From</label></td>
+				<td><input type="text" name="bp_date_from" value=""/></td>
+			</tr>
+			<tr>
+				<td class="caption"><label>Date To</label></td>
+				<td><input type="text" name="bp_date_to" value=""/></td>
+			</tr>
+			<tr>
+				<th class="buttons" colspan="2">
+					<input type="button" class="btn_def" value="Add Business Period" onClick="return fs(this,'BPAdd')"/>
+					<input type="hidden" name="SubmitName" value=""/>
+					<input type="hidden" name="action" value="ADMIN::BUSINESSPERIOD::DoBusinessPeriodSetup"/>
+				</th>
+			</tr>
+		</form>
+</table>
+
+##TP_COMMENT {<!-- END Business Periods Add New Form //-->}##
+
+</body>
+</html>

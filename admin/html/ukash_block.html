@@ -1,0 +1,76 @@
+<html>
+<!-- $Id: ukash_block.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Ukash Block</title>
+##TP_PLAY JS_WriteSelect.html##	
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<form action=##TP_CGI_URL## method=get>
+<table border=0 cellspacing=0 cellpadding=2>
+<tr>
+	<th colspan=2 class=title>
+	Ukash Block
+	</th>
+	<th class=title>
+		(Id = ##TP_UkashBlockId##)
+	</th>
+</tr>
+<tr>
+	<th>Voucher Code</th>
+	<td colspan=2><input type=text name=voucher value="##TP_UkashVoucher##"></td>
+</tr>
+<tr>
+	<th>Ban Status</th>
+	<td colspan=2>
+		<select name="status">
+			<script>
+				write_select("##TP_UkashStatus##","A","Active","S","Suspended");
+			</script>
+		</select>
+	</td>
+</tr>
+<tr>
+	<th>Comment</th>
+	<td colspan=2>
+		<input type=text name=comment value="##TP_UkashComment##">
+	</td>
+</tr>
+
+<tr>
+	##TP_IF {[op_allowed ManUkashBlocks]}##
+	<th class=buttons>
+		<input type=button value="Back" onClick="return fs(this,'Back')">
+	</th>
+	<th class=buttons>
+		<input type=button value="Update" onClick="return fs(this,'DoBlkUpd')">
+	</th>
+	<th class=buttons>
+		<input type=button value="Delete" onClick="return fs(this,'DoBlkDel')">
+	</th>
+	##TP_ELSE##
+	<th colspan=3 class=buttons>
+		<input type=button value="Back" onClick="return fs(this,'Back')">
+	</th>
+	##TP_ENDIF##
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::PMT::GoUkashBlocks>
+<input type=hidden name=ukash_block_id value=##TP_UkashBlockId##>
+</table>
+</form>
+</body>
+</html>
+

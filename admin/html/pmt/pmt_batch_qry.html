@@ -1,0 +1,111 @@
+<html> 
+<!-- $Header: /cvsroot-openbet/training/admin/html/pmt/pmt_batch_qry.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+##TP_PLAY JS_WriteSelect.html##
+##TP_IF {[OT_CfgGet CALENDAR 0]}##
+##TP_PLAY utils/display_calendar.js##
+##TP_ENDIF##
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_IF {[op_allowed ViewPmtBatches]}##
+<form method="post" action="##TP_CGI_URL##">
+	<input type="hidden" name="SubmitName" value="" />
+	<input type="hidden" name="action" value="ADMIN::PMT::DoBatchSearch" />
+	<table cellspacing="0" cellpadding="2" border="0">
+		<tr><th colspan="2" class="title">Payment Batch Search</th></tr>
+		<tr>
+			<td class=caption>Batch ID</td>
+			<td>
+				<input type="text" name="batch_id" value="" size=19 />
+			</td>
+		</tr>
+		<tr>
+			<td class=caption>Batch Type</td>
+			<td>
+				<select name="batch_type">
+					<option value="ANY">Any</option>
+					##TP_LOOP btype_idx {[tpGetVar NumBatches]}##
+					<option value="##TP_batch_type##">##TP_batch_desc##</option>
+					##TP_ENDLOOP##
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class=caption>Date Range</td>
+			<td>
+			<input type="text" name="batch_date_1" value="" size=19 id=date_lo>
+			##TP_IF {[OT_CfgGet CALENDAR 0]}##
+				##TP_TCL {ADMIN::CALENDAR::get_calendar date_lo 1 lo}##
+			##TP_ENDIF##
+			&nbsp;and&nbsp;
+			<input type="text" name="batch_date_2" value="" size=19 id=date_hi>
+			##TP_IF {[OT_CfgGet CALENDAR 0]}##
+				##TP_TCL {ADMIN::CALENDAR::get_calendar date_hi 1 hi}##
+			##TP_ENDIF##
+			&nbsp;(yyyy-mm-dd hh:mm:ss)
+			</td>
+		</tr>
+		<tr>
+			<td class=caption>or</td>
+			<td>
+			<select name="batch_date_range">
+				<option value="" selected>n/a</option>
+				<option value="TD">Today</option>
+				<option value="YD">Yesterday</option>
+				<option value="L3">Last 3 days</option>
+				<option value="L7">Last 7 days</option>
+				<option value="CM">Current month</option>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<th class="buttons" colspan="2">
+				<input type="button" value="Batch Search" onClick="return fs(this,'DoBatchQry')" />
+			</th>
+		</tr>
+	</table>
+</form>
+<br>
+<br>
+##TP_IF {[op_allowed GeneratePmtBatches]}##
+<form method="post" action="##TP_CGI_URL##">
+	<input type="hidden" name="SubmitName" value="" />
+	<input type="hidden" name="action" value="ADMIN::PMT::DoPmtBatch" />
+	<table cellspacing="0" cellpadding="2" border="0">
+		<tr><th colspan="2" class="title">Generate Payment Batch</th></tr>
+		<tr>
+			<td class=caption>Batch Type</td>
+			<td>
+				<select name="batch_type">
+					##TP_LOOP btype_idx {[tpGetVar NumBatches]}##
+					<option value="##TP_batch_type##">##TP_batch_desc##</option>
+					##TP_ENDLOOP##
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<th class="buttons" colspan="2">
+				<input type="button" value="Generate Batch" onClick="return fs(this,'DoPmtBatch')" />
+			</th>
+		</tr>
+	</table>
+</form>
+##TP_ENDIF GeneratePmtBatches##
+##TP_ENDIF ViewPmtBatches##
+</body>
+</html>
+

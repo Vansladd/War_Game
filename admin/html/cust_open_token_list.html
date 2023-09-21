@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<title>OpenBet Administration</title>
+
+	<script src="##TP_CGI_URL##?action=list_js"></script>
+	<script type="text/javascript">
+		/* <![CDATA[ */
+
+		// List of freebet tokens
+		var tokens_array = new List();
+
+		// go back to customer card
+		function goBackCust() {
+			window.location.href = "##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##";
+		}
+
+		// Go and see Active or Deleted tokens
+		function goSeeTokens() {
+
+			var status = null;
+			var status_select = document.getElementById('status_select').selectedIndex;
+			if (status_select == 1 ) {
+				status = 'D';
+			} else if (status_select == 0) {
+				status = 'A';
+			} else {
+				alert ("Wrong token status selection");
+				return;
+			}
+			window.location.href = "##TP_CGI_URL##?action=ADMIN::CUST::GoFreeTokenList&CustId=##TP_CustId##&TokenType=##TP_TokenType##&TokensStatus=" + status;
+		}
+		// ask for confirmation
+		function fs(b,t) {
+			// check if operator has actually selected at least one token
+			if (tokens_array.length < 1) {
+				if (t == 'GoAudit') {
+					alert ('You must select one checkbox');
+				} else {
+					alert ('You must select at least one checkbox');
+				}
+				return false;
+			}
+
+			if (t == 'GoAudit') {
+				if (tokens_array.length > 1) {
+					alert(' Auditing information can be consulted just for one freebet token at a time. \n Please select just one');
+					return false;
+				} else {
+					b.form.cust_token_id.value = tokens_array.pop();
+				}
+			} else if (t == 'DelCustToken') {
+				if (!confirm ('You are about to delete '+tokens_array.length+' tokens. Do you want to proceed?')) {
+					return false;
+				} else {
+					b.form.TokensArray.value  = tokens_array.join(',');
+				}
+			}
+
+			b.disabled  = true;
+			b.value     = "Busy...";
+			b.form.SubmitName.value=t;
+			b.form.submit();
+			return true;
+		}
+		/* ]]> */
+	</script>
+</head>
+<body>
+	<form method="post" action="##TP_CGI_URL##" name="fbet_form">
+
+		<table cellspacing=0 cellpadding=2 border=0>
+
+		<tr>
+			<th class=title colspan=5>##TP_XL {Admin.Open_Tok_List.TITLE}##</th>
+		</tr>
+
+
+
+			<tr bgcolor="#993333">
+				<th>
+					<select onchange="javascript:goSeeTokens();" id="status_select">
+						<option ##TP_IF {[tpBindGet TokensStatus] == "A"}##selected="selected"##TP_ENDIF##>Active</option>
+						<option ##TP_IF {[tpBindGet TokensStatus] == "D"}##selected="selected"##TP_ENDIF##>Deleted</option>
+					</select>
+				</th>
+				<th colspan=1 nowrap align=left width="250"> <font color=white>##TP_XL {Admin.Open_Tok_List.OFFER_NAME}##</font></th>
+				<th colspan=1 nowrap align=left width="200"> <font color=white>##TP_XL {Admin.Open_Tok_List.EXPIRY_DATETIME}##</font></th>
+				<th colspan=1 nowrap align=left width="100"> <font color=white>##TP_XL {Admin.Open_Tok_List.REDEMPTION_AMOUNT}##</font></th>
+				<th colspan=1 nowrap align=left width="250"> <font color=white>##TP_XL {Admin.Open_Tok_List.POSSIBLE_BETS}##</font></th>
+			</tr>
+
+			##TP_IF {[tpGetVar numTokens] > 0}##
+				##TP_LOOP t_idx {[tpGetVar numTokens]}##
+				##TP_IF {[tpGetVar t_idx] == 0 || $TOKENS([tpGetVar t_idx],cust_token_id) != $TOKENS([expr {[tpGetVar t_idx]-1}],cust_token_id)}##
+				<tr ##TP_IF {[tpBindGet token_status] == "S"}##class="suspended"##TP_ENDIF##>
+					<td>
+						<input type="checkbox" name="del_fbet_##TP_cust_token_id##" value="##TP_cust_token_id##" onclick="tokens_array.toggle(##TP_cust_token_id##);">
+					</td>
+					<td>##TP_token_name##</td>
+					<td>##TP_token_expiry_date##</td>
+					<td>##TP_token_amount##&nbsp;##TP_token_ccy_code##</td>
+					<td>##TP_token_p_bet_name##</td>
+				</tr>
+				##TP_ELSE##
+				<tr>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>##TP_token_p_bet_name##</td>
+				</tr>
+				##TP_ENDIF##
+				##TP_ENDLOOP##
+			##TP_ELSE##
+			<tr>
+				<td colspan="5">This user has no more tokens</td>
+			</tr>
+			##TP_ENDIF##
+
+			<tr>
+				<th colspan="5" class="buttons" />
+				<input type="button" class="btn_def" value="Back" onclick="goBackCust();" />
+				##TP_IF {[OT_CfgGet DELETE_CUST_FBET_TOKEN 0] == 1 && [tpBindGet TokensStatus] != "D"}##
+				<input type="button" class="btn_def" value="Delete" onClick="return fs(this,'DelCustToken');" ##TP_IF {![op_allowed DelFreebetTokens]}##disabled="true"##TP_ENDIF##/>
+				##TP_ENDIF##
+				<input type="button" class="btn_def" value="View Audit History" onClick="return fs(this, 'GoAudit');" />
+				<input type="hidden" name="AuditInfo" value="customerToken" />
+				<input type="hidden" name="cust_token_id" value="" />
+				<input type="hidden" name="action" value="ADMIN::CUST::DelCustToken" />
+				<input type="hidden" name="SubmitName" value="" />
+				<input type="hidden" name="CustId" value="##TP_CustId##" />
+				<input type="hidden" name="TokenType" value="##TP_TokenType##" />
+				<input type="hidden" name="TokensStatus" value="##TP_TokensStatus##" />
+				<input type="hidden" name="TokensArray" value="" />
+				</th>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>

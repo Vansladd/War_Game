@@ -1,0 +1,102 @@
+##TP_COMMENT $Id: offer.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $##
+##TP_COMMENT Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.##
+
+<!-- Bet Park Offer -->
+<tr>
+	<td colspan="2" style="padding-top: 10px"></td>
+</tr>
+<tr>
+	<th class="title" style="padding: 3px 3px 3px 3px" colspan="2">
+		<script>
+			write_which('##TP_off_status##',
+				'A', 'Bet Accepted',
+				'D', 'Bet Declined',
+				'S', 'Offer with a different stake-per-line',
+				'P', 'Offer with a different price',
+				'E', 'Offer with a different stake and terms',
+				'F', 'Offer with a different price and terms',
+				'L', 'Offer with different terms',
+				'F', 'Offer with a different price and terms',
+				'M', 'Max Bet Offer',
+				'G', 'Offer with a different stake,price and terms',
+				'B', 'Offer with a different stake-per-line and price')
+		</script>
+	</th>
+</tr>
+<tr>
+	<td align="left" width="80%">
+		<table cellspacing="0" cellpadding="6" border="0" align="left">
+
+			<form action="##TP_CGI_URL##" name="bet_action" method="get">
+			<input type="hidden" name="action" value="">
+			<input type="hidden" name="bet_id" value="##TP_bet_id##">
+			<input type="hidden" name="selected_leg" value="">
+			<input type="hidden" name="selected_dd" value="">
+			<input type="hidden" name="bet_group_id" value="##TP_bet_group_id##">
+			<tr>
+				<td class="caption">Created</td>
+				<td>##TP_off_cr_date##</td>
+				<td class="caption">Offer Expires</td>
+				<td ##TP_IF {$ASYNC(offer,expired) == "Y"}##style="color:red"##TP_ENDIF##>
+					##TP_off_expiry_date##
+				</td>
+				<td class="caption">User</td>
+				<td>##TP_off_username##</td>
+			</tr>
+			##TP_IF {$ASYNC(offer,status) == "D"}##
+				<tr>
+					<td class="caption">Reason</td>
+					<td colspan=5>##TP_off_reason_desc##</td>
+				</tr>
+			##TP_ELSEIF {$ASYNC(offer,status) == "S" || $ASYNC(offer,status) == "B" || $ASYNC(offer,status) == "E" || $ASYNC(offer,status) == "G"}##
+				<tr>
+					<td class="caption">Stake Per Line</td>
+					<td colspan=5>##TP_ccy_code## ##TP_TCL {tpBufWrite [comma_num_str [tpBindGet off_off_stake_per_line]]}## </td>
+				</tr>
+			##TP_ENDIF##
+			##TP_IF {$ASYNC(offer,status) == "L" || $ASYNC(offer,status) == "E" || $ASYNC(offer,status) == "F" || $ASYNC(offer,status) == "G"}##
+				<tr>
+					<td class="caption">Bet Terms</td>
+					<td colspan=5>##TP_off_leg_type##</td>
+				</tr>
+			##TP_ENDIF##
+			##TP_IF {$ASYNC(offer,status) == "P" || $ASYNC(offer,status) == "B" || $ASYNC(offer,status) == "F" || $ASYNC(offer,status) == "G"}##
+				<tr>
+					<td colspan="6">
+						<table cellspacing="0" cellpadding="6" border="0" align="left">
+							<tr>
+								<th nowrap class="colhead">Selection</th>
+								<th nowrap class="colhead">Offer Price</th>
+							</tr>
+							##TP_LOOP off_leg_idx {$ASYNC(offer,leg,nrows)}##
+								<tr>
+									<td>##TP_off_leg_oc_name##</td>
+									<td>##TP_off_leg_off_price##</td>
+								</tr>
+							##TP_ENDLOOP##
+						</table>
+					</td>
+				</tr>
+			##TP_ENDIF##
+
+			</form>
+
+		</table>
+	</td>
+
+	<td align="right" width="20%" valign="top">
+		<table cellspacing="0" cellpadding="6" border="0" align="left">
+			<tr>
+				<td align="right">
+					<input type="button" class="btn_def" value="Refresh" onClick="betAction(this, 'bet_action', 'ADMIN::ASYNC_BET::GoBet')">
+				</td>
+				<td align="right">
+					##TP_IF {![OT_CfgGet FUNC_ASYNC_BET_DETAILS 0]}##
+					<input type="button" class="btn_def" vvalue="Search" onClick="betAction(this, 'bet_action', 'ADMIN::ASYNC_BET::GoSearch')">
+					##TP_ENDIF##
+				</td>
+			</tr>
+		</table>
+	</td>
+</tr>
+<!-- End of Bet Park Offer -->

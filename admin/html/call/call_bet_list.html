@@ -1,0 +1,97 @@
+##TP_TCL {ADMIN::CALL::bind_call_bets [tpGetVar call_id]}##
+<br>
+<table cellspacing=0 cellpadding=2 border=0>
+	<br>
+	<tr>
+		<th colspan=18 class=title>Bets</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>Receipt</th>
+		<th nowrap class=colhead>Customer</th>
+		<th nowrap class=colhead>Placed at</th>
+		<th nowrap class=colhead>Settled</th>
+		<th nowrap class=colhead>Override</th>
+		<th nowrap class=colhead>Bet</th>
+		<th nowrap class=colhead>Leg Type</th>
+		<th nowrap class=colhead>Currency</th>
+		<th nowrap class=colhead>Stake</th>
+		<th nowrap class=colhead>Winnings</th>
+		<th nowrap class=colhead>Refund</th>
+		<th nowrap class=colhead>Leg</th>
+		<th nowrap class=colhead>Sort</th>
+		<th nowrap class=colhead>Event</th>
+		<th nowrap class=colhead>Market</th>
+		<th nowrap class=colhead>Selection</th>
+		<th nowrap class=colhead>Price</th>
+		<th nowrap class=colhead>Result</th>
+	</tr>
+	##TP_IF {[tpGetVar NumBets 0]>0}##
+	##TP_LOOP bet_idx {[tpGetVar NumBets]}##
+	##TP_LOOP seln_idx {$BET([tpGetVar bet_idx],num_selns)}##
+	<tr>
+		##TP_IF {[tpGetVar seln_idx]==0}##
+		##TP_IF {$BET([tpGetVar bet_idx],odds_type) == "X"}##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoXGameSub&SubId=##TP_BetReceipt##">##TP_BetReceipt##</a></td>
+		##TP_ELSEIF {$BET([tpGetVar bet_idx],odds_type) == "P"}##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoPoolsReceipt&BetId=##TP_BetId##">##TP_BetReceipt##</a></td>
+		##TP_ELSE##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_BetId##">##TP_BetReceipt##</a></td>
+		##TP_ENDIF##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_CustName##</a></td>
+		<td nowrap>##TP_BetTime##</td>
+		<td nowrap>##TP_BetSettled##</td>
+		##TP_IF {$BET([tpGetVar bet_idx],override) == "Y"}##
+		##TP_IF {$BET([tpGetVar bet_idx],odds_type) == "X"}##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::CALL::GoXGOverride&RefId=##TP_BetId##&RefKey=##TP_RefKey##">Yes</a></td>
+		##TP_ELSE##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::CALL::GoOverride&RefId=##TP_BetId##&RefKey=##TP_RefKey##">Yes</a></td>
+		##TP_ENDIF##
+		##TP_ELSE##
+		<td nowrap>No</td>
+		##TP_ENDIF##
+		<td nowrap>##TP_BetType##</td>
+		<td nowrap>##TP_LegType##</td>
+		<td nowrap>##TP_BetCCY##</td>
+		<td nowrap align=right>##TP_BetStake##</td>
+		<td nowrap align=right>##TP_Winnings##</td>
+		<td nowrap align=right>##TP_Refund##</td>
+		##TP_ELSE##
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		##TP_ENDIF##
+		<td nowrap align=right>##TP_BetLegNo##</td>
+		<td nowrap>##TP_BetLegSort##</td>
+		##TP_IF {$BET([tpGetVar bet_idx],[tpGetVar seln_idx],man_bet)==1}##
+		<td nowrap><a href="javascript:bet_desc(##TP_BetId##)">##TP_EvDesc##</a></td>
+		<td nowrap><a href="javascript:bet_desc(##TP_BetId##)">##TP_MktDesc##</a></td>
+		<td nowrap><a href="javascript:bet_desc(##TP_BetId##)">##TP_SelnDesc##</a></td>
+		##TP_ELSEIF {$BET([tpGetVar bet_idx],[tpGetVar seln_idx],xgame_bet)!=1}##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_EvId##">##TP_EvDesc##</a></td>
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::MARKET::GoMkt&MktId=##TP_EvMktId##">##TP_MktDesc##</a></td>
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::SELN::GoOc&OcId=##TP_EvOcId##">##TP_SelnDesc##</a></td>
+		##TP_ELSE##
+		<td nowrap>##TP_EvDesc##</td>
+		<td nowrap>##TP_MktDesc##</td>
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoXGameReceipt&BetId=##TP_BetId##">##TP_SelnDesc##</a></td>
+		##TP_ENDIF##
+
+		<td nowrap>##TP_Price##</td>
+		<td nowrap>##TP_Result##</td>
+	</tr>
+	##TP_ENDLOOP##
+	##TP_ENDLOOP##
+	##TP_ELSE##
+	<tr>
+		<td colspan=18 align=center>No bets found.</td>
+	</tr>
+	##TP_ENDIF##
+</table>

@@ -1,0 +1,98 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+
+function fs(b,t) {
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<form action="##TP_CGI_URL##" method=get>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::AUTO_LETTERS::DoTemplate>
+<input type=hidden name=template_id value="##TP_template_id##">
+<input type=hidden name=used_field_count value="##TP_TCL {tpBufWrite [tpGetVar NumUsedFields]}##">
+
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th class=title colspan=4>
+	Template: ##TP_template_name##
+	</th>
+</tr>
+<tr>
+	<td>
+		<input type=text name=template_name value="##TP_template_name##">
+	</td>
+	<td>
+		<input type=button class="btn_def" value="Change Name" onClick="return fs(this,'ChangeName')">
+		##TP_IF {[tpGetVar NumUsedFields 0]==0}##
+			<input type=button class="btn_def" value="Delete Template" onClick="return fs(this,'DeleteTemplate')">
+		##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<th nowrap class=colhead>Desc</th>
+	<th nowrap class=colhead>Display Order</th>
+	<th nowrap class=colhead>&nbsp;</th>
+	<th nowrap class=colhead>&nbsp;</th>
+</tr>
+##TP_IF {[tpGetVar NumUsedFields 0]==0}##
+<tr>
+	<td colspan=4>
+	No Fields
+	</td>
+</tr>
+##TP_ELSE##
+##TP_LOOP ufld_idx {[tpGetVar NumUsedFields]}##
+<input type=hidden name=field_id_##TP_TCL {tpBufWrite [tpGetVar ufld_idx]}## value="##TP_used_field_id##">
+<input type=hidden name=old_disp_order_##TP_TCL {tpBufWrite [tpGetVar ufld_idx]}## value="##TP_used_disp_order##">
+<tr>
+	<td>##TP_used_desc##</td>
+	<td>
+		<input type=text name=disp_order_##TP_TCL {tpBufWrite [tpGetVar ufld_idx]}## value="##TP_used_disp_order##">
+	</td>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::AUTO_LETTERS::DoTemplate&field_id=##TP_used_field_id##&template_id=##TP_template_id##&disp_order=##TP_used_disp_order##&SubmitName=DeleteField">x</a></td>
+	##TP_IF {[tpGetVar ufld_idx]==[expr [tpGetVar NumUsedFields]-1]}##
+		<td>
+			<input type=button class="btn_def" value="Update Display Order" onClick="return fs(this,'UpdDispOrder')">
+		</td>
+	##TP_ENDIF##
+</tr>
+##TP_ENDLOOP##
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar NumAvailFields 0] > 0}##
+<tr>
+	<td>
+		<select name="field_id">
+			<script>
+				write_select('##TP_field_id##'
+				##TP_LOOP afld_idx {[tpGetVar NumAvailFields]}##
+					,'##TP_avail_field_id##', '##TP_avail_desc##'
+				##TP_ENDLOOP##
+				)
+			</script>
+		</select>
+	</td>
+	<td><input type=text name=disp_order value="##TP_disp_order##"></td>
+	<td colspan=2>
+		<input type=button class="btn_def" value="Add Field to Template" onClick="return fs(this,'AddFieldTemplate')">
+	</td>
+</tr>
+##TP_ELSE##
+	<td colspan=4>
+		No fields available for templates
+	</td>
+##TP_ENDIF##
+</table>
+</form>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<html>
+<!-- $Id: seo_tags.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	<head>
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<title>SEO Title Tags - ##TP_TITLE##</title>
+		##TP_PLAY JS_WriteSelect.html##
+		##TP_PLAY JS_seo.html##
+
+		<script type="text/javascript">
+
+			function fs(b,t) {
+
+				var level         = '##TP_LEVEL##';
+				var static_select = document.dkiform.static_select;
+
+				if (level != 'Static') {
+					if (level == 'Home') {
+						document.dkiform.tag_level.value = 'Global';
+					} else if (level == 'Coupon') {
+						document.dkiform.tag_level.value = 'Coupon';
+					}
+					##TP_IF {[tpGetVar INVALID 0] != 1}##
+						else {
+							document.dkiform.tag_level.value = document.dkiform.tag_level_select.value;
+						}
+					##TP_ENDIF##
+
+				} else if (document.getElementById('static_edit_checkbox').checked && t != 'Back') {
+					if (static_select.options[static_select.selectedIndex].value == "--"){
+						return false;
+					} else {
+						document.dkiform.level_id.value = static_select.options[static_select.selectedIndex].value;
+						document.dkiform.static_name.value = static_select.options[static_select.selectedIndex].text;
+					}
+				} else if (t != 'Back') {
+					if (update_all_char_remaining() == false) {
+						return false;
+					}
+				}
+
+				b.disabled = true;
+				b.value = "Busy...";
+				b.form.SubmitName.value=t;
+				b.form.submit();
+				return true;
+			}
+
+		</script>
+
+	</head>
+	<!--seo_tags.html-->
+	<body ##TP_IF {[tpGetVar static "N"] == "Y"}## onLoad="changeMode(); update_all_char_remaining();" ##TP_ELSE## onLoad="update_all_char_remaining();"##TP_ENDIF##>
+		<form name="dkiform" method=get action="##TP_CGI_URL##">
+			<input type="hidden" name="action" value="ADMIN::SEO::GoSEOMain">
+			<input type="hidden" name="SubmitName" value="changeLang">
+			<input type="hidden" id="last_focus" name="last_focus" value="title_tag">
+			<input type="hidden" id="title_tag" name="title_tag" value="">
+			<input type="hidden" id="desc_tag" name="desc_tag" value="">
+			<input type="hidden" id="key_tag" name="key_tag" value="">
+			<input type="hidden" id="h1h2_tag" name="h1h2_tag" value="">
+
+			<input type="hidden" name="level" value="##TP_LEVEL##">
+			<input type="hidden" name="level_id" value="##TP_LEVEL_ID##">
+			<input type="hidden" name="level_title" value="##TP_LEVEL_TITLE##">
+			<input type="hidden" name="tag_level" value="">
+			<input type="hidden" name="from" value="##TP_FROM##">
+			<input type="hidden" name="back_proc" value="##TP_BACK_PROC##">
+			<input type="hidden" name="back_proc_args" value="##TP_BACK_PROC_ARGS##">
+			<input type="hidden" name="back_proc_args_name" value="##TP_BACK_PROC_ARGS_NAME##">
+			<input type="hidden" name="back_proc_args_value" value="##TP_BACK_PROC_ARGS_VALUE##">
+			<input type="hidden" name="channel_id" value="##TP_CHANNEL_ID##">
+
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td valign="top">
+						<table cellpadding="3">
+							##TP_IF {[tpGetVar static "N"] == "Y"}##
+								<tr>
+									<th colspan="3" class="title">
+										##TP_XL Admin.SEO.STATIC_PAGE_TAGS##
+										&nbsp;&nbsp;-&nbsp;&nbsp;Selected Site:&nbsp;##TP_CHANNEL_DESC##
+									</th>
+									<th>
+										<select name="language" onChange="document.dkiform.submit();">
+											##TP_LOOP lang_idx {[tpGetVar NumLangs 0]}##
+												<option value="##TP_lang_code##" ##TP_IF {[tpBindGet lang_code] == [tpBindGet LangSel]}##selected##TP_ENDIF##>##TP_lang_name##</option>
+											##TP_ENDLOOP##
+										</select>
+									</th>
+								</tr>
+								<tr>
+									<td align="right">
+										##TP_XL Admin.SEO.STATIC_PAGE_URL##
+									</td>
+									<td colspan="2">
+										<input type="text" size="50" name="static_url" value="##TP_STATIC_URL##">
+									</td>
+								</tr>
+								<tr>
+									<td align="right">
+										##TP_XL Admin.SEO.STATIC_PAGE_TITLE##
+									</td>
+									<td>
+										<input type="text" id="static_name" name="static_name" size="25" value="##TP_STATIC_NAME_SEL##">
+									</td>
+									<td>
+										<select id="static_select" name="static_select" onChange="return fs(this,'showTags')"><option value="--" selected>Select Static Page</option>
+											<option value="--">&nbsp;---------------------&nbsp;</option>
+											##TP_LOOP static_idx {[tpGetVar numStatic]}##
+												<option value="##TP_STATIC_ID##" ##TP_IF {[tpBindGet STATIC_ID] == [tpGetVar STATIC_SEL]}##selected##TP_ENDIF##>##TP_STATIC_NAME##</option>
+											##TP_ENDLOOP##
+										</select>
+										<input type="hidden" name="static_edit" value="##TP_STATIC_EDIT##">
+									</td>
+								</tr>
+								<tr>
+									<td>
+										&nbsp;
+									</td>
+									<td>
+										##TP_XL Admin.SEO.STATIC_PAGE_EDIT_EXISTING_PAGE## <input type="checkbox" id="static_edit_checkbox" onChange="changeMode()" ##TP_STATIC_CHECKED##>
+									</td>
+									<td>
+										<div id="delete_tag">
+											<u>##TP_XL Admin.SEO.STATIC_PAGE_DELETE_TAG##</u>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										&nbsp;
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<b>##TP_XL Admin.SEO.STATIC_PAGE_META_TAGS##</b>
+									</td>
+								</tr>
+							##TP_ELSE##
+								<tr>
+									<th colspan="3" class="title">
+										##TP_IF {[tpGetVar HomePage "N"] == "Y"}##
+											##TP_XL Admin.SEO.HOME_PAGE_TAGS## &nbsp;&nbsp;-&nbsp;&nbsp;Selected Site:&nbsp;##TP_CHANNEL_DESC##
+										##TP_ELSEIF {[tpGetVar INVALID 0] == 1}##
+											##TP_XL Admin.SEO.INVALID_SELECTION##
+										##TP_ELSE##
+											##TP_LEVEL_TITLE## ##TP_LEVEL## ##TP_XL Admin.SEO.TAGS##
+											##TP_IF {[tpBindGet LEVEL] != "Coupon"}##
+												&nbsp;&nbsp;-&nbsp;&nbsp;##TP_XL Admin.SEO.CURRENT_TAG_LEVEL##:&nbsp;
+												<select name="tag_level_select" onChange="return fs(this,'showTags')">
+													##TP_LOOP h_idx {[tpGetVar num_h_Levels]}##
+														<option value="##TP_h_NAME##" ##TP_IF {[tpGetVar SEL_LEVEL] == [tpBindGet h_NAME]}##selected##TP_ENDIF##>##TP_h_NAME##</option>
+													##TP_ENDLOOP##
+												</select>
+											##TP_ENDIF##
+											&nbsp;&nbsp;-&nbsp;&nbsp;Selected Site:&nbsp;##TP_CHANNEL_DESC##
+										##TP_ENDIF##
+									</th>
+									<th>
+										<select name="language" onChange="document.dkiform.submit();">
+											##TP_LOOP lang_idx {[tpGetVar NumLangs 0]}##
+												<option value="##TP_lang_code##" ##TP_IF {[tpBindGet lang_code] == [tpBindGet LangSel]}##selected##TP_ENDIF##>##TP_lang_name##</option>
+											##TP_ENDLOOP##
+										</select>
+									</th>
+								</tr>
+							##TP_ENDIF##
+							##TP_IF {[tpGetVar INVALID 0] != 1}##
+								<tr>
+									<td align="right">
+										##TP_XL Admin.SEO.META_TITLE##
+									</td>
+									<td>
+										<textarea cols="51" rows="2" id="_title_tag" name="_title_tag" wrap="soft" value="" onFocus="updateLastFocus('_title_tag')" onKeyUp="update_char_remaining('_title_tag')">##TP_TITLE_TAG##</textarea>
+									</td>
+									<td>
+										<table>
+											<tr>
+												<td><i>##TP_XL Admin.SEO.META_REMAINING##:</i></td>
+											</tr>
+											<tr>
+												<td align="right"><input type="text" size="3" id="_title_tag_rem" readonly></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td align="right">
+										##TP_XL Admin.SEO.META_DESC##
+									</td>
+									<td>
+										<textarea cols="51" rows="5" id="_desc_tag" name="_desc_tag" wrap="soft" value="" onFocus="updateLastFocus('_desc_tag')" onKeyUp="update_char_remaining('_desc_tag')">##TP_DESC_TAG##</textarea>
+									</td>
+									<td>
+										<table>
+											<tr>
+												<td><i>##TP_XL Admin.SEO.META_REMAINING##:</i></td>
+											</tr>
+											<tr>
+												<td align="right"><input type="text" size="3" id="_desc_tag_rem" readonly></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td align="right">
+										##TP_XL Admin.SEO.META_KEYWORDS##
+									</td>
+									<td>
+										<textarea cols="51" rows="5" id="_key_tag" name="_key_tag" wrap="soft" value="" onFocus="updateLastFocus('_key_tag')" onKeyUp="update_char_remaining('_key_tag')">##TP_KEY_TAG##</textarea>
+									</td>
+									<td>
+										<table>
+											<tr>
+												<td><i>##TP_XL Admin.SEO.META_REMAINING##:</i></td>
+											</tr>
+											<tr>
+												<td align="right"><input type="text" size="3" id="_key_tag_rem" readonly></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+
+								<tr>
+									<td align="right">
+										##TP_XL Admin.SEO.META_H1_H2_TAGS##
+									</td>
+									<td>
+										<textarea cols="51" rows="5" id="_h1h2_tag" name="_h1h2_tag" wrap="soft" value="" onFocus="updateLastFocus('_h1h2_tag')" onKeyUp="update_char_remaining('_h1h2_tag')">##TP_H1H2_TAG##</textarea>
+									</td>
+									<td>
+										<table>
+											<tr>
+												<td><i>##TP_XL Admin.SEO.META_REMAINING##:</i></td>
+											</tr>
+											<tr>
+												<td align="right"><input type="text" size="3" id="_h1h2_tag_rem" readonly></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							##TP_ENDIF##
+							##TP_IF {[tpGetVar INVALID 0] != 1}##
+								<tr>
+									<td colspan="3">&nbsp;</td>
+								</tr>
+								<tr>
+									<td colspan="3">
+										##TP_XL Admin.SEO.META_EXAMPLE##
+									</td>
+								</tr>
+								<tr>
+									<td colspan="3">&nbsp;</td>
+								</tr>
+							##TP_ENDIF##
+							<tr>
+								<th colspan="3" class="buttons">
+									##TP_IF {[tpGetVar INVALID 0] != 1}##
+										<input type="button" value="##TP_XL Admin.SEO.SAVE_ALL_BUTTON##" onClick="return fs(this,'saveTags')">
+									##TP_ENDIF##
+									<input type="button" value="##TP_XL Admin.SEO.BACK_BUTTON##" onClick="return fs(this,'Back')">
+									##TP_IF {[tpGetVar TAGS_EXIST 0] == 1}##
+										<input type="button" value="##TP_XL Admin.SEO.DELETE_TAG_BUTTON##" onClick="return fs(this,'deleteTag')">
+									##TP_ENDIF##
+								</th>
+							</tr>
+						</table>
+					</td>
+					##TP_IF {[tpGetVar INVALID 0] != 1}##
+						<td bgcolor="#FFFFFF">
+							&nbsp;&nbsp;&nbsp;
+						</td>
+						<td valign="top" bgcolor="#FFFFFF">
+							<table cellpadding="3">
+								<tr>
+									<th class="title">
+										##TP_XL Admin.SEO.META_DKIS##
+									</th>
+								</tr>
+								<tr>
+									<td align="right">
+										##TP_XL Admin.SEO.META_DKI_OPTIONAL_TAGS##&nbsp;<input type="checkbox" id="optional_dki" checked>
+									<td>
+								</tr>
+								<tr>
+									<td>
+										<select id="dki_sel" name="dki_sel" style="width:125px" size="10" onDblClick="addDKI()">
+											##TP_LOOP dki_idx {[tpGetVar num_dki_Levels]}##
+												<option value="##TP_dki_NAME##">##TP_dki_NAME##</option>
+											##TP_ENDLOOP##
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										##TP_XL Admin.SEO.META_DKI_TAG##
+									</td>
+								</tr>
+							</table>
+						</td>
+					##TP_ENDIF##
+				</tr>
+			</table>
+		</form>
+	</body>
+</html>

@@ -1,0 +1,54 @@
+<html>
+<!-- $Id: game_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Games</title>
+</head>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=5 class=title>
+	Games
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Name</th>
+	<th nowrap class=colhead>URL</th>
+	<th nowrap class=colhead>PopUp</th>
+	<th nowrap class=colhead>Horiz Size</th>
+	<th nowrap class=colhead>Vert Size</th>
+
+</tr>
+##TP_LOOP game_idx {[tpGetVar NumGames]}##
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::GAMES::GoGame&GameId=##TP_GAME_ID##">##TP_GAME_NAME##</a></td>
+	<td>##TP_GAME_URL##</td>
+	<td align=right>##TP_GAME_POPUP##</td>
+	<td align=right>##TP_GAME_HORIZ##</td>
+	<td align=right>##TP_GAME_VERT##</td>
+</tr>
+##TP_ENDLOOP##
+<tr>
+	<th class=buttons colspan=5>
+	  <form action="##TP_CGI_URL##" method=get>
+		<input type=button class="btn_def" value="Add New Game" onClick="return fs(this,'GameAdd')">
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value=ADMIN::GAMES::AddGame>
+	  </form>
+	</th>
+</tr>
+</table>
+</body>
+</html>

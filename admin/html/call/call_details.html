@@ -1,0 +1,47 @@
+<html>
+<!-- $Id: call_details.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script>
+function wr_tr(status) {
+		if (status=="Y") {
+			document.write('<tr class=active>');
+		} else if (status=="N") {
+			document.write('<tr class=suspended>');
+		} else if (status=='U') {
+			document.write('<tr class=unknown>');
+		} else {
+			document.write('<tr class=settled>');
+		}
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+function write_auth_decl(status, pay_mthd, prefix, pmt_id)
+{
+	if (status=='P') {
+		document.write('<input type=checkbox name='+prefix+'_'+pmt_id+' value=Y></td>');
+	} else {
+		document.write('&nbsp;');
+	}
+}
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+##TP_PLAY call/call_summary.html##
+<br>
+##TP_PLAY call/call_bet_list.html##
+<br>
+##TP_PLAY call/call_pmt_list.html##
+</body>
+</html>

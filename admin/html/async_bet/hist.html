@@ -1,0 +1,518 @@
+<html>
+	<!-- $Id: hist.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<title>Auto-referral Betting</title>
+
+	##TP_PLAY header_cal.html##
+
+	<script language="javascript" src="##TP_CGI_URL##?action=ADMIN::ASYNC_BET::GoScript" type="text/javascript"></script>
+	<script type="text/javascript" src="##TP_OFFICE_STATIC_URL##/js/xmlhttp.js"></script>
+	<script language="javascript">
+	##TP_ESC esc_js##
+
+		##TP_PLAY input_util.js##
+
+		// AJAX global variable settings
+		var call_back_func = 'updateResultsDiv';
+		var call_back_url  = '##TP_CGI_URL##?action=ADMIN::ASYNC_BET::DoHist';
+		var method         = 'POST';
+		var error_msg      = '##TP_XL ASYNC_HIST_UNAVAILABLE##';
+
+		// update the results section of the page
+		function updateResultsDiv(response) {
+
+			var f, hist_div, cookie;
+
+			f = document.forms['async_hist'];
+
+			hist_div = document.getElementById("asyncHistResults");
+			hist_div.innerHTML = response;
+
+			// grab the betCount from the betCount div in the results section
+			document.getElementById('betCountDummy').style.display = 'none';
+			document.getElementById('betCount').innerHTML = document.getElementById('betCountDummy').innerHTML;
+
+			// grab the accepted action counter from the dummy divs in the results section
+			if (document.getElementById('accActionDummy')) {
+				document.getElementById('accActionDummy').style.display = 'none';
+				document.getElementById('accAction').innerHTML = document.getElementById('accActionDummy').innerHTML;
+			}
+
+			// grab the rejected action counter from the dummy divs in the results section
+			if (document.getElementById('rejActionDummy')) {
+				document.getElementById('rejActionDummy').style.display = 'none';
+				document.getElementById('rejAction').innerHTML = document.getElementById('rejActionDummy').innerHTML;
+			}
+
+			// grab the cancelled action counter from the dummy divs in the results section
+			if (document.getElementById('canActionDummy')) {
+				document.getElementById('canActionDummy').style.display = 'none';
+				document.getElementById('canAction').innerHTML = document.getElementById('canActionDummy').innerHTML;
+			}
+
+			// grab the limited action counter from the dummy divs in the results section
+			if (document.getElementById('ltdActionDummy')) {
+				document.getElementById('ltdActionDummy').style.display = 'none';
+				document.getElementById('ltdAction').innerHTML = document.getElementById('ltdActionDummy').innerHTML;
+			}
+
+			// grab the timedout action counter from the dummy divs in the results section
+			if (document.getElementById('toActionDummy')) {
+				document.getElementById('toActionDummy').style.display = 'none';
+				document.getElementById('toAction').innerHTML = document.getElementById('toActionDummy').innerHTML;
+			}
+
+			// grab the overridden action counter from the dummy divs in the results section
+			if (document.getElementById('ovrActionDummy')) {
+				document.getElementById('ovrActionDummy').style.display = 'none';
+				document.getElementById('ovrAction').innerHTML = document.getElementById('ovrActionDummy').innerHTML;
+			}
+		}
+
+		// return the form arguments as a parameter list in a URL
+		function getFormArgs() {
+
+			var f, user_id;
+			var param_str;
+
+			f = document.forms['async_hist'];
+			param_str = '';
+
+			// user
+			param_str += 'user_id='+f.user_id.value;
+
+			// action
+			if (f.accepted.checked == 1) {
+				param_str += '&accepted=1';
+			}
+			if (f.rejected.checked == 1) {
+				param_str += '&rejected=1';
+			}
+			if (f.limited.checked == 1) {
+				param_str += '&limited=1';
+			}
+			if (f.timedout.checked == 1) {
+				param_str += '&timedout=1';
+			}
+			if (f.cancelled.checked == 1) {
+				param_str += '&cancelled=1';
+			}
+			if (f.overridden.checked == 1) {
+				param_str += '&overridden=1';
+			}
+			
+			if (f.channel.value != '') {
+				param_str += '&channel='+f.channel.value;
+			}
+			if (f.accept_status.value != '') {
+				param_str += '&accept_status='+f.accept_status.value;
+			}
+
+			if (f.username.value != '') {
+				param_str += '&username='+f.username.value;
+			}
+			if (f.exact_name.checked == 1) {
+				param_str += '&exact_name=Y';
+			}
+			if (f.upper_name.checked == 1) {
+				param_str += '&upper_name=Y';
+			}
+			if (f.acct_no.value != '') {
+				param_str += '&acct_no='+f.acct_no.value;
+			}
+			if (f.exact_acct_no.checked == 1) {
+				param_str += '&exact_acct_no=Y';
+			}
+			if (f.upper_acct_no.checked == 1) {
+				param_str += '&upper_acct_no=Y';
+			}
+			if (f.bet_receipt.value != '') {
+				param_str += '&bet_receipt='+f.bet_receipt.value;
+			}
+			if (f.stake_1.value != '') {
+				param_str += '&stake_1='+f.stake_1.value;
+			}
+			if (f.stake_2.value != '') {
+				param_str += '&stake_2='+f.stake_2.value;
+			}
+			if (f.u_stake_1.value != '') {
+				param_str += '&u_stake_1='+f.u_stake_1.value;
+			}
+			if (f.u_stake_2.value != '') {
+				param_str += '&u_stake_2='+f.u_stake_2.value;
+			}
+			if (f.liab_group_id.value != '') {
+				param_str += '&liab_group_id='+f.liab_group_id.value;
+			}
+			if (f.referral_rule_code.value != '') {
+				param_str += '&referral_rule_code='+f.referral_rule_code.value;
+			}
+
+			// category
+			##TP_LOOP cat_idx {[tpGetVar NumCategories]}##
+				if (f.cat_##TP_CatNameStripped##.checked == 1) {
+					param_str += '&cat_' + encodeURI('##TP_CategoryName##') + '=1';
+				}
+			##TP_ENDLOOP##
+
+			// date
+			if (f.hist_time_range.selectedIndex != 0) {
+				selectedIndex = f.hist_time_range.selectedIndex;
+				param_str += '&hist_time_range=' + f.hist_time_range.options[selectedIndex].value;
+			} else {
+				param_str += '&hist_from=' + f.hist_from.value;
+				param_str += '&hist_to=' + f.hist_to.value;
+			}
+
+			return param_str;
+
+		}
+
+		function fs(a) {
+
+			var f = document.forms['async_hist'];
+
+			err.reset();
+
+			// must have date range specified
+			if (f.hist_time_range.selectedIndex == 0) {
+				// must have custom date values
+				if (f.hist_from.value == "" && f.hist_to.value == "") {
+					err.add("If choosing custom date, at least one date must be specified.");
+				}
+				if (f.hist_from.value != "" && !isValidInfDate(f.hist_from.value)) {
+					err.add("'From' date is not in 'yyyy-mm-dd hh:mi:ss' format.");
+				}
+				if (f.hist_to.value != "" && !isValidInfDate(f.hist_to.value)) {
+					err.add("'To' date is not in 'yyyy-mm-dd hh:mi:ss' format.");
+				}
+			}
+
+			// must have at least one category
+			var num_cats = 0;
+			##TP_LOOP cat_idx {[tpGetVar NumCategories]}##
+				if (f.cat_##TP_CatNameStripped##.checked == 1) {
+					num_cats++;
+				}
+			##TP_ENDLOOP##
+			
+			if (num_cats == 0) {
+				err.add("Must choose at least one category.");
+			}
+
+			if (a == 'do_cat_save') {
+				f.action.value = 'ADMIN::ASYNC_BET::DoCatSave';
+				call_back_url  = '##TP_CGI_URL##?action=ADMIN::ASYNC_BET::DoCatSave';
+				call_back_func = '';
+			} else {
+				f.action.value = 'ADMIN::ASYNC_BET::DoHist';
+				call_back_url  = '##TP_CGI_URL##?action=ADMIN::ASYNC_BET::DoHist';
+				call_back_func = 'updateResultsDiv';
+
+				// must have at least one status
+				var num_status = 0;
+				if (f.accepted.checked == 1) {
+					num_status++;
+				}
+				if (f.rejected.checked == 1) {
+					num_status++;
+				}
+				if (f.limited.checked == 1) {
+					num_status++;
+				}
+				if (f.timedout.checked == 1) {
+					num_status++;
+				}
+				if (f.cancelled.checked == 1) {
+					num_status++;
+				}
+				if (f.overridden.checked == 1) {
+					num_status++;
+				}
+	
+				if (num_status == 0) {
+					err.add("Must choose at least one status.");
+				}
+			}
+
+			if(err.isErr()) {
+				err.alert();
+			}
+			else {
+				var call_back_function = function(_req) {asynchProcessHTMLResponse(_req,call_back_func,error_msg);};
+				HttpRequest(call_back_url,'POST',call_back_function,getFormArgs(),true); 
+			}
+		}
+
+		function displayCalendars() {
+			var cal_from = new Calendar(document.forms.async_hist.hist_from,null,true,"lo");
+			var cal_to = new Calendar(document.forms.async_hist.hist_to,null,true,"high");
+
+			cal_from.setOnSelect(function() {customDate()});
+			cal_to.setOnSelect(function() {customDate()});
+		}
+
+		function customDate() {
+			document.getElementById('hist_time_range').selectedIndex = 0;
+		}
+
+		function action_all_cats(type) {
+			var f = document.forms['async_hist'];
+
+			##TP_LOOP cat_idx {[tpGetVar NumCategories]}##
+				if (type == "select_all") {
+					f.cat_##TP_CatNameStripped##.checked = true;
+				} else if (type == "deselect_all") {
+					f.cat_##TP_CatNameStripped##.checked = false;
+				}
+			##TP_ENDLOOP##			
+		}
+	##TP_ESC##
+	</script>
+
+</head>
+
+<body ##TP_IF {[op_allowed ViewAsyncBetsHist] && [OT_CfgGet FUNC_VIEW_ASYNC_HIST 0] == 1}##onLoad="displayCalendars()"##TP_ENDIF##>
+	##TP_PLAY error_rpt.html##
+
+	##TP_IF {[op_allowed ViewAsyncBetsHist] && [OT_CfgGet FUNC_VIEW_ASYNC_HIST 0] == 1}##
+	<form id="async_hist_form" action="##TP_CGI_URL##" name="async_hist" onSubmit="return false">
+
+	<input type="hidden" name="action" value="ADMIN::ASYNC_BET::DoHistSearch">
+	<table width="100%" cellspacing="0" cellpadding="0" border="0">
+		<tr>
+			<th colspan="13" class="title" align="left">Auto-referral Bet History</th>
+		</tr>
+			<tr>
+				<td colspan="6">
+					<table cellspacing="0" cellpadding="0" border="0">
+						<tr>
+							<td class="caption">TIME RANGE:</td>
+							<td>
+								<select name="hist_time_range" id="hist_time_range">
+									<option value="">Custom</option>
+									<option value="L24">Last 24 Hours</option>
+									<option value="L12">Last 12 Hours</option>
+									<option value="L6" selected>Last 6 Hours</option>
+								</select>
+							</td>
+							<td nowrap>
+								<input name="hist_from" type="text" size="19" onChange="customDate()">
+								&nbsp;to
+							</td>
+							<td nowrap>
+								<input name="hist_to" type="text" size="19" onFocus="customDate()">
+							</td>
+						</tr>
+						<tr>
+							<td class="caption">TRADER:</td>
+							<td colspan="3">
+								<select name="user_id">
+									<option value="ALL">ALL</option>
+									<option value="System">System</option>
+									##TP_LOOP async_user_idx {[tpGetVar NumAsyncUsers]}##
+										<option value="##TP_UserId##">##TP_UserName##</option>
+									##TP_ENDLOOP##
+								</select>
+							</td>
+							<td>
+								<input type="button" class="btn_def" value="Search" onClick="fs('do_hist')">
+							</td>
+						</tr>
+						<tr>
+							<td class="caption">Accepted</td>
+							<td nowrap style="font-weight:bold">
+								<input type="checkbox" name="accepted" checked>
+								<span id="accAction"></span>
+							</td>
+							<td class="caption">Rejected</td>
+							<td nowrap style="font-weight:bold">
+								<input type="checkbox" name="rejected" checked>
+								<span id="rejAction"></span>
+							</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr>
+							<td class="caption">Limited</td>
+							<td nowrap style="font-weight:bold">
+								<input type="checkbox" name="limited" checked>
+								<span id="ltdAction"></span>
+							</td>
+							<td class="caption">Timed Out</td>
+							<td nowrap style="font-weight:bold">
+								<input type="checkbox" name="timedout" checked>
+								<span id="toAction"></span>
+							</td>
+							<td style="font-weight:bold">Total Bet Count: 
+								<span id="betCount">0</span>
+							</td>
+						</tr>
+						<tr>
+							<td class="caption">Cancelled</td>
+							<td nowrap style="font-weight:bold">
+								<input type="checkbox" name="cancelled" checked>
+								<span id="canAction"></span>
+							</td>
+							<td class="caption">Overridden</td>
+							<td nowrap style="font-weight:bold;">
+								<input type="checkbox" name="overridden" checked />
+								<span id="ovrAction"></span>
+							</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr>
+							<td class="captionindex">Acceptance Status</td>
+							<td>
+								<select name="accept_status">
+									<option value="">ALL</option>
+									##TP_LOOP CUSTOMER_RESPONSES_idx {[tpGetVar NumCustomerResponses]}##
+										<option value="##TP_CustValue##">##TP_CustLabel##</option>
+									##TP_ENDLOOP##
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="captionindex">Channel</td>
+							<td>
+								<select name="channel">
+									<option value="">ALL</option>
+									##TP_LOOP CHAN_idx {[tpGetVar NumChannels]}##
+										<option value="##TP_ChanValue##">##TP_ChanLabel##</option>
+									##TP_ENDLOOP##
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class=captionindex>Username</td>
+							<td>
+							<input type="text" name="username" value="" size=32>
+							</td>
+							<td>
+							(exact:
+							<input type="checkbox" name="exact_name" value="Y" ##TP_IF {[OT_CfgGet FUNC_RELAXED_CUST_SEARCH 0] == 0}##checked##TP_ENDIF##>
+							&nbsp;&nbsp;case insensitive:
+							<input type="checkbox" name="upper_name" value="Y" ##TP_IF {[OT_CfgGet FUNC_RELAXED_CUST_SEARCH 0]}##checked##TP_ENDIF##>
+							&nbsp;)
+							</td>
+						</tr>
+						<tr>
+							<td class=caption>Account No</td>
+							<td>
+							<input type="text" name="acct_no" value="" size=32>
+							</td>
+							<td>
+							(exact:<input type="checkbox" name="exact_acct_no" value="Y" ##TP_IF {[OT_CfgGet FUNC_RELAXED_CUST_SEARCH 0] == 0}##checked##TP_ENDIF##>&nbsp;
+							&nbsp;&nbsp;case insensitive:
+							<input type="checkbox" name="upper_acct_no" value="Y" ##TP_IF {[OT_CfgGet FUNC_RELAXED_CUST_SEARCH 0]}##checked##TP_ENDIF##>
+							&nbsp;)
+							</td>
+						</tr>
+						<tr>
+							<td class=caption>Bet Receipt</td>
+							<td>
+							<input type="text" name="bet_receipt" value="" size=32>
+							</td>
+						</tr>
+						<tr>
+							<td class=caption>Stake between</td>
+							<td>
+							<input type="text" name="stake_1" value="" size=10>
+							&nbsp;and&nbsp;
+							<input type="text" name="stake_2" value="" size=10>
+							</td>
+						</tr>
+						<tr>
+							<td class=caption>Unit Stake between</td>
+							<td>
+							<input type="text" name="u_stake_1" value="" size=10>
+							&nbsp;and&nbsp;
+							<input type="text" name="u_stake_2" value="" size=10>
+							</td>
+						</tr>
+						<tr>
+							<td class=caption>Liability Group:</td>
+							<td colspan="4">
+								<select name="liab_group_id">
+									<option value="" selected></option>
+									##TP_LOOP liab_group_idx {[tpGetVar NumLiabGroups]}##
+										<option value="##TP_LiabGroupId##">##TP_LiabGroupDesc##</option>
+									##TP_ENDLOOP##
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class=caption>Referral Rule:</td>
+							<td>
+								<select name="referral_rule_code">
+									<option value="" selected></option>
+									##TP_LOOP referral_rule_idx {[tpGetVar NumReferralRules]}##
+										<option value="##TP_ReferralRuleCode##">##TP_ReferralRuleReason##</option>
+									##TP_ENDLOOP##
+								</select>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td colspan="7">
+					<table cellspacing="0" cellpadding="0" border="0">
+						##TP_LOOP cat_idx {[tpGetVar NumCategories]}##
+
+							##TP_IF {[tpGetVar cat_idx] > 0}##
+								##TP_TCL {tpSetVar cat_idx [expr {[tpGetVar cat_idx] + [tpGetVar cat_idx]}]}##
+							##TP_ENDIF##
+
+							##TP_IF {[tpGetVar cat_idx] >= [tpGetVar NumCategories]}##
+								##TP_BREAK##
+							##TP_ENDIF##
+
+						<tr>
+							<td>
+								##TP_IF {[tpBindGet [tpBindGet CatNameStripped]Checked] == 1}##
+									<input type="checkbox" name="cat_##TP_CatNameStripped##" checked>
+								##TP_ELSE##
+									<input type="checkbox" name="cat_##TP_CatNameStripped##">
+								##TP_ENDIF##
+							</td>
+							<td nowrap style="font-weight:bold">##TP_CategoryName##</td>
+
+							##TP_TCL {tpSetVar cat_idx [expr {[tpGetVar cat_idx] + 1}]}##
+
+							##TP_IF {[tpGetVar cat_idx] < [tpGetVar NumCategories]}##
+								<td>
+									##TP_IF {[tpBindGet [tpBindGet CatNameStripped]Checked] == 1}##
+										<input type="checkbox" name="cat_##TP_CatNameStripped##" checked>
+									##TP_ELSE##
+										<input type="checkbox" name="cat_##TP_CatNameStripped##">
+									##TP_ENDIF##
+								</td>
+								<td nowrap style="font-weight:bold">##TP_CategoryName##</td>
+							##TP_ELSE##
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							##TP_ENDIF##
+
+						</tr>
+						##TP_ENDLOOP##
+						<tr>
+							<td colspan="2">
+								<a href="javascript:action_all_cats('select_all')">Select All</a>
+								|
+								<a href="javascript:action_all_cats('deselect_all')">Deselect All</a>
+							</td>
+							<td colspan="2">
+								<input type="button" class="btn_def" value="Save Category Settings" onClick="fs('do_cat_save')">
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		</form>
+		<div id="asyncHistResults"></div>
+	##TP_ENDIF##
+
+</body>
+</html>

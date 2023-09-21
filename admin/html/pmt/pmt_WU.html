@@ -1,0 +1,133 @@
+<html>
+<!-- $Id: pmt_WU.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+
+var wtd_str = ##TP_IF {[tpBindGet IsKYCOverride] == 1}##'Customer is KYC Restricted. Continue with withdrawal?'##TP_ELSE##'Make withdrawal?'##TP_ENDIF##;
+
+function fs(b,t)
+{
+	if (t == 'DoDep' && !confirm('Make deposit?')) {
+		return
+	}
+	if (t == 'DoWtd' && !confirm(wtd_str)) {
+		return
+	}
+	b.disabled = true;
+	b.value = "Busy...";
+    b.form.SubmitName.value=t;
+    b.form.submit();
+    return true;
+}
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<form method=post action="##TP_CGI_URL##">
+<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th colspan=2 class=title>Western Union (##TP_DepWtd##)</th>
+	</tr>
+
+	<!-- show the customers details -->
+	##TP_PLAY pmt/pmt_detail_cust.html##
+
+	<!-- bank details -->
+	<tr class=subtitle>
+		<th colspan=2 align=left>Payment details</th>
+	</tr>
+	##TP_IF {[tpGetVar DepWtd] == "DEP"}##
+	<tr>
+		<td class=caption>MTCN:</td>
+		<td><input type=text name="mtcn" value="##TP_mtcn##" maxlength=10 size=20></td>
+	</tr>
+	##TP_ENDIF##
+	<tr>
+		<td class=caption>Location of Email Req.:</td>
+		<td>
+			<select name="req_location">
+				<option value="Western Union">Western Union</option>
+				<option value="Customer">Customer</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Extra Info:</td>
+		<td><input type=text name="extra_info" value="##TP_extra_info##" size=20></td>
+	</tr>
+	<tr>
+		<td class=caption>Channel:</td>
+		<td>
+			<select name="source">
+				<script>write_select("P"
+					##TP_LOOP chan_idx {[tpGetVar NumChannels]}##
+						,"##TP_ChanCode##", "##TP_ChanName##"
+					##TP_ENDLOOP##
+							);</script>
+			</select>
+		</td>
+	</tr>
+
+
+##TP_IF {[tpGetVar DepWtd] == "WTD"}##
+	<tr class=subtitle>
+		<th colspan=2 align=left>Withdraw</th>
+	</tr>
+	##TP_IF {[OT_CfgGet FUNC_PMT_SURCHARGE 0]}##
+	<tr>
+		<td class="caption">Surcharge (##TP_CustCurrency##):</td>
+		<td>##TP_WtdCharge##</td>
+		<input type="hidden" name="wtd_charge" value="##TP_WtdCharge##">
+	</tr>
+	##TP_ENDIF##
+ 	<tr>
+		<td class=caption>Amount (##TP_CustCurrency##):</td>
+		<td><input type="text" name="Amount" size=10 value=""></td>
+	</tr>
+	<tr>
+		<th colspan=2 class=buttons>
+			<input type="button" class="btn_def" value="Make Withdrawal" onClick="return fs(this,'DoWtd')">
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</th>
+	</tr>
+##TP_ELSEIF {[tpGetVar DepWtd] == "DEP"}##
+	<tr class=subtitle>
+		<th colspan=2 align=left>Deposit</th>
+	</tr>
+	##TP_IF {[OT_CfgGet FUNC_PMT_SURCHARGE 0]}##
+	<tr>
+		<td class="caption">Surcharge (##TP_CustCurrency##):</td>
+		<td>##TP_DepCharge##</td>
+		<input type="hidden" name="dep_charge" value="##TP_DepCharge##">
+	</tr>
+	##TP_ENDIF##
+ 	<tr>
+		<td class=caption>Amount (##TP_CustCurrency##):</td>
+		<td><input type="text" name="Amount" size=10 value=""></td>
+	</tr>
+	<tr>
+		<th colspan=2 class=buttons>
+			<input type="button" class="btn_def" value="Make Deposit" onClick="return fs(this,'DoDep')">
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</th>
+	</tr>
+##TP_ENDIF##
+	<input type="hidden" name="cpm_id" value="##TP_cpm_id##">
+	<input type="hidden" name="RefId" value="##TP_RefId##">
+	<input type="hidden" name="pay_mthd" value="##TP_pay_mthd##">
+	<input type="hidden" name="CustId" value="##TP_CustId##">
+	<input type="hidden" name="SubmitName" value="">
+	<input type="hidden" name="action" value="ADMIN::PMT::do_pay_mthd_pmt">
+	<input type="hidden" name="uniqueId" value="##TP_TCL {tpBufWrite [OT_UniqueId]}##">
+	<input type="hidden" name="DepWtd" value="##TP_DepWtd##">
+	<input type="hidden" name="IsKYCOverride" value="##TP_IsKYCOverride##">
+	</form>
+</table>
+</body>
+</html>
+

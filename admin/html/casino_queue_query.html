@@ -1,0 +1,114 @@
+<html>
+<!-- $Id: casino_queue_query.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY header_cal.html##
+<script>
+function fs(b)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.submit();
+	return true;
+}
+
+function displayCalendars() {
+    new Calendar(document.forms.ext_search_criteria.date_low,null,false,"lo")
+    new Calendar(document.forms.ext_search_criteria.date_high,null,false,"lo")
+}
+</script>
+##TP_PLAY JS_WriteSelect.html##
+</head>
+<body onload="displayCalendars()">
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<form name="ext_search_criteria" method=get action=##TP_CGI_URL##>
+<tr>
+	<th colspan=3 class=title>
+		External System Queue - Filter Options
+	</th>
+</tr>
+<tr class=subtitle>
+	<th colspan=2 align=left>Filter Queued Items</th>
+</tr>
+<tr>
+	<td class=caption>External System</td>
+	<td>
+		<select name="system">
+			<script>
+				write_select('##TP_SYSTEM##','','All'
+				##TP_LOOP sys_idx {[tpGetVar num_synced_sys]}##,'##TP_sys_name##','##TP_sys_name##'##TP_ENDLOOP##);
+			</script>
+		</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Username</td>
+	<td><input type="text" name="username" value="##TP_USERNAME##" size=32></td>
+</tr>
+<tr>
+	<td class=caption>Types</td>
+	<td>
+		Registration <input type="checkbox" name="type_R" ##TP_TYPE_R##>&nbsp;
+		Update <input type="checkbox" name="type_U" ##TP_TYPE_U##>&nbsp;
+		Banner Tag <input type="checkbox" name="type_B" ##TP_TYPE_B##>&nbsp;
+	</td>
+</tr>
+<tr class=subtitle>
+	<th colspan=2 align=left>Filter Responses</th>
+</tr>
+<tr>
+    <td class=caption>Date between</td>
+    <td>
+    <input type="text" name="date_low" value="##TP_date_low##" size=10>
+    &nbsp;and&nbsp;
+    <input type="text" name="date_high" value="##TP_date_high##" size=10>
+    </td>
+</tr>
+<tr>
+	<td class=caption>Status</td>
+	<td>
+		Good <input type="checkbox" name="status_G" ##TP_STATUS_G##>&nbsp;
+		Bad <input type="checkbox" name="status_B" ##TP_STATUS_B##>&nbsp;
+		Unknown <input type="checkbox" name="status_U" ##TP_STATUS_U##>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Show Requeued</td>
+	<td>
+		<input type="checkbox" name="show_requeued" ##TP_SHOW_REQUEUED##>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Show Deleted</td>
+	<td>
+		<input type="checkbox" name="show_deleted" ##TP_SHOW_DELETED##>
+	</td>
+</tr>
+<!--
+<tr class=subtitle>
+	<th colspan=2 align=left>Format</th>
+</tr>
+<tr>
+	<td class=caption>Rows Per Page</td>
+	<td>
+		<select name="rows_per_page">
+			<script>
+				write_select('##TP_ROWS_PER_PAGE##',20,20,50,50,100,100,200,200,500,500)
+			</script>
+		</select>
+	</td>
+</tr>
+-->
+<tr>
+	<th class=buttons colspan=3>
+		<input type=button class="btn_def" value="View Queue" onClick="return fs(this)">
+	</th>
+</tr>
+<input type=hidden name=action value=ADMIN::CASINOQUEUE::Go>
+</form>
+</table>
+</body>
+</html>

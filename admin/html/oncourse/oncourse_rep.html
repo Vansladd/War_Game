@@ -1,0 +1,101 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- $Id: oncourse_rep.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##" />
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>On-Course Summary</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function check_rep(form)
+{
+  if (form.rep_code.value.length == 0 || form.rep_code.value.length > 32) {
+    alert("The field 'Rep Code' must not be empty or longer than 32 characters");
+    return false;
+  }
+  if (form.field_acct.value.length == 0 && form.hedge_acct.value.length == 0) {
+    alert("At least one of the fields 'Fielding Acct' or 'Hedging Acct' \nmust contain a value");
+    return false;
+  }
+  return true;
+}
+
+function remove_rep(form,c,f,h)
+{
+  if (confirm("Removing a Rep Code cannot be undone. Proceed?")) {
+    form.SubmitName.value='remove_rep';
+    form.rep_code.value=c;
+    form.field_acct.value=f;
+    form.hedge_acct.value=h;
+
+    form.submit();
+
+    return true;
+  }
+  return false;
+
+}
+
+##TP_PLAY upload/JS_CheckFileName.html##
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+
+<form method="post" action="##TP_CGI_URL##" onsubmit="return check_rep(this)">
+<input type="hidden" name="returl" value="##TP_CGI_URL##" />
+<input type="hidden" name="retaction" value="ADMIN::ONCOURSE::GoOnCourse" />
+<input type="hidden" name="action" value="ADMIN::ONCOURSE::DoOnCourse">
+<input type="hidden" name="SubmitName" value="set_rep">
+
+<table style="spacing:1px; border:none padding:1px;">
+<tr>
+	<th colspan="5" class="title">
+	On-Course Rep Codes
+	</th>
+</tr>
+<tr>
+	<th class="colhead">Rep Code</th>
+	<th class="colhead">Fielding Acct</th>
+	<th class="colhead">Hedging Acct</th>
+	<th class="colhead">Remove Rep Code</th>
+</tr>
+##TP_LOOP repIndex {[tpGetVar numReps]}##
+<tr>
+##TP_IF {[tpBindGet RepStatus] == "X"}##
+	<strike>
+	<td><strike>##TP_RepCode##</strike></td>
+	<td><strike>##TP_FieldAcct##</strike></td>
+	<td><strike>##TP_HedgeAcct##</strike></td>
+	<td><strike>[remove]</strike></td>
+##TP_ELSE##
+	<td>##TP_RepCode##</td>
+	<td>##TP_FieldAcct##</td>
+	<td>##TP_HedgeAcct##</td>
+	<td><a  onclick="return remove_rep(this.form, '##TP_RepCode##', '##TP_FieldAcct##', '##TP_HedgeAcct##');"
+		HREF="##TP_CGI_URL##?action=ADMIN::ONCOURSE::DoOnCourse&SubmitName=remove_rep&rep_code=##TP_RepCode##&field_acct=##TP_FieldAcct##&hedge_acct=##TP_HedgeAcct##"
+	    >[remove]</a></td>
+##TP_ENDIF##
+</tr>
+##TP_ENDLOOP##
+<tr>
+	<td><input type="text" size="5" name="rep_code" value=""></td>
+	<td><input type="text" size="5" name="field_acct" value=""></td>
+	<td><input type="text" size="5" name="hedge_acct" value=""></td>
+	<td><input type="submit" class="btn_def" name="DoIt" value="Update"/></td>
+</tr>
+</table>
+</form>
+
+</body>
+</html>

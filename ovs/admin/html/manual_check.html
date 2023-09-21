@@ -1,0 +1,534 @@
+<html>
+	<!-- $Id: manual_check.html,v 1.1 2011/10/04 12:41:14 xbourgui Exp $ -->
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<title>OpenBet Administration</title>
+		<style>
+			TH.colheadra {
+				color: white;
+				background-color: black;
+				text-align: right;
+				white-space: nowrap;
+			}
+		</style>
+		<script language="JavaScript">
+			var fields = ["postcode", "building_name", "building_no", "sub_building", "organisation", "street", "sub_street", "town", "district", "first_year_of_residence", "last_year_of_residence"];
+
+			function checkAddress(b,n)
+			{
+				for (var i = 0; i < fields.length; i++) {
+					if (eval("b.form.address" + n + ".checked")) {
+						eval("b.form.address" + n + "_" + fields[i] + ".disabled = false")
+					} else {
+						eval("b.form.address" + n + "_" + fields[i] + ".disabled = true")
+					}
+				}
+				return true;
+			}
+			
+			function str_trim(str) {
+				var sl = ""+str.length;
+				var i;
+				for (i = 0; i < sl; i++) {
+					if (str.charAt(i) != ' ' &&
+						str.charAt(i) != '\t' &&
+						str.charAt(i) != '\n') {
+						break;
+					}
+				}
+				start = i;
+			
+				for (i = sl-1; i > 0; i--) {
+					if (str.charAt(i) != ' ' &&
+						str.charAt(i) != '\t' &&
+						str.charAt(i) != '\n') {
+						break;
+					}
+				}
+			
+				return str.substring(start, i+1);
+			}
+			
+			function validateForm(b,n)
+			{
+				var check_dob_fields = ["dob_year", "dob_month", "dob_day"];
+				var check_address_fields = ["postcode", "building_no", "street"];
+				##TP_IF {[tpGetVar card]}##
+					var check_card_fields = ["card_number", "card_expiry_date", "card_verification_code"];
+				##TP_ENDIF##
+				
+				var f = document.forms.fmManualCheck;
+				
+				var dob_reg_exp, uppper_limit, lower_limit;
+  	 
+				for (var i = 0; i < check_dob_fields.length; i++) {
+					var field_value = eval("b.form."+ check_dob_fields[i]+".value");
+  	 
+					switch(check_dob_fields[i]) {
+						case "dob_year":
+							dob_reg_exp =/^\d{4}$/;
+							upper_limit  = '2050';
+							lower_limit  = '1900';
+  	 
+						break;
+  	               
+  	               case "dob_month":
+							dob_reg_exp =/^\d{2}$/;
+							upper_limit  = '12';
+							lower_limit  = '01';
+  	 
+  	               break;
+  	               
+  	               case "dob_day":
+							dob_reg_exp =/^\d{2}$/;
+							upper_limit  = '31';
+							lower_limit  = '01';
+  	               break;
+					}
+  	 
+					if ( (! dob_reg_exp.test(field_value)) ||
+						(parseInt(field_value, 10) < parseInt(lower_limit, 10)) ||
+						(parseInt(field_value, 10) > parseInt(upper_limit, 10)) ) {
+							alert ("Please enter a valid " + check_dob_fields[i].substring(4) + " (" + lower_limit + "-" + upper_limit + ")");
+  	             		return;
+					}
+				}
+				
+				for (var i = 0; i < check_address_fields.length; i++) {
+					var field_value = eval("b.form.address" + n + "_" + check_address_fields[i]+".value");
+					var trimmed_str = str_trim(field_value);
+					if (trimmed_str.length < 1) {
+						alert("Please fill in the "+check_address_fields[i]);
+						return 0;
+					}
+				}
+				##TP_IF {[tpGetVar card]}##
+				for (var i = 0; i < check_card_fields.length; i++) {
+					var field_value = eval("b.form." + check_card_fields[i]+".value");
+					var trimmed_str = str_trim(field_value);
+					if (trimmed_str.length < 1) {
+						alert("Please fill in the "+check_card_fields[i]);
+						return 0;
+					}
+				}
+				##TP_ENDIF##
+				f.submit();
+			}
+
+			function validateBinForm(b,n)
+			{
+				var check_bin_fields = ["card_bin"];
+				var f = document.forms.fmManualCheck;
+				for (var i = 0; i < check_bin_fields.length; i++) {
+					var field_value = eval("b.form." + check_bin_fields[i]+".value");
+					var trimmed_str = str_trim(field_value);
+					if (trimmed_str.length < 1) {
+						alert("Please enter a Card BIN number");
+						return 0;
+					}
+				}
+				f.submit();
+			}
+		</script>
+		##TP_PLAY JS_WriteSelect.html##
+	</head>
+	<body>
+		##TP_PLAY error_rpt.html##
+		##TP_PLAY msg_rpt.html##
+		<form action="##TP_CGI_URL##" method="post" name="fmManualCheck">
+			##TP_IF {[tpGetVar resp_count] != ""}##
+			##TP_IF {[tpGetVar resp_count] > 0}##
+			<table cellspacing="0" cellpadding="2" border="0">
+				
+				<tr>
+					##TP_IF {[tpGetVar card_bin]}##
+					<th class="title">Bin Range</th>
+					##TP_ELSE##
+					<th class="title">Code</th>
+					##TP_ENDIF##
+					<th class="title">Response</th>
+					<th class="title">Score</th>
+				</tr>
+				
+				
+				##TP_LOOP idx {[tpGetVar resp_count]}##
+				<tr>
+					<td style="background-color: ##TP_resp_colour##;">##TP_resp_code##</td>
+					<td>##TP_resp_message##</td>
+					<td>##TP_resp_score##</td>
+				</tr>
+				##TP_ENDLOOP##
+				<tr>
+					<td colspan="2">Weighting</td>
+					<td >##TP_weight##</td>
+				</tr>
+				##TP_LOOP idx {[tpGetVar or_count]}##
+				<tr>
+					<td colspan="2">##TP_or_name## Override</td>
+					<td>##TP_or_score##</td>
+				</tr>
+				##TP_ENDLOOP##
+				<tr>
+					<th class="colhead" colspan="2">&nbsp</td>
+					<th class="colhead">##TP_final_score##</td>
+				</tr>
+			</table>
+			##TP_ELSE##
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<th style="title">No Verification Check Responses received</th>
+					</tr>
+				<table>
+			##TP_ENDIF##
+			<br>
+			##TP_ENDIF##
+			##TP_IF {[tpGetVar check_count] > 0}##
+			<table cellspacing="0" cellpadding="2" border="0">
+				<tr>
+					<th colspan="5" class="title">Manual Verification Check</th>
+				</tr>
+				##TP_IF {[tpBindGet cust_id] != ""}##
+				<tr>
+					<td>Doing check for account</td>
+					<td>
+						<a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_cust_id##">##TP_username##</a>
+					</td>
+				</tr>
+				##TP_ENDIF##
+
+				##TP_IF {![tpGetVar log]}##
+				<tr>
+					<td>Channel check should be run for</td>
+					<td>
+						<select name="channel">
+							<script>write_select("##TP_channel##"##TP_LOOP idx2 {[tpGetVar channel_count]}##, "##TP_channel_val##", "##TP_channel_name##"##TP_ENDLOOP##)</script>
+						</select>
+					</td>
+				</tr>
+				##TP_ENDIF##
+				<tr>
+					<td>Title</td>
+					<td>
+						<select name="title">
+							<script>write_select("##TP_title##"##TP_LOOP idx2 {[tpGetVar title_count]}##, "##TP_title_val##", "##TP_title_name##"##TP_ENDLOOP##)</script>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Forename</td>
+					<td><input name="forename" value="##TP_forename##" size="10" maxlength="17"></td>
+				</tr>
+				<tr>
+					<td>Middle Initial</td>
+					<td><input name="middle_initial" value="##TP_middle_initial##" size="1" maxlength="1"></td>
+				</tr>
+				<tr>
+					<td>Surname</td>
+					<td><input name="surname" value="##TP_surname##" size="10" maxlength="17"></td>
+				</tr>
+				<tr>
+					<td>Date Of Birth (yyyy-mm-dd)</td>
+					<td>
+						<input name="dob_year"  value="##TP_dob_year##"  size="4" maxlength="4">-
+						<input name="dob_month" value="##TP_dob_month##" size="2" maxlength="2">-
+						<input name="dob_day"   value="##TP_dob_day##"   size="2" maxlength="2">
+					</td>
+				</tr>
+				<tr>
+					<td>Gender</td>
+					<td>
+						Male  <input type="radio" name="gender" value="Male"  ##TP_IF {[tpGetVar gender] == "M" || [tpGetVar gender] == "Male" }## checked##TP_ENDIF##>
+						Female<input type="radio" name="gender" value="Female"##TP_IF {[tpGetVar gender] == "F" || [tpGetVar gender] == "Female"}## checked##TP_ENDIF##>
+					</td>
+				</tr>
+				<tr>
+					<td>Country</td>
+					<td>
+						<select name="country">
+							<script>write_select("##TP_country##"##TP_LOOP idx2 {[tpGetVar country_count]}##, "##TP_country_val##", "##TP_country_name##"##TP_ENDLOOP##)</script>
+						</select>
+					</td>
+				</tr>
+			</table>
+			<br>
+			<table cellspacing="0" cellpadding="2" border="0">
+				##TP_IF {[tpGetVar address]}##
+				<tr>
+					<th class="title" colspan="2">Address Details</th>
+				</tr>
+				##TP_LOOP idx2 {[tpGetVar address]}##
+				<tr>
+					##TP_IF {[tpGetVar idx2] == 0 || [tpGetVar log]}##
+					<th class="colhead" colspan="2">Address##TP_IF {[tpGetVar address] > 1}## ##TP_index####TP_ENDIF##<input type="hidden" name="address##TP_index##" value="true"></th>
+					##TP_ELSE##
+					<th class="colhead">Address ##TP_index##</th>
+					<th class="colheadra"><input name="address##TP_index##" type="checkbox" onClick="return checkAddress(this, ##TP_index##)"##TP_IF {[tpGetVar address[tpGetVar idx2]] == "true"}## checked##TP_ENDIF##></th>
+					##TP_ENDIF##
+				</tr>
+				<tr>
+					<td>Postcode</td>
+					<td><input name="address##TP_index##_postcode"      value="##TP_address_postcode##"      size="9"  maxlength="9" ##TP_IF {[tpGetVar idx2] != 0 && [tpGetVar address[tpGetVar idx2]] != "true"}## disabled##TP_ENDIF##></td>
+				</tr>
+				<tr>
+					<td>Building Name</td>
+					<td><input name="address##TP_index##_building_name" value="##TP_address_building_name##" size="10" maxlength="17"##TP_IF {[tpGetVar idx2] != 0 && [tpGetVar address[tpGetVar idx2]] != "true"}## disabled##TP_ENDIF##></td>
+				</tr>
+				<tr>
+					<td>Building Number</td>
+					<td><input name="address##TP_index##_building_no"   value="##TP_address_building_no##"   size="5"  maxlength="7" ##TP_IF {[tpGetVar idx2] != 0 && [tpGetVar address[tpGetVar idx2]] != "true"}## disabled##TP_ENDIF##></td>
+				</tr>
+				<tr>
+					<td>Sub-building</td>
+					<td><input name="address##TP_index##_sub_building"  value="##TP_address_sub_building##"  size="10" maxlength="17"##TP_IF {[tpGetVar idx2] != 0 && [tpGetVar address[tpGetVar idx2]] != "true"}## disabled##TP_ENDIF##></td>
+				</tr>
+				<tr>
+					<td>Organisation</td>
+					<td><input name="address##TP_index##_organisation"  value="##TP_address_organisation##"  size="17" maxlength="30"##TP_IF {[tpGetVar idx2] != 0 && [tpGetVar address[tpGetVar idx2]] != "true"}## disabled##TP_ENDIF##></td>
+				</tr>
+				<tr>
+					<td>Street</td>
+					<td><input name="address##TP_index##_street"        value="##TP_address_street##"        size="17" maxlength="30"##TP_IF {[tpGetVar idx2] != 0 && [tpGetVar address[tpGetVar idx2]] != "true"}## disabled##TP_ENDIF##></td>
+				</tr>
+				<tr>
+					<td>Sub-street</td>
+					<td><input name="address##TP_index##_sub_street"    value="##TP_address_sub_street##"    size="17" maxlength="30"##TP_IF {[tpGetVar idx2] != 0 && [tpGetVar address[tpGetVar idx2]] != "true"}## disabled##TP_ENDIF##></td>
+				</tr>
+				<tr>
+					<td>Town</td>
+					<td><input name="address##TP_index##_town"          value="##TP_address_town##"          size="10" maxlength="17"##TP_IF {[tpGetVar idx2] != 0 && [tpGetVar address[tpGetVar idx2]] != "true"}## disabled##TP_ENDIF##></td>
+				</tr>
+				<tr>
+					<td>District</td>
+					<td><input name="address##TP_index##_district"      value="##TP_address_district##"      size="10" maxlength="17"##TP_IF {[tpGetVar idx2] != 0 && [tpGetVar address[tpGetVar idx2]] != "true"}## disabled##TP_ENDIF##></td>
+				</tr>
+				##TP_IF {[tpGetVar address] > 1}##
+				<tr>
+					<td>Years Of Residence (yyyy-yyyy)</td>
+					<td>
+						<input name="address##TP_index##_first_year_of_residence" value="##TP_address_first_year_of_residence##" size="4" maxlength="4"##TP_IF {[tpGetVar idx2] != 0 && [tpGetVar address[tpGetVar idx2]] != "true"}## disabled##TP_ENDIF##>-
+						<input name="address##TP_index##_last_year_of_residence"  value="##TP_address_last_year_of_residence##"  size="4" maxlength="4"##TP_IF {[tpGetVar idx2] != 0 && [tpGetVar address[tpGetVar idx2]] != "true"}## disabled##TP_ENDIF##>
+					</td>
+				</tr>
+				##TP_ENDIF##
+				##TP_ENDLOOP##
+				##TP_ENDIF##
+				##TP_IF {[tpGetVar passport]}##
+				<tr>
+					<th class="title" colspan="2">Passport Details</th>
+				</tr>
+				<tr>
+					<td>Passport Number 1 (10 digits)</td>
+					<td><input name="passport_number1" value="##TP_passport_number1##" size="10" maxlength="10"></td>
+				</tr>
+				<tr>
+					<td>Passport Number 2 (3 characters)</td>
+					<td><input name="passport_number2" value="##TP_passport_number2##" size="3"  maxlength="3"></td>
+				</tr>
+				<tr>
+					<td>Passport Number 3 (7 digits)</td>
+					<td><input name="passport_number3" value="##TP_passport_number3##" size="7"  maxlength="7"></td>
+				</tr>
+				<tr>
+					<td>Passport Number 4 (1 character)</td>
+					<td><input name="passport_number4" value="##TP_passport_number4##" size="1"  maxlength="1"></td>
+				</tr>
+				<tr>
+					<td>Passport Number 5 (7 digits)</td>
+					<td><input name="passport_number5" value="##TP_passport_number5##" size="7"  maxlength="7"></td>
+				</tr>
+				<tr>
+					<td>Passport Number 6 (2 digits)</td>
+					<td><input name="passport_number6" value="##TP_passport_number6##" size="2"  maxlength="2"></td>
+				</tr>
+				<tr>
+					<td>Expiry Date (yyyy-mm-dd)</td>
+					<td>
+						<input name="passport_year"  value="##TP_passport_year##"  size="4" maxlength="4">-
+						<input name="passport_month" value="##TP_passport_month##" size="2" maxlength="2">-
+						<input name="passport_day"   value="##TP_passport_day##"   size="2" maxlength="2">
+					</td>
+				</tr>
+				##TP_ENDIF##
+				##TP_IF {[tpGetVar electricity]}##
+				<tr>
+					<th class="title" colspan="2">Electricity Details</th>
+				</tr>
+				<tr>
+					<td>Electricity Number 1 (2 digits)</td>
+					<td><input name="electric_number1" value="##TP_electric_number1##" size="2" maxlength="2"></td>
+				</tr>
+				<tr>
+					<td>Electricity Number 2 (4 digits)</td>
+					<td><input name="electric_number2" value="##TP_electric_number2##" size="4" maxlength="4"></td>
+				</tr>
+				<tr>
+					<td>Electricity Number 3 (4 digits)</td>
+					<td><input name="electric_number3" value="##TP_electric_number3##" size="4" maxlength="4"></td>
+				</tr>
+				<tr>
+					<td>Electricity Number 4 (3 digits)</td>
+					<td><input name="electric_number4" value="##TP_electric_number4##" size="3" maxlength="3"></td>
+				</tr>
+				<tr>
+					<td>Mail Sort</td>
+					<td><input name="electric_mail_sort" value="##TP_electric_mail_sort##" size="8" maxlength="8"></td>
+				</tr>
+				##TP_ENDIF##
+				##TP_IF {[tpGetVar phone]}##
+				<tr>
+					<th class="title" colspan="2">Telephone Details</th>
+				</tr>
+				<tr>
+					<td>Telephone Number (excluding spaces)</td>
+					<td><input name="telephone_number" value="##TP_telephone_number##" size="11" maxlength="15"></td>
+				</tr>
+				##TP_IF {[tpGetVar URU]}##
+				<tr>
+					<td>Date Activate (yyyy-mm)</td>
+					<td><input name="telephone_active_year" value="##TP_telephone_active_year##" size="4" maxlength="4">-<input name="telephone_active_month" value="##TP_telephone_active_month##" size="2" maxlength="2"></td>
+				</tr>
+				<tr>
+					<td>Ex-directory</td>
+					##TP_IF {[tpGetVar telephone_exdirectory]}##
+					<td>Y<input name="telephone_exdirectory" value="yes" type="radio" checked>N<input name="telephone_exdirectory" value="no" type="radio"></td>
+					##TP_ELSE##
+					<td>Y<input name="telephone_exdirectory" value="yes" type="radio">N<input name="telephone_exdirectory" value="no" type="radio" checked></td>
+					##TP_ENDIF##
+				</tr>
+				##TP_ENDIF##
+				##TP_ENDIF##
+				##TP_IF {[tpGetVar drivers]}##
+				<tr>
+					<th class="title" colspan="2">Driver Licence Details</th>
+				</tr>
+				<tr>
+					<td>Driver Licence Number 1 (5 characters)</td>
+					<td><input name="driver_number1" value="##TP_driver_number1##" size="5" maxlength="5"></td>
+				</tr>
+				<tr>
+					<td>Driver Licence Number 2 (6 digits)</td>
+					<td><input name="driver_number2" value="##TP_driver_number2##" size="6" maxlength="6"></td>
+				</tr>
+				<tr>
+					<td>Driver Licence Number 3 (3 digits)</td>
+					<td><input name="driver_number3" value="##TP_driver_number3##" size="3" maxlength="3"></td>
+				</tr>
+				<tr>
+					<td>Driver Licence Number 4 (2 digits)</td>
+					<td><input name="driver_number4" value="##TP_driver_number4##" size="2" maxlength="2"></td>
+				</tr>
+				<tr>
+					<td>Mail Sort</td>
+					<td><input name="driver_mail_sort" value="##TP_driver_mail_sort##" size="8" maxlength="8"></td>
+				</tr>
+				##TP_ENDIF##
+				##TP_IF {[tpGetVar ip]}##
+				<tr>
+					<th class="title" colspan="2">IP Location Details</th>
+				</tr>
+				<tr>
+					<td>IP Address (xxx.xxx.xxx.xxx)</td>
+					<td>
+						<input name="ip_address1" value="##TP_ip_address1##" size="3" maxlength="3">.
+						<input name="ip_address2" value="##TP_ip_address2##" size="3" maxlength="3">.
+						<input name="ip_address3" value="##TP_ip_address3##" size="3" maxlength="3">.
+						<input name="ip_address4" value="##TP_ip_address4##" size="3" maxlength="3">
+					</td>
+				</tr>
+				<tr>
+					<td>IP Country</td>
+					<td>
+						<select name="ip_country">
+							<script>write_select("##TP_ip_country##"##TP_LOOP idx2 {[tpGetVar country_count]}##, "##TP_country_val##", "##TP_country_name##"##TP_ENDLOOP##)</script>
+						</select>
+					</td>
+				</tr>
+				##TP_ENDIF##
+				##TP_IF {[tpGetVar card]}##
+				<tr>
+					<th class="title" colspan="2">Credit/Debit Card Details</th>
+				</tr>
+				<tr>
+					<td>Card Number</td>
+					<td>
+						<input name="card_number" value="##TP_card_number##" size="19" maxlength="19">
+					</td>
+				</tr>
+				<tr>
+					<td>Card Expiry Date (MMYY)</td>
+					<td>
+						<input name="card_expiry_date" value="##TP_card_expiry_date##" size="4" maxlength="4">
+					</td>
+				</tr>
+				<tr>
+					<td>Card Issue Number</td>
+					<td>
+						<input name="card_issue_number" value="##TP_card_issue_number##" size="1" maxlength="1">
+					</td>
+				</tr>
+				<tr>
+					<td>Card Verification Code</td>
+					<td>
+						<input name="card_verification_code" value="##TP_card_verification_code##" size="4" maxlength="4">
+					</td>
+				</tr>
+				<tr>
+					<td>Card Scheme</td>
+					<td>
+						<select name="card_type">
+							<script>write_select("##TP_card_type##", "VISA", "Visa", "MASTERCARD", "Mastercard", "DELTA", "Delta", "SWITCH", "Switch", "AMEX", "American Express", "JCB", "JCB", "MAESTRO", "Maestro", "DINERS", "Diners Club", "SOLO", "Solo", "ELECTRON", "Electron")</script>
+						</select>
+					</td>
+				</tr>
+				##TP_ELSEIF {[tpGetVar scheme]}##
+				<tr>
+					<td>Card Scheme</td>
+					<td>
+						<select name="scheme_type">
+							<script>write_select("##TP_scheme_type##"##TP_LOOP idx2 {[tpGetVar scheme_count]}##, "##TP_scheme_val##", "##TP_scheme_name##"##TP_ENDLOOP##)</script>
+						</select>
+					</td>
+				</tr>
+				##TP_ELSEIF {[tpGetVar card_bin]}##
+				<tr>
+					<th class="title" colspan="2">Credit/Debit Card BIN Details</th>
+				</tr>
+				<tr>
+					<td>Card Bin</td>
+					<td>
+						<input name="card_bin" value="##TP_card_bin_check##" size="6" maxlength="6">
+					</td>
+				</tr>
+				##TP_ENDIF##
+				##TP_IF {![tpGetVar log]}##
+				<tr>
+					<th colspan="5" class="buttons">
+						##TP_IF {[tpGetVar address]}##
+						<input type="button" value="Run Check" onClick="javascript:validateForm(this, 1);">
+						##TP_ELSEIF {[tpGetVar card_bin]}##
+						<input type="button" value="Run Check" onClick="javascript:validateBinForm(this, 1);">
+						##TP_ELSE##
+						<input type="button" value="Run Check" onClick="submit();">
+						##TP_ENDIF##
+					</th>
+				</tr>
+				##TP_ENDIF##
+			</table>
+			<input type="hidden" name="action"         value="ADMIN::VERIFICATION::DoManual">
+			<input type="hidden" name="checks"         value="##TP_checks##">
+			<input type="hidden" name="profile_def_id" value="##TP_profile_def_id##">
+			<input type="hidden" name="channels"       value="##TP_channels##">
+			<input type="hidden" name="cust_id"        value="##TP_cust_id##">
+			<input type="hidden" name="username"       value="##TP_username##">
+			<input type="hidden" name="requestType"    value="##TP_request_type##">
+			##TP_ELSE##
+			<table cellspacing="0" cellpadding="2" border="0">
+				<tr>
+					<th style="title">No Verification Checks found</th>
+				</tr>
+			<table>
+			##TP_ENDIF##
+		</form>
+	</body>
+</html>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<artifact created="2016-04-17 11:03:09" projectName="OpenBet Core Database" type="sources" groupId="com.openbet.core.db" artifactId="openbet-core-database" version="3.33">
+    <openbet corporatePomVersion="2" teamPomVersion="11.29" pluginVersion="2.17.0"/>
+    <scm module="" server="stash.int.openbet.com:7999" tag="HEAD" type="git" branch="master" repo="https://stash.int.openbet.com/scm/obcore/database.git"/>
+    <artifactory url="https://artifactory.int.openbet.com/artifactory/openbet-release-local/com/openbet/core/db/openbet-core-database/3.33" buildTag="openbet-core-database-3.33-20160417.110258"/>
+    <files>
+        <file location="db-compat.tcl" sha1sum="fb02214cebe06e1edbc0aec0f069344a2c000ff4"/>
+        <file location="db-failover.tcl" sha1sum="ae2daa7763c3e3de8dd75235a56728728298226d"/>
+        <file location="db-informix.tcl" sha1sum="c4feccdfff719db9c2326e3038346a290abaedb7"/>
+        <file location="db-mySQL.tcl" sha1sum="fb8559d9805ee22f778335c626971bd1e6801a80"/>
+        <file location="db-postgreSQL.tcl" sha1sum="b813fc019c05d137173714f7b2757dc1b430dcc1"/>
+        <file location="db.tcl" sha1sum="3d2c46a15b7c0f9bbf50d73b0c5908d8d68cd854"/>
+        <file location="pkgIndex.tcl" sha1sum="b353959449faa8e167847286c8d4a9558c8093aa"/>
+        <file location="pom.xml" sha1sum="3d2073a0acfbb59625569458812765fd4668d1bd"/>
+        <file location="schema.tcl" sha1sum="f5a277b98436ea9c6f169fb0ed2cffca73a349f9"/>
+        <file location="trickle.tcl" sha1sum="0b77e1b1c85637a295ede8781bee7cb508e79793"/>
+    </files>
+</artifact>

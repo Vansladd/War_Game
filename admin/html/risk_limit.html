@@ -1,0 +1,101 @@
+<html>
+<!-- $Id: risk_limit.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Risk Limits</title>
+<script>
+function fs(b,t)
+{
+	if (t != 'DoAdd' && t != 'Back') {
+		if (b.form.RNumLegs) {
+			var nl = b.form.RNumLegs;
+			for (var i=0; i < nl.length; i++) {
+				if (nl[i].checked == true) {
+					b.form.NumLegs.value = nl[i].value;
+					break;
+				}
+			}
+		}
+	}
+	if (t == 'Delete' && (!confirm("Delete Risk Limits for this Number of Legs?"))) {
+		return false;
+	}
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY msg_rpt.html##
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=3 class=title>
+	Risk Limits
+	</th>
+</tr>
+<form action="##TP_CGI_URL##" method="post">
+<input type=hidden name=action value=ADMIN::RISK_LIMIT::DoRiskLimits>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name="NumLegs" value="##TP_NumLegs##">
+<tr>
+	<td class=caption>Number of Legs:</td>
+	##TP_IF {[tpGetVar Add 0]}##
+	<td colspan=2>##TP_NumLegs##</td>
+	##TP_ELSE##
+	<td colspan=2>##TP_LOOP risk_idx {[tpGetVar NumNumLegs 0]}##
+		<input type="radio" name="RNumLegs" value="##TP_NumLegs##" ##TP_IF {[tpGetVar ViewNumLegs] == [tpBindGet NumLegs]}##checked##TP_ENDIF## onChange="fs(this,'Go');" />##TP_NumLegs##
+		##TP_ENDLOOP##
+		&nbsp;
+		##TP_IF {[tpGetVar CanEdit 0]}##
+		<input type="text" name="NewNumLegs" size=3 maxlength=2><input type="button" value="Add New" onClick="return fs(this,'GoAdd');">
+		##TP_ELSE##
+		&nbsp;
+		##TP_ENDIF##
+	</td>
+	##TP_ENDIF##
+</tr>
+##TP_IF {[tpGetVar NoRiskLimit 0]}##
+<tr>
+	<td colspan=3>No Risk Limit has been defined</td>
+</tr>
+##TP_ELSE##
+<tr>
+	<th nowrap class=colhead>Risky Legs</th>
+	<th nowrap class=colhead>Win Limit</th>
+	<th nowrap class=colhead>Bet Limit</th>
+</tr>
+##TP_LOOP risk_idx {[tpGetVar NumNumLegsRisky]}##
+	<tr>
+		<td>##TP_NumLegsRisky##</td>
+		##TP_IF {[tpGetVar CanEdit 0]}##
+		<td><input type="text" name="WinLimit_##TP_NumLegsRisky##" size=10 value="##TP_WinLimit##"></td>
+		<td><input type="text" name="BetLimit_##TP_NumLegsRisky##" size=10 value="##TP_BetLimit##"></td>
+		##TP_ELSE##
+		<td>##TP_WinLimit##</td><td>##TP_BetLimit##</td>
+		##TP_ENDIF##
+	</tr>
+##TP_ENDLOOP##
+##TP_IF {[tpGetVar CanEdit 0]}##
+<tr>
+	<th class=buttons colspan=3>
+	##TP_IF {[tpGetVar Add 0]}##
+	<input type=button value="Back" onClick="return fs(this, 'Back')">
+	<input type=button value="Add" onClick="return fs(this,'DoAdd')">
+	##TP_ELSE##
+	<input type=button value="Update" onClick="return fs(this, 'Update')">
+	<input type=button value="Delete" onClick="return fs(this, 'Delete')">
+	##TP_ENDIF##
+	</th>
+</tr>
+##TP_ENDIF##
+##TP_ENDIF##
+</form>
+</table>
+
+</body>
+</html>

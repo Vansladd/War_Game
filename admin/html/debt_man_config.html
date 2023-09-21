@@ -1,0 +1,90 @@
+<html>
+<!-- $ID$ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY header_cal.html##
+
+<script>
+function fs(b,t)
+{
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<form name="debt_management" action="##TP_CGI_URL##">
+	<input type="hidden" name="SubmitName" value="">
+	<input type="hidden" name="action" value="ADMIN::DEBT_MANAGEMENT::DoDebtManCfg">
+	<input type="hidden" name="cust_id" value="##TP_cust_id##">
+	<input type="hidden" name="debt_diary_id" value="##TP_debt_diary_id##">
+	<input type="hidden" name="AuditInfo" value="">
+	
+	<table border=0 cellspacing=0 cellpadding=3 bgcolor=#10137c>
+	<tr>
+		<th colspan=8 class=title>
+			Debt letters configuration
+		</th>
+	</tr>
+	<tr>
+		<th class=colhead>
+			Select<br>for update
+		</th>
+		<th class=colhead>
+			State code
+		</th>
+		<th class=colhead>
+			Description
+		</th>
+		<th class=colhead>
+			Next state
+		</th>
+		<th class=colhead>
+			Add status<br> flag
+		</th>
+		<th class=colhead>
+			Remove status<br> flag
+		</th>
+		<th class=colhead>
+			Next review in (days)
+		</th>
+		<th class=colhead>
+			Letter template
+		</th>
+	</tr>
+	##TP_LOOP row_idx {[tpGetVar debt_num_states]}##
+	<tr>
+		<td><input type="checkbox" name="select_state" id="chk_##TP_debt_state_id##" value="##TP_debt_state_id##"></td>
+		<td>##TP_code##</td>
+		<td>##TP_desc##</td>
+		<td>##TP_next_code##</td>
+		<td>##TP_add_flag##</td>
+		<td>##TP_remove_flag##</td>
+		<td><input type="text" name="INCR_##TP_debt_state_id##" value="##TP_incr_review##"> </td>
+		<td>
+			<!-- select that one -->
+			<select name="SelectTmpl_##TP_debt_state_id##">
+				##TP_LOOP tmpl_idx {[tpGetVar debt_num_templates]}##
+				<option value="##TP_tmpl_id##">##TP_tmpl_name##</option>
+				##TP_ENDLOOP##
+			</select>
+		</td>
+	</tr>
+	##TP_ENDLOOP##
+	<tr>
+		<td colspan=8 class=buttons>
+			<input type="button" class="btn_def" value="Update" onClick="return fs(this,'GoDebtManCfg')">
+		</td>
+	</tr>
+	</table>
+	
+	</table>
+</form>
+</body>
+</html>

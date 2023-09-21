@@ -1,0 +1,159 @@
+<html>
+<!-- $Id: ramp_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script>
+function write_tr(settled,result_conf,status,displayed)
+{
+	if (settled == 'Y') {
+		document.write('<tr class=settled>');
+	} else if (result_conf == 'Y') {
+		document.write('<tr class=confirmed>');
+	} else if (status != 'A') {
+		document.write('<tr class=suspended>');
+	} else if (displayed == 'N') {
+		document.write('<tr class=hidden>');
+	} else {
+		document.write('<tr class=active>');
+	}
+}
+function write_status(status)
+{
+	if (status != 'A') {
+		document.write('suspendu');
+	} else {
+		document.write('actif');
+	}
+}
+function write_displayed(displayed)
+{
+	if (displayed == 'N') {
+		document.write('pas affiché');
+	} else {
+		document.write('affiché');
+	}
+}
+
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+function go_ev(ev_id)
+{
+	document.go_event.EvId.value = ev_id;
+	document.go_event.submit();
+}
+
+function go_ev_mkt(ev_mkt_id)
+{
+	document.go_market.MktId.value = ev_mkt_id;
+	document.go_market.submit();
+}
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+##TP_IF {[tpGetVar EventSearch 0]}##
+	<tr>
+		<th colspan=5 class=title>
+			Search for '##TP_Selection##' - ##TP_TCL {tpBufWrite [tpGetVar event_rows]}## results found.
+		</th>
+		<th class=title align="right"><input type=button class="btn_def" value="Back" onClick="javascript:history.go(-1)"></th>
+	</tr>
+##TP_ELSE##
+	<tr>
+		<th colspan=##TP_TCL {expr 9 +[tpGetVar NumRampChannels]}## class=title>
+			Evènements (par categorie)
+		</th>
+	</tr>
+##TP_ENDIF##
+<tr>
+	<th class=colhead>Catégorie</th>
+	<th class=colhead>Classe</th>
+	<th class=colhead>Type</th>
+	<th class=colhead>Evènement</th>
+	<th class=colhead>Marché</h>
+	##TP_IF {[tpGetVar NumRampChannels]>0}##
+	<th class=colhead colspan=##TP_TCL {tpGetVar NumRampChannels}##>Channels</th>
+	##TP_ENDIF##
+	<th class=colhead>Création du marché</th>
+	<th class=colhead>Début de l'évènement</th>
+	<th class=colhead>Status</th>
+	<th class=colhead>Affichage</th>
+</tr>
+##TP_IF {[tpGetVar event_rows 0]>0}##
+##TP_LOOP event_idx {[tpGetVar event_rows]}##
+	<script>write_tr('##TP_Settled##','##TP_ResultConf##','##TP_Status##','##TP_Displayed##')</script>
+	<td>##TP_Category##</td>
+	<td>##TP_Class##</td>
+	<td>##TP_Type##</td>
+	<td><a href="javascript:go_ev('##TP_EvId##');">##TP_Event##</a></td>
+	<td><a href="javascript:go_ev_mkt('##TP_MktId##');">##TP_Market##</a></td>
+	##TP_LOOP ramp_chan_idx {[tpGetVar NumRampChannels]}##
+		##TP_IF {[tpBindGet ChannelDisplayed]}##
+			<td style="vertical-align:bottom; text-align:center;"><input type="checkbox" disabled="yes" ##TP_ChannelStatus## /><br />
+		##TP_ELSE##
+			<td style="vertical-align:bottom; text-align:center;">##TP_ChannelStatus##<br />
+		##TP_ENDIF##
+		##TP_ChannelName##</td>
+	##TP_ENDLOOP ramp_chan_idx##
+	<td>##TP_MktCrDate##</td>
+	<td>##TP_StartTime##</td>
+	<td><script>write_status('##TP_Status##')</script></td>
+	<td><script>write_displayed('##TP_Displayed##')</script></td>
+	</tr>
+##TP_ENDLOOP event_idx##
+##TP_ELSE##
+<tr>
+	<td colspan=6>
+	Aucun évènement trouvé pour les critères choisis.
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[tpGetVar CanAddEv 0]}##
+<form method=get action=##TP_CGI_URL##>
+<tr>
+	<th class=buttons colspan=6>
+	<input type=button class="btn_def" value="Add Event" onClick="return fs(this,'EvAdd')">
+	</td>
+</tr>
+<input type=hidden name=TypeId value="##TP_TypeId##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::EV_SEL::DoEvSel>
+</form>
+##TP_ENDIF##
+</table>
+
+<form method=get action=##TP_CGI_URL## name="go_event">
+
+<input type=hidden name=action      value=ADMIN::EVENT::GoEv>
+<input type=hidden name=EvId        value="">
+<input type=hidden name=ClassSort   value="##TP_ClassSort##">
+<input type=hidden name=ClassId     value="##TP_ClassId##">
+<input type=hidden name=type_id     value="##TP_type_id##">
+<input type=hidden name=date_range  value="##TP_date_range##">
+<input type=hidden name=date_lo     value="##TP_date_lo##">
+<input type=hidden name=date_hi     value="##TP_date_hi##">
+<input type=hidden name=settled     value="##TP_settled##">
+<input type=hidden name=result_conf value="##TP_result_conf##">
+<input type=hidden name=status      value="##TP_status##">
+<input type=hidden name=allow_stl   value="##TP_allow_stl##">
+
+</form>
+
+
+<form method=get action=##TP_CGI_URL## name="go_market">
+	<input type="hidden" name="action"    value="ADMIN::MARKET::GoMkt">
+	<input type="hidden" name="MktId"     value="">
+</form>
+
+</body>
+</html>

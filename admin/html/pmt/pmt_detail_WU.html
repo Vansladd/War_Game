@@ -1,0 +1,10 @@
+
+##TP_TCL {ADMIN::PMT::bind_detail_WU [tpGetVar cpm_id]}##
+<tr>
+	<td class="caption">Account Name:</td>
+	<td>##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != "Y")}## ##TP_PM_wu_payee## ##TP_ELSE## * ##TP_ENDIF##</td>
+</tr>
+<tr>
+	<td class="caption">Country:</td>
+	<td>##TP_PM_wu_country_code##</td>
+</tr>

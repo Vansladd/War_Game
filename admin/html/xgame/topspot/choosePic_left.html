@@ -1,0 +1,88 @@
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+
+<script>
+var maxpics = 100; // amount of pics available - set this by hand!!
+
+var ie45=false;
+if (navigator.appName.indexOf('Microsoft') != -1)
+{
+  ie45=true;
+}
+var cwp=0;
+var picks = new Array(4);
+var loop;
+var seld = new Array(maxpics);
+var srcs = new Array(maxpics);
+
+for (loop=0; loop<maxpics; loop++)
+{
+  seld[loop]=false;
+}
+
+function clearAll()
+{
+  for (loop=0; loop<maxpics; loop++)
+  {
+    if (seld[loop])
+    {
+        document.images['ap'+(loop+1)].src=srcs[loop];
+    }
+    seld[loop]=false;
+  }
+  cwp=0;
+  parent.frames['pmain'].document.images['ic1'].src="##TP_GIF_URL##/topspot/select.gif";
+  parent.frames['pmain'].document.images['ic2'].src="##TP_GIF_URL##/topspot/select.gif";
+  parent.frames['pmain'].document.images['ic3'].src="##TP_GIF_URL##/topspot/select.gif";
+  parent.frames['pmain'].document.images['ic4'].src="##TP_GIF_URL##/topspot/select.gif";
+}
+
+function selectIt(pn)
+{ 
+  if (seld[pn-1])
+  {
+    return;
+  }
+  
+  if (cwp<4)
+  {   
+    picks[cwp]=pn;
+    parent.frames['pmain'].document.images['ic'+(cwp+1)].src=document.images['ap'+(pn)].src; 
+    srcs[pn-1]=document.images['ap'+(pn)].src;   
+    cwp++;
+    seld[pn-1]=true;
+    document.images['ap'+pn].src="##TP_GIF_URL##/topspot/coverpic.gif";
+  }  
+}
+
+
+</script>
+
+</head>
+
+<body bgcolor="#0066CC" background="##TP_GIF_URL##/gfx/tile2.gif">
+<form method="post" action="##TP_CGI_URL##">
+  <div align="center"> 
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" height="100%">
+      <tr>
+        <td> 
+          <div align="center">
+            <table width="200" border="0" cellspacing="0" cellpadding="0">
+
+            ##TP_IMAGES##
+
+            </table>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</form>
+<script>
+maxpics=16;
+</script>
+</body>
+</html>

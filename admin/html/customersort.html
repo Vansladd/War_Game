@@ -1,0 +1,136 @@
+<html>
+<!-- $Id: customersort.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table cellspacing="0" cellpadding="3" border="0">
+<tr>
+	<th colspan=4 class=title>
+	##TP_IF {[OT_CfgGet RENAME_CUST_GRP_SORT 0]}##
+		Customer Sort
+	##TP_ELSE##
+		Customer Types
+	##TP_ENDIF##
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Sort</td>
+	<th class=colhead>Description</td>
+	<th class=colhead>Commission Rate</td>
+	<th class=colhead>Tax Rate</td>
+</tr>
+##TP_LOOP idx {[tpGetVar NumSorts]}##
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::CUSTSORT::GoCustSort&Sort=##TP_Sort##">##TP_Sort##</a></td>
+	<td>##TP_Desc##</td>
+	<td class=ra>##TP_CommissionRate##&nbsp;</td>
+	<td class=ra>##TP_TaxRate##&nbsp;</td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[op_allowed AddCustomerSort]}##
+<tr>
+	<th class=buttons colspan=4>
+	<form action="##TP_CGI_URL##" method=get>
+	<input type=button class="btn_def" value="Add New Sort" onClick="return fs(this,'SortAdd')">
+	</th>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::CUSTSORT::GoCustSort>
+	</form>
+</tr>
+##TP_ENDIF##
+</form>
+</table>
+
+<br/>
+
+<table cellspacing="0" cellpadding="3" border="0">
+<tr>
+	<th colspan=4 class=title>
+	##TP_IF {[OT_CfgGet RENAME_CUST_GRP_SORT 0]}##
+		Customer Groups
+	##TP_ELSE##
+		Customer Codes
+	##TP_ENDIF##
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Code</td>
+	<th class=colhead>Description</td>
+</tr>
+##TP_LOOP idx {[tpGetVar NumCodes]}##
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::CUSTSORT::GoCustCode&Code=##TP_Code##">##TP_Code##</a></td>
+	<td>##TP_CodeDesc##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[op_allowed AddCustomerCode]}##
+<tr>
+	<th class=buttons colspan=4>
+	<form action="##TP_CGI_URL##" method=get>
+	<input type=button class="btn_def" value="Add New Code" onClick="return fs(this,'CodeAdd')">
+	</th>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::CUSTSORT::GoCustCode>
+	</form>
+</tr>
+##TP_ENDIF##
+</form>
+</table>
+
+<br/>
+
+<table cellspacing="0" cellpadding="3" border="0">
+<form action="##TP_CGI_URL##" method=get>
+<tr>
+	<th colspan=5 class=title>
+	Liability Groups
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Code</td>
+	<th class=colhead>Description</td>
+	<th class=colhead>Intercept Value</td>
+	<th class=colhead>Display Order</td>
+	<th class=colhead>Colour</td>
+
+</tr>
+##TP_LOOP liab_group_idx {[tpGetVar NumLiabGroups 0]}##
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::CUSTSORT::GoLiabGroup&LiabGroupId=##TP_LiabGroupId##">##TP_LiabGroupId##</a></td>
+	<td>##TP_LiabDesc##</td>
+	<td>##TP_InterceptValue##</td>
+	<td>##TP_DispOrder##</td>
+	<td><font color="##TP_Colour_Rgb##">##TP_Colour_Name##</font></td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[op_allowed ManageLiabGroup]}##
+<tr>
+	<th class=buttons colspan=5>
+	<input type=button class="btn_def" value="Add New Liability Group" onClick="return fs(this,'GroupAdd')">
+	</th>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::CUSTSORT::GoLiabGroup>
+</tr>
+##TP_ENDIF##
+</form>
+</table>
+
+</body>
+</html>

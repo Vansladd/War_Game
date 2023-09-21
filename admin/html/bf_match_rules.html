@@ -1,0 +1,75 @@
+
+##TP_IF {[tpGetVar BfFilterHeaders 0]==1}##
+		##TP_IF {[tpGetVar ClassSort] == "HR" || [tpGetVar ClassSort] == "GR"}##
+			<th class=colhead>Betfair Event</th>
+			<th class=colhead>Match String (% - Wildcard)</th>
+			<th class=colhead>Exclude String (Comma ',' Separated)</th>
+			<th class=colhead>Standard Events</th>
+		##TP_ELSE##
+			<th class=colhead>Betfair Events</th>
+			<th class=colhead>Matched Event</th>
+		  <th class=colhead>Betfair Link (% - Wildcard)</th>
+		##TP_ENDIF##
+		<th class=colhead>Betfair Auto-Match mode</th>
+
+	##TP_TCL {tpSetVar BfFilterHeaders 0}##
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar BfFilterCols 0]==1}##
+	##TP_IF {[tpGetVar ClassSort] == "HR" || [tpGetVar ClassSort] == "GR"}##
+		##TP_IF {[tpGetVar ClassSort] == "HR"}##
+			<td> ##TP_TCL {OT_CfgGet BF_HORSE_RACING_TYPE "Horse Racing"}## </td>
+		##TP_ELSE##
+			<td> ##TP_TCL {OT_CfgGet BF_GREYHOUND_RACING_TYPE "Dog Racing"}## </td>
+		##TP_ENDIF##
+		<td><input type=text name="txtGlob_##TP_ObTypeId##" value="##TP_TypeGlobDesc##" /></td>
+		<td><input type=text name="txtGlobExclude_##TP_ObTypeId##" value="##TP_TypeGlobDescExclude##" /></td>
+		<td><input type=checkbox name="isStdEvt_##TP_ObTypeId##"  ##TP_IF {$OBTYPE([tpGetVar type_idx],is_std_hr) == "Y"}##checked##TP_ENDIF## /></td>
+	##TP_ELSE##
+		<td>
+		##TP_IF {[tpGetVar NoBFClassMap 0] == 1}##
+			<a class="caption" href="javascript:go_bf_dd_class_popup(##TP_TypeClassId##,##TP_ObTypeId##)">Betfair Hierarchy</a>
+		##TP_ELSE##
+			<a class="caption" href="javascript:go_bf_dd_popup(##TP_TypeClassId##,##TP_ObTypeId##)">Betfair Hierarchy</a>
+		##TP_ENDIF##
+		</td>
+		<td>
+			<input type=text id="BF_TypeFilter_name_##TP_ObTypeId##" name="BF_TypeFilter_name_##TP_ObTypeId##" value="##TP_BFName##" readonly="readonly">
+			<input type=hidden id="BF_TypeFilter_##TP_ObTypeId##" name="BF_TypeFilter_##TP_ObTypeId##" value="##TP_TypeBfEvId##" />
+		</td>
+		<td nowrap>
+			Straight <input type=radio name="linkType_##TP_ObTypeId##" value="STR" ##TP_IF {[tpBindGet TypeMapType]=="STR"}## checked ##TP_ENDIF##/>
+			Skip <input type=radio name="linkType_##TP_ObTypeId##" value="SKP" ##TP_IF {[tpBindGet TypeMapType]=="SKP"}## checked ##TP_ELSEIF {[tpBindGet TypeMapType]==""} ## checked ##TP_ENDIF##/>
+			<input type=text name="txtGlob_##TP_ObTypeId##" value="##TP_TypeGlobDesc##" size=10/>
+			Add <input type=radio name="linkType_##TP_ObTypeId##" value="ADD" ##TP_IF {[tpBindGet TypeMapType]=="ADD"}## checked ##TP_ENDIF##/>
+			##TP_IF {([tpGetVar bf_selected] == "Golf")}##
+				2/3Ball <input type=radio name="linkType_##TP_ObTypeId##" value="BLL" ##TP_IF {[tpBindGet TypeMapType]=="BLL"}## checked ##TP_ENDIF##/>
+			##TP_ENDIF##
+		</td>
+	##TP_ENDIF##
+	<td>
+    <select name="BF_AutoMatch_##TP_ObTypeId##">
+			<option value="MATCH" ##TP_IF {[tpBindGet TypeAutoMatchMode] == "MATCH"}##selected style="color:red"##TP_ELSEIF {[tpBindGet TypeAutoMatchMode]== ""} ##selected ##TP_ENDIF##>MATCH</option>
+			<option value="GENERATE" ##TP_IF {[tpBindGet TypeAutoMatchMode] == "GENERATE"}##selected style="color:red"##TP_ENDIF##>GENERATE</option>
+		</select>
+	</td>
+	##TP_TCL {tpSetVar BfFilterCols 0}##
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar BfFilterBtn 0]==1}##
+	##TP_IF {[op_allowed BFMatch]}##
+		<input type=button class="btn_def" value="Update Event Type Rules" onClick="return fs(this,'UpdRule')">
+		<input type=hidden name="ClassSort" value="##TP_ClassSort##">
+		##TP_IF {[tpGetVar IsSubType 0]==1}##
+			<input type=hidden name="IsSubType" value="1">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	##TP_TCL {tpSetVar BfFilterBtn 0}##
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar BfFilterHidden 0]==1}##
+	<input type=hidden name="ClassSort" value="##TP_ClassSort##">
+	<input type=hidden name=action value=ADMIN::TYPE::GoType>
+	##TP_TCL {tpSetVar BfFilterHidden 0}##
+##TP_ENDIF##
+

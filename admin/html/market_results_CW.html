@@ -1,0 +1,483 @@
+<html>
+<!-- $Id: market_results_CW.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Set BIR Event Market Result</title>
+
+##TP_PLAY JS_WriteSelect.html##
+
+<script language=JavaScript>
+
+var errorList = "";
+
+function add_err(e_str)
+{
+	if (errorList.length > 0) {
+		errorList += "\n";
+	}
+	errorList += e_str;
+}
+
+
+function validate(f)
+{
+	return true;
+
+	var desc          = strTrim(f.Desc.value, " ");
+	var disporder     = strTrim(f.Disporder.value, " ");
+	var group_menu    = f.OptGrp;
+	var scheme_menu   = f.PricingScheme;
+	var group         = group_menu.options[group_menu.selectedIndex].value;
+	var scheme        = scheme_menu.options[scheme_menu.selectedIndex].value;
+	var max_bet       = f.MaxBet.value;
+	var min_bet       = f.MinBet.value;
+	var max_tot_stake = f.MaxTotalStake.value;
+	var odds_num      = f.OddsNum.value;
+	var odds_denom    = f.OddsDenom.value;
+
+	errorList = "";
+
+    if (desc.length == 0) {
+        add_err("Description cannot be empty");
+    } else {
+        if (!isSafeStr(desc)) {
+            add_err("don't use these characters in descriptions: "
+                + "tab [ ] { } < > \" \\ $");
+        }
+    }
+	if (group == "") {
+		add_err("no market specified");
+	}
+	if (!isMoney(max_tot_stake, false)) {
+		add_err("max total stake is invalid - must be a money quantity");
+	}
+	if ((min_bet.length > 0) && (!isMoney(min_bet, false))) {
+        add_err("min bet is invalid - must be a money quantity");
+    }
+    if ((max_bet.length > 0) && (!isMoney(max_bet, false))) {
+        add_err("max bet is invalid - must be a money quantity");
+    }
+    if ((min_bet.length > 0) && (max_bet.length > 0)) {
+        if (isMoney(min_bet, false) && isMoney(max_bet, false)) {
+            if (parseFloat(min_bet) > parseFloat(max_bet)) {
+                add_err("min bet is bigger than max bet");
+            }
+        }
+	}
+	if (disporder.length > 0) {
+		if (!isInt8(disporder, true)) {
+			add_err("disporder must be an integer between +/-99999999");
+		}
+	}
+	if (scheme == 'LP') {
+		if (!isInt8(odds_num, false) || !isInt8(odds_denom, false)) {
+			add_err("odds must be specified for live price");
+		} else {
+			odds_num   = parseInt(odds_num);
+			odds_denom = parseInt(odds_denom);
+			if ((parseFloat(odds_num) < 1) || (parseFloat(odds_denom) < 1)) {
+				add_err("odds num/denom must be positive integers");
+			}
+		}
+	}
+
+	if (errorList != "") {
+		alert("There are some errors in the form:\n\n" + errorList);
+		return false;
+	}
+
+	return true;
+}
+
+function write_oc_tr(result,settled,status)
+{
+	if (settled == 'Y') {
+		document.write('<tr class=settled>');
+	} else {
+		if (result != '-') {
+			document.write('<tr class=hidden>');
+		} else {
+			if (status == 'S') {
+				document.write('<tr class=suspended>');
+			} else {
+				document.write('<tr class=active>');
+			}
+		}
+	}
+}
+
+var rslt = new Object();
+
+rslt["-"] = "Unset";
+rslt["V"] = "Void";
+rslt["W"] = "Win";
+rslt["L"] = "Lose";
+rslt["H"] = "Handicap";
+rslt["P"] = "Place";
+
+function write_result_sel(res,results) {
+	var i;
+	for (i = 0; i < results.length; i++) {
+		var r = results.charAt(i);
+		var s = (r == res) ? " selected" : "";
+		document.write('<option value="'+r+'"'+s+'>'+rslt[r]+'</option>\n')
+	}
+}
+
+function write_oc_frac(how,name,id,sort,val1,val2)
+{
+	var content = "";
+	if (sort == "P") {
+		content = val1;
+	} else {
+		if (val1 != "") {
+			content = val1+"/"+val2;
+		}
+	}
+	document.write('<td>');
+	if (how == "INPUT") {
+		document.write('<input type=text name="' + name + '_' + id
+				+ '" value="' + content + '" size=8>');
+	} else {
+		if (content == "") {
+			content = '&' + 'nbsp;';
+		}
+		document.write(content);
+	}
+	document.write('</td>\n');
+}
+
+var row_num = 0;
+var ev_oc_id_list = "";
+
+##TP_IF {[tpGetVar AfterEventStart 0]}##
+	var is_past = "Y";
+##TP_ELSE##
+	var is_past = "N";
+##TP_ENDIF##
+
+function write_ev_oc_id_list()
+{
+	document.write('<input type="hidden" name="EvOcIdList" value="'
+		+ ev_oc_id_list + '">\n');
+}
+
+function add_oc_res_id(id)
+{
+	if (ev_oc_id_list != "") {
+		ev_oc_id_list += ","
+	}
+	ev_oc_id_list += id;
+}
+
+function write_oc_res_line(
+	id,ew,lp,sp,pm,desc,res,results,place,lp_v,sp_v,stl,
+	w_r_n,w_r_d,p_r_n,p_r_d,
+	tw_div,tp_div)
+{
+	var i;
+
+	// add id to list of ids if selection not settled
+	if (stl == 'N') {
+		add_oc_res_id(id);
+	}
+
+	// alternate row colours
+	row_num += 1;
+	if (row_num % 2 == 0) {
+		document.write('<tr bgcolor=#999999>\n');
+	} else {
+		document.write('<tr bgcolor=#cccccc>\n');
+	}
+
+	document.write('<td>\n');
+    document.write('<a href="##TP_CGI_URL##?action=ADMIN::SELN::GoOc'
+        +'&MktId=##TP_MktId##&OcId='
+        +id+'">'+desc+'</a>\n');
+	document.write('</td>\n');
+
+
+	// write live price, if one exists
+	if (lp == "Y") {
+		document.write('<td>'+lp_v+'&nbs'+'p;</td>');
+	}
+
+	// write sp, if sp specified
+	if (sp == "Y") {
+		if (stl == "N") {
+			write_oc_frac('INPUT','oc_sp',id,'P',sp_v);
+		} else {
+			write_oc_frac('TEXT','oc_sp',id,'P',sp_v);
+		}
+	}
+
+	if (stl == "N") {
+		document.write('<td>\n<select name="oc_res_' + id + '">\n');
+		if (is_past == "Y" && res == "-") {
+			##TP_IF {[string first [tpGetVar MktType] "AHLMU"]>=0}##
+				res = "H";
+			##TP_ELSE##
+				res = "L";
+			##TP_ENDIF##
+		}
+		write_result_sel(res,results);
+
+		document.write('\n</select>\n</td>\n');
+		##TP_IF {[tpGetVar MktCanPlace 1]}##
+			document.write('<td>');
+			document.write('<input type="text" name="oc_place_'+id+'" size="3"'+
+				' value="'+place+'">');
+			document.write('</td>');
+		##TP_ENDIF##
+		##TP_IF {[tpGetVar MktCanDeadHeat 1]}##
+			write_oc_frac('INPUT','oc_wr',id,'F',w_r_n,w_r_d);
+			write_oc_frac('INPUT','oc_pr',id,'F',p_r_n,p_r_d);
+		##TP_ENDIF##
+	} else {
+		document.write('<td>');
+		for (i = 0; i < results.length; i++) {
+			var r = results.charAt(i);
+			if (r == res) {
+				document.write(rslt[r]);
+			}
+		}
+		document.write('</td>\n');
+		##TP_IF {[tpGetVar MktCanPlace 1]}##
+			document.write('<td>');
+			if (place == "") {
+				place = '&' + 'nbsp;';
+			}
+			document.write(place);
+			document.write('</td>\n');
+		##TP_ENDIF##
+		##TP_IF {[tpGetVar MktCanDeadHeat 1]}##
+			write_oc_frac('TEXT','oc_wr',id,'F',w_r_n,w_r_d);
+			write_oc_frac('TEXT','oc_pr',id,'F',p_r_n,p_r_d);
+		##TP_ENDIF##
+	}
+
+	// write sp, if sp specified
+	if (pm == "Y") {
+		if (stl == "N") {
+			write_oc_frac('INPUT','oc_tw_div',id,'P',tw_div);
+			write_oc_frac('INPUT','oc_tp_div',id,'P',tp_div);
+		} else {
+			write_oc_frac('TEXT','oc_tw_div',id,'P',tw_div);
+			write_oc_frac('TEXT','oc_tp_div',id,'P',tp_div);
+		}
+	}
+
+	document.write('</tr>');
+}
+function setDefault(b,t)
+{
+	//because this is called onChange need to actually set the var before submitting
+	var def = b.form.DefaultResult_select.value;
+	b.form.DefaultResult.value = def;
+
+	fs(b,t);
+}
+function setAudIdx(b,t,idx,form_name)
+{
+	b.form.AudMktIdx.value = idx;
+	fs(b,t);
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+
+</head>
+
+<body>
+##TP_PLAY error_rpt.html##
+
+<table cellspacing=0 cellpadding=2>
+  <tr>
+	 <th class=title colspan=4>
+		##TP_EvDesc##, ##TP_EvStartTime##<br>##TP_MktName##
+	 </th>
+  </tr>
+
+  <tr>
+    <th class=colhead>Outcome</th>
+    <th class=colhead>Result</th>
+    <th class=colhead>Remove selection</th>
+	<th class=colhead></th>
+  </tr>
+##TP_LOOP bir_ix {[tpGetVar NumBirs]}##
+
+##TP_IF {$BIR([tpGetVar bir_ix],result_conf) == "N"} ##
+<form name="form_##TP_BirIdx##" action="##TP_CGI_URL##" method="POST">
+<input type="hidden" name="action" VALUE="ADMIN::BIR::SetRes">
+<input type="hidden" name="MktId" value="##TP_MktId##">
+<input type="hidden" name="BirIdx" value="##TP_BirIdx##">
+<input type="hidden" name="MktBirIdx" value="##TP_MktBirIdx##">
+<input type="hidden" name="Confirm" value="Y">
+<input type="hidden" name="SubmitName" value="">
+<input type="hidden" name="AudMktIdx" value="">
+
+  <!-- Index info -->
+  <tr>
+    <th colspan=4 class=buttons>BIR index: ##TP_BirIdx##</th>
+  </tr>
+  <tr>
+    <td>default result:</td>
+    <td>
+	<select name="DefaultResult_select" onchange="return setDefault(this,'UpdDfltRes')">
+	##TP_IF {[OT_CfgGet BIR_INX_ONE_RES "0"] == "1"}##
+		<script>
+		write_select('##TP_BirDefault##','L','Lose','V','Void');
+		</script>
+		</select>
+	##TP_ELSE##
+		<script>
+		write_select('##TP_BirDefault##', 'W','Win','L','Lose','V','Void');
+		</script>
+		</select>
+	##TP_ENDIF##
+	<input type="hidden" name="DefaultResult" value="">
+    </td>
+	<th class=buttons><input type="button" class="btn_def" value="confirm results" onClick="return fs(this,'ConfirmRes')"></th>
+	<th class=buttons>
+	##TP_IF {![tpGetVar opAdd 0]}##
+		##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+			<input type=button class="btn_def" value="View Index History" onClick="return setAudIdx(this,'GoAudit','##TP_MktBirIdx##')">
+			<input type=hidden name=AuditInfo value="tMktBirIdxRes">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	</th>
+  </tr>
+
+  <!-- Results already set for index -->
+  ##TP_LOOP res_ix {$BIR([tpGetVar bir_ix],num_res)}##
+  <tr>
+    <td>##TP_EvOcDesc##</td>
+    <td>
+	<script>
+	write_which('##TP_Result##','W','Win','L','Lose','V','Void');
+	</script>
+	</select>
+    </td>
+    <th class=buttons><a href="##TP_CGI_URL##?action=ADMIN::BIR::SetRes&SubmitName=DelBirOc&MktId=##TP_MktId##&MktBirIdx=##TP_MktBirIdx##&EvOcId=##TP_EvOcId##">delete</a></th>
+	<th class=buttons></th>
+  </tr>
+  ##TP_ENDLOOP##
+
+
+  ##TP_IF {$BIR([tpGetVar bir_ix],show_add)}##
+  <!-- New results for index -->
+  <tr>
+    <td>
+	<select name="EvOcId">
+	<script>
+	write_select(''
+	   ##TP_LOOP oc_ix {[tpGetVar NumMktSelns]}##
+       ,##TP_OcId##,'##TP_OcDesc##'
+       ##TP_ENDLOOP##
+	);
+	</script>
+	</select>
+    </td>
+    <td>
+	##TP_IF {[OT_CfgGet BIR_INX_ONE_RES "0"] == "1"}##
+		<input type="hidden" name="Result" value="W">
+		Win
+	##TP_ELSE##
+		<select name="Result">
+		<script>
+		write_select('W', 'W','Win','L','Lose','V','Void');
+		</script>
+		</select>
+	##TP_ENDIF##
+    </td>
+	<th class=buttons><input type="button" class="btn_def" value="add" onClick="return fs(this,'DoAddBirOc')"></th>
+	<th class=buttons></th>
+  </tr>
+  ##TP_ENDIF##
+
+</form>
+
+##TP_ELSE##
+<tr>
+    <th class="buttons">BIR index: ##TP_BirIdx##</th>
+    <th class="buttons">default:
+    <script>
+	write_which('##TP_BirDefault##', 'W','Win','L','Lose','V','Void');
+	</script></th>
+	##TP_IF {$BIR([tpGetVar bir_ix],settled) == "N"} ##
+    <th class="buttons"><a href="##TP_CGI_URL##?action=ADMIN::BIR::SetRes&SubmitName=ConfirmRes&MktId=##TP_MktId##&MktBirIdx=##TP_MktBirIdx##&Confirm=N">Unconfirm</a>&nbsp;<a href="##TP_CGI_URL##?action=ADMIN::BIR::SetRes&SubmitName=SettleRes&MktId=##TP_MktId##&MktBirIdx=##TP_MktBirIdx##&DoSettle=Y">Settle</a></th>
+    ##TP_ELSE##
+    <th class="buttons">Index is Settled</th>
+    ##TP_ENDIF##
+	<form name="form_##TP_BirIdx##" action="##TP_CGI_URL##" method="POST">
+	<input type="hidden" name="action" VALUE="ADMIN::BIR::SetRes">
+	<input type="hidden" name="MktId" value="##TP_MktId##">
+	<input type="hidden" name="BirIdx" value="##TP_BirIdx##">
+	<input type="hidden" name="MktBirIdx" value="##TP_MktBirIdx##">
+	<input type="hidden" name="Confirm" value="Y">
+	<input type="hidden" name="SubmitName" value="">
+	<input type="hidden" name="AudMktIdx" value="">
+	<th class=buttons>
+	##TP_IF {![tpGetVar opAdd 0]}##
+		##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+			<input type=button class="btn_def" value="View Index History" onClick="return setAudIdx(this,'GoAudit','##TP_MktBirIdx##')">
+			<input type=hidden name=AuditInfo value="tMktBirIdxRes">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	</form>
+	</th>
+</tr>
+  ##TP_LOOP res_ix {$BIR([tpGetVar bir_ix],num_res)}##
+  ##TP_IF {$BIR([tpGetVar bir_ix],settled) == "N"} ##
+  <tr class="confirmed">
+  ##TP_ELSE##
+  <tr class="settled">
+  ##TP_ENDIF##
+    <td>##TP_EvOcDesc##</td>
+    <td>
+	<script>
+	write_which('##TP_Result##','W','Win','L','Lose','V','Void');
+	</script>
+	</select>
+    </td>
+	<td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  ##TP_ENDLOOP##
+
+
+##TP_ENDIF##
+##TP_ENDLOOP##
+
+<form name="form" action="##TP_CGI_URL##" method="POST">
+<input type="hidden" name="action" VALUE="ADMIN::BIR::SetRes">
+<input type="hidden" name="MktId" value="##TP_MktId##">
+<input type="hidden" name="BirIdx" value="##TP_BirIdx##">
+<input type="hidden" name="MktBirIdx" value="##TP_MktBirIdx##">
+<input type="hidden" name="SubmitName" value="">
+<tr>
+	<th class=buttons colspan=4>
+	##TP_IF {([tpGetVar NumUnconfirmed] == 0) && ([tpGetVar MktSettled] == "N") && ([tpGetVar MktResConf] == "N")}##
+		<input type=button class="btn_def" value="Set Market Result" onClick="return fs(this,'SetMktRes')">
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	##TP_IF {![tpGetVar opAdd 0]}##
+		##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+			<input type=button class="btn_def" value="View Audit History" onClick="return fs(this,'GoAudit')">
+			<input type=hidden name=AuditInfo value="tMktBirIdx">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	</td>
+</tr>
+</form>
+</table>
+
+</body>
+</html>

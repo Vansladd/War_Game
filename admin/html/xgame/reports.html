@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>External Game Reports</title>
+	<SCRIPT LANGUAGE="JavaScript">
+	##TP_PLAY calendar.js##
+        </SCRIPT>
+  </head>
+
+  <body bgcolor=white>
+
+  <table cellspacing=0 cellpadding=2 bgcolor=#cccccc border=0>
+
+  <tr bgcolor=#10137c><th align=left colspan=5><font color=white size=+1>Pools/Lottery bets placed report</th></tr>
+
+   <form name=selectionForm action="##TP_CGI_URL##">
+
+      <input type=hidden name=action value="DoReport">
+
+
+      <tr><td rowspan=2><b>From:</b></td>
+      <td align=right>      <a href="javascript:doNothing();" onclick="setDateField(document.selectionForm.fromDate); top.newWin = window.open('##TP_CGI_URL##?action=go_popup_calendar', 'cal', 'dependent=yes, width=210, height=230, titlebar=yes')">Date:</a></td>
+      <td><INPUT size=10 NAME=fromDate value='##TP_DEFAULT_DATE##'></td>
+      </tr>
+      <tr><td align=right>Time:</td>
+      <td><INPUT TYPE="text" size=8 NAME=startTime VALUE="00:00:00"></td>
+      </tr>
+
+      <tr><td rowspan=2><b>To:</b></td>
+      <td align=right>      <a href="javascript:doNothing();" onclick="setDateField(document.selectionForm.toDate); top.newWin = window.open('##TP_CGI_URL##?action=go_popup_calendar', 'cal', 'dependent=yes, width=210, height=230, titlebar=yes')">Date:</a></td>
+      <td><INPUT size=10 NAME=toDate value='##TP_DEFAULT_DATE##'></td>
+      </tr>
+      <tr><td align=right>Time:</td>
+      <td><INPUT TYPE="text" size=8 NAME=endTime VALUE="23:59:59"></td>
+      </tr>
+
+	<tr>
+	  <td colspan=2 rowspan=2><b>Channels/Affiliates break-down:</b></td>
+	  <td><input type=radio name=breakdown value=1>Yes</input>
+	 </tr>
+	 <tr>
+	 <td><input type=radio name=breakdown value=0 checked>No</input></td>
+	<tr bgcolor=#10137c><td colspan=3><font color=white>
+	<input type=submit class="btn_def" value="Generate Game Report" name="sort">
+	<input type=submit class="btn_def" value="Generate Subscriptions Report" name="sort"></font>
+	</td>
+	</tr>
+
+      </table>
+    </form>
+    
+  </body>
+</html>

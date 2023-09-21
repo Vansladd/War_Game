@@ -1,0 +1,68 @@
+<html>
+<!-- $Id: cleardown_groups.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Clear Down Groups</title>
+<script>
+function write_tr(status,displayed)
+{
+	if (status == 'S') {
+		document.write('<tr class=suspended>');
+	} else if (displayed != 'Y') {
+		document.write('<tr class=hidden>');
+	} else {
+		document.write('<tr class=active>');
+	}
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3 bgcolor=#10137c>
+<tr>
+	<th class=title colspan=3>
+	Clear Down Groups
+	</th>
+</tr>
+##TP_IF {[tpGetVar NumGrps 0]}##
+<tr>
+	<th class=colhead>Name</th>
+	<th class=colhead>Clear Down Days</th>
+	<th class=colhead>Active</th>
+</tr>
+##TP_LOOP grp_idx {[tpGetVar NumGrps]}##
+	<td><A HREF="##TP_CGI_URL##?action=ADMIN::AUTODBT::GoGroupDetails&GroupId=##TP_cd_grp_id##">##TP_cd_grp_name##</A></td>
+	<td>##TP_cd_days##</td>
+	<td>##TP_cd_status##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+	<td colspan=##TP_NumCols##>
+	<b><i>There are no clear down groups defined</i></b>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[op_allowed AddGrpClearDown]}##
+<form method=get action="##TP_CGI_URL##" >
+    <tr>
+        <th class=buttons colspan=3>
+        <input type=button class="btn_def" value="Add" onClick="return fs(this,'Add')">
+        <input type=hidden name=SubmitName value="">
+        <input type=hidden name=action value="ADMIN::AUTODBT::GoGroupAdd">
+    </th>
+</tr>
+</form>
+##TP_ENDIF##
+</table>
+</body>
+</html>

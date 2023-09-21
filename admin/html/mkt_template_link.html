@@ -1,0 +1,142 @@
+<html>
+<!-- $Id: mkt_template_link.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Templates Links</title>
+
+<script>
+
+var is_all_select = 0;
+
+function selectAll()
+{
+
+	var myform = document.getElementById('templateform');
+
+	if (is_all_select === 0) {
+
+		for (var i =0; i < myform.elements.length; i++) {
+			if (myform.elements[i].name == "delBoxes") {
+				myform.elements[i].checked = true;
+			}
+		}
+
+		document.getElementById('selectbutton').value = 'Unselect All';
+
+		is_all_select = 1;
+
+	} else {
+
+		for (var i =0; i < myform.elements.length; i++) {
+			if (myform.elements[i].name == "delBoxes") {
+				myform.elements[i].checked = false;
+			}
+		}
+
+		document.getElementById('selectbutton').value = 'Select All';
+
+		is_all_select = 0;
+	}
+}
+
+function selchange(s,t) {
+		s.form.SubmitName.value=t;
+		s.form.submit();
+		return true;
+}
+
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+
+	b.form.submit();
+	return true;
+}
+</script>
+
+</head>
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<form action="##TP_CGI_URL##" method="post" id="templateform">
+
+<table border="0" cellspacing="0" cellpadding="3" bgcolor="#10137c">
+<tr>
+	<th class="title" colspan="4" width="400">
+	Market Templates
+	</th>
+</tr>
+
+<tr>
+	<td class="caption"><strong>Template</strong></td>
+	<td>&nbsp;##TP_mkt_tplate_name## </td>
+	<td class="caption"><strong>Sport</strong></td>
+	<td class="buttons">
+		<select name="sport_filter" onchange="selchange(this,'FilterSport');">
+				##TP_LOOP sport_idx {[tpGetVar NumSports]}##
+					<option value="##TP_SportId##" ##TP_SportSel##>##TP_SportName##</option>
+				##TP_ENDLOOP##
+				</select>
+				##TP_LOOP sport_idx {[tpGetVar NumSports]}##
+					<input type="hidden" name="##TP_SportId##_ob_level" value="##TP_SportLev##" />
+				##TP_ENDLOOP##
+	</td>
+</tr>
+</table>
+
+<p/>
+
+<table border="0" cellspacing="0" cellpadding="3" bgcolor="#10137c">
+<tr>
+	<th class="title" colspan="4" width="400">
+	Linked Market Groups
+	</th>
+</tr>
+<tr>
+	<th class="colhead"><a href="##TP_CGI_URL##?action=ADMIN::MKT_TEMPLATE::GoMktTemplateLink&mkt_tmpl_id=##TP_mkt_tmpl_id##&order=grp_name&sport_id=##TP_sport_id##">Market Group</A></th>
+	<th class="colhead"><a href="##TP_CGI_URL##?action=ADMIN::MKT_TEMPLATE::GoMktTemplateLink&mkt_tmpl_id=##TP_mkt_tmpl_id##&order=type_name&sport_id=##TP_sport_id##">Event Type</A></th>
+	<th class="colhead">Select to Delete</th>
+</tr>
+
+##TP_IF {[tpGetVar NumGrps 0]}##
+
+	##TP_LOOP grp_link_idx {[tpGetVar NumGrps]}##
+	<tr>
+		<td> ##TP_grp_name##</td>
+		<td> ##TP_type_name##</td>
+
+		<td > <input name="delBoxes" id="chk_##TP_grp_id##" type="checkbox" value="##TP_grp_id##"> </td>
+
+	</tr>
+	##TP_ENDLOOP##
+
+##TP_ELSE##
+
+	<tr>
+		<td> No linked groups </td>
+	</tr>
+
+##TP_ENDIF##
+
+<tr>
+	<th class=buttons colspan=6>
+	<input type=button class="btn_def" value="Add Link" onClick="return fs(this,'AddLink')">
+	<input type=button class="btn_def" value="Remove Link" onClick="return fs(this,'RemoveLink')">
+	<input type=button class="btn_def" id="selectbutton" value="Select All" onClick="selectAll()">
+	</td>
+</tr>
+<input type=hidden name=mkt_tmpl_id value="##TP_mkt_tmpl_id##">
+<input type=hidden name=sport_id value="##TP_SportId##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::MKT_TEMPLATE::DoMktTemplateLink">
+</form>
+
+
+</table>
+</body>
+</html>

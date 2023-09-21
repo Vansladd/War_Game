@@ -1,0 +1,91 @@
+<html>
+<!-- $Id: game_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<title>OpenBet Administration</title>
+
+	<script language="javascript">
+
+	<!-- //
+
+		function write_tr(t)
+		{
+			if (t == "S") {
+				col="#cc9999";
+			}
+			if (t == "A") {
+				col="#99cc99"
+			}
+			document.write('<tr bgcolor="'+col+'">');
+		}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+	// -->
+
+	</script>
+</head>
+
+<body bgcolor="white" text="black" link="#0000ee" vlink="#3333ff" alink="#ff0000">
+
+	##TP_PLAY error_rpt.html##
+	<table cellspacing="0" cellpadding="2" border="0" bgcolor="#cccccc">
+		<tr bgcolor="#10137c">
+			<th colspan="7" align="left">
+			<font color="white" size="+1">Games</font>
+			</th>
+		</tr>
+		<tr bgcolor="#999999">
+			<th align="left">Game ID</th>
+			<th align="left">Start Date</th>
+			<th align="left">Affiliate Name</th>
+			<th align="left">Affiliate ID</th>
+			<th align="left">Status</th>
+		</tr>
+
+		##TP_IF {[tpGetVar game_rows] > 0}##
+		##TP_LOOP game_idx {[tpGetVar game_rows]}##
+		<script>write_tr('##TP_Status##')</script>
+			<td><a href="##TP_CGI_URL##?action=GoFBetGameUpdate&GameID=##TP_GameID##">##TP_GameID##</td>
+			<td>##TP_Start##</td>
+			<td>##TP_AffName##</td>
+			<td>##TP_AffID##</td>
+			<td>##TP_Status##</td>
+		</tr>
+		##TP_ENDLOOP##
+
+		##TP_ELSE##
+		<tr bgcolor="#cc3333">
+			<th align="center" colspan="6">
+			<font color="white">
+			No games matched the search criteria.
+			</font>
+			</th>
+		</tr>
+		##TP_ENDIF##
+
+		<form method="get" action="##TP_CGI_URL##">
+		<input type="hidden" name="SubmitName" value="">
+		<input type="hidden" name="action" value="GoFBetGame">
+
+		<tr bgcolor="#10137c">
+    	<th align="left" colspan="6">
+      <font color="white">
+     	##TP_IF {[tpGetVar CanAddGame]}##
+     	<input type="button" class="btn_def" value="Add Game" onClick="return fs(this,'GameAdd')">
+			##TP_ENDIF##
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+      </font>
+		</tr>
+		</form>
+
+	</table>
+
+</body>
+</html>

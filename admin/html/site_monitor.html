@@ -1,0 +1,103 @@
+<html>
+<!-- $Id: site_monitor.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Affiliate</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{     	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+function wr_tr(def) {
+		if (def!='') {
+			document.write('<tr class=active>');
+		} else  {
+			document.write('<tr class=suspended>');
+		}
+}
+</script>
+</head>
+
+<body>
+	##TP_PLAY error_rpt.html##
+
+	<h3>Registered Sessions</h3>
+
+	<table border=0 cellspacing=0 cellpadding=3>
+	<tr>
+		<th>Feed</th>
+		<th>Hostname</th>
+		<th>Priority</th>
+		<th align="center">Started</th>
+		<th>Sid</th>
+		<th>Connected</th>
+	</tr>
+
+	##TP_LOOP reg_idx {[tpGetVar REG_ROWS]}##
+	<script>wr_tr('##TP_REG_ACTIVE##')</script>
+		<td>##TP_REG_FEED##</td>
+		<td>##TP_REG_HOSTNAME##</td>
+		<td align="center">##TP_REG_PRIORITY##</td>
+		<td>##TP_REG_STARTED##</td>
+		<td>##TP_REG_SID##</td>
+		<td>##TP_REG_CONNECTED##</td>
+	</tr>
+	##TP_ENDLOOP##
+
+	</table>
+	<br>
+	<form action="##TP_CGI_URL##" method="get" onSubmit="return validate(this);" name="site_refresh_form">
+		<input type=button value="Refresh" onClick="return fs(this,'GoHome')">
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value="ADMIN::SITE_MONITOR::GoHome">
+	</form>
+	<br>
+	<h3>Priority List</h3>
+
+	<table border=0 cellspacing=0 cellpadding=3>
+	<tr>
+		<th>Feed</th>
+		<th>Hostname</th>
+		<th>Priority Rank</th>
+		<th>&nbsp;</th>
+	</tr>
+
+	##TP_LOOP pr_idx {[tpGetVar PR_ROWS]}##
+	<tr>
+		<td>##TP_PR_FEED##</td>
+		<td>##TP_PR_HOSTNAME##</td>
+		<td align="center">##TP_PR_PRIORITY##</td>
+		<td><a href="##TP_CGI_URL##?action=ADMIN::SITE_MONITOR::goPriority&hostname=##TP_PR_HOSTNAME##&feed=##TP_PR_FEED##">modify</a></td>
+	</tr>
+	##TP_ENDLOOP##
+	<tr>
+	</table>
+
+	<br>
+	<br>
+	<h3>Add Host to Priority List</h3>
+	<br>
+
+	<form action="##TP_CGI_URL##" method="get" onSubmit="return validate(this);" name="site_monitor_form">
+		Feed &nbsp;<input name="feedname" value="##TP_FEEDNAME##" size="10">
+		Host &nbsp;<input name="hostname" value="##TP_HOSTNAME##" size="15">
+		Priority (1-99)&nbsp;<input name="priority" value="" size="2">
+		<input type=button value="Add" onClick="return fs(this,'Back')">
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value="ADMIN::SITE_MONITOR::addPriority">
+	</form>
+
+	<li><i>The feed name must correspond with the setting in the feeds configuration file</i>
+	<li><i>All feeds need to be defined in the priority list to be able to run</i>
+	<li><i>The lower the number the higher the priority (1 is higher than 99)</i>
+	<li><i>The hostname for a box can be obtained from running 'info hostname' in a tclsh on the host box</i>
+
+</body>
+</html>

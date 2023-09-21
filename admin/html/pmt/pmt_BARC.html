@@ -1,0 +1,66 @@
+<html>
+<!-- $Id: pmt_BARC.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<title>OpenBet Administration</title>
+	##TP_PLAY JS_WriteSelect.html##
+	<script>
+
+		function fs(b,t)
+		{
+			if (t == 'DoDep' && !confirm('Make deposit?')) {
+				return
+			}
+		
+			b.disabled = true;
+			b.value = "Busy...";
+			b.form.SubmitName.value=t;
+			b.form.submit();
+			return true;
+		}
+
+	</script>
+</head>
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<form method=post action="##TP_CGI_URL##">
+<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th colspan=2 class=title>Barclays BACS Transfer (##TP_DepWtd##)</th>
+	</tr>
+
+	<!-- show the customers details -->
+	##TP_PLAY pmt/pmt_detail_cust.html##
+
+##TP_IF {[tpGetVar DepWtd] == "DEP"}##
+	<tr class=subtitle>
+		<th colspan=2 align=left>Deposit</th>
+	</tr>
+ 	<tr>
+		<td class=caption>Amount (##TP_CustCurrency##)</td>
+		<td><input type="text" name="Amount" size=10 value=""></td>
+	</tr>
+	<tr>
+		<th colspan=2 class=buttons>
+			<input type="button" class="btn_def" value="Make Deposit" onClick="return fs(this,'DoDep')">
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</th>
+	</tr>
+##TP_ENDIF##
+	<input type="hidden" name="cpm_id" value="##TP_cpm_id##">
+	<input type="hidden" name="pay_mthd" value="##TP_pay_mthd##">
+	<input type="hidden" name="CustId" value="##TP_CustId##">
+	<input type="hidden" name="AcctId" value="##TP_AcctId##">
+	<input type="hidden" name="SubmitName" value="">
+	<input type="hidden" name="action" value="ADMIN::PMT::do_pay_mthd_pmt">
+	<input type="hidden" name="uniqueId" value="##TP_TCL {tpBufWrite [OT_UniqueId]}##">
+	<input type="hidden" name="DepWtd" value="##TP_DepWtd##">
+	<input type="hidden" name="CustCurrency" value="##TP_CustCurrency##">
+	</form>
+</table>
+</body>
+</html>

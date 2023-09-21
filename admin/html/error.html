@@ -1,0 +1,85 @@
+<html>
+<!-- $Id: error.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<title>OpenBet Administration</title>
+<style type="text/css">
+	##TP_IF {![tpGetVar FuncOffice 0]}##
+		table, tbody {
+			font-family: Verdana, Arial, Helvetica;
+			background-color: white;
+			font-size: 12pt;
+		}
+		TD {
+			font-family: Verdana, Arial, Helvetica;
+			color: black;
+			padding: 0 8px 0 8px;
+		}
+		th {
+			font-size: 12pt;
+		}
+		TH.title {
+			color: white;
+			background-color: #10137c;
+			text-align: center;
+		}
+		TH.colhead {
+			color: white;
+			background-color: black;
+			text-align: left;
+			padding: 0 8px 0 8px;
+		}
+		span.sorry {
+			font-size: 14pt;
+		}
+	##TP_ELSE##
+		@import "##TP_OFFICE_STATIC_URL##/css/base.css";
+		h3 {
+			padding: 5px;
+			background: #335;
+			color: #fff;
+			font-size: 16px;
+			font-weight: bolder;
+			text-align: left;
+			width: 60%;
+		}
+		pre {
+			font-size: 12px;
+		}
+		span.sorry {
+			font-size: 14px;
+		}
+	##TP_ENDIF##
+	span.sorry {
+		color: orange;
+	}
+</style>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<h3>Application Error</h3>
+<br>
+<span class="sorry">Sorry, something went wrong...</span>
+<br/>
+<br>
+	##TP_XL {Admin.SUPPORT_EMAIL_MESSAGE}##
+<br/>
+<pre>
+##TP_TclErrorInfo##
+</pre>
+<table cellspacing=1 cellpadding=0>
+<tr><th colspan=2 class="title">Parameters</th></tr>
+<tr>
+	<th class="colhead">Name</th>
+	<th class="colhead">Value</th>
+</tr>
+##TP_LOOP arg_idx {[tpGetVar NumActs]}##
+<tr>
+	<td>##TP_ActName##</td>
+	<td>##TP_ActVal##</td>
+</tr>
+##TP_ENDLOOP##
+</table>
+
+</body>
+</html>

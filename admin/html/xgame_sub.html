@@ -1,0 +1,182 @@
+<html>
+<!-- $Id: xgame_sub.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script>
+function fs(b,t)
+{
+	if (!confirm("Are you sure you want to void this subscription?")) {
+		return;
+	}
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function cfs(b,t)
+{
+	if (!confirm("Are you sure you want to change this user's selections?")) {
+		return;
+	}
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_IF {[tpGetVar IS_ELITE 0]!=0}##
+	<font color="red"><b>&nbsp; * Elite Customer</b></font>
+##TP_ENDIF##
+##TP_PLAY error_rpt.html##
+
+##TP_IF {[op_allowed BrowseXGame]==0}##
+<p>You do not have permission to view pools and lottery bets</p>
+##TP_ELSE##
+
+##TP_IF {[OT_CfgGet XGAME_RECEIPT_FUNC 0]}##
+	<h3>Bet receipt ##TP_SubReceipt##</h3>
+##TP_ELSE##
+	<h3>Bet receipt L/##TP_CustId##/##TP_SubId##</h3>
+##TP_ENDIF##
+
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th colspan=2 class=title>
+	Subscription Details
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Field</th>
+	<th class=colhead>Value</th>
+</tr>
+<tr><td>Customer</td><td>##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet Elite] != "Y")}##<a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_CustName##</a>##TP_ELSE## ##TP_AcctNo##(*)##TP_ENDIF##</td></tr>
+<tr><td>Date placed</td><td>##TP_SubDate##</td></tr>
+<tr><td>Game</td><td>##TP_GameName##</td></tr>
+<tr><td>Draws</td><td>##TP_DrawsDesc##</td></tr>
+<tr><td>Number of entries</td><td>##TP_NumSubs##</td></tr>
+<tr><td>Bets left to play</td><td>##TP_BetsLeft##</td></tr>
+<tr><td>Stake per bet</td><td>##TP_StakePerBet##</td></tr>
+<tr><td>Selections</td><td>##TP_Picks##</td></tr>
+<tr><td>Source</td><td>##TP_SubSource##</td></tr>
+<tr><td>Status</td><td>##TP_Status##</td></tr>
+<tr><td>Authorised</td><td>##TP_Auth##</td></tr>
+
+##TP_IF {[OT_CfgGet XG_BET_TYPES 0]} ##
+    <tr><td>Bet Type</td><td>##TP_betType##</td></tr>
+    <tr><td>Number Selections</td><td>##TP_numSelns##</td></tr>
+    <tr><td>Stake per line</td><td>##TP_stakePerLine##</td></tr>
+##TP_ENDIF##
+
+</table>
+<br>
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th nowrap class=colhead>Bet ID</th>
+	<th nowrap class=colhead>Bet Date</th>
+	<th nowrap class=colhead>Stake</th>
+	<th nowrap class=colhead>Results</th>
+	<th nowrap class=colhead>Winnings</th>
+	<th nowrap class=colhead>Refund</th>
+	<th nowrap class=colhead>Settled</th>
+</tr>
+##TP_IF {[tpGetVar NumBets 0]>0}##
+##TP_LOOP bet_idx {[tpGetVar NumBets]}##
+<tr>
+	<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoXGameReceipt&BetId=##TP_BetId##">##TP_BetId##</a></td>
+	<td nowrap>##TP_BetDate##</td>
+	<td nowrap align=right>##TP_BetStake##</td>
+	<td nowrap>##TP_Results##</td>
+	<td nowrap align=right>##TP_Winnings##</td>
+	<td nowrap align=right>##TP_Refund##</td>
+	<td nowrap>##TP_BetSettled##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+	<td colspan=17 align=center>
+	No bets found.
+	</td>
+</tr>
+##TP_ENDIF##
+</table>
+<br>
+##TP_IF {[tpGetVar CanVoid 0]>0}##
+<!-- disabled until we sort out XGAM j_op_ref_key!!! Do not reenable without talking
+     to Richard.
+
+<table cellspacing=0 cellpadding=2 border=0>
+	<form name="voidform" action="##TP_CGI_URL##" method=get>
+	<tr>
+		<th colspan=2 class=buttons>
+		Manual Void
+		</th>
+	</tr>
+	<input type=hidden name=BetId value=##TP_SubId##>
+	<tr>
+		<th colspan=2 class=buttons>
+		<input type=button class="btn_def" value="Void Sub" onClick="return fs(this,'VoidXBet');">
+		</th>
+	</tr>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::BET::DoXGameSubVoid>
+	<input type="hidden" name="Auth" value="##TP_Auth##">
+	<input type="hidden" name="SubId" value="##TP_SubId##">
+	<input type="hidden" name="BetsLeft" value="##TP_BetsLeft##">
+	<input type="hidden" name="NumSubs" value="##TP_NumSubs##">
+	</form>
+	</table>
+
+-->
+##TP_ENDIF##
+
+<!-- Change subscription's picks -->
+##TP_IF {[tpGetVar CanVoid 0]>0}##
+##TP_IF {[tpGetVar sort]=="VPOOLS10" || [tpGetVar sort]=="VPOOLS11"}##
+
+<br>
+
+<table cellspacing=0 cellpadding=2 border=0>
+	<form name="voidform" action="##TP_CGI_URL##" method=get>
+	<tr>
+		<th colspan=##TP_num_picks_max##" class=title>
+		Change selections
+		</th>
+	</tr>
+	<input type=hidden name=BetId value=##TP_SubId##>
+
+	<tr>
+	##TP_LOOP idx {[tpGetVar num_picks_max]}##
+	<td>
+	<input name="sel_##TP_TCL {tpBufWrite [tpGetVar idx]}##" size=2>
+	</td>
+	##TP_ENDLOOP##
+	</tr>
+
+	<tr>
+		<th colspan=##TP_num_picks_max## class=buttons>
+		<input type=button class="btn_def" value="Update" onClick="return cfs(this,'do_sub_change_selections');">
+		</th>
+	</tr>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=do_sub_change_selections>
+	<input type="hidden" name="SubId" value="##TP_SubId##">
+	<input type="hidden" name="xgame_sub_id" value="##TP_SubId##">
+	<input type="hidden" name="num_picks_max" value="##TP_num_picks_max##">
+	</form>
+	</table>
+##TP_ENDIF##
+##TP_ENDIF##
+
+
+##TP_ENDIF## <!-- permission -->
+</body>
+</html>

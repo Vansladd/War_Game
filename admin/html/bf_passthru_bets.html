@@ -1,0 +1,144 @@
+<html>
+<!-- $Id: bf_passthru_bets.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Betfair Pass Through Bet Details</title>
+<script language=javascript>
+
+	function go_bf_order_upd_popup(bf_order_id) {
+		var popup = window.open("##TP_CGI_URL##?action=ADMIN::BETFAIR_PASSBET::GoBFPassbet&BFPassBetId="+bf_order_id,
+								"popup",
+								"toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,height=200,width=600");
+		popup.focus();
+	}
+
+	function fs(b,t)
+	{
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=1>
+<form name="passthru_search_result" action="##TP_CGI_URL##" method="POST">
+	<br>
+	<br>
+	<br>
+	<tr>
+		<th colspan=17 class=title>
+			Betfair Pass Through Bets - Details
+		</th>
+	</tr>
+	<tr>
+		<th class=colhead>Betfair Pass Through Bet Id </th>
+		<th class=colhead>Betfair Bet Id</th>
+		<th class=colhead>Username</th>
+		<th class=colhead>Receipt</th>
+		<th class=colhead>Creation Date</th>
+		<th class=colhead>Stake</th>
+		<th class=colhead>Size</th>
+		<th class=colhead>Size Matched</th>
+		<th class=colhead>Price</th>
+		<th class=colhead>Average Price Matched</th>
+		<th class=colhead>Openbet Price</th>
+		<th class=colhead>Betfair Returns</th>
+		<th class=colhead>Status</th>
+		<th class=colhead>Settled Date</th>
+		<th class=colhead>Market</th>
+		<th class=colhead>Selection</th>
+	</tr>
+
+	##TP_LOOP passthru_idx {[tpGetVar NumBet]}##
+		<tr>
+			<td><a href='javascript:go_bf_order_upd_popup("##TP_BFPassBetId##")'>##TP_BFPassBetId##</a></td>
+			<td>##TP_BFBetId##&nbsp;</td>
+			<td>
+			##TP_IF {[tpBindGet Username] != ""}##
+			<a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_Username##</a>##TP_ELSE##&nbsp;##TP_ENDIF##</td>
+			<td>##TP_IF {[tpBindGet BetId] != ""}##<a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_BetId##">##TP_BetReceipt##&nbsp;</a>##TP_ELSE##&nbsp;##TP_ENDIF##</td>
+			<td>##TP_CrDate##</td>
+			<td>##TP_CcyCode##&nbsp;##TP_Stake##</td>
+			<td>##TP_Size##&nbsp;</td>
+			<td>
+				##TP_IF {[tpBindGet SizeMatched] != ""}##
+					##TP_SizeMatched##
+				##TP_ELSE##
+					&nbsp;
+				##TP_ENDIF##
+			</td>
+			<td>##TP_Price##&nbsp;</td>
+			<td>##TP_AvgPrice##&nbsp;</td>
+			<td>##TP_OBPrice##&nbsp;</td>
+			<td>##TP_BF_Profit##&nbsp;</td>
+			<td>
+				##TP_IF {[tpBindGet BFStatus]=="U"}##
+					Unmatched
+				##TP_ELSEIF {[tpBindGet BFStatus]=="M"}##
+					Matched
+				##TP_ELSEIF {[tpBindGet BFStatus]=="C"}##
+					Cancelled
+				##TP_ELSEIF {[tpBindGet BFStatus]=="X"}##
+					Unsuccessful
+				##TP_ELSEIF {[tpBindGet BFStatus]=="B"}##
+					Being Placed
+				##TP_ELSEIF {[tpBindGet BFStatus]=="N"}##
+					Sent to Betfair
+				##TP_ELSEIF {[tpBindGet BFStatus]=="P"}##
+					Partially Matched
+				##TP_ELSEIF {[tpBindGet BFStatus]=="S"}##
+					Settled
+				##TP_ELSEIF {[tpBindGet BFStatus]=="L"}##
+					Lapsed
+				##TP_ELSEIF {[tpBindGet BFStatus]=="V"}##
+					Voided
+				##TP_ENDIF##&nbsp;
+			</td>
+			<td>##TP_SettledAt##&nbsp;</td>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::MARKET::GoMkt&MktId=##TP_MktId##">
+				##TP_Class##-->##TP_TypeName##-->##TP_Event##-->##TP_Mkt##</a> &nbsp;</td>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::SELN::GoOc&OcId=##TP_EvOcId##">##TP_OCDesc##&nbsp;</a></td>
+		<tr>
+	##TP_ENDLOOP##
+	<tr>
+		<th class=buttons colspan=17>
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'back')">
+			<input type=button class="btn_def" value="Refresh" onClick="return fs(this,'Refresh')">
+		</th>
+	</tr>
+</table>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::BETFAIR_PASSBET::GoSearchPassThruBets>
+<input type=hidden name=PassThruBetId value="##TP_PassThruBetId##">
+<input type=hidden name=BFBetId value="##TP_BFBetId##">
+<input type=hidden name=Status value="##TP_Status##">
+<input type=hidden name=PlacedFrom value="##TP_PlacedFrom##">
+<input type=hidden name=PlacedDateFrom value="##TP_PlacedDateFrom##">
+<input type=hidden name=PlacedDateTo value="##TP_PlacedDateTo##">
+<input type=hidden name=PriceFrom value="##TP_PriceFrom##">
+<input type=hidden name=PriceTo value="##TP_PriceTo##">
+<input type=hidden name=AvgPriceMatchFrom value="##TP_AvgPriceMatchFrom##">
+<input type=hidden name=AvgPriceMatchTo value="##TP_AvgPriceMatchTo##">
+<input type=hidden name=SizeFrom value="##TP_SizeFrom##">
+<input type=hidden name=SizeTo value="##TP_SizeTo##">
+<input type=hidden name=SizeMatchFrom value="##TP_SizeMatchFrom##">
+<input type=hidden name=SizeMatchTo value="##TP_SizeMatchTo##">
+<input type=hidden name=ProfitFrom value="##TP_ProfitFrom##">
+<input type=hidden name=ProfitTo value="##TP_ProfitTo##">
+<input type=hidden name=Username value="##TP_Username##">
+<input type=hidden name=ExactName value="##TP_ExactName##">
+<input type=hidden name=UpperName value="##TP_UpperName##">
+<input type=hidden name=IsSettled value="##TP_IsSettled##">
+<input type=hidden name=OrderSettledAt value="##TP_OrderSettledAt##">
+<input type=hidden name=OrderPlacedFrom value="##TP_OrderPlacedFrom##">
+
+</form>
+</body>
+</html>
+

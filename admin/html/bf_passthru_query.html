@@ -1,0 +1,191 @@
+<html>
+<!-- $Id: bf_passthru_query.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Search Betfair Pass Through Bets</title>
+##TP_PLAY header_cal.html##
+<script language=javascript>
+function fs(b,t)
+{
+        b.disabled = true;
+        b.value = "Busy...";
+        b.form.SubmitName.value=t;
+        b.form.submit();
+        return true;
+}
+
+function displayCalendars() {
+        new Calendar(document.forms.passthru_search_criteria.PlacedDateFrom,null,true,"lo")
+        new Calendar(document.forms.passthru_search_criteria.PlacedDateTo,null,true,"lo")
+        new Calendar(document.forms.passthru_search_criteria.SettledDate1,null,true,"lo")
+				new Calendar(document.forms.passthru_search_criteria.SettledDate2,null,true,"lo")
+}
+
+</script>
+</head>
+
+<body onload="displayCalendars()">
+##TP_PLAY error_rpt.html##
+##TP_IF {[tpBindGet NoPassThruBets ]!= ""}##
+	<h3><font color=green>##TP_NoPassThruBets##</font></h3>
+##TP_ENDIF##
+<table cellspacing=0 cellpadding=2 border=0>
+<form name="passthru_search_criteria" action="##TP_CGI_URL##" method="POST">
+	 <br>
+        <br>
+        <tr>
+                <th colspan=4 class=title>
+                        Pass Through Bets Search Criteria
+                </th>
+        </tr>
+	<tr>
+                <td class=caption>Pass Through Bet Id</td>
+                <td>
+                        <input type="text" name="PassThruBetId" value="" size=32>
+                </td>
+        </tr>
+	<tr>
+                <td class=caption>Betfair Bet Id</td>
+                <td>
+                        <input type="text" name="BFBetId" value="" size=32>
+                </td>
+        </tr>
+	<tr>
+
+	<tr>
+		<td class=caption>Settled</td>
+		<td>
+			<select name="IsSettled">
+				<option value="">Either</option>
+				<option value="N">No</option>
+				<option value="Y">Yes</option>
+			</select>
+		</td>
+	</tr>
+
+                <td class=caption>Status</td>
+                <td>
+                        <select name="Status">
+                                <option value="">N/A</option>
+                                <option value="U">Unmatched</option>
+                                <option value="M">Matched</option>
+                                <option value="P">Partially Matched</option>
+                                <option value="X">Unsuccessful</option>
+                                <option value="C">Cancelled</option>
+                                <option value="B">Being Placed</option>
+                                <option value="N">Sent to Betfair</option>
+                                <option value="L">Lapsed</option>
+                                <option value="V">Voided</option>
+                        </select>
+                </td>
+        </tr>
+        <tr>
+                <td class=caption>Creation Date Between</td>
+                <td>
+                        <input type="text" name="PlacedDateFrom" value="" size=23 maxlength=19>
+                        &nbsp;<b>and</b>&nbsp;
+                        <input type="text" name="PlacedDateTo" value="" size=23 maxlength=19>
+                        (YYYY-MM-DD hh:mm:ss)
+                </td>
+        </tr>
+	<tr>
+                <td class=caption>Creation Date</td>
+                <td>
+                          <select name="PlacedFrom">
+                                <option value="0">N/A</option>
+                                <option value="1" selected>Today</option>
+                                <option value="2">Yesterday</option>
+                                <option value="3">Last 3 Days</option>
+                                <option value="4">Last 7 Days</option>
+                                <option value="5">Last Month</option>
+                          </select>&nbsp;
+                </td>
+        </tr>
+  	<tr>
+			<td class=caption>Settled Date Between</td>
+					<td>
+					<input type="text" name="SettledDate1" value="" size=23 maxlength=19>
+					&nbsp;<b>and</b>&nbsp;
+					<input type="text" name="SettledDate2" value="" size=23 maxlength=19>
+					(YYYY-MM-DD hh:mm:ss)
+				</td>
+			</tr>
+			<tr>
+				<td class=caption>Settled Date Between</td>
+				<td>
+						<select name="OrderSettledAt">
+						<option value="0" selected>N/A</option>
+						<option value="1">Today</option>
+						<option value="2">Yesterday</option>
+						<option value="3">Last 3 Days</option>
+						<option value="4">Last 7 Days</option>
+						<option value="5">Last Month</option>
+						</select>&nbsp;
+				</td>
+			</tr>
+
+	<tr>
+                <td class=caption>Price Between</td>
+                <td>
+                        <input type="text" name="PriceFrom" value="" size=10>
+                        &nbsp;<b>and</b>&nbsp;
+                        <input type="text" name="PriceTo" value="" size=10>
+                </td>
+        </tr>
+        <tr>
+                <td class=caption>Average Price Matched Between</td>
+                <td>
+                        <input type="text" name="AvgPriceMatchFrom" value="" size=10>
+                        &nbsp;<b>and</b>&nbsp;
+                        <input type="text" name="AvgPriceMatchTo" value="" size=10>
+                </td>
+        </tr>
+        <tr>
+                <td class=caption>Size Between</td>
+                <td>
+                        <input type="text" name="SizeFrom" value="" size=10>
+                        &nbsp;<b>and</b>&nbsp;
+                        <input type="text" name="SizeTo" value="" size=10>
+                </td>
+        </tr>
+        <tr>
+                <td class=caption>Size Matched Between</td>
+                <td>
+                        <input type="text" name="SizeMatchFrom" value="" size=10>
+                        &nbsp;<b>and</b>&nbsp;
+                        <input type="text" name="SizeMatchTo" value="" size=10>
+                </td>
+        </tr>
+	<tr>
+                <td class=caption>Returns Between</td>
+                <td>
+                        <input type="text" name="ProfitFrom" value="" size=10>
+                        &nbsp;<b>and</b>&nbsp;
+                        <input type="text" name="ProfitTo" value="" size=10>
+                </td>
+        </tr>
+	<tr>
+                <td class=caption>Username</td>
+                <td>
+                        <input type="text" name="Username" value="" size=32>
+                        &nbsp;(exact:<input type="checkbox" name="ExactName" value="Y" checked>
+			&nbsp; case insensitive&nbsp;
+			<input type="checkbox" name="UpperName" value="Y" checked>
+			&nbsp;)
+                </td>
+        </tr>
+	<tr>
+                <th class=buttons colspan=2>
+                        <input type=button class="btn_def" value="Find Bets" onClick="return fs(this,'SearchBets')">
+		</th>
+        </tr>
+
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::BETFAIR_PASSBET::DoSearchPassThruBets>
+</form>
+</table>
+</body>
+</html>
+
+

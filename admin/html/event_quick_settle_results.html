@@ -1,0 +1,70 @@
+<!-- $Id: event_quick_settle_results.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+
+<html>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+
+<script language="Javascript">
+	<!--
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+	//-->
+</script>
+
+<title>OpenBet Quick Confirmation/Settlement</title>
+
+</head>
+
+<body>
+
+<table cellspacing="0" cellpadding="1" border="0">
+
+	<tr>
+		<th class="title" colspan="2">Confirmation/Settlement Results</th></tr>
+
+	<tr>
+		<td class="caption">Time&nbsp;</td>
+		<td><b>&nbsp;##TP_TimeNow##</b></td>
+	</tr>
+
+	<tr>
+		<td class="caption">User&nbsp;</td>
+		<td><b>&nbsp;##TP_TCL {set USERNAME}##</b></td>
+	</tr>
+
+	<form method="get" action="##TP_CGI_URL##">
+
+	<input type="hidden" name="action"     value="ADMIN::EV_SEL::GoEvSel">
+	<input type="hidden" name="SubmitName" value="">
+
+	<tr>
+		<th class="buttons" colspan="2">
+			<input type="button"
+				value="Back" onClick="return fs (this, 'Back')">
+		</th>
+	</tr>
+
+
+	</form>
+
+</table>
+
+<br>
+<br>
+
+<pre>
+##TP_TCL -quiet {ADMIN::EVENT::do_ev_quick_stl_results}##
+</pre>
+
+</body>
+
+</html>

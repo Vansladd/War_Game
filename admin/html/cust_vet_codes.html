@@ -1,0 +1,74 @@
+<html>
+<!-- $Id: cust_vet_codes.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Customer Flags</title>
+</head>
+<script>
+function fs(b,t,a)
+{
+	/*-----------
+	b = button
+	t = tcl command
+	a = action
+	--------------*/
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.action.value=a;
+	b.form.submit();
+	return true;
+}
+
+</script>
+<body>
+<form action="##TP_CGI_URL##" method=get>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=2 >
+<tr>
+	<th colspan=3 class=title>
+	Customer Flags
+	</th>
+</tr>
+<tr>
+	<td valign="top"><b>Vet Code</b></td>
+	<td valign="top">
+		<select name="vet_code" width="255" style="width:300px;">
+			<option value="0">Unset</option>
+			##TP_LOOP fg_idx {[tpGetVar NumFlags]}##
+					<option value="##TP_flag_value##"
+						##TP_IF {[tpGetVar flag_val]==[tpBindGet flag_value]}## selected="selected"  ##TP_ENDIF##>
+						##TP_flag_value##
+					</option>
+			##TP_ENDLOOP##
+		</select>
+	</td>
+</tr>
+
+
+<tr>
+	<td valign="top"><b>Vet Code Description</b></td>
+	<td valign="top">
+		<input type="text" name="vet_desc" value="##TP_flag_desc##" width="500" style="width:500px;" maxlength="255">
+	</td>
+</tr>
+	<th class=buttons >
+		##TP_IF {[op_allowed "UpdateCustomerFlags"]}##
+  		<input type=button class="btn_def" value="Update Vet Codes" onClick="return fs(this,'UpdVetCode','ADMIN::CUST::DoVetCode')">
+		##TP_ENDIF##
+	</th>
+	<th class=buttons colspan="2">
+		<input type=button class="btn_def" value="Back" onClick="return fs(this,'GoCust','ADMIN::CUST::GoCust')">
+	</th>
+</tr>
+</table>
+
+
+<input type=hidden name=action value="">
+<input type=hidden name=CustId value="##TP_CustId##">
+<input type=hidden name=SubmitName value="">
+</form>
+</body>
+</html>

@@ -1,0 +1,40 @@
+##TP_COMMENT $Id: header.html,v 1.1 2011/10/04 12:37:53 xbourgui Exp $##
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="##TP_HTML_LANG##">
+
+<!--
+Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.
+-->
+
+<head>
+	<title>OpenBet Office</title>
+	##TP_TCL -quiet {ob_office::action::H_header}##
+
+	##TP_COMMENT IE wont use the dynamically added Javascript within an onload,
+	    therefore, physically add the scripts ##
+
+	##TP_IF {[tpGetVar JS_LOGIN 0]}##
+		<script src="##TP_JS_URL##/div_popup.js" language="javascript" type="text/javascript"></script>
+		<script src="##TP_JS_URL##/login.js" language="javascript" type="text/javascript"></script>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar OFFICE_MENU 0]}##
+		<link href="##TP_CSS_URL##/office_menu.css" type="text/css" rel="stylesheet" />
+		<script src="##TP_JS_URL##/menu.js" language="javascript" type="text/javascript"></script>
+
+		<style type="text/css">
+			#officeMenuTop {
+				background: url("##TP_GIF_URL##/menu/bg.gif") repeat-x bottom;
+			}
+			#officeMenu li {
+				background: url("##TP_GIF_URL##/menu/left.gif") no-repeat left top;
+			}
+			#officeMenu span {
+				background: url("##TP_GIF_URL##/menu/right.gif") no-repeat right top;
+			}
+		</style>
+	##TP_ENDIF##
+</head>
+
+<body id="body" onload="document.bodyOnLoad.execute()">

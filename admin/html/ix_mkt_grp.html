@@ -1,0 +1,195 @@
+<html>
+<!-- $Id: ix_mkt_grp.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add Market</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+
+var errorList = "";
+
+function add_err(e_str)
+{
+	if (errorList.length > 0) {
+		errorList += "\n";
+	}
+	errorList += e_str;
+}
+
+function validate(f)
+{
+	var grp_name  = strTrim(f.MarketName.value, " ");
+
+	errorList = "";
+
+	if (grp_name.length == 0) {
+		add_err("group name cannot be empty");
+	} else {
+		if (!isSafeStr(grp_name)) {
+			add_err("don't use these characters in group name : "
+				+ "tab [ ] { } < > \" \\ $");
+		}
+	}
+
+	if (errorList != "") {
+		alert("There are some errors in the form:\n\n" + errorList);
+		return false;
+	}
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<form ACTION="##TP_CGI_URL##" method=get onSubmit="return validate(this);">
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	Event Type: ##TP_TypeName##
+	</th>
+</tr>
+<tr>
+	<td class=caption>Index sort</td>
+	<td>
+	<script>
+    write_which('##TP_IxMktGrpSort##'
+		##TP_LOOP mix_idx {[tpGetVar NumMIxMkts 0]}##
+			,"##TP_MIxMktSort##","##TP_MIxMktName##"
+		##TP_ENDLOOP##
+		);
+	</script>
+	</select>
+	<input type=hidden name=IxMktGrpSort value="##TP_IxMktGrpSort##">
+	</td>
+</tr>
+<tr>
+	<td class=caption>Index name</td>
+	<td>
+	<input type=text name="MktGrpName" value="##TP_MktGrpName##" SIZE=40>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Index code</td>
+	<td>
+	<input type=text name="MktGrpCode" value="##TP_MktGrpCode##" SIZE=30>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Display order</td>
+	<td>
+	<input type=text name="MktGrpDisporder" value="##TP_MktGrpDisporder##" SIZE=8>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Index</td>
+	<td>
+	<b>Min:</b>&nbsp;
+	<input type=text name=MktGrpIndexMin value="##TP_MktGrpIndexMin##" size=5>
+	&nbsp;&nbsp;&nbsp;
+	<b>Max:</b>&nbsp;
+	<input type=text name=MktGrpIndexMax value="##TP_MktGrpIndexMax##" size=5>
+	&nbsp;&nbsp;&nbsp;
+	<b>Step:</b>
+	<input type=text name=MktGrpIndexStep value="##TP_MktGrpIndexStep##" size=4>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Point price</td>
+	<td>
+	<select name=MktGrpPointPrice>
+	<script>write_select("##TP_MktGrpPointPrice##",
+		0.01, "0.01", 0.10, "0.10", 1.0, "1.00", 10.0, "10.00", 100.0, "100.00"
+	)</script>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Commission</td>
+	<td>
+	<input type=text name="MktGrpCommission" value="##TP_MktGrpCommission##" SIZE=8>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Makeup step</td>
+	<td>
+	<input type=text name=MktGrpMakeupStep value="##TP_MktGrpMakeupStep##" size=5>
+	</td>
+</tr>
+<tr>
+	<td class=caption>End of day</td>
+	<td>
+		<input type=text name=MktGrpEndOfDay value="##TP_MktGrpEndOfDay##" size=9>		
+	</td>
+</tr>
+<tr>
+	<td class=caption>Blurb buy</td>
+	<td>
+	<textarea cols=60 rows=4 wrap=virtual name="MktGrpBlurbBuy">##TP_MktGrpBlurbBuy##</textarea>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Blurb sell</td>
+	<td>
+	<textarea cols=60 rows=4 wrap=virtual name="MktGrpBlurbSell">##TP_MktGrpBlurbSell##</textarea>
+	</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td>
+	<i>(Only 250 characters are stored)</i>
+	</td>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_CHANNELS 0]}##
+	<tr>
+		<td class=caption>Channels</td>
+		<td>
+		##TP_PLAY chan_sel.html##
+		</td>
+	</tr>
+##TP_ENDIF##
+<tr>
+	<th colspan=2 class=buttons>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr>
+		<th width=75% class=buttons>
+		##TP_IF {[op_allowed IxMktGrp]}##
+			##TP_IF {[tpGetVar opAdd 0]}##
+				<input type=button class="btn_def" value="Add Index" onClick="return fs(this,'MktGrpAdd')">
+			##TP_ELSE##
+				<input type=button class="btn_def" value="Modify Index" onClick="return fs(this,'MktGrpMod')">
+				<input type=button class="btn_def" value="Delete Index" onClick="return fs(this,'MktGrpDel')">
+			##TP_ENDIF##
+		##TP_ENDIF##
+		<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</th>
+		##TP_IF {![tpGetVar opAdd 0]}##
+			##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+				<th class=goaudit width=25%>
+				<input type=button class="btn_def" value="View Audit History" onClick="return fs(this,'GoAudit')">
+				<input type=hidden name=AuditInfo value="IxMktGrp">
+				</th>
+			##TP_ENDIF##
+		##TP_ENDIF##
+	</tr>
+	</table>
+	</th>
+	<input type=hidden name="ClassId" value="##TP_ClassId##">
+	<input type=hidden name="ClassSort" value="##TP_ClassSort##">
+	<input type=hidden name="MktGrpId" value="##TP_MktGrpId##">
+	<input type=hidden name="TypeId" value="##TP_TypeId##">
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::IX_MKT_GRP::DoIxMktGrp>
+</tr>
+</table>
+</form>
+</body>
+</html>

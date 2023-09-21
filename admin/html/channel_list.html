@@ -1,0 +1,60 @@
+<html>
+<!-- $Id: channel_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Channel Table</title>
+</head>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=4 class=title>
+	Channels
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Symbol</th>
+	<th nowrap class=colhead>Name</th>
+	<th nowrap class=colhead>Tax Rate</th>
+	<th nowrap class=colhead>Max Stake Mul</th>
+</tr>
+##TP_LOOP channel_idx {[tpGetVar NumChannels]}##
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::CHANNEL::GoChannel&ChannelId=##TP_ChannelId##">##TP_ChannelId##</a></td>
+	<td>##TP_ChannelName##</td>
+	<td align=right>##TP_ChannelTaxRate##&nbsp;</td>
+	<td align=right>##TP_ChannelMaxStakeMul##&nbsp;</td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[tpGetVar NumChannels 0]==0}##
+<tr>
+	<td colspan=4>
+	<b><i>There are no channels defined</i></b>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[op_allowed ManageChannel]}##
+	<tr>
+		<th class=buttons colspan=4>
+		<form action="##TP_CGI_URL##" method=get>
+		<input type=button class="btn_def" value="Add New Channel" onClick="return fs(this,'ChanAdd')">
+		</th>
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value=ADMIN::CHANNEL::GoChannel>
+		</form>
+	</tr>
+##TP_ENDIF##
+</table>
+</body>
+</html>

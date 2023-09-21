@@ -1,0 +1,115 @@
+<html>
+<!-- $Id: cust_status_flags_args.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script>
+function fs(b,t)
+{
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+##TP_PLAY JS_WriteSelect.html##
+</head>
+<body>
+
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<form method=get action="##TP_CGI_URL##">
+	<tr>
+		<th colspan=2 class=title>Customer Status Flags Search Criteria</th>
+	</tr>
+	<tr>
+		<td class=captionindex>Username</td>
+		<td>
+			<input type="text" name="Username" value="" size=32>
+			&nbsp;
+			(exact:
+			<input type="checkbox" name="ExactName" value="Y" ##TP_IF {[OT_CfgGet FUNC_DEF_CASE_INS_SEARCH 0] == 0}##checked##TP_ENDIF##>&nbsp; case insensitive: <input type="checkbox" name="ignorecase" value="Y" ##TP_IF {[OT_CfgGet FUNC_DEF_CASE_INS_SEARCH 0] == 1}##checked##TP_ENDIF##>)
+		</td>
+	</tr>
+	
+	<tr>
+		<td class=caption>Date Range</td>
+		<td>
+		<input type="text" name="SR_date_1" value="" size=19>
+		&nbsp;and&nbsp;
+		<input type="text" name="SR_date_2" value="" size=19>&nbsp;(yyyy-mm-dd hh:mm:ss)
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>or</td>
+		<td>
+		<select name="SR_date_range">
+			<option value="">n/a</option>
+			<option value="TD" selected>Today</option>
+			<option value="YD">Yesterday</option>
+			<option value="L3">Last 3 days</option>
+			<option value="L7">Last 7 days</option>
+			<option value="CM">Current month</option>
+		</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Added By</td>
+			<td>
+			<input type="text" name="added_by" value="" size=32>
+		</td>
+	</tr>
+		<td class=caption>Cleared By</td>
+			<td>
+			<input type="text" name="cleared_by" value="" size=32>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Flag</td>
+		<td>
+		<select name="flag">
+			<option value="">-</option>
+			##TP_LOOP flag_idx {[tpGetVar NumFlags]}##
+				<option value="##TP_FlagTag##">##TP_FlagName##</option>
+			##TP_ENDLOOP##
+		</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Status</td>
+		<td>
+		<select name="status">
+			<option value="">-</option>
+			<option value="A">Active</option>
+			<option value="S">Suspended</option>
+		</select>
+		</td>
+	</tr>
+
+	##TP_IF {[OT_CfgGetTrue FUNC_FLG_SEARCH_CUST_GRP]}##
+	<tr>
+		<td class="caption">Customer Group</td>
+		<td>
+			<select name="SR_CustGrp">
+				<option value="">-</option>
+				<option value="OPT_AllPlatinum">All Platinum Customers</option>
+				##TP_LOOP ccc_idx {[tpGetVar NumCCode]}##
+				<option value="##TP_CCCode##">##TP_CCDesc##</option>
+				##TP_ENDLOOP##
+			</select>
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	<tr>
+		<th class=buttons colspan=2>
+		<input type=button class="btn_def" value="Find Status Flags" onClick="return fs(this,'Query')">
+		</th>
+	</tr>
+	
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::CUST::QueryCustStatusFlags>
+</form>
+</table>
+
+</body>

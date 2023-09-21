@@ -1,0 +1,789 @@
+<html>
+<!-- $Id: control.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##" />
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet" />
+<title>Control Information</title>
+##TP_PLAY JS_WriteSelect.html##
+##TP_PLAY JS_ValFuncs.html##
+<script language="JavaScript">
+
+function go(action) {
+	document.location = "##TP_CGI_URL##?action=" + action;
+}
+
+var errorList = "";
+
+function add_err(e_str)
+{
+  if (errorList.length > 0) {
+    errorList += "\n";
+  }
+  errorList += e_str;
+}
+
+function validate(f)
+{
+  ##TP_IF {[OT_CfgGet FUNC_ASYNC_BET 0]}##
+  	var async_timeout     = f.form.AsyncTimeout.value;
+  	var async_off_timeout = f.form.AsyncOffTimeout.value;
+  ##TP_ENDIF##
+
+  errorList = "";
+
+  ##TP_IF {[OT_CfgGet FUNC_ASYNC_BET 0]}##
+  	if (!async_timeout.length || !isInt8(async_timeout, false) || parseInt(async_timeout) <= 0) {
+  		add_err("Asynchronous Betting Timeout must be an integer greater than zero");
+  	}
+  	if (!async_off_timeout.length || !isInt8(async_off_timeout, false) || parseInt(async_off_timeout) <= 0) {
+  		add_err("Asynchronous Betting Offer Timeout must be an integer greater than zero");
+  	}
+  ##TP_ENDIF##
+  if (errorList != "") {
+    alert(errorList);
+    return false;
+  }
+  return fs(f, 'Update');
+}
+
+function fs(b,t)
+{
+    // if livechat values are invalid, don't submit
+    if(!checkLivechatValues(b)) return false;
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+	// Check if Livechat settings are valid
+	function checkLivechatValues(b) {
+
+  		##TP_IF {[OT_CfgGet FUNC_RN_LIVE_CHAT 0]}##
+		// we cannot globally disable live chat and then trying to enable indirect messages
+		if ((b.form.EnableRNLiveChat.value == 'N') && (b.form.EnableRNIndirect.value == 'Y')) {
+			alert ("RN LIVECHAT SETTINGS ERROR:\n Cannot switch Indirect messages ON while global livechat is OFF");
+			return false;
+  	  }
+		##TP_ENDIF##
+   	 return true;
+	}
+
+
+	function disableTypeCDN(f)
+	{
+		if(f.form.CdnEnabled.value == 'I') {
+			f.form.JsCdnEnabled.disabled = false;
+			f.form.CssCdnEnabled.disabled = false;
+			f.form.GifCdnEnabled.disabled = false;
+			f.form.SwfCdnEnabled.disabled = false;
+	  	} else {
+	  		f.form.JsCdnEnabled.disabled = true;
+			f.form.CssCdnEnabled.disabled = true;
+			f.form.GifCdnEnabled.disabled = true;
+			f.form.SwfCdnEnabled.disabled = true;
+	  	}
+	}
+
+
+
+</script>
+
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border="0" cellspacing="0" cellpadding="3">
+<form action="##TP_CGI_URL##" method="get">
+<tr>
+  <th colspan="2" class="title">
+  Control Information
+  </th>
+</tr>
+<tr>
+  <td class="caption">Offer Expiry</td>
+  <td>
+  <input type="text" name="OfferExpiry" size="5" value="##TP_OfferExpiry##" />
+  <strong>(seconds)</strong>
+  </td>
+</tr>
+<tr>
+  <td class="caption">Login Keepalive</td>
+  <td>
+  <input type=text name="LoginKeepalive" size=6 value="##TP_LoginKeepalive##" />
+  <strong>(seconds)</strong>
+  </td>
+</tr>
+<tr>
+  <td class="caption">Allow Betting</td>
+  <td>
+  <select name="AllowBetting">
+  <script>
+  write_select('##TP_AllowBetting##','Y','Yes','N','No')
+  </script>
+  </select>
+  </td>
+</tr>
+<tr>
+  <td class="caption">Allow Deposit</td>
+  <td>
+  <select name="AllowFundsDep">
+  <script>
+  write_select('##TP_AllowFundsDep##','Y','Yes','N','No')
+  </script>
+  </select>
+  </td>
+</tr>
+<tr>
+  <td class="caption">Allow Withdrawal</td>
+  <td>
+  <select name="AllowFundsWtd">
+  <script>
+  write_select('##TP_AllowFundsWtd##','Y','Yes','N','No')
+  </script>
+  </select>
+  </td>
+</tr>
+<tr>
+  <td class=caption>Enable Suspension Limits</td>
+  <td>
+  <select name="EnableLiab">
+  <script>
+  write_select('##TP_EnableLiab##','Y','Yes','N','No')
+  </script>
+  </select>
+  </td>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_RN_LIVE_CHAT 0]}##
+<tr>
+  <td class=caption>Enable RN Livechat</td>
+  <td>
+  <select name="EnableRNLiveChat">
+  <script>
+  write_select('##TP_EnableRNLiveChat##','Y','Yes','N','No')
+  </script>
+  </select>
+  </td>
+</tr>
+<tr>
+  <td class=caption>Enable Livechat Indirect Messages</td>
+  <td>
+  <select name="EnableRNIndirect">
+  <script>
+  write_select('##TP_EnableRNIndirect##','Y','Yes','N','No')
+  </script>
+  </select>
+  </td>
+</tr>
+##TP_ENDIF##
+<tr>
+  <td class="caption">Default Currency</td>
+  <td>
+  <select name="DefaultCCY">
+    <option value="">--</option>
+    ##TP_LOOP ccy_idx {[tpGetVar NumCCYs]}##
+      <option value="##TP_CCYCode##" ##TP_CCYSel##>
+		##TP_CCYName##</option>
+    ##TP_ENDLOOP##
+  </select>
+  </td>
+</tr>
+<tr>
+  <td class="caption">Default Language</td>
+  <td>
+  <select name="DefaultLang">
+    <option value="">--</option>
+    ##TP_LOOP lang_idx {[tpGetVar NumLangs]}##
+      <option value="##TP_LangId##" ##TP_LangSel##>
+		##TP_LangName##</option>
+    ##TP_ENDLOOP##
+  </select>
+  </td>
+</tr>
+<tr>
+  <td class="caption">Default Country</td>
+  <td>
+  <select name="DefaultCountry">
+    <option value="">--</option>
+    ##TP_LOOP country_idx {[tpGetVar NumCountrys]}##
+	  <option value="##TP_CountryCode##" ##TP_CountrySel##>
+		##TP_CountryName##</option>
+    ##TP_ENDLOOP##
+  </select>
+  </td>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_VIEWS 0]}##
+<tr>
+  <td class="caption">Default View</td>
+  <td>
+  <select name="DefaultView">
+    <option value="">--</option>
+    ##TP_LOOP view_idx {[tpGetVar NumView]}##
+      <option value="##TP_ViewId##" ##TP_ViewSel##>
+		##TP_ViewName##</option>
+    ##TP_ENDLOOP##
+  </select>
+  </td>
+</tr>
+##TP_ENDIF##
+<tr>
+  <td class="caption">Max Login Failures</td>
+  <td>
+  <input type="text" name="MaxLoginFails" size="2" maxlength="2" value="##TP_MaxLoginFails##" />
+  </td>
+</tr>
+<tr>
+  <td class="caption">Max Accumulator</td>
+  <td>
+  <input type="text" name="AccMax" size="2" maxlength="2" value="##TP_AccMax##" />
+  <strong>(1-25)</strong>
+  </td>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_ASIAN_HCAP 0]}##
+  <tr>
+    <td class="caption">AH Refund Charge</td>
+    <td>
+    <input type="text" name="AHRefundPct" size="3" maxlength="3" value="##TP_AHRefundPct##" />
+    <strong>(%)</strong>
+    </td>
+  </tr>
+##TP_ELSE##
+  <input type="hidden" name="AHRefundPct" value="##TP_AHRefundPct##" />
+##TP_ENDIF##
+<tr>
+  <td class="caption">Default Tax Rate</td>
+  <td>
+  <input type="text" name="DefaultTaxRate" size="5" maxlength="5" value="##TP_DefaultTaxRate##" />
+  </td>
+</tr>
+<tr>
+  <td class="caption">Settle Conf Limit</td>
+  <td>
+  <input type="text" name="StlPayLimit" size="5" maxlength="5" value="##TP_StlPayLimit##" />
+  </td>
+</tr>
+<tr>
+  <td class="caption">Cumulative Stakes Delay</td>
+  <td>
+  <input type="text" name="CumStakesDelay" size="5" maxlength="5" value="##TP_CumStakesDelay##" />
+  </td>
+</tr>
+<tr>
+  <td class="caption">Cumulative Stakes - Change on Price (In-Play)?</td>
+  <td>
+	<select name="PrevStkBir">
+	  <script>
+		 write_select('##TP_PrevStkBir##','Y','Yes','N','No')
+	  </script>
+	</select>
+	<strong>(when Y, cumulative stakes are calculated on bets since last price change)</strong>
+  </td>
+</tr>
+<tr>
+  <td class="caption">Cumulative Stakes - Change on Price (Non BIR)?</td>
+  <td>
+	<select name="PrevStkNoBir">
+	  <script>
+		 write_select('##TP_PrevStkNoBir##','Y','Yes','N','No')
+	  </script>
+	</select>
+	<strong>(when Y, cumulative stakes are calculated on bets since last price change)</strong>
+  </td>
+</tr>
+<tr>
+  <td class="caption">Soft Credit Limit (%)</td>
+  <td>
+  <input type="text" name="CreditLimitOr" size="5" maxlength="5" value="##TP_CreditLimitOr##" />
+  </td>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_ASYNC_BET 0]}##
+		<tr>
+		<td class="caption">Auto-referral Betting</td>
+		<td>
+			<select name="AsyncBet">
+			<script>
+				write_select('##TP_AsyncBet##','Y','Yes','N','No')
+			</script>
+			</select>
+		</td>
+		</tr>
+	##TP_IF {[OT_CfgGet FUNC_ASYNC_FINE_GRAINED 0]}##
+		<input type="hidden" name="AsyncBet"        value="##TP_AsyncBet##">
+		<input type="hidden" name="AsyncTimeout"    value="##TP_AsyncTimeout##">
+		<input type="hidden" name="AsyncOffTimeout" value="##TP_AsyncOffTimeout##">
+		<input type="hidden" name="AsyncRuleStk1"   value="##TP_AsyncRuleStk1##">
+		<input type="hidden" name="AsyncRuleStk2"   value="##TP_AsyncRuleStk2##">
+		<input type="hidden" name="AsyncRuleLiab"   value="##TP_AsyncRuleLiab##">
+		<input type="hidden" name="AsyncMaxPayout"  value="##TP_AsyncMaxPayout##">
+		##TP_IF {[op_allowed AsyncPerChannel]}##
+			<tr>
+				<td class="caption">Auto Referral Settings</td>
+				<td><input type="button" value="Manage by Channel"
+					onClick="go('ADMIN::CONTROL::GoControlChannel');" /></td>
+			</tr>
+		##TP_ENDIF##
+		##TP_IF {[op_allowed AsyncPerCustGrp]}##
+			<tr>
+				<td class="caption">Auto Referral Settings</td>
+				<td><input type="button" value="Manage by Customer Group"
+					onClick="go('ADMIN::CONTROL::GoControlCustGrp');" /></td>
+			</tr>
+		##TP_ENDIF##
+	##TP_ELSE##
+		<tr>
+		<td class="caption">Bet In Running Auto-referral Betting</td>
+		<td>
+			<select name="BirAsyncBet">
+			<script>
+				write_select('##TP_BirAsyncBet##','Y','Yes','N','No')
+			</script>
+			</select>
+		</td>
+		</tr>
+		<tr>
+		<td class="caption">Auto-referral Betting Timeout</td>
+		<td>
+			<input type="text" name="AsyncTimeout" size="6" value="##TP_AsyncTimeout##" />
+			<strong>(seconds) - time the bet is left with trader</strong>
+		</td>
+		</tr>
+		<tr>
+		<td class="caption">Auto-referral Betting Offer Timeout</td>
+		<td>
+			<input type="text" name="AsyncOffTimeout" size="6" value="##TP_AsyncOffTimeout##" />
+			<strong>(seconds) - time the bet is left for the customer to accept changes</strong>
+		</td>
+		</tr>
+		##TP_IF {[OT_CfgGet FUNC_ASYNC_BET_RULES 0]}##
+			<tr>
+			<td class="caption">Auto-referral stake rule 1</td>
+			<td>
+				<input type="text" name="AsyncRuleStk1" size="10" value="##TP_AsyncRuleStk1##" />
+				<strong>if the bet stake is over this limit then the bet is referred</strong>
+			</td>
+			</tr>
+			<tr>
+			<td class="caption">Auto-referral stake rule 2</td>
+			<td>
+				<input type="text" name="AsyncRuleStk2" size="10" value="##TP_AsyncRuleStk2##" />
+				<strong>if the bet stake is below the above limit (rule 1) but above this one, and the bet is a single the below market liability limit is checked</strong>
+			</td>
+			</tr>
+			<tr>
+			<td class="caption">Auto-referral liability rule</td>
+			<td>
+				<input type="text" name="AsyncRuleLiab" size="10" value="##TP_AsyncRuleLiab##" />
+			</td>
+			</tr>
+			<tr>
+			<td class="caption">Auto-referral max payout</td>
+			<td>
+				<input type="text" name="AsyncMaxPayout" size="10" value="##TP_AsyncMaxPayout##" />
+			</td>
+			</tr>
+		##TP_ENDIF##
+	##TP_ENDIF##
+##TP_ELSE##
+	<input type="hidden" name="AsyncBet"        value="##TP_AsyncBet##">
+	<input type="hidden" name="AsyncTimeout"    value="##TP_AsyncTimeout##">
+	<input type="hidden" name="AsyncOffTimeout" value="##TP_AsyncOffTimeout##">
+	<input type="hidden" name="AsyncRuleStk1"   value="##TP_AsyncRuleStk1##">
+	<input type="hidden" name="AsyncRuleStk2"   value="##TP_AsyncRuleStk2##">
+	<input type="hidden" name="AsyncRuleLiab"   value="##TP_AsyncRuleLiab##">
+	<input type="hidden" name="AsyncMaxPayout"  value="##TP_AsyncMaxPayout##">
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_NIGHT_MODE 0]}##
+<tr>
+  <td class="caption">Night Mode</td>
+  <td>
+    <select name="NightMode">
+      <script>
+          write_select('##TP_NightMode##','Y','Yes','N','No')
+      </script>
+    </select>
+  </td>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_NIGHT_MODE_MAX_BET 0]}##
+<tr>
+  <td class="caption">Night Max Bet</td>
+  <td><input type="text" name="NightMaxBet" value="##TP_NightMaxBet##" size="10" /></td>
+</tr>
+##TP_ENDIF##
+<tr>
+  <td class="caption">Night Max APC limit</td>
+  <td><input type="text" name="NightMaxAPC" value="##TP_NightMaxAPC##" size="10" /></td>
+</tr>
+<tr>
+  <td></td>
+  <td>
+  	Note: Changing the Night Mode can take upto 10 minutes to take effect.
+  </td>
+</tr>
+##TP_ELSE##
+  <input type="hidden" name="NightMode"   value="##TP_NightMode##">
+  <input type="hidden" name="NightMaxBet" value="##TP_NightMaxBet##">
+##TP_ENDIF##
+
+##TP_IF {[OT_CfgGetTrue FUNC_CAPTCHAS] && [OT_CfgGetTrue USE_CAPTCHAS]}##
+	<tr>
+		<td class="caption">Use captchas</td>
+		<td>
+			<select name="UseCaptchas">
+				<script>
+					write_select('##TP_UseCaptchas##','Y','Yes','N','No')
+				</script>
+			</select>
+		</td>
+	</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_SHOP_SAMPLING 0]}##
+	<tr>
+		<td class="caption">
+			Shop Sample Liability Multiplier
+		</td>
+		<td>
+			<input type="text" name="ShopLiabMult" value="##TP_ShopLiabMult##" size="8" />
+		</td>
+	</tr>
+##TP_ENDIF##
+<tr>
+  <td class="caption">Admin Password Repeat Cycle</td>
+  <td>
+  <input type="text" name="AdmnPwdNumRpt" size="10" value="##TP_AdmnPwdNumRpt##" />
+  </td>
+</tr>
+<tr>
+  <td class="caption">Minimum Admin Password Length</td>
+  <td>
+  <input type="text" name="AdmnPwdMinLen" size="10" value="##TP_AdmnPwdMinLen##" />
+  </td>
+</tr>
+<tr>
+  <td class="caption">Maximum Incorrect Admin Passwords</td>
+  <td>
+  <input type="text" name="AdmnPwdNumBad" size="10" value="##TP_AdmnPwdNumBad##" />
+  </td>
+</tr>
+<tr>
+  <td class="caption">Admin Account Lock Period (seconds)</td>
+  <td>
+  <input type="text" name="AdmnPwdLock" size="10" value="##TP_AdmnPwdLock##" />
+  </td>
+</tr>
+<tr>
+  <td class="caption">Admin Password Change Frequency (seconds)</td>
+  <td>
+  <input type="text" name="AdmnPwdChgFrq" size="10" value="##TP_AdmnPwdChgFrq##" />
+  </td>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_PWD_EXPIRY 0]}##
+<tr>
+  <td class="caption">Password Validity (days)</td>
+  <td>
+  <input type="text" name="PasswordExpiry" size="10" value="##TP_PasswordExpiry##" />
+  </td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<td class="caption">Suspend Admin Users After</td>
+	<td>
+		<input type="text" name="AdminSuspendUsers" size="10" value="##TP_AdminSuspendUsers##" />
+		<strong>(days)</strong>
+	</td>
+</tr>
+<tr>
+	<td class="caption">Delete Admin Users After</td>
+	<td>
+		<input type="text" name="AdminDeleteUsers" size="10" value="##TP_AdminDeleteUsers##" />
+		<strong>(days)</strong>
+	</td>
+</tr>
+##TP_IF {[OT_CfgGet CHOOSE_NUMBER_VIRTUAL_RACES 0]}##
+<tr>
+  <td class="caption">Number Virtual Races To Display</td>
+  <td>
+  <input type="text" name="VirtualRaceDisp" size="10" value="##TP_VirtualRaceDisp##" />
+  </td>
+</tr>
+##TP_ENDIF##
+
+##TP_IF {[OT_CfgGet USE_AUTO_COUPONS 1]}##
+<tr>
+  <td class="caption">Use Auto Coupons</td>
+  <td>
+    <select name="AutoCouponOn">
+      <script>
+          write_select('##TP_AutoCouponOn##','Y','Yes','N','No')
+      </script>
+    </select>
+  </td>
+</tr>
+##TP_ENDIF##
+
+##TP_IF {[OT_CfgGet FUNC_MENU_COLLECTIONS 0]}##
+<tr>
+  <td class="caption">Number of markets displayed per collection</td>
+  <td>
+  <input type="text" name="MarketsDispPerCollection" size="10" value="##TP_MarketsDispPerCollection##" />
+  </td>
+</tr>
+##TP_ENDIF##
+
+<tr>
+  <td class="caption">Display Tomorrow's Races At:</td>
+  <td>
+  <input type="text" name="TmrwRaceDispAt" size="10" value="##TP_TmrwRaceDispAt##" />
+  </td>
+</tr>
+
+##TP_IF {[OT_CfgGet FUNC_SET_OXIFEED_HBEAT_CHK 0]}##
+<tr>
+  <td class="caption">Oxifeed Heartbeat Active</td>
+  <td>
+    <select name="OxiHBActive">
+      <script>
+          write_select('##TP_OxiHBActive##','Y','Yes','N','No')
+      </script>
+    </select>
+  </td>
+</tr>
+##TP_ENDIF##
+<tr>
+  <td class="caption">Enable PUSH globally</td>
+  <td>
+    <select name="PushEnabled">
+      <script>
+          write_select('##TP_PushEnabled##','Y','Yes','N','No')
+      </script>
+    </select>
+	<b>(When Y, the endemol flash app is disabled)</b>
+  </td>
+</tr>
+
+##TP_IF {[OT_CfgGet FUNC_CDN 0]}##
+
+<tr>
+  <td class="caption">Use Content Distribution Network (CDN)</td>
+  <td>
+    <select name="CdnEnabled" onChange="return disableTypeCDN(this)">
+      <script>
+          write_select('##TP_CdnEnabled##','Y','Yes','N','No', 'I', 'Individually controlled')
+      </script>
+    </select>
+  </td>
+</tr>
+
+<tr>
+  <td class="caption">Use Content Distribution Network (CDN) For JS</td>
+  <td>
+    <select name="JsCdnEnabled" ##TP_cdnDisable##>
+      <script>
+          write_select('##TP_JsCdnEnabled##','Y','Yes','N','No')
+      </script>
+    </select>
+  </td>
+</tr>
+
+<tr>
+  <td class="caption">Use Content Distribution Network (CDN) For CSS</td>
+  <td>
+    <select name="CssCdnEnabled" ##TP_cdnDisable##>
+      <script>
+          write_select('##TP_CssCdnEnabled##','Y','Yes','N','No')
+      </script>
+    </select>
+  </td>
+</tr>
+
+<tr>
+  <td class="caption">Use Content Distribution Network (CDN) For GIF</td>
+  <td>
+    <select name="GifCdnEnabled" ##TP_cdnDisable##>
+      <script>
+          write_select('##TP_GifCdnEnabled##','Y','Yes','N','No')
+      </script>
+    </select>
+  </td>
+</tr>
+
+<tr>
+  <td class="caption">Use Content Distribution Network (CDN) For SWF</td>
+  <td>
+    <select name="SwfCdnEnabled" ##TP_cdnDisable##>
+      <script>
+          write_select('##TP_SwfCdnEnabled##','Y','Yes','N','No')
+      </script>
+    </select>
+  </td>
+</tr>
+##TP_ENDIF##
+
+<tr>
+  <td class="caption">Park Bets Exceeding Max Payout</td>
+  <td>
+    <select name="MaxPayoutParking">
+      <script>
+          write_select('##TP_MaxPayoutParking##','Y','Yes','N','No')
+      </script>
+    </select>
+	<b>(When Y, bets whose winnings exceed max payout will be parked for manual settlement)</b>
+  </td>
+</tr>
+
+
+##TP_IF {[OT_CfgGet FUNC_NICE_API 0]}##
+<tr>
+  <td class="caption">NICE Api Active</td>
+  <td>
+    <select name="NiceApiActive">
+      <script>
+          write_select('##TP_NiceApiActive##','Y','Yes','N','No')
+      </script>
+    </select>
+  </td>
+</tr>
+##TP_ENDIF##
+
+##TP_IF {[OT_CfgGetTrue FUNC_MEDIA_CONTENT] && [op_allowed VideoStreamControl]}##
+<tr>
+  <td class="caption">Minimum balance to view Perform VoD</td>
+  <td><input type="text" name="PerformVoDMinBal" value="##TP_PerformVoDMinBal##" size="10" /></td>
+</tr>
+<tr>
+  <td class="caption">Max hours allowed since last bet to view Perform VoD</td>
+  <td><input type="text" name="PerformVoDLastBetInterval" value="##TP_PerformVoDLastBetInterval##" size="10" /></td>
+</tr>
+##TP_ENDIF##
+
+<input type="hidden" name="FraudScreen" value="##TP_AllowFraudScreen##">
+##TP_IF {[op_allowed ManageControl]}##
+<tr>
+  <th colspan=2 class=buttons>
+  <input type=button class="btn_def" value="Update" onClick="return validate(this)">
+
+  ##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+  <input type="button" class="btn_def" value="View Audit History" onClick="return fs(this,'GoAudit')">
+  <input type="hidden" name="AuditInfo" value="Control">
+  ##TP_ENDIF##
+  </th>
+  <input type="hidden" name="SubmitName" value="" />
+  <input type="hidden" name="action" value="ADMIN::CONTROL::DoControl" />
+</tr>
+##TP_ENDIF##
+</form>
+</table>
+
+##TP_IF {[OT_CfgGet FUNC_URN_MATCHING 0] && [op_allowed URNMatcher]}##
+<br />
+<table border="0" cellspacing="0" cellpadding="3">
+<form action="##TP_CGI_URL##" method=get>
+<tr>
+  <th colspan="2" class="title">
+  URN Matching
+  </th>
+</tr>
+<tr>
+  <td class="caption">Last Executed:</td>
+  <td>##TP_LastProcessedDate##</td>
+</tr>
+<tr>
+  <td class="caption">Set Last Executed:</td>
+  <td><input type="text" name="last_executed" value="##TP_LastProcessedDate##" size="19"></td>
+</tr>
+<tr>
+  <td colspan="2">
+  <input type="checkbox" name="matching_allowed" value="Y" ##TP_MatchingChecked## />
+  &nbsp;Enable URN Matching
+  </td>
+</tr>
+<tr>
+  <th class="buttons" colspan="2">
+    <input type="button" class="btn_def" value="Update" onClick="return fs(this,'UpdateURN')">
+  </th>
+</tr>
+<input type="hidden" name="SubmitName" value="">
+<input type="hidden" name="action" value="ADMIN::CONTROL::UpdateURN">
+</form>
+</table>
+##TP_ENDIF##
+
+
+##TP_IF {[OT_CfgGet FUNC_WON_ACTIVE 0] && [op_allowed WONView]}##
+<br />
+<table border="0" cellspacing="0" cellpadding="3">
+<tr><th colspan="2" class="title">##TP_WonTitle##</th></tr>
+
+##TP_IF {[tpGetVar WonNumRows 0]}##
+
+	<script language="javascript">
+	function check_won (f) {
+		##TP_LOOP won_idx {[tpGetVar WonNumCols 0]}##
+		var v_##TP_WonColName## = "##TP_WonColValue##";
+		##TP_ENDLOOP##
+
+		var msg = "The system normally clears old passwords";
+
+		if (f.lic_rev_pwd.value != v_lic_rev_pwd && f.lic_rev_pwd_old.value != v_lic_rev_pwd_old) {
+
+			if (!confirm(msg+"\nDo you want to change the current and old passwords manually?")) {
+				return false;
+			}
+
+		} else if (f.lic_rev_pwd.value != v_lic_rev_pwd) {
+
+			if (v_lic_rev_pwd_old != "") {
+				if (!confirm(msg+"\nDo you want to change the current password and overwrite the old one?")) {
+					return false;
+				}
+			}
+			f.lic_rev_pwd_old.value = v_lic_rev_pwd;
+
+		} else if (f.lic_rev_pwd_old.value != v_lic_rev_pwd_old) {
+			if (!confirm(msg+"\nAre you sure you want to overwrite the old password?")) {
+				return false;
+			}
+		}
+
+		if (f.timeout.value < 0) {
+			alert("The timeout must be 0 or more milliseconds.");
+			return false;
+		}
+
+		return fs(f.UpdBtn,'UpdateWON');
+	}
+	</script>
+
+	<form name="won_fm" action="##TP_CGI_URL##" method="post">
+	<input type="hidden" name="action" value="ADMIN::CONTROL::UpdateWON" />
+	<input type="hidden" name="SubmitName" value="" />
+
+	##TP_LOOP won_idx {[tpGetVar WonNumCols 0]}##
+	<tr>
+	<td class="caption">##TP_WonColDesc##</td>
+	<td><input type="text" name="##TP_WonColName##" value="##TP_WonColValue##" size="40" /></td>
+	</tr>
+	##TP_ENDLOOP##
+
+	<tr>
+	<th class="buttons" colspan="2">
+	##TP_IF {[op_allowed WONEdit]}##
+		<input type="button" name="UpdBtn" value="Update" onClick="return check_won(this.form);" />
+	##TP_ENDIF##
+	</th>
+	</tr>
+
+</form>
+
+##TP_ELSE##
+
+<tr><td colspan="2" class="caption">##TP_WonErrMsg##</td></tr>
+
+##TP_ENDIF##
+
+</table>
+
+##TP_ENDIF##
+
+</body>
+</html>

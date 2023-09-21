@@ -1,0 +1,105 @@
+<html>
+<!-- $Id: story.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<script language="javascript">
+var popup;
+function go_dd_popup() {
+	popup = window.open("##TP_CGI_URL##?action=ADMIN::BESTBETS::go_bbet_dd",
+		"popup",
+		"toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,height=400,width=400");
+	popup.focus();
+}
+
+function set_vals(level, id, name) {
+	f = document.fm_story;
+	if (!f) {
+		alert("unable to find form");
+		return;
+	}
+	f.level.value = level;
+	f.key.value   = id;
+	f.name.value  = name;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+
+<body>
+<form action="##TP_CGI_URL##" name="fm_story" method="POST">
+<input type=hidden name="action" value="ADMIN::STORIES::go_upd_top_story">
+<input type=hidden name="top_story_id" value="##TP_top_story_id##">
+<input type=hidden name="key" value="##TP_id_key##">
+<table cellspacing="0" cellpadding="3" border="0">
+<tr>
+	<th colspan=4 class=title>
+	##TP_ev_class_name##
+	</th>
+</tr>
+<tr>
+	<td class=caption>Headline</td>
+	<td colspan=3><textarea name=headline rows=3 cols=80 wrap=virtual>##TP_headline##</textarea></td>
+</tr>
+<tr>
+	<td class=caption>Story Text</td>
+	<td colspan=3><textarea name=story_text rows=20 cols=80 wrap=virtual>##TP_story_text##</textarea></td>
+</tr>
+<tr>
+	  <td class=caption>Keyword</td>
+	  <td colspan=3><input type=text name=keyword size=32 maxlength=32 value="##TP_keyword##"></td>
+</tr>
+<tr>
+	<td class=caption>Event Class</td>
+	<td colspan=3>
+	<select name=ev_class_id>
+	<option value="">Front Page</option>
+	##TP_class_drop_down##
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Link to</td>
+	<td><input type=text name=level size=10 onFocus='document.fm_story.disporder.focus()' value="##TP_id_level##"></td>
+	<td colspan="2"><a href="javascript:go_dd_popup('##TP_top_story_id##')">change</a></td>
+</tr>
+<tr>
+	<td>&nbsp;</td>     
+	<td colspan=3><input type=text name=name  size=32 onFocus='document.fm_story.disporder.focus()' value="##TP_id_name##"></td>
+	</tr>	
+<tr>
+	<td class=caption>Disporder</td>
+	<td><input type=text name=disporder size=6 maxlength=6 value="##TP_disporder##"></td>
+	<td class=caption>Displayed</td>
+	<td><select name="displayed">
+	<option value="Y">Yes</option>
+	<option ##TP_not_displayed## value="N">No</option>
+	</select>
+	</td>
+</tr>
+<input type=hidden name=Fastkey value="">
+##TP_IF {[op_allowed UpdStories]}##
+<tr>
+	<th colspan="4" class=buttons>
+##TP_IF {[tpGetVar Insert 0]}##
+	<input type=button class="btn_def" value="Insert" onClick="return fs(this,'Insert')">
+##TP_ELSE##
+	<input type=button class="btn_def" value="Update" onClick="return fs(this,'Update')">
+	&nbsp;
+	<input type=button class="btn_def" value="Delete" onClick="return fs(this,'Delete')">
+##TP_ENDIF##
+	</th>
+</tr>
+##TP_ENDIF##
+<input type=hidden name=SubmitName value="">
+</table>
+</form>
+</body>
+</html>

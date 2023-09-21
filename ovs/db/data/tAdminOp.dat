@@ -1,0 +1,7 @@
+VrfProfileDef|Verification Profile Definition|VRF|
+VrfSearch|Verification Search Checks|VRF|
+VrfManCheck|Verification Run Manual Checks|VRF|
+VrfProvider|Verification Define Provider Profiles|VRF|
+VRFAGECHECK|Age Verification Check|VRF|
+VrfUpdProfileDef|Verification Profile Definition Update|VRF|
+VrfAgeManage|Age Verification Manual Setting|VRF|

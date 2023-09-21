@@ -1,0 +1,254 @@
+<html>
+<!-- $Id: adj_search.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY header_cal.html##
+<script language="JavaScript">
+
+var man_adj_subtype_desc = new Array();
+var man_adj_subtype = new Array();
+
+/* sub-types */
+##TP_LOOP madj_type_idx {[tpGetVar NumManAdjTypes]}##
+	##TP_IF {[tpGetVar MadjNumSubTypes] != 0}##
+		man_adj_subtype["t##TP_ManAdjType##"]=new Array(##TP_LOOP madj_subtype_idx {[tpBindGet MadjNumSubTypes]}##"##TP_MadjSubType##"##TP_IF {[tpGetVar madj_subtype_idx]!=[expr {[tpBindGet MadjNumSubTypes]-1}]}##, ##TP_ENDIF####TP_ENDLOOP##);
+		man_adj_subtype_desc["t##TP_ManAdjType##"]=new Array(##TP_LOOP madj_subtype_idx {[tpBindGet MadjNumSubTypes]}##"##TP_MadjSubTypeDesc##"##TP_IF {[tpGetVar madj_subtype_idx]!=[expr {[tpBindGet MadjNumSubTypes]-1}]}##, ##TP_ENDIF####TP_ENDLOOP##);
+	##TP_ELSE##
+		man_adj_subtype["t##TP_ManAdjType##"]=new Array();
+		man_adj_subtype_desc["t##TP_ManAdjType##"]=new Array();
+	##TP_ENDIF##
+##TP_ENDLOOP##
+
+function updateMadjSubTypeList(_selected) {
+
+	var c = document.ManAdjSearch.Type;
+	var opt = document.ManAdjSearch.SubType.options;
+
+	var cId = c.options[c.selectedIndex].value;
+	var cName = c.options[c.selectedIndex].text;
+
+	// Delete everything
+	opt.length=0;
+
+	if (!cId) {
+		document.ManAdjSearch.SubType.style.display = "none";
+	} else if (man_adj_subtype["t" + cId] != "") {
+
+		opt[opt.length] = new Option( "Choose subtype" , "-1" );
+
+		var nm = man_adj_subtype_desc["t" + cId];
+		var id = man_adj_subtype["t" + cId];
+
+		for (i=0;i<nm.length;i++) {
+			if (_selected == id[i]) {
+				var sel_opt = i+1
+			}
+
+			opt[opt.length] = new Option( nm[i], id[i] );
+		}
+
+		document.ManAdjSearch.SubType.style.display = "";
+
+	} else {
+		opt[opt.length] = new Option( "Choose subtype" , "0" );
+		document.ManAdjSearch.SubType.style.display = "none";
+	}
+
+	if (sel_opt) {
+		opt.selectedIndex = sel_opt;
+	} else {
+		opt.selectedIndex = -1;
+	}
+}
+
+
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+function resubmit () {
+	var op_susp = "N";
+	if (document.getElementById("op_susp").checked) {
+		op_susp = "Y";
+	}
+	document.location.replace("##TP_CGI_URL##?action=ADMIN::ADJ::GoAdjQry&op_susp=" + op_susp);
+}
+
+function displayCalendars() {
+	new Calendar(document.forms.ManAdjSearch.SR_date_1, null, true, "lo");
+	new Calendar(document.forms.ManAdjSearch.SR_date_2, null, true, "lo");
+}
+
+</script>
+##TP_PLAY JS_WriteSelect.html##
+</head>
+<body onload="displayCalendars();">
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<form method=get name="ManAdjSearch" action=##TP_CGI_URL##>
+<tr>
+	<th colspan=3 class=title>
+	##TP_XL {Admin.Adjustment_Search.ADJUSTMENT_SEARCH}##
+	</th>
+</tr>
+<tr class=subtitle>
+	<th colspan=2 align=left>##TP_XL {Admin.Adjustment_Search.CUST_INFO}##</th>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_HIDE_USERNAME 0]}##
+<tr>
+	<td class=caption>Username like</td>
+	<td><input type="text" name="SR_username" value="" size=32>&nbsp;
+	(case insensitive&nbsp;
+	<input type="checkbox" name="SR_upper_username" value="Y" ##TP_IF {[OT_CfgGet FUNC_DEF_CASE_INS_SEARCH 0] == 1}##checked##TP_ENDIF##>
+	&nbsp;)</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_MAN_ADJ_CONTACT_SEARCH 1]}##
+<tr>
+	<td class=caption>Name</td>
+	<td><input type="text" name="SR_fname" value="" size=16>
+	&nbsp;&nbsp;
+	<input type="text" name="SR_lname" value="" size=16></td>
+</tr>
+<tr>
+	<td class=caption>Email like</td>
+<td><input type="text" name="SR_email" value="" size=40></td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<td class=caption>##TP_XL {Admin.Adjustment_Search.ACCT_NO}##</td>
+	<td><input type="text"  name="SR_acct_no" value="" size=32>&nbsp;
+	(exact&nbsp;
+	<input type="checkbox" name="SR_acct_no_exact" value="Y" checked>
+	&nbsp;)
+    </td>
+</tr>
+<tr class=subtitle>
+	<th colspan=2 align=left>##TP_XL {Admin.Adjustment_Search.ADJUST_DETAILS}##</th>
+</tr>
+<tr>
+	<td class=caption>##TP_XL {Admin.Adjustment_Search.ADJUST_DATE}##</td>
+	<td>
+	<input type="text" name="SR_date_1" value="" size=19>
+	&nbsp;##TP_XL {and}##&nbsp;
+	<input type="text" name="SR_date_2" value="" size=19>&nbsp;(yyyy-mm-dd hh:mm:ss)
+	</td>
+</tr>
+<tr>
+	<td class=caption>##TP_XL {or}##</td>
+	<td>
+	<select name="SR_date_range">
+		##TP_IF {[OT_CfgGet CUST_PREFS_DEFAULT_DATE_NA 0]}##
+			<option value="" selected>n/a</option>
+			<option value="TD">Today</option>
+		##TP_ELSE##
+			<option value="">n/a</option>
+			<option value="TD" selected>Today</option>
+		##TP_ENDIF##
+		<option value="YD">Yesterday</option>
+		<option value="L3">Last 3 days</option>
+		<option value="L7">Last 7 days</option>
+		<option value="CM">Current month</option>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>##TP_XL {Admin.Adjustment_Search.RAISE_OPERATOR}##</td>
+	<td>
+	<select name="SR_operator">
+	<script>
+	write_select("","","n/a"
+		##TP_LOOP op_idx {[tpGetVar NumOperators]}##
+			,"##TP_operator##","##TP_operator##"
+		##TP_ENDLOOP##
+	)
+	</script>
+	</select>
+	&nbsp;
+	<input type=checkbox name=op_susp id=op_susp value="Y" onClick="javascript:resubmit();"##TP_IF {[tpGetVar OpSusp N] == "Y"}## checked##TP_ENDIF##>Include suspended?
+	</td>
+</tr>
+<tr>
+	<td class=caption>##TP_XL {Admin.Adjustment_Search.AUTH_OPERATOR}##</td>
+	<td>
+	<select name="SR_auth_operator">
+	<script>
+	write_select("","","n/a"
+		##TP_LOOP op_idx {[tpGetVar NumOperators]}##
+			,"##TP_operator##","##TP_operator##"
+		##TP_ENDLOOP##
+	)
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>##TP_XL {Admin.Adjustment_Search.POST_OPERATOR}##</td>
+	<td>
+	<select name="SR_post_operator">
+	<script>
+	write_select("","","n/a"
+		##TP_LOOP op_idx {[tpGetVar NumOperators]}##
+			,"##TP_operator##","##TP_operator##"
+		##TP_ENDLOOP##
+	)
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>##TP_XL {Admin.Adjustment_Search.TYPE}##</td>
+	<td>
+			<select name="SR_adj_type" id="Type" onchange="updateMadjSubTypeList()">
+				<script>
+					write_select(
+						'##TP_ManAdjSelType##'
+						,'','n/a'
+						##TP_LOOP madj_type_idx {[tpGetVar NumManAdjTypes]}##
+							,'##TP_ManAdjType##','##TP_ManAdjDesc##'
+						##TP_ENDLOOP##
+					)
+				</script>
+			</select>
+			&nbsp;<select name="SR_adj_subtype" id="SubType" style="display:none">
+					<option value=""> Choose subtype </option>
+			</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>##TP_XL {Admin.Adjustment_Search.STATUS}##</td>
+	<td>
+	<select name="SR_status">
+		<option value="" selected>any</option>
+		<option value="R">Raised</option>
+		##TP_IF {[OT_CfgGet FUNC_DO_AUTH_MAN_ADJ 0]}##
+                <option value="A">Authorised</option>
+		##TP_ENDIF##   
+                <option value="D">Declined</option>
+		<option value="P">Posted</option>
+		<option value="N">Complete</option>
+	</select>
+	</td>
+</tr>
+<tr>
+<tr>
+	<td class=caption>Batch reference</td>
+	<td><input type=text name=SR_batch_ref_id value="" size=10 maxlength=10></td>
+</tr>
+	<th class=buttons colspan=3>
+	<input type=button class="btn_def" value="##TP_XL {Admin.Adjustment_Search.FIND_ADJUSTMENTS}##" onClick="return fs(this,'DoAdjSearch')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::ADJ::do_adj_query>
+</form>
+</table>
+</body>
+</html>
+

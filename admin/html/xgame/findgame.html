@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+    <title>external game</title>
+  </head>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+	function validateEditGame(thisForm,name) {
+
+		var t = document.forms['XGameFind'].elements['sort'];
+		var ret = true;
+
+		if (name == 'Edit Game Definition' || name == 'Edit Default Draw Times' || name == 'Add New Game' || name == 'Price Matrix' || name == 'View Game Def' || name == 'Edit Draw Desc') {
+			if (t.selectedIndex < 1) {
+				alert("Please select a game type from the list.");
+				return false;
+			}
+		}
+
+		thisForm.form.GameName.value = name;
+		thisForm.form.submit();
+		return true;
+
+	}
+
+</script>
+
+    <body bgcolor=white>
+      <form action="##TP_CGI_URL##" name="XGameFind">
+	<input type=hidden name=action value="DoXGameFind">
+	<input type=hidden name=GameName value="">
+    
+	<table cellspacing=0 cellpadding=2 border=0 bgcolor=#cccccc>
+	<tr bgcolor=#10137c>
+	  <th colspan=2 class=title>
+	  <font color=white size=+1>Search for Lottery game<font>
+	  </th>
+	</tr>
+	  <tr>
+	    <td>Game Type:
+			##TP_IF {[tpGetVar NumGameTypes 0] == 0}##
+				<b>No game definitions found</b>
+			##TP_ELSE##
+				<select name=sort>
+					<script>
+						write_select("##TP_GameType##","all","All Games"
+							##TP_LOOP game_type_idx {[tpGetVar NumGameTypes]}##
+								,"##TP_GameSort##","##TP_GameName##"
+							##TP_ENDLOOP##
+						);
+					</script>
+				</select>
+			##TP_ENDIF##
+		</td>
+	  </tr>
+
+	  <tr>
+	    <td>Game open between: ##TP_PLAY xgame/earliestdate.htmlf## and ##TP_PLAY xgame/latestdate.htmlf##</td>
+	  </tr>
+	  <tr>
+		<td>Game status:
+			<select name=SelectStatus>
+				<option value=''>Either</option>
+				<option value='A'>Active</option>
+				<option value='S'>Suspended</option>
+			</select>
+		</td>
+	  </tr>
+      
+      ##TP_IF {[OT_CfgGet XGAME_ADD_EDIT_GAMEDEF 0]}##
+      <tr bgcolor=#10137c>
+	    <th class=buttons>
+		##TP_IF {[op_allowed AddNewGameDef]}##
+	    <INPUT TYPE=button VALUE="Add New Game Def" onClick="return validateEditGame(this,'Add New Game Def')">
+		##TP_ENDIF##
+	    <INPUT TYPE=button VALUE="Edit Game Def" onClick="return validateEditGame(this,'View Game Def')">
+          </th>
+      </tr>
+      ##TP_ENDIF##
+      
+	<tr bgcolor=#10137c>
+	    <th class=buttons>
+	    <INPUT TYPE=button VALUE="Add New Game" onClick="return validateEditGame(this,'Add New Game')">
+	    ##TP_IF {[OT_CfgGet OPENBET_CUST nobody]!="BET247"}##
+	    <INPUT TYPE=button VALUE="Game Def Settings" onClick="return validateEditGame(this,'Edit Game')">
+	    ##TP_ENDIF##
+        </th>
+	</tr>
+	<tr bgcolor=#10137c>
+	    <td class=buttons>
+	      <INPUT TYPE=button VALUE="Show Matching Games" onClick="return validateEditGame(this,'Show Matching Games')">
+	      	      <INPUT TYPE=button VALUE="Update Matching Games" onClick="return validateEditGame(this,'Update Matching Games')">
+          
+		##TP_IF {[OT_CfgGet OPENBET_CUST ""] == "BlueSQ"} ##
+	 	<INPUT TYPE=button VALUE="Edit Default Draw Times" onClick="return validateEditGame(this,'Edit Default Draw Times')">>
+		##TP_ENDIF##
+	   </td>
+	</tr>
+
+	</table>
+
+##TP_IF {[OT_CfgGet FUNC_XGAME_FILES 0]}##
+	<br>
+	<table cellspacing=0 cellpadding=2 border=0 bgcolor=#cccccc>
+	<tr bgcolor=#10137c>
+	<th><font color=white size=+1>External Settlement</font></th>
+	</tr>
+	<tr bgcolor=#10137c>
+	  <td><font color=white><INPUT TYPE=button VALUE="Export Files" onClick="return validateEditGame(this,'Export Files')">
+	  <INPUT TYPE=button VALUE="Import Files" onClick="return validateEditGame(this,'Import Files')"></font></td>
+	</tr>
+	</table>
+##TP_ENDIF##
+
+
+  </form>
+	<br>
+
+	<table cellspacing=0 cellpadding=2 border=0 bgcolor=#cccccc>
+	<tr bgcolor=#10137c>
+	<th align=left><font color=white size=+1>View Bet Placement Reports</font></th>
+	</tr>
+	<tr>
+	<td>
+	  View <a href="##TP_CGI_URL##?action=GoReports">financial reports</a> for the pools/lottery games.
+	</td>
+	</tr>
+	</table>
+
+
+	##TP_IF {[OT_CfgGet XG_DYNAMIC_PRICES "0"] == "1"} ##
+
+	<br>
+
+	<form name="form_add_price" action="##TP_CGI_URL##" >
+	<input type=hidden name=action value="GoPriceHistory">
+
+	<table cellspacing=0 cellpadding=2 border=0 bgcolor=#cccccc>
+	<tr bgcolor=#10137c>
+	  <th colspan=2 align=left>
+	  <font color=white size=+1>View Price History<font>
+	  </th>
+	</tr>
+	  <tr>
+		<td>
+		  View <a href="##TP_CGI_URL##?action=GoPriceHistory">price history</a> for the pools/lottery games.
+		</td>
+	  </tr>
+
+	</table>
+
+	##TP_ENDIF##
+	</form>
+
+
+
+	##TP_IF {[OT_CfgGet OPENBET_CUST] == "BET247"}##
+
+	<br>
+
+	<table cellspacing=0 cellpadding=2 border=0 bgcolor=#cccccc>
+	<tr bgcolor=#10137c>
+	<th><font color=white size=+1>Manual Authorisation</font></th>
+	</tr>
+	<tr>
+	<td>
+	  Prizebuster bet subscriptions must be <a href="##TP_CGI_URL##?action=GoManualAuthorize">manually authorised</a>.
+	</td>
+	</tr>
+	</table>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGet FUNC_MULTI_CCY 0] == "1"}##
+	<br>
+	<table cellspacing=0 cellpadding=2 border=0 bgcolor=#cccccc>
+	<tr bgcolor=#10137c>
+	<th align=left><font color=white size=+1>Multi-Currency Stakes</font></th>
+	</tr>
+	<tr>
+	<td>
+	  <a href="##TP_CGI_URL##?action=show_round_ccy">Edit</a> the list of scale factors for stakes in non-system currency.</a>.
+	</td>
+	</tr>
+	</table>
+	##TP_ENDIF##
+
+
+
+
+
+    </body>
+</html>
+

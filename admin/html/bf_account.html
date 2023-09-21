@@ -1,0 +1,152 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>New Betfair Account</title>
+
+##TP_PLAY JS_WriteSelect.html##
+
+<script language=JavaScript>
+
+var errorList = "";
+
+function add_err(e_str)
+{
+	if (errorList.length > 0) {
+		errorList += "\n";
+	}
+	errorList += e_str;
+}
+
+
+function validate(b,t)
+{	
+	var username    = b.form.Username.value;
+	var password    = b.form.Password.value;
+	var vpassword   = b.form.VPassword.value;
+
+	var re = "^[A-Za-z0-9]+([_][A-Za-z0-9]+)*$"
+
+	errorList = "";
+
+	if (username == "") {
+		add_err("Username cannot be empty");
+	} else if (!username.match(new RegExp(re))) {
+		add_err("Invalid username");
+	}
+	
+	if (t == "AddAccount") {
+		if ((password =="") || (vpassword =="")) {
+			add_err("Password and Confirm Password fields cannot be empty");
+		}
+		if (password.length < 6) {
+			add_err("Password must have atleast 6 digits");
+		}
+		
+		
+	} else if (t == "UpdAccount") {
+		if ((password =="") && (vpassword !="")) {
+			add_err("Please enter New Password");
+		}
+		
+		if ((password !="") && (vpassword =="")) {
+			add_err("Please enter Confirm Password");
+		} 
+		if ((password !="") && (password.length < 6)) {
+			add_err("Password must have atleast 6 digits");
+		}
+	}
+	
+	if (username.length < 6) {
+		add_err("Username must have atleast 6 digits"); 
+	}
+	
+	if (password != vpassword) {
+		add_err("Password and confirm Password Fields do not match");
+	}
+	if (errorList != "") {
+		alert("There are some errors in the form:\n\n" + errorList);
+		return false;
+	}
+	
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+
+</script>
+
+</head>
+<body>
+
+##TP_PLAY error_rpt.html##
+
+<table cellspacing=0 cellpadding=2 border=0>
+<form name=AddAcct method=get action="##TP_CGI_URL##">
+
+<tr>
+	##TP_IF {[tpGetVar AddAcct 0] == 1} ##
+		<th class=title colspan=2>New Betfair Account</th>
+	##TP_ELSEIF {[tpGetVar EditAcct 0] == 1}##
+		<th class=title colspan=2>Edit Betfair Account</th>
+	##TP_ENDIF##
+	
+</tr>
+<tr>
+	<td class=caption>Username</td>
+	<td><input type=text name=Username value="##TP_Name##" size=40 maxlength="20"></td>
+	<input type=hidden name=Name value="##TP_Name##">
+	<input type=hidden name=Old_Status value="##TP_Status##">
+</tr>
+
+
+<tr>
+	##TP_IF {[tpGetVar AddAcct 0] == 1} ##
+	<td class=caption>Password</td>
+	##TP_ELSEIF {[tpGetVar EditAcct 0] == 1}##
+	<td class=caption>New Password</td>
+	##TP_ENDIF##
+    	<td><input type="password" name=Password value="" size=25 maxlength="15"></td>
+</tr>
+
+<tr>
+	<td class=caption>Confirm Password</td>
+    	<td><input type="password" name=VPassword size=25 maxlength="15"></td>
+</tr>
+
+<tr>
+	<td class=caption>Status</td>
+	<td>
+		<select name=Status>
+		<script>
+			write_select('##TP_Status##','A','Active','S','Suspended')
+		</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr>
+		<th width="75%" class=buttons>
+		##TP_IF {[tpGetVar AddAcct 0] == 1} ##
+			<input type=button class="btn_def" value="Add Account" onClick="return validate(this,'AddAccount')">
+		##TP_ELSEIF {[tpGetVar EditAcct 0] == 1}##
+			<input type=button class="btn_def" value="Update Account" onClick="return validate(this,'UpdAccount')">			
+		##TP_ENDIF##
+			<input type=button class="btn_def" name="back" value="Back" onClick="history.go(-1)">
+		</th>
+		
+	</tr>
+	</table>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::BETFAIR_ACCT::DoBFAccount>
+</form>
+</table>
+	
+</body>
+</html>

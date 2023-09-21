@@ -1,0 +1,155 @@
+<html>
+	<!-- $Id: pools_setup_addpooltype.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	<head>
+	  <meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		  <title>OpenBet Database Viewer</title>
+		  ##TP_PLAY JS_WriteSelect.html##
+			<script language=javascript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+		  	</script>
+	</head>
+
+	<body>
+	  ##TP_PLAY error_rpt.html##
+	  <table border=0 cellspacing=0 cellpadding=3 bgcolor=#10137c>
+		<form name="NewPoolType" method=get action="##TP_CGI_URL##">
+		<input type=hidden name="SubmitName" value="">
+		<input type=hidden name=action value="ADMIN::POOLS::SETUP::go_pools">
+		<input type=hidden name=sid value="##TP_sid##">
+		<input type=hidden name=otype value="##TP_Type##">
+		<input type="hidden" name="MinRunners" value="##TP_MinRunners##" />
+		<input type="hidden" name="num_picks" value="##TP_NumPicks##" />
+
+		  <tr>
+			<th colspan=4 class=title>
+			  ##TP_Source##
+			</th>
+		  </tr>
+		  <tr>
+			<td class=caption>Type</td>
+			<td><input type=text width=5 maxlength=4 name="Type" value="##TP_Type##"> (4 letter ref. code)</td>
+		  </tr>
+		  <tr>
+			<td class=caption>Name</td>
+			<td>
+				<input type=text width=35 maxlength=120 name="Desc" value="##TP_Name##">
+			</td>
+		  </tr>
+
+		  <tr>
+			<td class=caption>Disporder</td>
+			<td>
+				<input type=text width=5 maxlength=6 name="disporder" value="##TP_Disporder##">
+			</td>
+			<td class=caption>Status</td>
+			<td>
+				<select name="PoolStatus">
+						<script>write_select('##TP_Status##','A','Active','S','Suspended');</script>
+				</select>
+			</td>
+		  </tr>
+		  <tr>
+			<td class=caption>Leg-type</td>
+			<td>
+				<select name="LegType">
+						<script>write_select('##TP_Legtype##','W','Win','P','Place','O','Ordered','U','Unordered');</script>
+				</select>
+			</td>
+			<td class=caption>Number of legs</td>
+			<td>
+				<input type=text width=2 maxlength=2 name="numlegs" value="##TP_Numlegs##">
+			</td>
+		  </tr>
+		  <tr>
+			<td class=caption>All-up?</td>
+			<td>
+				<select name="AllUp">
+					<script>write_select('##TP_Allup##','N','No','Y','Yes');</script>
+				</select>
+			</td>
+			<td class=caption>Void action is</td>
+			<td>
+				<select name="VoidAction">
+					<script>write_select('##TP_Voidaction##','S','substitute','R','refund');</script>
+				</select>
+			</td>
+		  </tr>
+		  <tr>
+			<td class=caption>Min stake</td>
+			<td>
+				<input type=text width=15 maxlength=15 name="minst" value="##TP_Minstake##">
+			</td>
+			<td class=caption>Max stake</td>
+			<td>
+				<input type=text width=15 maxlength=15 name="maxst" value="##TP_Maxstake##">
+			</td>
+		  </tr>
+		  <tr>
+			<td class=caption>Min unit</td>
+			<td>
+				<input type=text width=15 maxlength=15 name="minunit" value="##TP_Minunit##">
+			</td>
+			<td class=caption>Max Unit</td>
+			<td>
+				<input type=text width=15 maxlength=15 name=MaxUnit value="##TP_MaxUnit##">
+			</td>
+		  </tr>
+			<td class=caption>Max Payout</td>
+			<td>
+				<input type=text width=15 maxlength=15 name=MaxPayout value="##TP_MaxPayout##">
+			</td>
+			<td class=caption>Tax rate</td>
+			<td>
+				<input type=text width=17 maxlength=17 name="tax" value="##TP_Taxrate##">
+			</td>
+		  </tr>
+		  	<tr>
+			<td class=caption>Stake Increment</td>
+			<td>
+				<input type=text width=15 maxlength=15 name="StakeIncr" value="##TP_StakeIncr##">
+			</td>
+			<td>
+				&nbsp;
+			</td>
+			<td>
+				&nbsp;
+			</td>
+    		</tr>
+		  <tr>
+			<td class=caption>Num subs</td>
+			<td>
+				<input type=text width=6 maxlength=6 name="numsubs" value="##TP_Numsubs##">
+			</td>
+			<td class=caption>Favourite<br>available?</td>
+			<td>
+				<select name="FavAvail">
+					<script>write_select('##TP_FavAvail##','N','No','Y','Yes');</script>
+				</select>
+			</td>
+		  </tr>
+
+		  <tr>
+			<th class=buttons colspan=4>
+				##TP_IF {[tpGetVar UPDATE] == 1}##
+					<input type=button class="btn_def" value="Update Pool Type" onClick="return fs(this,'UpdPT')">
+					<input type=button class="btn_def" value="Delete Pool Type" onClick="return fs(this,'DelPT')">
+				##TP_ELSE##
+					<input type=button class="btn_def" value="Add Pool Type" onClick="return fs(this,'AddPT')">
+				##TP_ENDIF##
+				<input type=button class="btn_def" value="Back" onClick="javascript:history.go(-1)"> </td>
+			</th>
+		  </tr>
+		 </form>
+		</table>
+
+	</body>
+</html>
+

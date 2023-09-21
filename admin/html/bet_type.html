@@ -1,0 +1,103 @@
+<html>
+<!-- $Id: bet_type.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Currency</title>
+
+##TP_PLAY JS_WriteSelect.html##
+
+<script language=JavaScript>
+ 
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	##TP_BetType##
+	</th>
+</tr>
+<form ACTION="##TP_CGI_URL##" method=get onSubmit="return validate(this);">
+<tr>
+	<td class=caption>Bet Name</td>
+	<td>
+	<input type=text name="BetName" value="##TP_BetName##" size=20>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Min Bet</td>
+	<td>
+	<input type=text name="MinBet" value="##TP_MinBet##" size=14>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Max Bet</td>
+	<td>
+	<input type="text" name="MaxBet" value="##TP_MaxBet##" size=14>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Order</td>
+	<td>
+	<input type="text" name="Disporder" value="##TP_Disporder##" size=14>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Status</td>
+	<td>
+	<select name="Status">
+	<script>
+	write_select('##TP_Status##','A','Active','S','Suspended')
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class="caption">Bet Type Factor</td>
+	<td>
+	<input type="text" name="BetTypeFactor" value="##TP_BetTypeFactor##" size="5">&nbsp;<i>(between 0.00 and 99.99 inclusive)</i>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Blurb</td>
+	<td>
+	<textarea cols=60 rows=6 wrap=virtual name=blurb>##TP_Blurb##</textarea>
+	</td>
+</tr>
+##TP_IF {[tpGetVar FuncChannels]}##
+	<tr>
+		<td class=caption>Channels</td>
+		<td>
+		##TP_PLAY chan_sel.html##
+		</td>
+	</tr>
+##TP_ENDIF##
+##TP_IF {[op_allowed ManageBetLimits]}##
+<tr>
+	<th colspan=2 class=buttons>
+		<input type=hidden name="BetType" value="##TP_BetType##">
+		<input type=button class="btn_def" value="Modify Bet Limits" onClick="return fs(this,'BetMod')">
+	</th>
+</tr>
+##TP_ENDIF##
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::BET_TYPE::DoBetType>
+</form>
+</table>
+</body>
+</html>

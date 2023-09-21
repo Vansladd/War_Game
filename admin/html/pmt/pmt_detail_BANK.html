@@ -1,0 +1,58 @@
+
+##TP_TCL {ADMIN::PMT::bind_detail_BANK [tpGetVar cpm_id]}##
+<tr>
+	<td class=caption>Account Name:</td>
+	<td>##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != "Y")}## ##TP_PM_bank_acct_name## ##TP_ELSE## * ##TP_ENDIF##</td>
+</tr>
+<tr>
+	<td class=caption>Account Number:</td>
+	<td>##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != "Y")}## ##TP_PM_bank_acct_no## ##TP_ELSE## * ##TP_ENDIF##</td>
+</tr>
+<tr>
+	<td class=caption>Sort Code:</td>
+	<td>##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != "Y")}## ##TP_PM_bank_sort_code## ##TP_ELSE## * ##TP_ENDIF##</td>
+</tr>
+<tr>
+	<td class=caption>Bank name:</td>
+	<td>##TP_PM_bank_name##</td>
+</tr>
+<tr>
+	<td class=caption>Bank Address:</td>
+	<td>##TP_PM_bank_addr_1##</td>
+</tr>
+<tr>
+	<td class=caption>&nbsp;</td>
+	<td>##TP_PM_bank_addr_2##</td>
+</tr>
+<tr>
+	<td class=caption>&nbsp;</td>
+	<td>##TP_PM_bank_addr_3##</td>
+</tr>
+<tr>
+	<td class=caption>&nbsp;</td>
+	<td>##TP_PM_bank_addr_4##</td>
+</tr>
+<tr>
+	<td class=caption>City:</td>
+	<td>##TP_PM_bank_addr_city##</td>
+</tr>
+<tr>
+	<td class=caption>Postcode:</td>
+	<td>##TP_PM_bank_addr_postcode##</td>
+</tr>
+<tr>
+	<td class=caption>Country:</td>
+	<td>##TP_PM_country_name##</td>
+</tr>
+<tr>
+	<td class=caption>Bank Branch:</td>
+	<td>##TP_PM_bank_branch##</td>
+</tr>
+<tr>
+	<td class=caption>Swift (BIC) code:</td>
+	<td>##TP_PM_swift_code##</td>
+</tr>
+<tr>
+	<td class=caption>IBAN code:</td>
+	<td>##TP_PM_iban_code##</td>
+</tr>

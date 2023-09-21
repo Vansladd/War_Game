@@ -1,0 +1,67 @@
+<html>
+<!-- $Id: news_group.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##"/>
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet"/>
+<script language="javascript">
+function blurb_popup (id, sort) {
+
+	if (id == "") {
+		alert("No Id specified, does the "+sort+" exist.\n"+
+			"You must create it before you can add a blurb");
+		return;
+	}
+
+	window.open("##TP_CGI_URL##?action=ADMIN::BLURB::do_blurb&ref_id="
+	+id+"&sort="+sort,
+	"Blurb",
+	"toolbar=no,location=no,directories=no,menubar=no,resizable=yes,width=600,height=200");
+}
+</script>
+</head>
+<body>
+
+##TP_PLAY error_rpt.html##
+
+<form action="##TP_CGI_URL##" name="news_grp_fm" method="post">
+<input type="hidden" name="action" value="ADMIN::NEWS::upd_news_group"/>
+<input type="hidden" name="grp_id" value="##TP_grp_id##"/>
+
+<table cellspacing="0" cellpadding="2" border="0">
+<tr><th class="title" colspan="2">News Group Details</th></tr>
+<tr>
+<td class="caption" align="right">Group Title</td>
+<td><input type="text" name="title" value="##TP_title##" size="32" maxlength="32"/> &nbsp;<a href='javascript:blurb_popup("##TP_grp_id##", "NEWSGRP")'>edit multi-lingual title</a></td>
+</tr>
+<tr>
+	<td class="caption" align="right">Group Text</td>
+	<td>
+		<textarea name="text" rows=4 cols=80 wrap=virtual>##TP_text##</textarea>
+		##TP_IF {[string first BLURB [OT_CfgGet FUNC_NEWS_GROUP_TEXT ""]] >= 0}##
+			<br><a href='javascript:blurb_popup("##TP_grp_id##", "NGRPTEXT")'>edit multi-lingual text</a>
+			<span class="multiLingualMsg">
+			(multi-lingual text will take precedence over the default text)</span>
+		##TP_ENDIF##
+	</td>
+</tr>
+
+<tr>
+<td class="caption" align="right">Disporder</td>
+<td align="left"><input type="text" name="disporder" value="##TP_disporder##" size="6" maxlength="6"/></td>
+</tr>
+
+<tr>
+<th class="buttons" colspan="2">
+##TP_IF {[tpGetVar do_insert 0]}##
+<input type="submit" class="btn_def" name="button" value="Insert"/>
+##TP_ELSE##
+<input type="submit" class="btn_def" name="button" value="Update"/>
+<input type="submit" class="btn_def" name="button" value="Delete"/>
+##TP_ENDIF##
+</th>
+</tr>
+
+</table>
+</form>
+</body>
+</html>

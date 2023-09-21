@@ -1,0 +1,71 @@
+<html>
+<!-- $Id: trigger_type_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Freebet Trigger Types</title>
+<script>
+function write_tr(status)
+{
+	if (status == 'A') {
+		document.write('<tr class=active>');
+	} else if (status == 'S') {
+		document.write('<tr class=suspended>');
+	} else {
+		document.write('<tr class=unknown>');
+	}
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<table border=0 cellspacing=0 cellpadding=2>
+	<form ACTION="##TP_CGI_URL##" method=get>
+	<tr>
+		<th class=title colspan=3>Trigger Types</th>
+	</tr>
+
+	<tr>
+		<th nowrap class=colhead>Code</th>
+		<th nowrap class=colhead>Name</th>
+		<th nowrap class=colhead>Qualification</th>
+	</tr>
+
+	##TP_LOOP type_idx {[tpGetVar NumTTypes]}##
+	<tr>
+		<td><a href="##TP_CGI_URL##?action=ADMIN::FREEBETS::GoTriggerType&Code=##TP_Code##">##TP_Code##</a></td>
+		<td>##TP_Name##&nbsp;</td>
+		<td>##TP_Qual##&nbsp;</td>
+	</tr>
+	##TP_ENDLOOP##
+
+	##TP_IF {![tpGetVar NumTTypes]}##
+	<tr>
+		<td><i>There are no trigger types defined</i></td>
+	</tr>
+	##TP_ENDIF##
+
+	<tr>
+		<th class=buttons colspan=3>
+			##TP_IF {[tpGetVar PERM_AddTriggerTypes]} ##
+			<input type=submit class="btn_def" value="Add New Trigger Type">
+			##TP_ENDIF##
+			&nbsp;
+		</th>
+	</tr>
+<input type=hidden name=action value=ADMIN::FREEBETS::GoAddTType>
+</form>
+</table>
+
+</body>
+</html>

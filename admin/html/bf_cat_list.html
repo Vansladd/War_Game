@@ -1,0 +1,11 @@
+##TP_IF {[tpGetVar Bflist 0]==1}##
+	<tr>
+		<th class=colhead colspan=2>Betfair Catagories</th>
+	</tr>
+	##TP_LOOP bf_mtch_idx {[tpGetVar BFNumCats]}##
+	<tr>
+		<td>##TP_BFDesc##</td>
+	</tr>
+	##TP_ENDLOOP##
+	##TP_TCL {tpSetVar Bflist 0}##
+##TP_ENDIF##

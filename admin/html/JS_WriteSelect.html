@@ -1,0 +1,40 @@
+##TP_COMMENT $Id: JS_WriteSelect.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $##
+##TP_COMMENT Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.##
+
+##TP_IF {[tpGetVar ADD_SCRIPT_TAG 1]}##
+<script type="text/javascript">
+##TP_ENDIF##
+
+function write_select()
+{
+	var sel = arguments[0];
+	var i;
+
+	for (i = 1; i < arguments.length; i += 2) {
+		var v = arguments[i];
+		var n = arguments[i+1];
+		var sel_tag = (sel == v) ? " selected" : "";
+		document.writeln
+			('<option value="' + v + '"' + sel_tag + '>' + n + '<\/option>');
+	}
+}
+
+function write_which()
+{
+	var sel = arguments[0];
+	var i;
+
+	for (i = 1; i < arguments.length; i += 2) {
+		var v = arguments[i];
+		var n = arguments[i+1];
+
+		if (v == sel) {
+			document.write(n);
+			break;
+		}
+	}
+}
+
+##TP_IF {[tpGetVar ADD_SCRIPT_TAG 1]}##
+</script>
+##TP_ENDIF##

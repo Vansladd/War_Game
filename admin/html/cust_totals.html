@@ -1,0 +1,157 @@
+<html>
+<!-- $Id: cust_totals.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=javascript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<form action="##TP_CGI_URL##" method=get>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value="ADMIN::CUST_TOTALS::DoCustTotals">
+	<input type=hidden name=CustId value="##TP_CustId##">
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th class=title colspan=7>Customer Totals</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>Transaction Type</th>
+		<th nowrap class=colhead>Channel</th>
+		<th nowrap class=colhead>Since Statement</th>
+		<th nowrap class=colhead>Week to date</th>
+        ##TP_IF {[OT_CfgGetTrue FUNC_BUSINESS_PERIOD] && [OT_CfgGetTrue CALCULATE_OVER_BP]}##
+		    <th nowrap class=colhead>Current BP<br/><em>##TP_BperiodFrom## / ##TP_BperiodTo##</em></th>
+        ##TP_ELSE##
+            <th nowrap class=colhead>Month to date</em></th>
+        ##TP_ENDIF##
+		<th nowrap class=colhead>Year to date</th>
+		<th nowrap class=colhead>All Time</th>
+	</tr>
+
+##TP_LOOP j_op_idx {[tpGetVar nOpTypes]}##
+
+	##TP_IF {$DATA(optypes,[tpGetVar j_op_idx]) != "BSTK"}##
+	<tr>
+		<td>##TP_j_op_name##</td>
+		<td>&nbsp;</td>
+		<td align=right>##TP_OStmtAmt##</td>
+		<td align=right>##TP_OWeekAmt##</td>
+        ##TP_IF {[OT_CfgGetTrue FUNC_BUSINESS_PERIOD] && [OT_CfgGetTrue CALCULATE_OVER_BP]}##
+            <td align=right>##TP_OBperiodAmt##</td>
+        ##TP_ELSE##
+            <td align=right>##TP_OMnthAmt##</td>
+        ##TP_ENDIF##
+		<td align=right>##TP_OYearAmt##</td>
+		<td align=right>##TP_OAllAmt##</td>
+	</tr>
+	##TP_ELSE##
+	##TP_LOOP channel_idx {[tpGetVar nChannels]}##
+	<tr>
+		##TP_IF {[tpGetVar channel_idx] == 0}##
+		<td>##TP_j_op_name##</td>
+		##TP_ELSE##
+		<td>&nbsp;</td>
+		##TP_ENDIF##
+		<td align=center>##TP_channel##</td>
+		<td align=right>##TP_CStmtAmt##</td>
+		<td align=right>##TP_CWeekAmt##</td>
+        ##TP_IF {[OT_CfgGetTrue FUNC_BUSINESS_PERIOD] && [OT_CfgGetTrue CALCULATE_OVER_BP]}##
+            <td align=right>##TP_CBperiodAmt##</td>
+        ##TP_ELSE##
+            <td align=right>##TP_CMnthAmt##</td>
+        ##TP_ENDIF##
+		<td align=right>##TP_CYearAmt##</td>
+		<td align=right>##TP_CAllAmt##</td>
+	</tr>
+	##TP_ENDLOOP##
+	##TP_ENDIF##
+##TP_ENDLOOP##
+
+	<tr>
+		<th colspan=7 class=buttons>
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</th>
+	</tr>
+</table>
+<br>
+
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th class=title colspan=7>Overall</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>Transaction Type</th>
+		<th nowrap class=colhead>Channel</th>
+		<th nowrap class=colhead>Since Statement</th>
+		<th nowrap class=colhead>Week to date</th>
+        ##TP_IF {[OT_CfgGetTrue FUNC_BUSINESS_PERIOD] && [OT_CfgGetTrue CALCULATE_OVER_BP]}##
+            <th nowrap class=colhead>Current BP<br/><em>##TP_BperiodFrom## / ##TP_BperiodTo##</em></th>
+        ##TP_ELSE##
+            <th nowrap class=colhead>Month to date</em></th>
+        ##TP_ENDIF##
+		<th nowrap class=colhead>Year to date</th>
+		<th nowrap class=colhead>All Time</th>
+	</tr>
+	<tr>
+		<td>Total Staked</td>
+		<td>&nbsp;</td>
+		<td align=right>##TP_TotalStakeStmt##</td>
+		<td align=right>##TP_TotalStakeWeek##</td>
+        ##TP_IF {[OT_CfgGetTrue FUNC_BUSINESS_PERIOD] && [OT_CfgGetTrue CALCULATE_OVER_BP]}##
+           <td align=right>##TP_TotalStakeBperiod##</td>
+        ##TP_ELSE##
+            <td align=right>##TP_TotalStakeMnth##</td>
+        ##TP_ENDIF##
+		<td align=right>##TP_TotalStakeYear##</td>
+		<td align=right>##TP_TotalStakeAll##</td>
+	</tr>
+	<tr>
+		<td>Win/Loss</td>
+		<td>&nbsp;</td>
+		<td align=right>##TP_WLStmt##</td>
+		<td align=right>##TP_WLWeek##</td>
+        ##TP_IF {[OT_CfgGetTrue FUNC_BUSINESS_PERIOD] && [OT_CfgGetTrue CALCULATE_OVER_BP]}##
+            <td align=right>##TP_WLBperiod##</td>
+        ##TP_ELSE##
+            <td align=right>##TP_WLMnth##</td>
+        ##TP_ENDIF##
+		<td align=right>##TP_WLYear##</td>
+		<td align=right>##TP_WLAll##</td>
+	</tr>
+	<tr>
+		<td>Win/Loss %</td>
+		<td>&nbsp;</td>
+		<td align=right>##TP_WLPStmt##</td>
+		<td align=right>##TP_WLPWeek##</td>
+        ##TP_IF {[OT_CfgGetTrue FUNC_BUSINESS_PERIOD] && [OT_CfgGetTrue CALCULATE_OVER_BP]}##
+            <td align=right>##TP_WLPBperiod##</td>
+        ##TP_ELSE##
+            <td align=right>##TP_WLPMnth##</td>
+        ##TP_ENDIF##
+		<td align=right>##TP_WLPYear##</td>
+		<td align=right>##TP_WLPAll##</td>
+	</tr>
+	<tr>
+		<th colspan=7 class=buttons>
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</th>
+	</tr>
+</table>
+
+</form>
+
+
+</body>

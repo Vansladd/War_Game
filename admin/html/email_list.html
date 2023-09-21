@@ -1,0 +1,143 @@
+<html>
+<!-- $Id: email_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<meta http-equiv="Expires" content="0">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Email Manager</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th class=title colspan=25>
+	<font color=white size=+1>Email Manager</font>
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Created</th>
+	<th class=colhead>Email/SMS Name</th>
+	<th class=colhead>Type</th>
+	<th class=colhead>Channels</th>
+	<th class=colhead colspan=15>Active Languages</th>
+</tr>
+##TP_IF {$EMAILS(num)>0}##
+	##TP_LOOP email_idx {$EMAILS(num)}##
+		##TP_IF {[tpBindGet email_id] != ""}##
+			##TP_IF {[tpBindGet status] == "A"}##
+				<tr bgcolor="#9CCF9C">
+			##TP_ELSE##
+				<tr bgcolor="#CE9A9C">
+			##TP_ENDIF##
+				<td>##TP_cr_date##</td>
+				<td><a href="##TP_CGI_URL##?action=ADMIN::EMAILS::GoEmail&email_id=##TP_email_id##">##TP_name##</a></td>
+				<td>##TP_type##</td>
+				<td>##TP_channels##</td>
+				<td>##TP_status##</td>
+				<td>##TP_language##</td>
+			</tr>
+		##TP_ENDIF##
+	##TP_ENDLOOP##
+##TP_ELSE##
+	<tr>
+		<td colspan=4>
+		<b><i>There are no email templates defined</i></b>
+		</td>
+	</tr>
+##TP_ENDIF##
+
+##TP_IF {[op_allowed ManageEmails]}##
+	<tr>
+		<form action="##TP_CGI_URL##" method=get>
+		<th class=buttons>
+		<input type=button value="Add Email" onClick="return fs(this,'AddEmail')">
+		</th>
+		<th class=buttons>
+		<input type=button value="Add Email Type" onClick="return fs(this,'AddEmailType')">
+		</th>
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value=ADMIN::EMAILS::GoEmail>
+		</form>
+	</tr>
+##TP_ENDIF##
+</table>
+
+<br><br>
+
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th class=title colspan=25>
+	<font color=white size=+1>Current Email Queue</font>
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Created</th>
+	<th class=colhead>Username</th>
+	<th class=colhead>Email/SMS Name</th>
+	<th class=colhead>Type</th>
+</tr>
+##TP_IF {$QUEUE(queue_size)>0}##
+	##TP_LOOP queue_idx {$QUEUE(queue_size)}##
+			<tr bgcolor="#9CCF9C">
+				<td>##TP_qcr_date##</td>
+				<td><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_qcust_id##">##TP_qusername##</a></td>
+				<td><a href="##TP_CGI_URL##?action=ADMIN::EMAILS::GoEmail&email_id=##TP_qemail_id##">##TP_qemail_name##</a></td>
+				<td>##TP_qmsg_type##</td>
+			</tr>
+	##TP_ENDLOOP##
+##TP_ELSE##
+	<tr>
+		<td colspan=4>
+		<b><i>There are no emails in the queue</i></b>
+		</td>
+	</tr>
+##TP_ENDIF##
+
+</table>
+
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th class=title colspan=25>
+	<font color=white size=+1>Current Internal Email Queue</font>
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Created</th>
+	<th class=colhead>Email/SMS Name</th>
+	<th class=colhead>Type</th>
+</tr>
+
+##TP_IF {$QUEUE_INT(queue_size)>0}##
+	##TP_LOOP queue_int_idx {$QUEUE_INT(queue_size)}##
+			<tr bgcolor="#9CCF9C">
+				<td>##TP_qcr_date##</td>
+				<td><a href="##TP_CGI_URL##?action=ADMIN::EMAILS::GoEmail&email_id=##TP_qemail_id##">##TP_qemail_name##</a></td>
+				<td>##TP_qmsg_type##</td>
+			</tr>
+	##TP_ENDLOOP##
+##TP_ELSE##
+	<tr>
+		<td colspan=3>
+		<b><i>There are no emails in the internal queue</i></b>
+		</td>
+	</tr>
+##TP_ENDIF##
+
+</table>
+
+<br>
+<br>
+
+</body>
+</html>

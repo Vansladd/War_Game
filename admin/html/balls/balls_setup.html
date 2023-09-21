@@ -1,0 +1,80 @@
+<html>
+<!-- $Id: balls_setup.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+</head>
+
+<body>
+
+<!-- Display any submission erros -->
+
+##TP_PLAY error_rpt.html##
+
+<!-- If the user has the permission show the balls set-up page -->
+
+##TP_IF {[tpGetVar HasPerm 0] == 1}##
+
+<table cellspacing=0 cellpadding=2 border=0>
+
+<tr>
+	<th class=title>Balls Game Set-Up</th>
+</tr>
+
+<!-- Customer search parameters -->
+
+<tr class=subtitle>
+	<th align=left>Balls Configuration</th>
+</tr>
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::BALLS::DoBallsConfig">Configure Balls Set-Up</a></td></tr>
+</tr>
+
+</table>
+
+<br/>
+
+<form method=get action=##TP_CGI_URL##>
+
+<table cellspacing=0 cellpadding=2 border=0>
+
+<!-- The Balls game configuration -->
+
+<tr class=subtitle>
+	<th align=left>Game Configuration</th>
+</tr>
+
+<!-- List all of the games for configuration -->
+
+<tr>
+	<td>
+		<select name="SubTypeId" size=10>
+			##TP_LOOP game_type_idx {[tpGetVar game_type_rows]}##
+				<!-- Select the first element -->
+				##TP_IF {[tpGetVar game_type_idx] == 0}##
+					<option value="##TP_GameType##" selected>##TP_GameName##</option>
+				##TP_ELSE##
+					<option value="##TP_GameType##">##TP_GameName##</option>
+				##TP_ENDIF##
+			##TP_ENDLOOP##
+		</select>
+	</td>
+</tr>
+
+<!-- Display the form submit buttons and hidden parameters to pass back -->
+
+<tr>
+	<th class=buttons><input type=submit class="btn_def" value="Configure Game"></th>
+</tr>
+
+</table>
+
+<input type=hidden name=action value=ADMIN::BALLS::DoBallsGameConfig>
+
+</form>
+
+##TP_ENDIF##
+
+</body>
+</html>

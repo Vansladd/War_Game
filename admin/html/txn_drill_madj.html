@@ -1,0 +1,113 @@
+<html>
+<!-- $Id: txn_drill_madj.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Payment Detail</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	Manual Adjustment Detail
+	</th>
+</tr>
+<tr>
+	<td class=caption>Amount</td>
+	<td>
+	##TP_MAmount##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Description</td>
+	<td>
+	##TP_MDesc##&nbsp;
+	</td>
+</tr>
+<tr>
+	<td class=caption>Raised by</td>
+	<td>
+	##TP_MUsername##&nbsp;
+	</td>
+</tr>
+<tr>
+	<td class=caption>Raise Date</td>
+	<td>
+	##TP_MDate##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Authorised by</td>
+	<td>
+	##TP_MAuthUser##&nbsp;
+	</td>
+</tr>
+<tr>
+	<td class=caption>Auth Date</td>
+	<td>
+	##TP_MAuthAt##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Posted by</td>
+	<td>
+	##TP_MPostUser##&nbsp;
+	</td>
+</tr>
+<tr>
+	<td class=caption>Post Date</td>
+	<td>
+	##TP_MPostAt##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Batch Reference</td>
+	<td>
+	##TP_MBatchRefID##&nbsp;
+	</td>
+</tr>
+##TP_IF {[lsearch {PMT BET XBET POOL} [tpGetVar RefKey]] > -1}##
+<tr>
+	##TP_IF {[tpGetVar RefKey] == "PMT"}##
+		<td class=caption>Payment Reference</td>
+		<td>
+		<a href="##TP_CGI_URL##?action=ADMIN::TXN::GPMT::GoPmt&pmt_id=##TP_RefId##">##TP_RefId##</a>&nbsp;
+		</td>
+	##TP_ELSEIF {[tpGetVar RefKey] == "BET"}##
+		<td class=caption>Bet Reference</td>
+		<td>
+		<a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_RefId##">##TP_RefId##</a>&nbsp;
+		</td>
+	##TP_ELSEIF {[tpGetVar RefKey] == "XBET"}##
+		<td class=caption>Bet Reference</td>
+		<td>
+		<a href="##TP_CGI_URL##?action=ADMIN::BET::GoXGameReceipt&BetId=##TP_RefId##">##TP_RefId##</a>&nbsp;
+		</td>
+	##TP_ELSEIF {[tpGetVar RefKey] == "POOL"}##
+		<td class=caption>Bet Reference</td>
+		<td>
+		<a href="##TP_CGI_URL##?action=ADMIN::BET::GoXGameReceipt&BetId=##TP_RefId##">##TP_RefId##</a>&nbsp;
+		</td>
+	##TP_ENDIF##	
+</tr>
+##TP_ENDIF##
+<tr>
+		<td class=caption>Operator Notes</td>
+		<td>
+			##TP_OperNotes##
+		</td>
+</tr>
+</table>
+</body>
+</html>

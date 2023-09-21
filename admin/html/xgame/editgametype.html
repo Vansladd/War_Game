@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+    <title>external game</title>
+    <SCRIPT LANGUAGE="JavaScript">
+        function write_selected_tag(chosen, current){
+            var selected = "";
+            if(chosen==current){
+                selected = "SELECTED";
+            }
+
+            document.writeln('<option value="' +current+ '" ' +selected+ '>');
+        }
+    </SCRIPT>
+  </head>
+
+  <body bgcolor=white>
+    <form name="pricesForm" action="##TP_CGI_URL##" method="POST">
+    <input type=hidden name="action" value="DoXGameFind">
+    ##TP_IF {[tpGetVar mode]=="edit"} ##
+        <input type=hidden name="GameName" value="Edit Game Def">
+    ##TP_ELSE##
+		##TP_IF {[op_allowed AddNewGameDef]}##
+        <input type=hidden name="GameName" value="Add New Game Def">
+		##TP_ENDIF##
+    ##TP_ENDIF##
+    <input type="hidden" name="mode" value="##TP_MODE##" >
+
+  ##TP_IF {[tpGetVar updateSuccessful]=="true"} ##
+    <font color="green"><b>Successful!</b></font>
+  ##TP_ELSEIF {[tpGetVar updateSucessful]=="false"} ##
+    <font color="red"><b>Failed!</b></font>
+  ##TP_ENDIF##
+  <br>
+
+  <table cellspacing=0 cellpadding=2 border="0" bgcolor=#cccccc>
+    <tr bgcolor=#10137c>
+	    <th class=title>
+            <font color=white size=+1>Game Definition</font>
+        </th>
+	</tr>
+    <tr><td align="center">
+        <table>
+            <tr>
+                <td><b>Game Type</b></td>
+                <td>
+                    <input type="text" name="game_type" width="6" maxlength="10" value="##TP_game_type##">
+                </td>
+                <td><b>Display Order</b></td>
+                <td>
+                    <input type="text" name="disp_order" width="6" maxlength="10" value="##TP_disp_order##">
+                </td>
+            </tr>
+            <tr>
+                <td><b>Sort</b></td>
+                <td>
+                    <input type="text" name="sort" width="6" maxlength="10" value="##TP_sort##" ##TP_IF {[tpGetVar mode]=="edit"} ##READONLY##TP_ENDIF## >
+                </td>
+
+                <td><b>Name</b></td>
+                <td>
+                    <input type="text" name="name" width="6" value="##TP_name##" >
+                </td>
+            </tr>
+            <tr>
+                <td><b>Picks Max</b></td>
+                <td>
+                    <input type="text" name="num_picks_max" width="6" value="##TP_num_picks_max##" >
+                </td>
+
+                <td><b>Picks Min</b></td>
+                <td>
+                    <input type="text" name="num_picks_min" width="6" value="##TP_num_picks_min##" >
+                </td>
+            </tr>
+            <tr>
+                <td><b>Results Max</b></td>
+                <td>
+                    <input type="text" name="num_results_max" width="6" value="##TP_num_results_max##" >
+                </td>
+
+                <td><b>Results Min</b></td>
+                <td>
+                    <input type="text" name="num_results_min" width="6" value="##TP_num_results_min##" >
+                </td>
+            </tr>
+
+            <tr>
+                <td><b>Balls Max</b></td>
+                <td>
+                    <input type="text" name="num_max" width="6" value="##TP_num_max##" >
+                </td>
+
+                <td><b>Balls Min</b></td>
+                <td>
+                    <input type="text" name="num_min" width="6" value="##TP_num_min##" >
+                </td>
+            </tr>
+            <tr>
+                <td><b>Description</b></td>
+                <td>
+                    <input type="text" name="desc" width="6" value="##TP_desc##" >
+                </td>
+            </tr>
+            <tr>
+                <td><b>Max Stake</b></td>
+                <td>
+                    <input type="text" name="max_stake" width="6" value="##TP_max_stake##" >
+                </td>
+
+                <td><b>Min Stake</b></td>
+                <td>
+                    <input type="text" name="min_stake" width="6" value="##TP_min_stake##" >
+                </td>
+            </tr>
+            <tr>
+                <td><b>Stake Mode</b></td>
+                <td>
+                    <select name="stake_mode">
+                      <option value="C" ##TP_IF {[tpGetVar stakeModeCur]=="C"}##selected##TP_ENDIF##>
+                            Continuous
+                      </option>
+                      <option value="D" ##TP_IF {[tpGetVar stakeModeCur]=="D"}##selected##TP_ENDIF##>
+                            Discrete
+                      </option>
+                    </select>
+                </td>
+
+                <td><b>External Settle</b></td>
+                <td>
+                    <select name="external_settle">
+                      <option value="Y" ##TP_IF {[tpGetVar extSettleCur]=="Y"}##selected##TP_ENDIF##>
+                            Yes
+                      </option>
+                      <option value="N" ##TP_IF {[tpGetVar extSettleCur]=="N"}##selected##TP_ENDIF##>
+                            No
+                      </option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Max Selns</b></td>
+                <td>
+                    <input type="text" name="max_selns" width="6" value="##TP_max_selns##" >
+                </td>
+                <td><b>Min Subscriptions</b></td>
+                <td>
+                    <input type="text" name="min_subs" width="6" value="##TP_min_subs##" >
+                </td>
+            </tr>
+            <tr>
+                <td><b>Max Subscriptions</b></td>
+                <td>
+                    <input type="text" name="max_subs" width="6" value="##TP_max_subs##" >
+                </td>
+                <td><b>Coupon Max Lines</b></td>
+                <td>
+                    <input type="text" name="coupon_max_lines" width="6" value="##TP_coupon_max_lines##" >
+                </td>
+            </tr>
+            <tr>
+                <td><b>Results (URL)</b></td>
+                <td>
+                    <input type="text" name="results" width="20" value="##TP_results##" >
+                </td>
+				<td><b>Rules (URL)</b></td>
+                <td>
+                    <input type="text" name="rules" width="20" value="##TP_rules##" >
+                </td>
+            </tr>
+            <tr>
+				<td><b>Flag Gif</b></td>
+                <td>
+                    <input type="text" name="flag_gif" width="20" value="##TP_flag_gif##" >
+                </td>
+			##TP_IF {[OT_CfgGet FUNC_LOTTO_MAX_PAYOUT 0]}##
+                <td><b>Max Payout</b></td>
+                <td>
+                    <input type="text" name="max_payout" width="6" value="##TP_max_payout##" >
+                </td>
+			##TP_ENDIF##
+            </tr>
+			<tr>
+			</tr>
+        </table>
+    </td></tr>
+	<tr bgcolor=#10137c>
+		<td>
+		<input type="Submit" name="Submit" value="Submit">
+		</td>
+	</tr>
+  </table>
+
+  ##TP_IF {[tpGetVar mode]=="edit"} ##
+      ##TP_IF {[OT_CfgGet XGAME_EDIT_DRAW_DESCS 0]}##
+      <br/>
+      <table cellspacing=0 cellpadding=2 border="0" bgcolor=#cccccc>
+        <tr bgcolor=#10137c>
+            <th class=title colspan=3>
+                <font color=white size=+1>Draw Descriptions</font>
+            </th>
+        </tr>
+        <tr>
+            <td><a href="##TP_CGI_URL##?action=DoXGameFind&GameName=Edit Draw Desc&sort=##TP_sort##">View Draw Descriptions</a></td>
+        </tr>
+      </table>
+      ##TP_ENDIF##
+
+      ##TP_IF {[OT_CfgGet XGAME_PRICE_MATRIX 0]}##
+      <br/>
+      <table cellspacing=0 cellpadding=2 border="0" bgcolor=#cccccc>
+        <tr bgcolor=#10137c>
+            <th class=title colspan=3>
+                <font color=white size=+1>Prices</font>
+            </th>
+        </tr>
+        <tr>
+            <td><a href="##TP_CGI_URL##?action=DoXGameFind&GameName=Price Matrix&sort=##TP_sort##">Price Matrix</a></td>
+        </tr>
+      </table>
+      ##TP_ENDIF##
+  ##TP_ENDIF##
+
+  ##TP_IF {[tpGetVar mode]=="edit"} ##
+  	##TP_IF {[tpGetVar stakeModeCur]=="C"}##
+	  <br/>
+	  <p><b>##TP_IF {[tpGetVar min_max_stored]=="true"}##<font color="green">Min and Max values for bet types are completed</font>##TP_ELSE##<font color="red">Min and Max values for bet types are not yet completed</font>##TP_ENDIF##</b></p>
+	  <table cellspacing=0 cellpadding=2 border="0" bgcolor=#cccccc>
+		<tr bgcolor=#10137c>
+			<th class=title colspan=3>
+				<font color=white size=+1>Max Min Bets</font>
+			</th>
+		</tr>
+		<tr>
+			<td><b>Bet Type</b></td>
+			<td><b>Max bet</b></td>
+			<td><b>Min Bet</b></td>
+		</tr>
+
+		##TP_LOOP row_idx {[tpGetVar bet_type_count]}##
+			##TP_TCL {tpBindString idx [tpGetVar row_idx]}##
+			<tr>
+				<td>
+					<input type=text readonly value="##TP_TYPE##" name="##TP_idx##_type"/>
+				</td>
+				<td>
+					<input type=text value="##TP_MAX##" name="##TP_idx##_max"/>
+				</td>
+				<td>
+					<input type=text value="##TP_MIN##" name="##TP_idx##_min"/>
+				</td>
+			</tr>
+		##TP_ENDLOOP row_idx##
+
+		<input type=hidden value="##TP_TCL {tpBufWrite [tpGetVar bet_type_count]}##" name="bet_type_count"/>
+	##TP_ELSE##
+		<input type=hidden value="0" name="bet_type_count"/>
+	##TP_ENDIF##
+  ##TP_ENDIF##
+  </table>
+  </body>
+  </form>
+</html>

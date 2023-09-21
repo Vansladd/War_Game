@@ -1,0 +1,186 @@
+##TP_IF {[OT_CfgGetTrue FUNC_CUST_DEP_LIMITS]}##
+<!-- Customer Deposit Limits -->
+##TP_IF {[OT_CfgGet FUNC_DEPOSIT_LIMIT_MANUAL_FIELD 0] == 1}##
+<script language=javascript>
+function depLimitDisable(b,val)
+{
+	b.form.dep_limit_text.value = numericCheck(val);
+	if (b.form.dep_limit_text.value!="") {
+		b.form.dep_limit.selectedIndex=0;
+		b.form.dep_limit.disabled=true;
+	} else {
+		b.form.dep_limit.disabled=false;
+	}
+}
+function numericCheck(val)
+{
+	var regex=/^[0-9\.]+$/;
+	if(regex.test(val))
+	{
+		return val;
+	} else {
+		alert("Error: non-numeric value entered");
+		return "";
+	}
+}
+function checkPermissions(b,what)
+{
+	##TP_IF {![op_allowed UpdCustDepLimitFree]}##
+	if (b.form.dep_limit_text.value!="") {
+		alert("An error occurred: You don't have permission to update customer deposit limits");
+		return 0;
+	}
+	##TP_ENDIF##
+	return changeCustLimit(b,what);
+}
+function changeCustLimit(b,what)
+{
+	if (b.form.limit_period.value=="") {
+		alert("Please specify the period of limits");
+		return 0;
+	}
+
+	return fs(b,what);
+}
+</script>
+##TP_ENDIF##
+<form action="##TP_CGI_URL##" method=get name="CustDepLimits">
+
+<table border=0 cellspacing=0 cellpadding=2 bgcolor=#cccccc>
+
+##TP_IF {[OT_CfgGetTrue BASIC_CASINO_LIMIT]}##
+
+<tr bgcolor=#10137c>
+	<th align=left colspan=2>
+	<font color=white size=+1>
+	Customer Casino Transfer Limits
+	</font>
+	</th>
+</tr>
+<tr>
+	<td height="20"><b>Social Responsibility Frequency</b></td>
+	<td height="20">
+	<select name="SRP_FRQ">
+		<script>write_select(##TP_srp_frq##, 0, "24hr", 1, "Week");</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td height="20"><b>Maximum Deposit Transfer Per 24hr/Week</b></td>
+	<td align=left height="20">
+	<input type=text name="max_tfr_dep_day" value=##TP_max_tfr_dep_day##>
+	</td>
+</tr>
+<tr>
+	<td height="20"><b>Maximum Withdrawal Transfer Per 24hr/Week</b></td>
+	<td align=left height="20">
+	<input type=text name="max_tfr_wtd_day" value=##TP_max_tfr_wtd_day##>
+	</td>
+</tr>
+<tr bgcolor=#10137c>
+	<th colspan=2 align=left>
+	<font color=white>
+	<input type=button value="Update Customer Limits" onClick="return fs(this,'DoCustTypeLimit')">
+	##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+	<input type=button value="View Audit History" onClick="return doAudit('CustLimits', this)">
+	<input type=hidden name=AuditInfo value="">
+	##TP_ENDIF##
+	##TP_IF {[OT_CfgGetTrue MCM_MAN_ADJ_TFR]}##
+	<input type=button value="View Transfer History" onClick="return fs(this,'CustCasinoTfrHist')">
+	##TP_ENDIF##
+	</font>
+	</th>
+</tr>
+
+##TP_ENDIF##
+##TP_ENDIF##
+
+<!--Customer Deposit Limits-->
+##TP_IF {[OT_CfgGetTrue FUNC_CUST_DEP_LIMITS]}##
+<table border=0 cellspacing=0 cellpadding=2 bgcolor=#cccccc>
+<form action="##TP_CGI_URL##" method=get name="CustDepLimits">
+<tr>
+	<th class=title colspan=2>
+	Customer Deposit Limits
+	</th>
+</tr>
+<tr>
+    <td class="caption"><b>Maximum deposit limit</b></td>
+    <td>
+		<select name="dep_limit" ##TP_IF {[OT_CfgGet FUNC_DEPOSIT_LIMIT_MANUAL_FIELD 0] == 1}## onChange="this.form.dep_limit_text.value=''" ##TP_ENDIF##>
+			<script language="javascript" type="text/javascript">
+				write_select("##TP_CurDepLimit##"
+					,"" ,"No limit"
+					##TP_LOOP dep_idx {[tpGetVar num_dep_limits 0]}##
+					,"##TP_DepLimit##" ,"##TP_DepLimit##"
+					##TP_ENDLOOP##
+				);
+			</script>
+		</select>
+		##TP_IF {[OT_CfgGet FUNC_DEPOSIT_LIMIT_MANUAL_FIELD 0] == 1}##
+		&nbsp;&nbsp;&nbsp;or&nbsp;&nbsp;&nbsp;<input type="text" name="dep_limit_text" value="##TP_CurLimitFieldValue##" size=10  onclick="this.form.dep_limit.selectedIndex=0" onchange="depLimitDisable(this,this.value)">
+		##TP_ENDIF##
+    </td>
+</tr>
+
+<tr>
+	<td class="caption"><b>Limit period</b></td>
+	<td align="left">
+		<select name="limit_period">
+			<script language="javascript" type="text/javascript">
+				write_select("##TP_CurLimitPeriod##"
+					,"" ,"None"
+					,"day" ,"Daily"
+					##TP_IF {[OT_CfgGet FUNC_DEPOSIT_LIMIT_DAILY_ONLY 0] != 1}##
+					,"week" ,"Weekly"
+					,"month" ,"Monthly"
+					##TP_ENDIF##
+				);
+			</script>
+		</select>
+	</td>
+</tr>
+
+##TP_IF {[OT_CfgGetTrue FUNC_CUST_DEP_LIMITS_MAX_FRQ]}##
+<tr>
+	<td class=caption><b>Maximum number of Deposits Per 24hr/Week</b></td>
+	<td>
+	<select name="MAX_FRQ">
+		<script>write_max_frq();</script>
+		</select>
+	<script>
+		update_selected(document.CustDepLimits.MAX_FRQ, ##TP_FRQ_DEPOSIT##);
+	</script>
+	</td>
+</tr>
+##TP_ELSE##
+<input type="hidden" name="MAX_FRQ" value="##TP_FRQ_DEPOSIT##">
+##TP_ENDIF##
+
+<tr>
+	<th class=buttons colspan="2">
+	<input type=button class="btn_def" value="Update Customer Limits" ##TP_IF {[OT_CfgGet FUNC_DEPOSIT_LIMIT_MANUAL_FIELD 0] == 1}## onClick="return checkPermissions(this,'DoCustLimit')" ##TP_ELSE## onClick="return fs(this,'DoCustLimit')" ##TP_ENDIF##>
+	<input type=button class="btn_def" value="View Audit History" onClick="return doAudit('CustLimits', this)">
+	<input type=button class="btn_def" value="View Frequency Audit History" onClick="return doAudit('CustomerFlagSingle', this)">
+    <input type=hidden name="FlagName" value="srp_dep_week">
+	<input type=hidden name=AuditInfo value="">
+
+	</font>
+	</th>
+</tr>
+
+##TP_ENDIF##
+
+</table>
+
+<input type=hidden name=PermissionLevel value="">
+<input type=hidden name=CustId value="##TP_CustId##">
+<input type=hidden name=OLD_MAX_DEP value="##TP_cust_max_dep##">
+<input type=hidden name=OLD_MAX_FRQ value="##TP_cust_max_frq##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::CUST::DoCust>
+
+</form>
+
+<br>
+##TP_ENDIF##

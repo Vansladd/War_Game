@@ -1,0 +1,89 @@
+<html>
+<!-- $Id: alert_acct.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Alert Setting</title>
+##TP_PLAY JS_WriteSelect.html##
+</head>
+<body>
+
+##TP_PLAY msg_rpt.html##
+##TP_PLAY error_rpt.html##
+
+<table cellspacing=0 cellpadding=2 border=0>
+
+<form method=post action="##TP_CGI_URL##">
+
+<input type=hidden name=action value="ADMIN::ALERTS::DoAlertAcct">
+<input type=hidden name=CustId value=##TP_CustId##>
+
+<tr>
+	<th class=title colspan=2>Alert Account Setting</th>
+</tr>
+<tr>
+	<td class=caption>Acount</td>
+	<td>
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<select name=AcctId>
+				<script>
+					write_select('##TP_AcctId##'
+					##TP_LOOP acct_idx {[tpGetVar NumAccts]}##
+						,'##TP_AcctAcctId##','##TP_AcctAcctId##'
+					##TP_ENDLOOP##
+					);
+				</script>
+			</select>
+		##TP_ELSE##
+			<input type=hidden name=AcctId value="##TP_AcctId##">
+			##TP_AcctId##
+		##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Free Count</td>
+	<td>
+		<input type=text name=FreeCount value="##TP_FreeCount##">
+	</td>
+</tr>
+<tr>
+	<td class=caption>Total</td>
+	<td>
+		<input type=text name=Total value="##TP_Total##">
+	</td>
+</tr>
+<tr>
+	<td class=caption>Cost</td>
+	<td>
+		<input type=text name=Cost value="##TP_Cost##">
+		<small>Default currency, not the customers</small>
+	</td>
+</tr>
+<tr>
+	<th class=buttons>
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=submit class="btn_def" name=SubmitName value=Add>
+		##TP_ELSE##
+			<input type=submit class="btn_def" name=SubmitName value=Update>
+			<input type=submit class="btn_def" name=SubmitName value=Delete>
+		##TP_ENDIF##
+		<input type=submit class="btn_def" name=SubmitName value=Back>
+	</th>
+	</form>
+	<th class=buttons align=right>
+		##TP_IF {![tpGetVar opAdd 0]}##
+		<!-- show the audit info -->
+		<form method=get action="##TP_CGI_URL##">
+			<input type=hidden name=action value="ADMIN::AUDIT::GoAudit">
+			<input type=hidden name=AuditInfo value=AlertAcct>
+			<input type=hidden name=AcctId value="##TP_AcctId##">
+			<input type=hidden name=CustId value="##TP_CustId##">
+			<input type=submit class="btn_def" value="View Audit History">
+		</form>
+		##TP_ENDIF##
+	</th>
+</tr>
+</table>
+
+</body>
+</html>

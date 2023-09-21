@@ -1,0 +1,289 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<script language=javascript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function init() {
+	change_dropdown()
+
+	document.getElementById("fn_add_header").style.display = "none"
+	document.getElementById("fn_add_body").style.display = "none"
+}
+
+function removeChild(_node) {
+	_node.parentNode.removeChild(_node);
+}
+
+
+// Make a drop down visible if 
+function change_dropdown () {
+	var pay_mthd = document.getElementById("new_pay_mthd_cmb")
+	var scheme   = document.getElementById("new_scheme_div")
+	
+	// Blank string so the browser picks the default for the item.
+	scheme.style.display = (pay_mthd.value == "CC" ? "" : "none");
+}
+
+function addPayMthd(_mthd, _mthd_name, _scheme) {
+	// Get the required data.
+	var combo        = document.getElementById("new_pay_mthd_cmb");
+
+	if (combo.selectedIndex > 0) {
+		var mthd_id      = combo.value;
+		var mthd_name    = combo.options[combo.selectedIndex].text;
+	
+		var combo        = document.getElementById("new_scheme_cmb");
+		var scheme       = combo.value;
+		var scheme_name  = combo.options[combo.selectedIndex].text;
+	
+		//document.getElementById("fn_add_header").style.display = "none";
+		//document.getElementById("fn_add_body").style.display = "none";
+	
+		// Change values.
+		document.getElementById("new_payScheme").value  = scheme;
+		document.getElementById("new_payMthd").value    = mthd_id;
+		document.getElementById("new_header").innerHTML = mthd_name+" "+scheme_name;
+	
+		// Blank string so the browser picks the default for the item.
+		document.getElementById("fn_add_header").style.display = ""
+		document.getElementById("fn_add_body").style.display   = ""
+	
+		return;
+			
+		var h = document.getElementById("fn_add_header")
+		var b = document.getElementById("fn_add_body")
+	
+		// Clone the nodes.
+		var header = h.cloneNode(true);
+		var body   = b.cloneNode(true);
+	
+		var t_node = document.getElementById("node_place_holder");
+		var p_node = document.getElementById("tWtdLmt");
+	
+	
+	
+		// Add the nodes.
+		p_node.tBodies[0].insertBefore(header, t_node);
+		p_node.tBodies[0].insertBefore(body, t_node);
+	}
+}
+
+</script>
+</head>
+<body onload="init()">
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+##TP_IF {[op_allowed ViewWtdLimits]}##
+
+	<!-- Notification Limits -->
+	<table cellspacing="0" cellpadding="2" border="0">
+	<form action="##TP_CGI_URL##">
+	<input type="hidden" name="SubmitName">
+	<input type="hidden" name="action" value="ADMIN::PMT::DoFraudNotfiy">
+			<tr>
+				<th class="title" colspan="5"> Fraud Notification </th>
+			</tr>
+			<tr>
+				<th class="colhead">Pay Mthd</th>
+				<th class="colhead">Pay Type</th>
+				<th class="colhead">Max Wtd</th>
+				<th class="colhead">Email</th>
+				<th class="colhead"></th>
+			</tr>
+			##TP_IF {[tpGetVar NumFraudNotify] < 1}##
+				<tr>
+					<td colspan=4>No Limits Set.</td>
+				</tr>
+			##TP_ENDIF##
+			##TP_LOOP idx {[tpGetVar NumFraudNotify]}##
+			<tr>
+				<td>
+					<input type="hidden" name="mw_payMthd_##TP_TCL {tpGetVar idx}##" value="##TP_mw_payMthd##">
+					##TP_mw_payMthdDesc##
+				</td>
+	
+				<td>
+					<input type="hidden" name="mw_scheme_##TP_TCL {tpGetVar idx}##" value="##TP_mw_scheme##">
+					##TP_mw_schemeName##
+				</td>
+	
+				<td><input name="mw_maxWtd_##TP_TCL {tpGetVar idx}##" value="##TP_mw_maxWtd##" size="20"></td>
+	
+				<td><input name="mw_email_##TP_TCL {tpGetVar idx}##" value="##TP_mw_email##" size="20"></td>
+				<td><a href="##TP_CGI_URL##?action=ADMIN::PMT::DoDelFraudNotify&payMthd=##TP_mw_payMthd##&scheme=##TP_mw_scheme##">Delete</td>
+			</tr>
+			##TP_ENDLOOP##
+			<tr>
+				<th colspan=5 class=buttons>
+					<input type=button class="btn_def" value="Update" onClick="return fs(this,'doUpd')">
+					<input type=button class="btn_def" ##TP_IF {[tpGetVar disable_add] > 0}##disabled##TP_ENDIF## value="Add" onClick="return fs(this,'goAdd')">
+				</th>
+			</tr>
+	</form>
+	</table>
+	
+	<!-- Withdrawal Limits -->
+	<table id="tWtdLmt" border=0 cellspacing=0 cellpadding=3>
+	<tr>
+		<th colspan=4 class=title>Withdrawal Limits</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>Number of Days since first deposit</th>
+		<th nowrap class=colhead>Days between withdrawals</th>
+		<th nowrap class=colhead>Max Withdrawals</th>
+		<th nowrap class=colhead>&nbsp;</th>
+	</tr>
+		<!-- header -->
+		##TP_LOOP idx {[tpGetVar NumFraudLimits]}##
+		##TP_IF {$WTD_LMT([tpGetVar idx],header)}##
+			<tr>
+				<th colspan=3 class=colhead>##TP_payDesc## ##TP_scheme_name##</td>
+				<th class=colhead>edit</td>
+			</tr>
+		##TP_ENDIF##
+		<tr>
+			<td>##TP_firstDep##</td>
+			<td>##TP_daysLastWtd##</td>
+			<td>##TP_maxWtd##</td>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::PMT::DoDelWtdLimits&limitId=##TP_limitId##">Del</a></td>
+		</tr>
+		##TP_IF {$WTD_LMT([tpGetVar idx],footer)}##
+		<form name="add_fraud_limit" method="POST" action="##TP_CGI_URL##">
+			<input type="hidden" name="payMthd"   value="##TP_payMthd##">
+			<input type="hidden" name="payScheme" value="##TP_scheme##">
+	
+			<input type="hidden" name="action" value="ADMIN::PMT::DoWtdLimits">
+			<input type="hidden" name="SubmitName" value="">
+			<tr>
+				<td><input type="text" size="4" name="new_firstDep" value="##TP_new_firstDep##"></td>
+				<td><input type="text" size="4" name="new_daysLastWtd" value="##TP_new_daysLastWtd##"></td>
+				<td><input type="text" size="4" name="new_maxWtd" value="##TP_new_maxWtd##"></td>
+				<td nowrap><input type="button" name="AddBtn" value="Add / Amend" onClick="return fs(this,'doAdd')" ></td>
+			</tr>
+		</form>
+		##TP_ENDIF##
+		##TP_ENDLOOP##
+	
+	
+	
+	
+		<!-- To insert a new category -->
+		<tr id="fn_add_header">
+			<th id="new_header" colspan=3 class=colhead> email: fraud_check_quickcash@willhill.com</th>
+			<th></th>
+		</tr>
+		<tr id="fn_add_body">
+			<form name="add_fraud_limit" method="POST" action="##TP_CGI_URL##">
+				<input type="hidden" id="new_payMthd" name="payMthd"   value="">
+				<input type="hidden" id="new_payScheme" name="payScheme" value="">
+		
+				<input type="hidden" name="action" value="ADMIN::PMT::DoWtdLimits">
+				<input type="hidden" name="SubmitName" value="">
+				<td><input type="text" size="4" name="new_firstDep" value="##TP_new_firstDep##"></td>
+				<td><input type="text" size="4" name="new_daysLastWtd" value="##TP_new_daysLastWtd##"></td>
+				<td><input type="text" size="4" name="new_maxWtd" value="##TP_new_maxWtd##"></td>
+				<td nowrap><input type="button" name="AddBtn" value="Add / Amend" onClick="return fs(this,'doAdd')" ></td>	
+			</form>
+		</tr>
+	
+	</table>
+	
+	##TP_IF {[tpGetVar NumPayMthds] > 0}##
+	<table id="tWtdLmt" border=0 cellspacing=0 cellpadding=3>
+		<tr>
+			<th colspan=2 class=title>Add Withdrawal Limit</th>
+		</tr>
+		<tr>
+			<td class=caption>Pay Mthd</td>
+			<td>
+				<select id="new_pay_mthd_cmb" onchange="change_dropdown(this)" name="payMthd">
+					<option SELECTED value="">Please Select</option>
+					##TP_LOOP pay_mtd_idx {[tpGetVar NumPayMthds]}##
+						<option value="##TP_cmb_pay_mthd##">##TP_cmb_desc##</option>
+					##TP_ENDLOOP##
+				</select>
+			</td>
+		</tr>
+		<tr id="new_scheme_div">
+			<td class=caption>Pay Type</td>
+			<td>
+				<select id="new_scheme_cmb" name="scheme">
+					<option SELECTED value="">Please Select</option>
+					##TP_LOOP scheme_idx {[tpGetVar NumSchemes]}##
+						<option value="##TP_cmb_scheme##">##TP_cmb_scheme_name##</option>
+					##TP_ENDLOOP##
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<th colspan=2 class=buttons>
+				<input onclick="addPayMthd()" type="button" value="Add Method">
+			</td>
+		<tr>
+		
+	</table>
+	##TP_ENDIF##
+
+##TP_ENDIF##
+
+##TP_IF {[op_allowed ViewLargeReturns]}##
+	<!-- Large Returns -->
+	<table cellspacing="0" cellpadding="2" border="0">
+	<form action="##TP_CGI_URL##">
+	<input type="hidden" name="SubmitName">
+	<input type="hidden" name="action" value="ADMIN::PMT::DoReturnLimits">
+	
+			<tr>
+				<th class="title" colspan="4"> Large Returns </th>
+			</tr>
+			<tr>
+				<th class="colhead">Type</th>
+				<th class="colhead">Sub Type</th>
+				<th class="colhead">Amount</th>
+				<th class="colhead"></th>
+			</tr>
+			<!-- Do this for every pay mthd in the system plus one extra blank one -->
+			##TP_IF {[tpGetVar NumFraudNotify] < 1}##
+				<tr>
+					<td colspan=4>No rows.</td>
+				</tr>
+			##TP_ENDIF##
+			##TP_LOOP idx {[tpGetVar LargeLmtNum]}##
+			<tr>
+				<td>
+					<input type="hidden" name="productArea_##TP_TCL {tpGetVar idx}##" value="##TP_productArea##">
+					##TP_productArea##
+				</td>
+				<td>
+					<input type="hidden" name="refId_##TP_TCL {tpGetVar idx}##" value="##TP_refId##">
+					##TP_refName##
+				</td>
+				<td>
+					<input name="limit_##TP_TCL {tpGetVar idx}##" type="text" value="##TP_limit##" size="8">
+				</td>
+				<td>
+					<a href="##TP_CGI_URL##?action=ADMIN::PMT::DoDelReturnLimits&productArea=##TP_productArea##&refId=##TP_refId##">Del</a>
+				</td>
+			</tr>
+			##TP_ENDLOOP##
+			<tr>
+				<th colspan=4 class=buttons>
+					<input type=button class="btn_def" value="Update" onClick="return fs(this,'doUpd')">
+					<input type=button class="btn_def" value="Add" onClick="return fs(this,'goAdd')">
+				</th>
+			</tr>
+	</form>
+	</table>
+##TP_ENDIF##
+</body>
+</html>

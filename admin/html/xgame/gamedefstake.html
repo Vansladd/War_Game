@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+    <title>Game Stakes</title>
+</head>
+
+<body bgcolor=white>
+<table cellspacing=0 cellpadding=2 border=0 bgcolor="#cccccc">
+	<form action="##TP_CGI_URL##">		
+		<input type=hidden name=sort value="##TP_sort##">
+		<input type=hidden name=stake_mode value="##TP_StakeMode##">
+	<tr bgcolor="#10137c">
+		<th colspan=4 align=left><font color=white size=+1>Edit Allowed Stakes for ##TP_sort##</th>
+	</tr>
+    <tr bgcolor="#999999">
+		<th align=left>Stake (##TP_ccy_code##)</th>
+		<th align=left>&nbsp;</th>
+    </tr>
+	##TP_IF {[tpGetVar CtsStakes]==0}##
+		<input type=hidden name=action value="add_gamedef_stake">
+    ##TP_LOOP idx {[tpGetVar gamedefstake_nrows]}##
+    <tr>
+		<td>##TP_gamedefstake_stake##</td>
+      	<td><a href="##TP_CGI_URL##?action=delete_gamedef_stake&stake=##TP_gamedefstake_stake##&sort=##TP_sort##">[delete stake]</a></td>
+	</tr>
+    ##TP_ENDLOOP##
+    <tr bgcolor="#10137c">
+		<td><input name=stake size=5></td>
+		<td><input type=submit class="btn_def" value="Add stake"></td>
+    </tr>
+	##TP_ELSE##
+		<input type=hidden name=action value="modify_gamedef_stake">
+	<tr>
+		<td><font color="#006666"><i>Min Stake</i></font></td>
+		<td><input type=text name=min_stake value="##TP_MinStake##" size=5></td>
+	</tr>
+	<tr>
+		<td><font color="#006666"><i>Max Stake</i></font></td>
+		<td><input type=text name=max_stake value="##TP_MaxStake##" size=5></td>
+	</tr>
+	<tr bgcolor="#10137c">
+		<td>&nbsp;</td>
+		<td><input type=submit class="btn_def" value="Submit stakes"></td>
+	</tr>
+	##TP_ENDIF##
+    </form>
+</table>
+</body>
+</html>

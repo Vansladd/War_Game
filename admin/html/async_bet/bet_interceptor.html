@@ -1,0 +1,1699 @@
+<html>
+	<!-- $Id: bet_interceptor.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=ADMIN::ASYNC_BET::GoStylesheet">
+	<script language="javascript" src="##TP_CGI_URL##?action=ADMIN::ASYNC_BET::GoScript" type="text/javascript"></script>
+	<script language="javascript" src="##TP_OFFICE_STATIC_URL##/sound_manager/script/soundmanager.js" type="text/javascript"></script>
+	<script type="text/javascript" src="##TP_OFFICE_STATIC_URL##/js/xmlhttp.js"></script>
+	<script src="##TP_CGI_URL##?action=list_js"></script>
+	<title>Auto-referral Bet Details</title>
+
+	<script language="javascript">
+	##TP_ESC esc_js##
+		// AJAX global variable settings
+		var call_back_func = updateResultsDiv;
+		var call_back_url  = '##TP_CGI_URL##?action=ADMIN::ASYNC_BET::DoPendingBetSearch';
+		var method         = 'POST';
+		var error_msg      = '##TP_XL ASYNCH_BET_DETAILS_UNAVAILABLE##';
+
+		// Cookie global variable settings
+		var viewPrefCookieName      = '##TP_view_pref_cookie##';
+		var filterOptionsCookieName = '##TP_filter_options_cookie##';
+		var viewPrefArray           = new Array();
+		var filterOptionsArray      = new Array();
+		
+		var min_refresh_rate = parseInt('##TP_min_refresh_rate##');
+
+		// Stores latest bet ID
+		var max_bet_id;
+
+		// The refresh time
+		var countDownTime;
+
+		// A timer to use
+		var countDownTimer;
+
+		// List of bets
+
+		document.bet_list = new List();
+		// categories table
+		var categories = new Array(##TP_LOOP cat_idx {[tpGetVar NumCategories]}##'##TP_CategoryId##--##TP_CategoryName##'##TP_IF {[tpGetVar cat_idx]!=[expr {[tpGetVar NumCategories]-1}]}##, ##TP_ENDIF####TP_ENDLOOP##);
+
+		// classes table
+		var classes = new Array(##TP_LOOP class_idx {[tpGetVar NumClasses]}##'##TP_ClassId##--##TP_ClassName##--##TP_ClassCategory##'##TP_IF {[tpGetVar class_idx]!=[expr {[tpGetVar NumClasses]-1}]}##, ##TP_ENDIF####TP_ENDLOOP##);
+
+		// types table
+		var types = new Array(##TP_LOOP ev_type_idx {[tpGetVar NumEvTypes]}##'##TP_TypeId##--##TP_TypeName##--##TP_TypeClassId##'##TP_IF {[tpGetVar ev_type_idx]!=[expr {[tpGetVar NumEvTypes]-1}]}##, ##TP_ENDIF####TP_ENDLOOP##);
+
+		// events table
+		var events = new Array(##TP_LOOP ev_idx {[tpGetVar NumEvents]}##'##TP_EvId##--##TP_EvName##--##TP_EvTypeId##'##TP_IF {[tpGetVar ev_idx]!=[expr {[tpGetVar NumEvents]-1}]}##, ##TP_ENDIF####TP_ENDLOOP##);
+
+		/*
+		 * Build the array of bet display preferences
+		 */
+		function setViewPref(f) {
+
+			var len = f.disp_pref_len.value;
+
+			for (var i = 0; i < len; i++) {
+				idx = "f.disp_" + i + ".checked";
+				val = eval(idx);
+				if (val)
+					j = 'Y';
+				else
+					j = 'N'
+				viewPrefArray[i] = j;
+			}
+			setCookie(viewPrefCookieName, viewPrefArray.join('|'), 10000);
+		}
+
+		/*
+		* Load up the view display preferences
+		*/
+		function loadViewPrefs() {
+
+			var f, cookie;
+			f = document.forms['async'];
+
+			cookie = getCookie(viewPrefCookieName);
+			viewPrefArray = cookie.split('|');
+			len = viewPrefArray.length;
+
+			for (var i = 0; i < len; i++) {
+				if (viewPrefArray[i] == "Y") {
+					idx = "f.disp_" + i + ".checked = true";
+					val = eval(idx);
+				}
+			}
+		}
+
+		/*
+		 * Build the array of bet filter options
+		 */
+		function setFilterOptions(f) {
+
+			var play_sound, refresh_rate, bir_flag, cat_chosen, class_chosen, channel_chosen, ev_type_chosen, event_chosen;
+			var num_cat_chosen, num_class_chosen, num_chan_chosen, num_ev_type_chosen, num_ev_chosen;
+
+			// Setup 'play sound' value
+			if (f.play_sound.checked) {
+				filterOptionsArray[0] = "Y";
+			} else {
+				filterOptionsArray[0] = "N";
+			}
+
+			// Setup 'refresh rate' value
+			refresh_rate = strTrim(f.refresh_rate.value," ");
+			if(!isInt8(refresh_rate, false)) {
+				alert("You must enter the refresh rate as integer");
+				return false;
+			} else {
+				filterOptionsArray[1] = refresh_rate;
+			}
+
+			// Setup 'play sound' value
+			if (f.bir_flag.checked) {
+				filterOptionsArray[2] = "Y";
+			} else {
+				filterOptionsArray[2] = "N";
+			}
+
+			// Get chosen categories and classes value(s)
+			num_cat_chosen = f.chosen_category_id.options.length;
+			num_class_chosen = f.chosen_class_id.options.length;
+			num_chan_chosen = f.chosen_channel_id.options.length;
+			num_ev_type_chosen = f.chosen_ev_type_id.options.length;
+			num_ev_chosen = f.chosen_ev_id.options.length;
+			num_owner_chosen = f.chosen_owner.options.length;
+
+			cat_chosen  = f.chosen_category_id.options;
+			class_chosen = f.chosen_class_id.options;
+			channel_chosen = f.chosen_channel_id.options;
+			ev_type_chosen = f.chosen_ev_type_id.options;
+			event_chosen = f.chosen_ev_id.options;
+			owner_chosen = f.chosen_owner.options;
+
+			cat_exclude = f.category_exclude.checked;
+
+			filterOptionsArray[3] = '';
+			for(var i=0; i < num_cat_chosen; i++) {
+				filterOptionsArray[3] += '' + cat_chosen[i].value + '&&';
+			}
+
+			filterOptionsArray[4] = '';
+			for(var i=0; i < num_class_chosen; i++) {
+				filterOptionsArray[4] += '' + class_chosen[i].value + '&&';
+			}
+
+			filterOptionsArray[5] = '';
+			for(var i = 0; i < num_chan_chosen; i++) {
+				filterOptionsArray[5] += '' + channel_chosen[i].value + '&&';
+			}
+
+			filterOptionsArray[6] = '';
+			for(var i=0; i < num_ev_type_chosen; i++) {
+				filterOptionsArray[6] += '' + ev_type_chosen[i].value + '&&';
+			}
+
+			filterOptionsArray[7] = '';
+			for(var i = 0; i < num_ev_chosen; i++) {
+				filterOptionsArray[7] += '' + event_chosen[i].value + '&&';
+			}
+
+			for (var i = 0; i< num_owner_chosen; i++) {
+				filterOptionsArray[8] = owner_chosen[i].value + '&&';
+			}
+
+			if (cat_exclude) {
+				filterOptionsArray[9] = '' + "Y";
+			} else {
+				filterOptionsArray[9] = '' + "N";
+			}
+
+			if (num_cat_chosen > 0) {
+				filterOptionsArray[3] = filterOptionsArray[3].substring(0,parseInt(filterOptionsArray[3].length-2));
+			}
+
+			if (num_class_chosen > 0) {
+				filterOptionsArray[4] = filterOptionsArray[4].substring(0,parseInt(filterOptionsArray[4].length-2));
+			}
+
+			if (num_chan_chosen > 0) {
+				filterOptionsArray[5] = filterOptionsArray[5].substring(0,parseInt(filterOptionsArray[5].length-2));
+			}
+
+			if (num_ev_type_chosen > 0) {
+				filterOptionsArray[6] = filterOptionsArray[6].substring(0,parseInt(filterOptionsArray[6].length-2));
+			}
+
+			if (num_ev_chosen > 0) {
+				filterOptionsArray[7] = filterOptionsArray[7].substring(0,parseInt(filterOptionsArray[7].length-2));
+			}
+
+			if (num_owner_chosen > 0) {
+				filterOptionsArray[8] = filterOptionsArray[8].substring(0,parseInt(filterOptionsArray[8].length-2));
+			}
+
+			// Setup the last bet ID
+			if (max_bet_id == undefined) { max_bet_id = -1; }
+			filterOptionsArray[10] = max_bet_id;
+
+			// Set the cookie to be what's in filterOptionsArray
+			setCookie(filterOptionsCookieName, filterOptionsArray.join('|'), 10000);
+		}
+
+		/*
+		* Load up the Filter Options
+		*/
+		function loadFilterOptions() {
+
+			var f, play_sound, refresh_rate, bir_flag, cat_chosen, class_chosen, channel_chosen, ev_type_chosen, event_chosen;
+			var cookie, num_cat_chosen, num_class_chosen, num_chan_chosen, num_ev_type_chosen, num_ev_chosen, cat_exclude;
+			var cat_id_len, class_id_len, chan_id_len, ev_type_id_len, ev_len;
+
+			f = document.forms['async'];
+
+			cat_chosen = f.chosen_category_id;
+			class_chosen = f.chosen_class_id;
+			channel_chosen = f.chosen_channel_id;
+			ev_type_chosen = f.chosen_ev_type_id;
+			event_chosen = f.chosen_ev_id;
+			cat_exclude = f.category_exclude;
+			owner_chosen = f.chosen_owner;
+
+			cat_orig   = f.category_id;
+			class_orig = f.class_id;
+			chan_orig = f.channel_id;
+			ev_type_orig = f.ev_type_id;
+			ev_orig = f.ev_id;
+			owner_orig = f.owner;
+
+			// Grab the filter Options Cookie
+			cookie             = getCookie(filterOptionsCookieName);
+			filterOptionsArray = cookie.split('|');
+
+			if (filterOptionsArray[0] == "Y") {
+				f.play_sound.checked = true;
+			}
+
+			// override refresh rate if it is below the minimum refresh rate allowed
+			if (filterOptionsArray[1] < min_refresh_rate) {
+				filterOptionsArray[1] = min_refresh_rate;
+			}
+
+			f.refresh_rate.value = filterOptionsArray[1];
+
+			// set up bir_flag
+			if (filterOptionsArray[2].length == "Y") {
+				f.bir_flag.checked = true
+			}
+
+			// Copy any category IDs in the cookie into the chosen category
+			// selection field
+			if (filterOptionsArray[3].length > 0) {
+				cookie_cat_ids = filterOptionsArray[3].split('&&');
+
+				cat_id_len = cookie_cat_ids.length;
+
+				for (var i = 0; i < cat_id_len; i++) {
+					cookieCopySeln(cat_orig,cat_chosen,cookie_cat_ids[i]);
+				}
+			}
+
+			// Copy any class IDs in the cookie into the chosen class
+			// selection field
+			if (filterOptionsArray[4].length > 0) {
+				cookie_class_ids = filterOptionsArray[4].split('&&');
+
+				class_id_len = cookie_class_ids.length;
+				for (var i = 0; i < class_id_len; i++) {
+					cookieCopySeln(class_orig,class_chosen,cookie_class_ids[i]);
+				}
+			}
+
+			if (filterOptionsArray[5].length > 0) {
+				cookie_chan_ids = filterOptionsArray[5].split('&&');
+
+				chan_id_len = cookie_chan_ids.length;
+				for (var i = 0; i < chan_id_len; i++) {
+					cookieCopySeln(chan_orig, channel_chosen,cookie_chan_ids[i]);
+				}
+			}
+
+			if (filterOptionsArray[6].length > 0) {
+				cookie_ev_type_ids = filterOptionsArray[6].split('&&');
+
+				ev_type_id_len = cookie_ev_type_ids.length;
+				for (var i = 0; i < ev_type_id_len; i++) {
+					cookieCopySeln(ev_type_orig, ev_type_chosen,cookie_ev_type_ids[i]);
+				}
+			}
+
+			if (filterOptionsArray[7].length > 0) {
+				cookie_ev_ids = filterOptionsArray[7].split('&&');
+
+				ev_id_len = cookie_ev_ids.length;
+				for (var i = 0; i < ev_id_len; i++) {
+					cookieCopySeln(ev_orig, event_chosen,cookie_ev_ids[i]);
+				}
+			}
+
+			if (filterOptionsArray[8].length > 0) {
+				cookie_owner = filterOptionsArray[8].split('&&');
+
+				owner_len = cookie_owner.length;
+				for (var i = 0; i < owner_len; i++) {
+					cookieCopySeln(owner_orig, owner_chosen, cookie_owner[i]);
+				}
+			}
+
+			if (filterOptionsArray[9].length == "Y") {
+				cat_exclude = true;
+			}
+
+			max_bet_id = filterOptionsArray[10];
+
+		}
+
+		// Create a countdown clock
+		function countDown(countDownInterval, evalOnCountDown,min_refresh_rate){
+			
+			if (min_refresh_rate > countDownInterval) {
+				countDownInterval = min_refresh_rate;
+			}
+
+			// the current refresh time
+			if (!countDownTime) {
+				countDownTime = countDownInterval + 1;
+			}
+		
+			countDownTime--;
+
+			// reset clock?
+			if (countDownTime <= 0) {
+		
+				countDownTime = countDownInterval;
+		
+				clearTimeout(countDownTimer);
+		
+				eval(evalOnCountDown);
+			}
+			countDownTimer = setTimeout("countDown(" + countDownInterval + ", '" + evalOnCountDown + "',"+min_refresh_rate+");", 1000);
+			
+			// this counter may be a non-visible one, so don't show it if this is the case
+			var countDown = getObject("countDown");
+		
+			if (countDown) {
+				countDown.innerHTML = countDownTime;
+			}
+		
+			return countDownInterval;
+		}
+
+		// Popup the asynchronous bet details page
+		function popupAsyncBetDetails(bet_id, bet_group_id) {
+
+			var url = "##TP_CGI_URL##?action=ADMIN::ASYNC_BET::GoBet&bet_id=" + bet_id + "&bet_group_id=" + bet_group_id;
+
+			window.open(
+				url,
+				"bet_"+bet_id,
+				"toolbar=no,location=no,directories=no,menubar=no,resizable=yes,scrollbars=yes,width=1150,height=800"
+			);
+
+		}
+
+		// Popup the asynchronous group bets page
+		function popupAsyncGrpBets(bet_group_id) {
+
+			var url = "##TP_CGI_URL##?action=ADMIN::ASYNC_BET::GoBetGroup&bet_group_id=" + bet_group_id;
+
+			window.open(
+				url,
+				"bet_group_"+bet_group_id,
+				"toolbar=no,location=no,directories=no,menubar=no,resizable=yes,scrollbars=yes,width=1150,height=800"
+			);
+
+		}
+
+		// Reset the count down
+		function setRefreshTimeout() {
+
+			var f, refresh_rate;
+			f = document.forms['async'];
+			refresh_rate = parseInt(strTrim(f.refresh_rate.value," "));
+
+			if (min_refresh_rate > refresh_rate) {
+				refresh_rate = min_refresh_rate;
+			}
+
+			countDownTime = -1;
+
+			countDown(refresh_rate, "searchBets();");
+		}
+
+		function doOnloadActions() {
+
+			var f, refresh_rate;
+			f = document.forms['async'];
+
+			// load data from cookies and update the forms
+			loadFilterOptions();
+			loadViewPrefs();
+			refresh_rate = parseInt(strTrim(f.refresh_rate.value," "));
+
+ 			// Start the count down timer
+ 			startClock('##TP_curr_year##', '##TP_curr_mon##', '##TP_curr_date##', '##TP_curr_hour##', '##TP_curr_min##', '##TP_curr_sec##');
+
+			countDown(refresh_rate, "searchBets();");
+
+			// Init sound manager JS-flash plugin
+			soundManagerInit('##TP_OFFICE_STATIC_URL##/sound_manager');
+		}
+
+		function loadAllCategories () {
+			var category_select = document.getElementById('id_category_id');
+			for(var i = 0, j=2; i < categories.length; i++) {
+				var categoryObj = categories[i].split('--');
+				category_select.appendChild(createOption(categoryObj[0],categoryObj[1]));
+			}
+		}
+
+		function loadAllClasses () {
+			var class_select = document.getElementById('id_class_id');
+			for(var i = 0; i < classes.length; i++) {
+				var classObj = classes[i].split('--');
+				class_select.appendChild(createOption(classObj[0],classObj[1]));
+			}
+		}
+
+		function loadAllTypes () {
+			var type_select = document.getElementById('id_ev_type_id');
+			for(var i = 0; i < types.length; i++) {
+				var typeObj = types[i].split('--');
+				type_select.appendChild(createOption(typeObj[0],typeObj[1]));
+			}
+		}
+
+		function loadAllEvents () {
+			var event_select = document.getElementById('id_ev_id');
+			for(var i = 0; i < events.length; i++) {
+				var eventObj = events[i].split('--');
+				event_select.appendChild(createOption(eventObj[0],eventObj[1]));
+			}
+		}
+
+		// Update the result section of the page
+		function updateResultsDiv(response) {
+
+			var f, bets_div, cookie, new_max_bet_id;
+
+			f = document.forms['async'];
+
+			bets_div = document.getElementById("betInterceptorResults");
+			bets_div.innerHTML = response;
+
+			cookie             = getCookie(filterOptionsCookieName);
+			filterOptionsArray = cookie.split('|');
+
+			new_max_bet_id = parseInt(filterOptionsArray[10]);
+
+			// Play a sound if a new bet has come through and player
+			// has checked 'Play Sound'
+			if (new_max_bet_id > max_bet_id && f.play_sound.checked == true) {
+				// window.focus() is just working in IE7 at the moment
+				// A work around would need to be find for Firefox for Phase 2
+				window.focus();
+				soundManager.play('smash1');
+				max_bet_id = new_max_bet_id;
+			}
+
+			retickPreselectedBets();
+		}
+
+		// Return the forms arguments as a parameter list in a URL
+		function getFormArgs() {
+
+			var f, num_cat_chosen, num_class_chosen, cat_chosen, class_chosen, channel_chosen, cat_exclude;
+			var param_str;
+
+			f = document.forms['async'];
+			param_str = '';
+
+			if (f.play_sound.checked) {
+				param_str += "play_sound=Y&";
+			} else {
+				param_str += "play_sound=&";
+			}
+
+			param_str += "refresh_rate="+f.refresh_rate.value+"&";
+			if (f.bir_flag.checked) {
+				param_str += "bir_flag=Y&";
+			} else {
+				param_str += "bir_flag=N&";
+			}
+
+			num_cat_chosen   = f.chosen_category_id.options.length;
+			num_class_chosen = f.chosen_class_id.options.length;
+			num_chan_chosen  = f.chosen_channel_id.options.length;
+			num_ev_type_chosen = f.chosen_ev_type_id.options.length;
+			num_ev_chosen = f.chosen_ev_id.options.length;
+			num_owner_chosen = f.chosen_owner.length;
+
+			cat_chosen = f.chosen_category_id.options;
+			class_chosen = f.chosen_class_id.options;
+			channel_chosen = f.chosen_channel_id.options;
+			ev_type_chosen = f.chosen_ev_type_id.options;
+			ev_chosen = f.chosen_ev_id.options;
+			cat_exclude = f.category_exclude.checked;
+
+			for(var i=0; i < num_cat_chosen; i++) {
+				param_str += "chosen_category_id=" + cat_chosen[i].value + "&";
+			}
+
+			for(var i=0; i < num_class_chosen; i++) {
+				param_str += "chosen_class_id=" + class_chosen[i].value + "&";
+			}
+
+			for (var i=0; i < num_chan_chosen; i++) {
+				param_str += "chosen_channel_id=" + channel_chosen[i].value + "&";
+			}
+
+			for(var i=0; i < num_ev_type_chosen; i++) {
+				param_str += "chosen_ev_type_id=" + ev_type_chosen[i].value + "&";
+			}
+
+			for (var i=0; i < num_ev_chosen; i++) {
+				param_str += "chosen_ev_id=" + ev_chosen[i].value + "&";
+			}	
+
+			for (var i=0; i < num_owner_chosen; i++) {
+				param_str += "chosen_owner=" + owner_chosen[i].value + "&";
+			}
+
+			if (cat_exclude) {
+				param_str += "cat_exclude=Y&";
+			} else {
+				param_str += "cat_exclude=N&";
+			}
+
+			// Chop off ending '&'
+			param_str = param_str.substring(0,parseInt(param_str.length-1));
+
+			return param_str;
+
+		}
+
+		/**
+		 * Copy a selected selection value from one selection to another.
+		 *
+		 * from - the selection we are copying from
+		 * to   - the selection we are copying to
+		 *
+		 */
+		function copySeln(from,to) {
+
+			var from_text, from_value, sel_idx, to_len, duplicate_value;
+
+			duplicate_value = 0;
+			sel_idx         = from.selectedIndex;
+
+			switch(sel_idx) {
+				case 0: // do nothing (Choose a Category/Class)
+					break;
+				case 1:
+					// Empty list
+					to.length = 0;
+					break;
+				default:
+					// Otherwise attempt to copy the selected value into the
+					// 'to' selection list. Only do so if that value does
+					// not already exist.
+					from_text  = from.options[sel_idx].text;
+					from_value = from.options[sel_idx].value;
+
+					to_len = to.options.length;
+
+					for (var i = 0; i < to_len; i++) {
+						if (to.options[i].value == from_value) {
+							duplicate_value = 1;
+							break;
+						}
+					}
+
+					if (!duplicate_value) {
+						to.options[to_len] = new Option(from_text,from_value);
+					}
+			}
+
+			// Resetting selection
+			from.selectedIndex = 0;
+		}
+
+		function filterClass(index, filterBy) {
+			var class_select = document.getElementById('id_class_id');
+			var classObj = null;
+			//lookup in classes table and add for this category
+			for (var i = 0; i < classes.length; i++) {
+				classObj = classes[i].split('--');
+				if (classObj[index] == filterBy) {
+					class_select.appendChild(createOption(classObj[0],classObj[1]));
+				}
+			}
+		}
+
+		function filterType(index, filterBy) {
+			var type_select = document.getElementById('id_ev_type_id');
+			var typeObj = null;
+			//lookup in types table and add for this class
+			for (var i = 0; i < types.length ; i++) {
+				typeObj = types[i].split('--');
+				if (typeObj[index] == filterBy) {
+					type_select.appendChild(createOption(typeObj[0],typeObj[1]));
+				}
+			}
+		}
+
+		function filterEvent(index, filterBy) {
+			var event_select = document.getElementById('id_ev_id');
+			var eventObj = null;
+			//lookup in events table and add for this type
+			for (var i = 0; i < events.length ; i++) {
+				eventObj = events[i].split('--');
+				if (eventObj[index] == filterBy) {
+					event_select.appendChild(createOption(eventObj[0],eventObj[1]));
+				}
+			}
+		}
+
+		function checkDuplicate(elem, collection) {
+
+			for(var i = 0; i < collection.length ; i++) {
+				if (collection[i].value == elem) return 1;
+			}
+			return 0;
+		}
+
+		function refreshHierarchy(from, level) {
+
+			var selectedId = from.selectedIndex;
+
+			if (selectedId == 0) {
+				return;
+			}
+
+			var f = document.forms["async"];
+
+			if (level == "category") {
+
+				var chosen_category_options = f.chosen_category_id.options;
+
+				// if a category is being added to chosen categories for the first time
+				if (chosen_category_options.length == 0) {
+					emptySelect('class_filter','id_class_id','class_id','id_chosen_class_id');
+				}
+
+				var category_options = document.getElementById('id_category_id');
+
+				//find out selected category name and text
+				var selected_category_name = category_options[selectedId].value;
+
+				if (checkDuplicate(selected_category_name, chosen_category_options)) return;
+
+				if (selectedId > 1) {
+					//filter classes by selected category name
+					filterClass(2, selected_category_name);
+				} else {
+					//leave only first two options
+					emptySelect('class_filter','id_class_id','class_id','id_chosen_class_id');
+
+					//simply display all classes
+					loadAllClasses();
+				}
+			} else if (level == "class") {
+
+				var chosen_class_options = f.chosen_class_id.options;
+
+				// if a class is being added to chosen classes for the first time
+				if (chosen_class_options.length == 0) {
+					emptySelect('ev_type_filter','id_ev_type_id','ev_type_id','id_chosen_ev_type_id');
+				}
+
+				var class_options = document.getElementById('id_class_id');
+
+				//find out selected class id value and text
+				selected_class_id = class_options[selectedId].value;
+
+				if (checkDuplicate(selected_class_id, chosen_class_options)) return;
+
+				if (selectedId > 1) {
+					//filter types by selected class id
+					filterType(2, selected_class_id);
+				} else {
+					// leave only first two options
+					emptySelect('ev_type_filter','id_ev_type_id','ev_type_id','id_chosen_ev_type_id');
+
+					//simply display all event types
+					loadAllTypes();
+				}
+
+			} else if (level == "type") {
+
+				var chosen_type_options = f.chosen_ev_type_id.options;
+
+				// if a type is being added to chosen types for the first time
+				if (chosen_type_options.length == 0) {
+					emptySelect('ev_filter','id_ev_id','ev_id','id_chosen_ev_id');
+				}
+
+				var type_options = document.getElementById('id_ev_type_id');
+
+				//find out selected event type id and text
+				var selected_ev_type_id = type_options[selectedId].value;
+
+				if (checkDuplicate(selected_ev_type_id, chosen_type_options)) return;
+
+				if (selectedId > 1) {
+					//filter events by ev_type_id
+					filterEvent(2, selected_ev_type_id);
+				} else {
+					// leave only first two options
+					emptySelect('ev_filter','id_ev_id','ev_id','id_chosen_ev_id');
+
+					//simply display all events
+					loadAllEvents();
+				}
+			}
+
+		}
+		
+		function getSelect(div) {
+
+			var d = document.getElementById(div);
+			var c = d.firstChild;
+			while (c.nodeType != 1 && c.nextSibling) {
+				c = c.nextSibling;
+			}
+			return ((c.nodeType == 1) && c);  //return c if c.nodeType == 1
+		}
+
+		function createOption(value, text) {
+
+			var option = document.createElement("option");
+			option.value = value;
+
+			if(document.all) { //check for ie
+				option.innerText = text;
+			} else {
+				option.text = text;
+			}
+			
+			return option;
+		}
+		
+		function emptySelect(div, selectFromId, selectFromName, selectToId) {
+
+			var s = getSelect(div);
+			var p = s.parentNode;
+
+			var newSelect = document.createElement("select");
+			newSelect.setAttribute("id", selectFromId);
+			newSelect.setAttribute("name", selectFromName);
+			if (selectFromId == 'id_ev_id') {
+				newSelect.onchange = function () { refreshHierarchy(document.getElementById('id_ev_id'),'event');copySeln(document.getElementById(selectFromId),document.getElementById(selectToId));};
+				newSelect.appendChild(createOption('-1','-Choose an Event-'));
+				newSelect.appendChild(createOption('all','-All Events-'));
+			} else if (selectFromId == 'id_ev_type_id') {
+				newSelect.onchange = function () { refreshHierarchy(document.getElementById('id_ev_type_id'),'type');copySeln(document.getElementById(selectFromId),document.getElementById(selectToId));};
+				newSelect.appendChild(createOption('-1','-Choose an Event Type-'));
+				newSelect.appendChild(createOption('all','-All Event Types-'));
+			} else { //must be a class
+				newSelect.onchange = function () { refreshHierarchy(document.getElementById('id_class_id'),'class');copySeln(document.getElementById(selectFromId),document.getElementById(selectToId));};
+				newSelect.appendChild(createOption('-1','-Choose a Class-'));
+				newSelect.appendChild(createOption('all','-All Classes-'));
+			}
+
+			p.replaceChild(newSelect, s);
+		}
+
+		/**
+		 * Copy a value from a cookie to a selection
+		 *
+		 * from - the selection we are copying from
+		 * to   - the selection we are copying to
+		 *
+		 */
+		function cookieCopySeln(from,to,cookie_value) {
+
+			var from_text, from_value, sel_idx, from_len, duplicate_value;
+
+			from_len = from.options.length;
+
+			// Need to obtain text and value from origin selection
+			// by looping through and matching the cookie value
+			for (var i = 0; i < from_len; i++) {
+
+				if (from.options[i].value == cookie_value) {
+					from_text  = from.options[i].text;
+					from_value = from.options[i].value;
+					to.options[to.options.length] = new Option(from_text,from_value);
+					break;
+				}
+			}
+
+		}
+
+		/**
+		 * Remove selected selections from a list
+		 *
+		 */
+		function rmSelns(seln) {
+
+			var seln_len;
+
+			seln_len = seln.options.length;
+
+			for (var i = 0; i < seln_len; i++) {
+				if (seln.options[i].selected) {
+					seln.options[i] = null;
+					i--;
+					seln_len = seln.options.length;
+				}
+			}
+
+		}
+
+		/**
+		* Accept selected bets 
+		*
+		*/
+		function acceptSelectedBets() {
+			if (document.bet_list.length > 0) {
+				// Building up the parameters string
+				var bet_ids = document.bet_list.join('|');
+				var params = '';
+				params += 'multi_bet=1';
+				params += '&bet_id=' + bet_ids;
+				params += '&acct_id=' + getValuesForBetList('AcctIds', bet_ids);
+				params += '&bet_group_id=' + getValuesForBetList('BetGroupIds', bet_ids);
+				params += '&bet_reason=' + getValuesForBetList('BetReasons', bet_ids);
+				// Sending AJAX request to the server
+				var call_back_function = function(_req) {asynchProcessHTMLResponse(_req,'updNotificationArea','There was an error in the server while accepting these bets');};
+				HttpRequest('##TP_CGI_URL##?action=ADMIN::ASYNC_BET::DoActAccept', 'POST', call_back_function, params, true);
+				closeActionPopup('actionPopup');
+			} else {
+				alert('Please select at least one bet from the list');
+			}
+		}
+
+		/**
+		* Submit max bet offer to selected bets 
+		*
+		*/
+		function submitMaxBetOfferToSelectedBets() {
+			if (document.bet_list.length > 0) {
+				// Doing extra checks
+				var bet_ids = document.bet_list.join('|');
+				var max_bet_values = getValuesForBetList('MaxBetValues', bet_ids);
+				var regex_dash = /-/
+
+				if (regex_dash.test(max_bet_values)) {
+					alert('At least one of your selections does not have a correct max bet value \nPlease click on the bet and change the stake manually');
+				} else {
+					// Building up the parameters string
+					var params = '';
+					params += 'multi_bet=1';
+					params += '&bet_id=' + bet_ids;
+					params += '&acct_id=' + getValuesForBetList('AcctIds', bet_ids);
+					params += '&bet_group_id=' + getValuesForBetList('BetGroupIds', bet_ids);
+					params += '&stake_per_line=' + max_bet_values;
+					params += '&bet_reason=' + getValuesForBetList('BetReasons', bet_ids);
+					// Sending AJAX request to the server
+					var call_back_function = function(_req) {asynchProcessHTMLResponse(_req,'updNotificationArea','There was an error in the server while submitting these bets at max bet');};
+					HttpRequest('##TP_CGI_URL##?action=ADMIN::ASYNC_BET::DoActStkLP', 'POST', call_back_function, params, true);
+					closeActionPopup('actionPopup');
+				}
+			} else {
+				alert('Please select at least one bet from the list');
+			}
+		}
+
+		/**
+		* Decline selected bets 
+		*
+		*/
+		function declineSelectedBets() {
+
+			var temp_bet_list = new String(document.bet_list.join(','));
+			var bet_id;
+			var reason_text;
+			var reason_select;
+
+			var bet_list      = new Array();
+			bet_list = temp_bet_list.split(',');
+
+			for (var idx = 0; idx < document.bet_list.length; idx++) {
+
+				bet_id = bet_list[idx];
+				var source = document.getElementById('bet_' + bet_id + '_source').value;
+				reason_select = document.getElementById("bet_" + bet_id + "_reason_select").selectedIndex;
+				if (source == 'P' || source == 'N') {
+					reason_text   = document.getElementById("bet_" + bet_id + "_reason").value;
+				} else {
+					reason_text = '';
+				}
+
+				if ((reason_select == 0 && reason_text == '') || (reason_select != 0 && reason_text != '')) {
+					alert("For each bet please select either a reason or enter a reason in text area.");
+					return 0
+				} 
+
+			}
+
+				// Building up the parameters string
+				var bet_ids = document.bet_list.join('|');
+				var params = '';
+				var reason_text_array = new Array();
+				var reason_code_array = new Array();
+
+				params += 'multi_bet=1';
+				params += '&bet_id=' + bet_ids;
+				params += '&acct_id=' + getValuesForBetList('AcctIds', bet_ids);
+				params += '&bet_group_id=' + getValuesForBetList('BetGroupIds', bet_ids);
+
+
+				for (var idx = 0; idx < document.bet_list.length; idx++) {
+
+					bet_id = bet_list[idx];
+					sel_idx = document.getElementById("bet_" + bet_id + "_reason_select").selectedIndex;
+					reason_select = document.getElementById("bet_" + bet_id + "_reason_select").options[sel_idx].value;
+					var source = document.getElementById('bet_' + bet_id + '_source').value;
+
+					if (source == 'P' || source == 'N') {
+						reason_text   = document.getElementById("bet_" + bet_id + "_reason").value;
+					}
+
+					if (reason_select != 0) {
+						
+						reason_code_array[idx] = reason_select;
+						reason_text_array[idx] = '';
+
+					} else {
+						reason_text_array[idx] = reason_text;
+						reason_code_array[idx] = '';
+					}
+
+				}
+
+				params += '&reason_code=' + reason_code_array.join('|');
+				params += '&bet_reason=' + reason_text_array.join('|');
+
+				// Sending AJAX request to the server
+				var call_back_function = function(_req) {asynchProcessHTMLResponse(_req,'updNotificationArea','There was an error in the server while declining these bets');};
+				HttpRequest('##TP_CGI_URL##?action=ADMIN::ASYNC_BET::DoActDecline', 'POST', call_back_function, params, true);
+		}
+
+		/**
+		* Cancel selected bets
+		*
+		*/
+		function cancelSelectedBets() {
+			if (document.bet_list.length > 0) {
+				// Building up the parameters string
+				var bet_ids = document.bet_list.join('|');
+				var params = '';
+				params += 'multi_bet=1';
+				params += '&bet_id=' + bet_ids;
+				params += '&acct_id=' + getValuesForBetList('AcctIds', bet_ids);
+				params += '&bet_group_id=' + getValuesForBetList('BetGroupIds', bet_ids);
+				params += '&bet_reason=' + getValuesForBetList('BetReasons', bet_ids);
+				// Sending AJAX request to the server
+				var call_back_function = function(_req) {asynchProcessHTMLResponse(_req,'updNotificationArea','There was an error in the server while cancelling these bets');};
+				HttpRequest('##TP_CGI_URL##?action=ADMIN::ASYNC_BET::DoActCancel', 'POST', call_back_function, params, true);
+				closeActionPopup('actionPopup');
+			} else {
+				alert('Please select at least one bet from the list');
+			}
+		}
+
+		/**
+		* Ticks the checboxes for the bets that are in the bet_list
+		*
+		*/
+		function retickPreselectedBets() {
+			var bet_list = new String(document.bet_list.join(','));
+
+			if (bet_list.length > 0) {
+				var presel_bets = bet_list.split(',');
+		
+				while (presel_bets.length > 0) {
+					var bet_id = presel_bets.pop();
+					if (document.getElementById('bet_' + bet_id) != undefined) {
+						document.getElementById('bet_' + bet_id).checked = true;
+					} else {
+						// If the bet is not there any more we have to delete it from
+						// the bet_list element
+						document.bet_list.del(bet_id);
+					}
+				}
+			}
+		}
+
+		/**
+		* This function just feeds the html string from the argument into the innerHTML function
+		*
+		*/
+		function updNotificationArea(html_code) {
+			document.getElementById('processing_report').innerHTML = html_code;
+			changeObjectDisplay('notification_area', '');
+			searchBets();
+		}
+
+		function getValuesForBetList(type, bet_ids) {
+			var bets_array = bet_ids.split('|');
+
+
+			var return_array = new Array();
+			for (var i = 0; i < bets_array.length; i++) {
+
+				var source = document.getElementById('bet_' + bets_array[i] + '_source').value;
+
+				if (type == 'AcctIds') {
+					return_array[i] = document.getElementById('bet_' + bets_array[i] + '_acct').value;
+				} else if (type == 'MaxBetValues') {
+					return_array[i] = document.getElementById('bet_' + bets_array[i] + '_max_bet').value;
+				} else if (type == 'BetGroupIds') {
+					return_array[i] = document.getElementById('bet_' + bets_array[i] + '_bet_group_id').value;
+				} else if (type == 'BetReasons' && (source == 'P' || source == 'N') ) {
+					return_array[i] = document.getElementById('bet_' + bets_array[i] + '_reason').value;
+				}
+			}
+			return return_array.join('|');
+		}
+
+		function searchBets() {
+			var call_back_function = function(_req) {asynchProcessHTMLResponse(_req,call_back_func,error_msg);};
+			HttpRequest(call_back_url,'POST',call_back_function,getFormArgs(),true); 
+		}
+
+		function sendViewPref() {
+			var call_back_function = function(_req) {asynchProcessHTMLResponse(_req,call_back_func,error_msg);};
+			HttpRequest(call_back_url,'POST',call_back_function,getFormArgs(),true); 
+		}
+
+		function validateReasonForm(action) {
+
+			var temp_bet_list = new String(document.bet_list.join(','));
+
+			var bet_list      = new Array();
+			bet_list = temp_bet_list.split(',');
+
+			for (var idx = 0; idx < document.bet_list.length; idx++) {
+
+				bet_id = bet_list[idx];
+				var source = document.getElementById('bet_' + bet_id + '_source').value;
+
+				if (source == 'P' || source == 'N') {
+
+					reason_text   = document.getElementById("bet_" + bet_id + "_reason").value;
+
+					if (reason_text.indexOf("|") != -1) {
+						alert("You have used character '|' which is not allowed in reason.");
+						return
+					}
+					if (reason_text.length > 255) {
+						alert("Sorry maximum length allowed for each reason is 255 characters. You have typed " + reason_text.length + " characters.");
+						return
+					}
+				}
+			}
+
+			var resp = action();
+
+			if (resp != 0) {
+				closeActionPopup('actionPopup');
+			}
+		}
+
+		// close a popup div
+		function closeActionPopup(popupName) {
+
+			changeObjectDisplay(popupName, 'none');
+			var tab_reasonRows = document.getElementById("tab_reasonRows");
+
+			for(var i = tab_reasonRows.rows.length - 1; i >= 0; i--) {
+				tab_reasonRows.deleteRow(i);
+			}
+
+			currPopupDiv = '';
+		}
+
+		function addReason(title, action, btnName, offset) {
+
+			var temp_bet_list = new String(document.bet_list.join(','));
+			var dec_reasons = '';
+			var first_reason_input = '';
+			var first_reason_idx = 0;
+			var show_reason_popup = 0;
+			var bet_list      = new Array();
+			bet_list = temp_bet_list.split(',');
+
+			if (document.bet_list.length > 0) {
+
+				var tbody = document.getElementById("tab_reasonRows").getElementsByTagName("TBODY")[0];
+				
+				for (var idx = 0; idx < document.bet_list.length; idx++) {
+
+					var bet_id = bet_list[idx];
+					var source = document.getElementById('bet_' + bet_id + '_source').value;
+
+					if (source == 'P' || source == 'N') {
+
+						var bet_time = document.getElementById('bet_time_' + bet_id);
+						var cust_name = document.getElementById('cust_name_' + bet_id);
+
+						var row = document.createElement("TR");
+
+						//add first colum with date and time
+						var lbl_td = document.createElement("TD");
+						var lbl_time = document.createElement("label");
+						lbl_time.appendChild(document.createTextNode(bet_time.innerHTML));
+						lbl_td.appendChild(lbl_time);
+
+						var lbl_cust_td = document.createElement("TD");
+						var lbl_cust = document.createElement("label");
+						lbl_cust.appendChild(document.createTextNode(cust_name.innerHTML));
+						lbl_cust_td.appendChild(lbl_cust);
+
+						var txt_td = document.createElement("TD");
+						var txt_reason = document.createElement("textarea");
+						txt_reason.setAttribute('id', "bet_" + bet_id + "_reason");
+						txt_reason.setAttribute('cols', "40");
+						txt_reason.setAttribute('rows', "4");
+						txt_reason.setAttribute('wrap', "virtual");
+
+						if (first_reason_idx == 0) {
+							first_reason_input = "bet_" + bet_id + "_reason";
+							first_reason_idx = 1;
+						}
+						txt_td.appendChild(txt_reason);
+
+						row.appendChild(lbl_td);
+						row.appendChild(lbl_cust_td);
+						row.appendChild(txt_td);
+
+						tbody.appendChild(row);
+
+						show_reason_popup = 1;
+
+					} 
+
+					if (action == 'declineSelectedBets') {
+						var dec_row = document.createElement("TR");
+						var dec_td1 = document.createElement("TD");
+						var dec_td2 = document.createElement("TD");
+						var dec_td3 = document.createElement("TD");
+
+						if (source != 'P' && source != 'N') {
+
+							var bet_time = document.getElementById('bet_time_' + bet_id);
+							var cust_name = document.getElementById('cust_name_' + bet_id);
+
+							var row = document.createElement("TR");
+
+							var lbl_time = document.createElement("label");
+							lbl_time.appendChild(document.createTextNode(bet_time.innerHTML));
+							dec_td1.appendChild(lbl_time);
+
+							var lbl_cust = document.createElement("label");
+							lbl_cust.appendChild(document.createTextNode(cust_name.innerHTML));
+							dec_td2.appendChild(lbl_cust);
+
+						}
+
+						dec_td3.setAttribute('id', "td_" + bet_id + "_select");
+
+						dec_row.appendChild(dec_td1);
+						dec_row.appendChild(dec_td2);
+						dec_row.appendChild(dec_td3);
+
+						tbody.appendChild(dec_row);
+
+						dec_reasons    += "<select id=\"bet_" + bet_id + "_reason_select\">";
+						dec_reasons    += getReasonOptions('##TP_action_decline_reason_code##'
+											##TP_LOOP xlate_idx {[tpGetVar decline_reason_nrows]}##
+												,'##TP_xlate_code_id##', '##TP_xlate_reason##'
+											##TP_ENDLOOP##
+										);
+						dec_reasons    += "</select>";
+
+						document.getElementById("td_" + bet_id + "_select").innerHTML = dec_reasons;
+						dec_reasons = "";
+						show_reason_popup = 1;
+
+					}
+
+				}
+
+				if (show_reason_popup == 1) {
+
+					var btn_reason = "<input type=\"button\" class=\"btn_def\" value=\"OK\" onClick=\"validateReasonForm(" + action + ")\" id=\"btn_reason2\">";
+
+					document.getElementById("td_btn_reason").innerHTML = btn_reason;
+
+					popupDiv('actionPopup', btnName, offset);
+
+					var first_reason_input_obj = document.getElementById(first_reason_input);
+					if (first_reason_input_obj) {
+						first_reason_input_obj.focus();
+					}
+				} else {
+					if (action == 'acceptSelectedBets') {
+						acceptSelectedBets();
+					} else if (action == 'submitMaxBetOfferToSelectedBets') {
+						submitMaxBetOfferToSelectedBets();
+					} else {
+						cancelSelectedBets();
+					}
+				}
+
+			} else {
+				alert('Please select at least one bet from the list');
+			}
+		}
+
+		function getReasonOptions() {
+			var sel = arguments[0];
+			var output = "<option value='0'></option>";
+			var i;
+		 
+			for (i = 1; i < arguments.length; i += 2) {
+				var v = arguments[i];
+				var n = arguments[i+1];
+				var sel_tag = (sel == v) ? " selected" : "";
+				output    += "<option value='" + v + "' " + sel_tag + ">" + n + "</option>";
+			}
+			return output;
+		}
+	##TP_ESC##
+	</script>
+
+</head>
+
+<body ##TP_IF {[op_allowed ViewAsyncBets]}##onLoad="doOnloadActions();"##TP_ENDIF##>
+
+	##TP_PLAY error_rpt.html##
+
+	##TP_IF {[op_allowed ViewAsyncBets]}##
+		<form id="async_form" action="##TP_CGI_URL##" name="async" onsubmit="return false;">
+
+		<div>
+ 		<!-- soundManager appends "hidden" Flash to the first DIV on the page. -->
+		</div>
+
+		<input type="hidden" name="action" value="ADMIN::ASYNC_BET::DoPendingBetSearch">
+		<table width="90%" cellspacing="0" cellpadding="2" border="3">
+			<tr>
+				<th class="title">Auto-referral Bet Details</th>
+			</tr>
+			<tr class="subtitle">
+				<th align="left"><a href="javascript:toggleDivDisplay('filter_div');">Filter Options</a></th>
+			</tr>
+			<tr>
+				<td>
+					<div id="filter_div" style="display:block">
+						<table>
+							<tr>
+								<td valign="top" width="15%">
+									<table style="border-width: 1px; border-spacing: 5px; border-style: inset;border-collapse: separate;">
+										<tr>
+											<td>
+												<strong>Play Sound?</strong>&nbsp;
+												<input name="play_sound" type="checkbox" value="Y" ##TP_play_sound_checked##>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<strong>
+												Refresh every
+												<input type="text" name="refresh_rate" id="refresh_rate" size="2">s
+												</strong>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<strong>Next refresh in&nbsp;:&nbsp;</strong><span id="countDown" width="300"></span>s<br>
+												<strong>Current Time&nbsp;:&nbsp;</strong><span id="clock" name="clock"></span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<strong>BIR flag</strong>
+												<input type=checkbox name="bir_flag">
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="85%">
+									<table >
+										<tr>
+											<td>
+												<table>
+													<tr>
+														<td><strong>Channel Filter</strong></td>
+													</tr>
+													<tr>
+														<td valign="top">
+															<table>
+																<tr>
+																	<td>
+																		<select name="channel_id" onchange="copySeln(document.async.channel_id,document.async.chosen_channel_id)">
+																		<option value="-1" selected>-Choose a Channel-</option>
+																		<option value="all">-All Channels-</option>
+																		##TP_LOOP chan_idx {[tpGetVar NumChannels]}##
+																		<option value="##TP_ChannelId##">##TP_ChannelName##</option>
+																		##TP_ENDLOOP##
+																		</select>
+																	</td>
+																</tr>
+																<tr>
+																	<td align="right">
+																		<input type="button" name="remove_chan" value="-" onClick="javascript:rmSelns(document.async.chosen_channel_id)">
+																	</td>
+																</tr>
+															</table>
+														</td>
+														<td>
+															<select id="id_chosen_channel_id" name="chosen_channel_id" multiple width="50" size="4">
+															</select>
+														</td>
+													</tr>
+												</table>
+											</td>
+											<td>
+												<table>
+													<tr>
+														<td><strong>Category Filter</strong></td>
+													</tr>
+													<tr>
+														<td valign="top">
+															<table>
+																<tr>
+																	<td><div id="category_filter" style="display:block">
+																		<select name="category_id" id="id_category_id" onchange="refreshHierarchy(document.async.category_id,'category');copySeln(document.async.category_id,document.async.chosen_category_id);">
+																		<option value="-1" selected>-Choose a Category-</option>
+																		<option value="all">-All Categories-</option>
+																		##TP_LOOP cat_idx {[tpGetVar NumCategories]}##
+																		<option value="##TP_CategoryName##">##TP_CategoryName##</option>
+																		##TP_ENDLOOP##
+																		</select>
+																		<input type=checkbox name="category_exclude">Exclude
+																	</div></td>
+																</tr>
+																<tr>
+																	<td align="right">
+																		<input type="button" name="remove_cat" value="-" onClick="javascript:rmSelns(document.async.chosen_category_id)">
+																	</td>
+																</tr>
+															</table>
+														</td>
+														<td>
+															<select id="id_chosen_category_id" name="chosen_category_id" multiple width="50" size="4">
+															</select>
+														</td>
+													</tr>
+												</table>
+											</td>
+											<td>
+												<table>
+													<tr>
+														<td><strong>Class Filter</strong></td>
+													</tr>
+													<tr>
+														<td valign="top">
+															<table>
+																<tr>
+																	<td><div id="class_filter" style="display:block">
+																		<select name="class_id" id="id_class_id" onchange="refreshHierarchy(document.async.class_id,'class');copySeln(document.async.class_id,document.async.chosen_class_id);">
+																		<option value="-1" selected>-Choose a Class-</option>
+																		<option value="all">-All Classes-</option>
+																		##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+																		<option value="##TP_ClassId##">##TP_ClassName##</option>
+																		##TP_ENDLOOP##
+																		</select>
+																	</div></td>
+																</tr>
+																<tr>
+																	<td align="right">
+																		<input type="button" name="remove_cat" value="-" onClick="javascript:rmSelns(document.async.chosen_class_id)">
+																	</td>
+																</tr>
+															</table>
+														</td>
+														<td>
+															<select id="id_chosen_class_id" name="chosen_class_id" multiple size="4">
+															</select>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td width="100%" colspan="2">
+									<table>
+										<tr>
+											<td>
+												<table>
+													<tr>
+														<td><strong>Event Type Filter</strong></td>
+													</tr>
+													<tr>
+														<td valign="top">
+															<table>
+																<tr>
+																	<td><div id="ev_type_filter" style="display:block">
+																		<select name="ev_type_id" id="id_ev_type_id" onchange="refreshHierarchy(document.async.ev_type_id,'type');copySeln(document.async.ev_type_id,document.async.chosen_ev_type_id);">
+																		<option value="-1" selected>-Choose an Event Type-</option>
+																		<option value="all">-All Event Types-</option>
+																		##TP_LOOP ev_type_idx {[tpGetVar NumEvTypes]}##
+																		<option value="##TP_TypeId##">##TP_TypeName##</option>
+																		##TP_ENDLOOP##
+																		</select>
+																	</div></td>
+																</tr>
+																<tr>
+																	<td align="right">
+																		<input type="button" name="remove_cat" value="-" onClick="javascript:rmSelns(document.async.chosen_ev_type_id)">
+																	</td>
+																</tr>
+															</table>
+														</td>
+														<td>
+															<select id="id_chosen_ev_type_id" name="chosen_ev_type_id" multiple width="50" size="4">
+															</select>
+														</td>
+													</tr>
+												</table>
+											</td>
+											<td>
+												<table>
+													<tr>
+														<td><strong>Event Filter</strong></td>
+													</tr>
+													<tr>
+														<td valign="top">
+															<table>
+																<tr>
+																	<td><div id="ev_filter" style="display:block">
+																		<select name="ev_id" id= "id_ev_id" onchange="copySeln(document.async.ev_id,document.async.chosen_ev_id)">
+																		<option value="-1" selected>-Choose an Event-</option>
+																		<option value="all">-All Events-</option>
+																		##TP_LOOP ev_idx {[tpGetVar NumEvents]}##
+																		<option value="##TP_EvId##">##TP_EvName##</option>
+																		##TP_ENDLOOP##
+																		</select>
+																	</div></td>
+																</tr>
+																<tr>
+																	<td align="right">
+																		<input type="button" name="remove_cat" value="-" onClick="javascript:rmSelns(document.async.chosen_ev_id)">
+																	</td>
+																</tr>
+															</table>
+														</td>
+														<td>
+															<select id="id_chosen_ev_id" name="chosen_ev_id" multiple width="50" size="4">
+															</select>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table>
+													<tr><td><strong>Account Owner Filter</strong></td></tr>
+													<tr>
+														<td valign="top">
+															<div id="owner_filter">
+																<select name="owner" id="owner" 
+																	onChange="copySeln(document.async.owner,document.async.chosen_owner);">
+																	<option value="-1" selected="selected">- Choose an account owner -</option>
+																	<option value="all">All Owners</option>
+																	##TP_LOOP owners_idx {[tpGetVar NumAcctOwners]}##
+																		<option value="##TP_OwnerName##">##TP_OwnerDesc##</option>
+																	##TP_ENDLOOP##
+																</select>
+															</div>
+															<input type="button" name="remove_owner" value="-" 
+																onClick="rmSelns(document.async.chosen_owner)" />
+															<select id="chosen_owner" name="chosen_owner" multiple size="4"></select>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td style="text-align: center" colspan="2">
+									<input type="button" value="Save Filter Options & Search" onClick="setFilterOptions(this.form);javascript:setRefreshTimeout();">
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+			<tr class="subtitle">
+				<th align="left">
+					<a href="javascript:toggleDivDisplay('view_pref');">
+					View Preferences</a>
+				</th>
+			</tr>
+			<tr>
+				<td>
+				<div id="view_pref" style="display:block">
+					<table width="100%">
+						<tr>
+							<td>
+								<table>
+									<input type="hidden" name=disp_pref_len value="##TP_view_pref_len##">
+									<tr>
+										<td>
+											<input type="checkbox" name="disp_0" id="disp_0" value="Y">&nbsp;Selection
+										</td>
+										<td>
+											<input type="checkbox" name="disp_1" id="disp_1" value="Y">&nbsp;Price
+										</td>
+										<td>
+											<input type="checkbox" name="disp_2" id="disp_2" value="Y">&nbsp;Customer Stake Factor
+										</td>
+										<td>
+											<input type="checkbox" name="disp_3" id="disp_3" value="Y">&nbsp;Client Name
+										</td>
+										<td>
+											<input type="checkbox" name="disp_4" id="disp_4" value="Y">&nbsp;Account Number
+										</td>
+										<td>
+											<input type="checkbox" name="disp_5" id="disp_5" value="Y">&nbsp;Stake
+										</td>
+										<td>
+											<input type="checkbox" name="disp_6" id="disp_6" value="Y">&nbsp;Max Bet
+										</td>
+										<td>
+											<input type="checkbox" name="disp_7" id="disp_7" value="Y">&nbsp;Bet Type
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<input type="checkbox" name="disp_8" id="disp_8" value="Y">&nbsp;Start time
+										</td>
+										<td>
+											<input type="checkbox" name="disp_9" id="disp_9" value="Y">&nbsp;Legs
+										</td>
+										<td>
+											<input type="checkbox" name="disp_10" id="disp_10" value="Y">&nbsp;No. Selections
+										</td>
+										<td>
+											<input type="checkbox" name="disp_11" id="disp_11" value="Y">&nbsp;Permutations
+										</td>
+										<td>
+											<input type="checkbox" name="disp_12" id="disp_12" value="Y">&nbsp;Payout
+										</td>
+										<td>
+											<input type="checkbox" name="disp_13" id="disp_13" value="Y">&nbsp;Event Category
+										</td>
+										<td>
+											<input type="checkbox" name="disp_14" id="disp_14" value="Y">&nbsp;Event Class
+										</td>
+										<td>
+											<input type="checkbox" name="disp_15" id="disp_15" value="Y">&nbsp;Event Type
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<input type="checkbox" name="disp_16" id="disp_16" value="Y">&nbsp;Event
+										</td>
+										<td>
+											<input type="checkbox" name="disp_17" id="disp_17" value="Y">&nbsp;Handicap
+										</td>
+										<td>
+											<input type="checkbox" name="disp_18" id="disp_18" value="Y">&nbsp;Channel
+										</td>
+										<td>
+											<input type="checkbox" name="disp_19" id="disp_19" value="Y">&nbsp;Liability Group
+										</td>
+										<td>
+											<input type="checkbox" name="disp_20" id="disp_20" value="Y">&nbsp;Freebet
+										</td>
+										<td>
+											<input type="checkbox" name="disp_21" id="disp_21" value="Y">&nbsp;Currency
+										</td>
+										<td>
+											<input type="checkbox" name="disp_22" id="disp_22" value="Y">&nbsp;Telephonist
+										</td>
+										<td>
+											<input type="checkbox" name="disp_23" id="disp_23" value="Y">&nbsp;Locked By
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<input type="checkbox" name="disp_24" id="disp_24" value="Y">&nbsp;Reason
+										</td>
+										<td>
+											<input type="checkbox" name="disp_25" id="disp_25" value="N">&nbsp;Customer Group
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td style="text-align: center">
+								<input type="button" value="Save View Preferences & Search" onClick="setViewPref(this.form);sendViewPref();">
+							</td>
+						</tr>
+					</table>
+				</div>
+				</td>
+			</tr>
+			<tr>
+				<th class="buttons">
+					<input type="button" value="Search" onClick="searchBets();">
+					<input type="button" value="Accept selected bets" onClick="addReason('Accept Bets', 'acceptSelectedBets', 'actionAcceptButton', 10)" id="actionAcceptButton">
+					<input type="button" value="Offer selected bets at Max Bet" onClick="addReason('Offer Max Stake', 'submitMaxBetOfferToSelectedBets', 'actionOfferButton', 10)" id="actionOfferButton">
+					<input type="button" value="Decline selected bets" onClick="addReason('Decline Bets', 'declineSelectedBets', 'actionDeclineButton', 10)" id="actionDeclineButton">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<input type="button" value="Cancel selected bets" onClick="addReason('Cancel Bets', 'cancelSelectedBets', 'actionCancelButton', 10)" id="actionCancelButton">
+					<div id="declining_reason_div" style="display: none">
+						<p>Declining Reason</p>
+						<p>
+						<select id="decline_reason_select" name="decline_reason_select">
+							<script>
+								write_select('##TP_action_decline_reason_code##'
+									##TP_LOOP xlate_idx {[tpGetVar decline_reason_nrows]}##
+										,'##TP_xlate_code_id##', '##TP_xlate_reason##'
+									##TP_ENDLOOP##
+								)
+							</script>
+						</select>
+						</p>
+						<p>
+							<a onclick="declineSelectedBets(2);">Decline all</a>
+							|
+							<a onclick="changeObjectDisplay('declining_reason_div', 'none');">Cancel</a>
+						</p>
+					</div>
+				</th>
+			</tr>
+			<tr>
+				<td colspan="2">
+				<div id="actionPopup" style="display: none; position: absolute; z-index: 5;" width="100">
+
+				<table id="tab_reasonPopup" cellspacing="0" cellpadding="3" align="left" width="100" class="bordered_table">
+				<tbody>
+					<form action="##TP_CGI_URL##" name="bet_accept_action" method="get">
+						<tr><th class="subtitle" colspan="2">Reason</th>
+						<tr><td colspan="2">
+							<table id="tab_reasonRows" cellspacing="0" cellpadding="3" align="left" width="100">
+								<tbody></tbody>
+							</table>
+						</td></tr>
+						<tr><td id="td_btn_reason">
+							<input type="button" class="btn_def" value="OK" onClick="" id="btn_reason">
+						</td>
+						<td>
+							<input type="button" class="btn_def" value="Back" onClick="closeActionPopup('actionPopup');">
+						</td></tr>
+
+					</form>
+				</tbody>
+				</table>
+
+				</div>
+				</td>
+			</tr>
+			<tr>
+				<td id="notification_area" style="display:none;background-color:#CAE1FF">
+					<div id="processing_report">
+					</div>
+					<a onclick="changeObjectDisplay('notification_area', 'none');">Hide</a>
+				</td>
+			</tr>
+		</table>
+
+		<br>
+		<div id="betInterceptorResults">
+		</div>
+
+		</form>
+	##TP_ENDIF op_allowed##
+
+</body>
+</head>

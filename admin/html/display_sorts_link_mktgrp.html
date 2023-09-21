@@ -1,0 +1,156 @@
+<html>
+<!-- $Id: display_sorts_link_mktgrp.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Link Market Group to Display Sort</title>
+<script language="JavaScript">
+
+function check_valid (b)
+{
+	numSelBoxes = b.form.selBoxes.length ;
+	grpLinksList = "" ;
+
+	if (!numSelBoxes ) {
+		// We only have 1 entry, the selBoxes.length check picks up nothing
+		// so access the one field manually
+		if ( b.form.selBoxes.checked ) {
+			grpLinksList = grpLinksList + b.form.selBoxes.value ;
+		}
+	} else {
+		// deal with multiple check boxes
+		for (i = 0; i < numSelBoxes; i++) {
+			if ( b.form.selBoxes[i].checked ) {
+				grpLinksList = grpLinksList + b.form.selBoxes[i].value + "," ;
+			}
+		}
+	}
+
+	if ( grpLinksList == "" ) {
+		alert ("There are no market groups selected to link to.") ;
+	} else {
+		action = "ADMIN::DISPLAYSORT::DispSortAddMktGroupLink&DispSortId=##TP_TCL {tpBufWrite [tpGetVar DispSortId]} ##&selMktGroupLinksList=" + grpLinksList ;
+
+		url = "##TP_CGI_URL##?action=" + action
+		document.location.href = url
+	}
+
+}
+
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function back()
+{
+	action = "ADMIN::DISPLAYSORT::GoDisplaySort&SubmitName=GotoUpd&DispSortId=##TP_TCL {tpBufWrite [tpGetVar DispSortId]} ##" ;
+
+	url = "##TP_CGI_URL##?action=" + action
+	document.location.href = url
+}
+</script>
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<form method="post" action="##TP_CGI_URL##" name="DispSortFm">
+	<input type="hidden" name="action" value="ADMIN::DISPLAYSORT::GoDisplaySort" />
+	<input type="hidden" name="SubmitName" value="" />
+
+##TP_PLAY display_sorts_link_mktgrp_header.html##
+
+<table>
+
+	<tr>
+		<td><b> Market Groups: </b></td>
+
+		##TP_IF {[tpGetVar PathLevel] == "class" || [tpGetVar root 0] } ##
+			<td>
+				##TP_sportName##
+			</td>
+		##TP_ELSEIF {[tpGetVar PathLevel] == "type" } ##
+			<td>
+				<A href="##TP_CGI_URL##?action=ADMIN::DISPLAYSORT::GoDisplaySort&SubmitName=GoAddMktGrpLinkEachType&DispSortId=##TP_TCL {tpBufWrite [tpGetVar DispSortId]} ##&PathLevel=category&clickedObjId=##TP_categoryId##">##TP_sportName##</A>
+
+				> ##TP_clickedObjName##
+			</td>
+		##TP_ELSEIF {[tpGetVar PathLevel] == "group" } ##
+			<td>
+				##TP_IF {[tpGetVar ShowParentName] != ""} ##
+					<A href="##TP_CGI_URL##?action=ADMIN::DISPLAYSORT::GoDisplaySort&SubmitName=GoAddMktGrpLinkEachType&DispSortId=##TP_TCL {tpBufWrite [tpGetVar DispSortId]} ##&PathLevel=category&clickedObjId=##TP_categoryId##">##TP_sportName##</A>
+					> <A href="##TP_CGI_URL##?action=ADMIN::DISPLAYSORT::GoDisplaySort&SubmitName=GoAddMktGrpLinkEachType&DispSortId=##TP_TCL {tpBufWrite [tpGetVar DispSortId]} ##&PathLevel=class&clickedObjName=##TP_parentName##&clickedObjId=##TP_parentId##">##TP_parentName##</A>
+				##TP_ELSE ##
+					<A href="##TP_CGI_URL##?action=ADMIN::DISPLAYSORT::GoDisplaySort&SubmitName=GoAddMktGrpLinkEachType&DispSortId=##TP_TCL {tpBufWrite [tpGetVar DispSortId]} ##&PathLevel=class">##TP_sportName##</A>
+				##TP_ENDIF##
+
+				> ##TP_clickedObjName##
+
+			</td>
+
+		##TP_ENDIF##
+
+	</tr>
+
+	<tr>
+		<td> &nbsp;&nbsp;</td>
+		<td colspan="4">	
+		</td>
+	</tr>
+
+	<tr>
+
+	##TP_IF {[tpGetVar PathLevel] == "group" } ##
+		##TP_LOOP disp_sort_mkt_grp_link_idx {[tpGetVar NumEntries]}##
+
+			<td >
+				<input ##TP_isDisabled## name="selBoxes" type="checkbox" value = "##TP_objId##"> ##TP_objName##
+			</td>
+	
+			##TP_TCL {expr {[tpGetVar disp_sort_mkt_grp_link_idx] % 2 == 0 ? "" : "</tr>"}}##
+		##TP_ENDLOOP##
+	##TP_ELSE##
+		##TP_LOOP disp_sort_mkt_grp_link_idx {[tpGetVar NumEntries]}##
+			
+			<td> <A href="##TP_CGI_URL##?action=ADMIN::DISPLAYSORT::GoDisplaySort&SubmitName=GoAddMktGrpLinkEachType&DispSortId=##TP_TCL {tpBufWrite [tpGetVar DispSortId]} ##&PathLevel=##TP_TCL {tpBufWrite [tpGetVar PathLevel]} ##&categoryId=##TP_categoryId##&parentName=##TP_parentName##&parentId=##TP_parentId##&clickedObjName=##TP_objName##&clickedObjId=##TP_objId##">##TP_objName##</A> </td>
+	
+			##TP_TCL {expr {[tpGetVar disp_sort_mkt_grp_link_idx] % 2 == 0 ? "" : "</tr>"}}##
+		
+		##TP_ENDLOOP##
+	##TP_ENDIF##
+
+	<tr>
+		<td> &nbsp;&nbsp;</td>
+		<td colspan="4">	
+		</td>
+	</tr>
+
+
+	<tr >
+		##TP_IF {[tpGetVar PathLevel] == "group" } ##
+			<th class="buttons" colspan=1>
+				<input type="button" value="Ok" onClick="return check_valid(this)" />
+			</th>
+		##TP_ELSE##
+			<th class="buttons" colspan=1>
+				<input disabled="true" type="button" value="Ok" />
+			</th>
+		##TP_ENDIF##
+		<th class="buttons" colspan=3>
+			
+			<input type="button" value="Cancel" onClick="return back()" />
+		</th>
+	</tr>
+
+
+</table>
+</form>
+
+</body>
+</html>

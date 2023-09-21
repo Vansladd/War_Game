@@ -1,0 +1,4 @@
+##TP_IF {[tpGetVar disp_profile]}##Profile,##TP_ENDIF####TP_IF {[tpGetVar disp_profile_def]}##ProfileDefinition,##TP_ENDIF####TP_IF {[tpGetVar disp_date]}##Date,##TP_ENDIF####TP_IF {[tpGetVar disp_customer]}##Customer,##TP_ENDIF####TP_IF {[tpGetVar disp_check]}##Check,##TP_ENDIF####TP_IF {[tpGetVar disp_action]}##Action##TP_ENDIF##
+##TP_LOOP idx {[tpGetVar count]}##
+##TP_IF {[tpGetVar disp_profile]}####TP_profile_id##,##TP_ENDIF####TP_IF {[tpGetVar disp_profile_def]}####TP_desc##,##TP_ENDIF####TP_IF {[tpGetVar disp_date]}####TP_cr_date##,##TP_ENDIF####TP_IF {[tpGetVar disp_customer]}####TP_username##,##TP_ENDIF####TP_IF {[tpGetVar disp_check]}####TP_check_type##,##TP_ENDIF####TP_IF {[tpGetVar disp_action]}####TP_action####TP_ENDIF##
+##TP_ENDLOOP##

@@ -1,0 +1,95 @@
+<!-- $Id: empty_event_cleanup_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+
+<html>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+
+<script language="Javascript">
+
+	function fs(b,t) {
+
+		b.disabled = true;
+		b.value = "Busy...";
+		if (t=="Back") {
+			b.form.action.value="ADMIN::CLEANUP::GoUnstlEvSel";
+		}
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+
+	function set_checkboxes (checkbox_root, num_boxes,check_value)  {
+		for( i=0 ; i<num_boxes; i++) {
+			document.getElementById(checkbox_root+i).checked = check_value;
+		}
+	}
+
+</script>
+
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<form method="post" name="emptyeventcleanupform" action="##TP_CGI_URL##">
+
+<input type="hidden" name="action"      value="ADMIN::CLEANUP::DoEmptyEventCleanup">
+<input type="hidden" name="SubmitName"  value="">
+<input type="hidden" name="NumEEvs"     value="##TP_TCL {tpBufWrite [tpGetVar ee_rows]}##">
+<input type="hidden" name="BackType"    value="0">
+<input type="hidden" name="EEventArgs"  value="##TP_EEVENT_INFO##">
+
+
+<table cellspacing="0" cellpadding="2" border="0">
+
+<tr><th class="title" colspan="7">Empty Event Cleanup Selection</th></tr>
+
+<tr>
+	<th class="colhead">Start Time</th>
+	<th class="colhead">Event Type</th>
+	<th class="colhead">Description</th>
+	<th class="colhead">Displayed</th>
+	<th class="colhead">Settle</th>
+</tr>
+
+##TP_IF {[tpGetVar ee_rows 0]>0}##
+
+##TP_LOOP ee_idx {[tpGetVar ee_rows]}##
+<tr>
+	<td>##TP_StartTime##</td>
+	<td>##TP_EventType##</td>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_EvId##">##TP_Desc##</a></td>
+	<td>##TP_Displayed##</td>
+
+	<td align="middle"><input type=checkbox name="ee_stl_##TP_EvId##" id="ee_chkbox_##TP_TCL {tpBufWrite [tpGetVar ee_idx]}##" value="Y" checked></td>
+	<input type="hidden" name="ee_ev_id_##TP_TCL {tpBufWrite [tpGetVar ee_idx]}##" value="##TP_EvId##">
+	<input type="hidden" name="ee_ev_desc_##TP_EvId##" value="##TP_Desc##">
+	<input type="hidden" name="ee_markets_##TP_EvId##" value="##TP_Markets##">
+
+</tr>
+
+##TP_ENDLOOP##
+
+##TP_ELSE##
+<tr>
+	<td colspan="6">No events matched the search criteria.</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th class="buttons" colspan="2"><input type="button" onClick="return fs(this,'SettleEvents')" value="Settle Events">
+	<input type="button" onClick="return fs(this,'Back')" value="Back"></th>
+	<th class="buttons" colspan="2">&nbsp;</th>
+	<th class="buttons" colspan="2">Select: <a href="javascript:set_checkboxes('ee_chkbox_',##TP_TCL {tpBufWrite [tpGetVar ee_rows]}##,true);">ALL</a> <a href="javascript:set_checkboxes('ee_chkbox_',##TP_TCL {tpBufWrite [tpGetVar ee_rows]}##,false);">NONE</a></th>
+</tr>
+</table>
+</form>
+
+</body>
+
+</html>

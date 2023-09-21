@@ -1,0 +1,103 @@
+<html>
+<!-- $Id: stmt_rerun_upload_file.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Openbet Administration - Uploaded Statment File Contents</title>
+</head>
+
+<script language="JavaScript">
+
+function confirm_csv_delete(f)
+{
+	var confirmed = confirm("Delete " + f.Filename.value);
+	return confirmed;
+}
+
+function fs(b,t)
+{
+	if (t == 'FileLoad' && !confirm("Upload file?")) {
+		return;
+	}
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+</script>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_IF {[tpGetVar UploadFailed 0]}##
+Upload Failed: ##TP_ErrMsg## at line ##TP_ErrLine##
+##TP_ENDIF##
+##TP_IF {[tpGetVar UploadOK 0]}##
+File uploaded OK
+##TP_ENDIF##
+<table border=1 cellspacing=0 cellpadding=1>
+<tr>
+	<th class=title colspan=##TP_NumColsPlus1##>
+	##TP_FileName## (##TP_FileType##)
+	</th>
+</tr>
+##TP_IF {[tpGetVar HeaderOK 0]}##
+<tr>
+	<th class=colhead>Line</th>
+	##TP_LOOP col_idx {[tpGetVar NumCols]}##<th class=colhead nowrap>##TP_FileHeader##</th>##TP_ENDLOOP##
+</tr>
+##TP_LOOP line_idx {[tpGetVar NumLines]}##
+##TP_IF {$FILE([tpGetVar line_idx],OK)}##
+<tr>
+	<th align=right bgcolor=black><font color=white>##TP_TCL {expr {1+[tpGetVar line_idx]}}##</font></th>
+	##TP_LOOP col_idx {[tpGetVar NumCols]}##
+	<td nowrap>##TP_FileData##&nbsp;</td>##TP_ENDLOOP##
+</tr>
+##TP_ELSE##
+<tr bgcolor=#993333>
+	<th align=right bgcolor=black><font color=white>##TP_TCL {expr {1+[tpGetVar line_idx]}}##</font></th>
+	<td colspan=##TP_NumCols## align=left>
+	<font color=white>
+	##TP_BadData##
+	</font>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr bgcolor=#993333>
+	<td align=left nowrap>
+	<font color=white>
+	##TP_HeaderLine##
+	</font>
+	</td>
+</tr>
+<tr bgcolor=#999999>
+	<td align=left nowrap>
+	<font color=yellow>
+	The file header is bad - please check that the
+	column names are correct
+	</font>
+	</td>
+</tr>
+##TP_ENDIF##
+<form method=get action="##TP_CGI_URL##" >
+<input type="hidden" name="FileName" value="##TP_FileName##">
+<input type="hidden" name="FileType" value="##TP_FileType##">
+<input type="hidden" name="FullName" value="##TP_FullName##">
+<input type="hidden" name="do_pmt_only" value="##TP_do_pmt_only##">
+<tr>
+	<th class=buttons colspan=##TP_NumColsPlus1##>
+	##TP_IF {[tpGetVar FileOK 0]}##
+	<input type=button class="btn_def" value="Run Statements" onClick="return fs(this,'RunStatements')">
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Delete File" onClick="return fs(this,'FileDel')">
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value="ADMIN::STMTRUN::DoUploadReRunFile">
+	</th>
+</tr>
+</form>
+</table>
+</body>
+</html>

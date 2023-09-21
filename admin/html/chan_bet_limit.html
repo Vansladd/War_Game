@@ -1,0 +1,69 @@
+<html>
+<!-- $Id: chan_bet_limit.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Modify Currency History</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	'##TP_ChannelId##' channel bet limit
+	</td>
+</tr>
+<form action="##TP_CGI_URL##" method=get onSubmit="return validate(this);">
+<input type="hidden" name="CBLId" value="##TP_CBLId##">
+<input type="hidden" name="ChannelId" value="##TP_ChannelId##">
+<tr>
+	<td class=caption>Time From</td>
+	<td>
+	<input type=text name="CBLTimeFrom" value="##TP_CBLTimeFrom##" size=8>
+	&nbsp;(HH:MM:SS)
+	</td>
+</tr>
+<tr>
+	<td class=caption>Time To</td>
+	<td>
+	<input type=text name="CBLTimeTo" value="##TP_CBLTimeTo##" size=8>
+	&nbsp;(HH:MM:SS)
+	</td>
+</tr>
+<tr>
+	<td class=caption>Min Bet</td>
+	<td>
+	<input type="text" name="CBLMinBet" value="##TP_CBLMinBet##" size=8>
+	</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {![tpGetVar opAdd 0]}##
+		<input type=button class="btn_def" value="Modify" onClick="return fs(this,'CBLMod')">
+		<input type=button class="btn_def" value="Delete" onClick="return fs(this,'CBLDel')">
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Add" onClick="return fs(this,'CBLAdd')">
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CHANNEL::DoCBL">
+</form>
+</table>
+</body>
+</html>

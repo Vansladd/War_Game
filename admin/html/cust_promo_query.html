@@ -1,0 +1,48 @@
+<table cellspacing=0 cellpadding=2 border=0>
+<form method=get action="##TP_CGI_URL##">
+<tr>
+	<th colspan=2 class=title>
+	Customer Promotion Transaction Query
+	</th>
+</tr>
+<tr>
+	<td class=caption>Username</td>
+	<td>
+	##TP_PROMO_username##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Acct No</td>
+	<td>
+	##TP_PROMO_acct_no##
+	</td>
+</tr>
+<tr>
+	<td class=captionindex valign="top">Date range</td>
+	<td>
+		<input type="text" name="TxnDate1" value="" size=10>
+		&nbsp;to&nbsp;
+		<input type="text" name="TxnDate2" value="" size=10>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Transactions per page</td>
+	<td>
+	<input type="text" name="TxnsPerPage" value="25" size=4>
+	</td>
+</tr>
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button value="List Transactions" onClick="return fs(this,'First')">
+	<input type=button value="Back" onClick="return fs(this,'CustBack')">
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=CustId value="##TP_PROMO_cust_id##">
+<input type=hidden name=PromoId value="##TP_PROMO_promotion_id##">
+<input type=hidden name=Username value="##TP_PROMO_username##">
+<input type=hidden name=AcctNo value="##TP_PROMO_acct_no##">
+<input type=hidden name=action value=ADMIN::CUST::PROMOTIONS::DoPromoTxnQuery>
+</form>
+</table>
+
+<p>All dates must be in following format: yyyy-mm-dd [hh:mm:ss]

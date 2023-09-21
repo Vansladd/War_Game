@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<!--
+ 		$Id: pay_mthd.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $
+		(C)2006 Orbis Technology Ltd. All rights reserved.
+	-->
+	<head>
+		<title>Payment Method</title>
+		<meta http-equiv="Content-Type"
+			content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css"
+			href="##TP_CGI_URL##?action=stylesheet">
+		##TP_PLAY JS_WriteSelect.html##
+	</head>
+	<body>
+		##TP_PLAY error_rpt.html##
+		##TP_PLAY msg_rpt.html##
+		<form method="post" action="##TP_CGI_URL##">
+			<input type="hidden" name="action" value="ADMIN::PAY_MTHD::do_pay_mthd">
+			<table cellspacing="0" summary="">
+				<thead>
+					<tr>
+						<th colspan="2" class="title">Payment Method</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="caption">Payment Method</td>
+						<td>
+							<input type="hidden" name="pay_mthd"
+								value="##TP_pay_mthd##">
+							##TP_pay_mthd##
+						</td>
+					</tr>
+					<tr>
+						<td class="caption">Description</td>
+						<td>##TP_desc##</td>
+					</tr>
+					<tr>
+						<td class="caption">Blurb</td>
+						<td>##TP_blurb##</td>
+					</tr>
+					<tr>
+						<td class="caption">Fraud Delay (mins)</td>
+						<td><input name="wtd_delay_mins" value="##TP_wtd_delay_mins##" ##TP_IF {![tpGetVar update_fraud_delay_mins 0]}## disabled="true" ##TP_ENDIF##></td>
+					</tr>
+
+
+					<tr>
+						<td class="caption">Batch time</td>
+						<td>
+							<input name="wtd_batch_time" value="##TP_wtd_batch_time##" ##TP_IF {![tpGetVar update_batch_time 0]}## disabled="true" ##TP_ENDIF##>
+							<i>Format is HH:mm:ss</i>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="caption">WE Batch time</td>
+						<td>
+							<input name="wtd_we_batch_time" value="##TP_wtd_we_batch_time##" ##TP_IF {![tpGetVar update_we_batch_time 0]}## disabled="true" ##TP_ENDIF##>
+							<i>Format is HH:mm:ss</i>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="caption">Defer to</td>
+						<td>
+							<input name="wtd_deferred_to" value="##TP_wtd_deferred_to##" ##TP_IF {![tpGetVar update_defer_to 0]}## disabled="true" ##TP_ENDIF##>
+							<i>Format is YYYY-MM-DD</i>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="caption">Withdrawal Delay Threshold</td>
+						<td>##TP_wtd_delay_threshold##</td>
+					</tr>
+					<tr>
+						<td class="caption">Cancel Pending Payments</td>
+						<td>
+							##TP_IF {[tpGetVar update_pending 0]==1}##
+							<select name="cancel_pending"><script>
+						        write_select('##TP_cancel_pending##','N','No','Y','Yes')
+						        </script></select>
+							##TP_ELSE##
+							<script>
+							write_which('##TP_cancel_pending##','N','No','Y','Yes')
+							</script>
+							<input type="hidden" name="cancel_pending" value="##TP_cancel_pending##">
+							##TP_ENDIF##
+							<i>(Whether pending payments can be cancelled
+							allowing customer to change payment method)</i>
+						</td>
+					</tr>
+					<tr>
+						<td class="caption">Deposit Check</td>
+						<td>
+							##TP_IF {[tpGetVar update_deposit_check 0] && [op_allowed UpdDepositCheck]}##
+							<select name="deposit_check">
+								<script type="text/javascript" language="Javascript">
+								write_select('##TP_deposit_check##','N','No','Y','Yes');
+								</script>
+							</select>
+							##TP_ELSE##
+							<script type="text/javascript" language="Javascript">
+							write_which('##TP_deposit_check##','N','No','Y','Yes');
+							</script>
+							<input type="hidden" name="deposit_check" value="##TP_deposit_check##"/>
+							##TP_ENDIF##
+							<i>(Whether to check that a customer has deposited with
+							this method before allowing them withdraw)</i>
+						</td>
+					</tr>
+
+					##TP_IF {[tpBindGet pay_mthd] == "CHQ"}##
+					<tr>
+						<td class="caption">Cheque No.</td>
+						<td><input name="chq_no"
+							value="##TP_chq_no##">
+							<i>The number of the next cheque that will
+							be automatically generated.</i>
+						</td>
+					</tr>
+					<tr>
+						<td class="caption">Max. Cheque No.</td>
+						<td><input name="max_chq_no"
+							value="##TP_max_chq_no##">
+							<i>This highest value of an automatically generated
+							cheque number.</i></td>
+					</tr>
+					<tr>
+						<td class="caption">Max. Cheque No. Amount<br>(Default
+							Currency)</td>
+						<td><input name="max_chq_no_amt"
+							value="##TP_max_chq_no_amt##">
+							<i>The highest value of a cheque that an automatic
+							number will be generated.</i></td>
+					</tr>
+					##TP_ENDIF##
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2" class="buttons">
+							##TP_IF {[tpGetVar update_mthd]==1}##
+							<input name="submit" type="submit" value="Update">
+							|
+							##TP_ENDIF##
+							<a href="##TP_CGI_URL##?action=ADMIN::AUDIT::GoAudit&AuditInfo=PayMthd&pay_mthd=##TP_pay_mthd##"
+								>Audit</a>
+							|
+							<a href="##TP_CGI_URL##?action=ADMIN::PAY_MTHD::go_pay_mthds"
+								>Back</a>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</form>
+		<p>Cheque numbers are not audited.</p>
+	</body>
+</html>

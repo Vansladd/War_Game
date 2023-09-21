@@ -1,0 +1,145 @@
+<html>
+<!-- $Id: befree_aff.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Affiliate</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	BeFree Affiliate Program ##TP_source_id## Details
+	</th>
+</tr>
+<form action="##TP_CGI_URL##" method="get" onSubmit="return validate(this);" name=aff_form>
+<tr>
+	<td class=caption>Source ID#</td>
+	<td size=40>##TP_source_id##
+
+	##TP_IF {[tpGetVar opAdd 0]}##
+	To Be Assigned
+	##TP_ENDIF##
+
+	</td>
+	<input type=hidden name="source_id" value="##TP_source_id##">
+
+</tr>
+<tr>
+	<td class=caption>Affiliate</td>
+	<td>
+	##TP_IF {[tpGetVar opAdd 0]}##
+	  <select name="aff_id">
+	    ##TP_LOOP aff_idx $DATA(numAffs)##
+	    <option value=##TP_AffId## ##TP_IF {[tpGetVar aff_id] == $DATA([tpGetVar aff_idx],aff_id)}## selected ##TP_ENDIF##>
+	      ##TP_AffName##
+	    </option>
+	    ##TP_ENDLOOP##
+	  </select>
+	##TP_ELSE##
+		<input type=hidden name="aff_id" value="##TP_aff_id##">
+		##TP_LOOP aff_idx $DATA(numAffs)##
+			##TP_IF {[tpGetVar aff_id] == $DATA([tpGetVar aff_idx],aff_id)}##
+				##TP_AffName##
+			##TP_ENDIF##
+	    ##TP_ENDLOOP##
+	##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Collect Registrations:</td>
+	<td>
+	<input type=checkbox name="reg_aff" value="Y" ##TP_reg_aff##>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Collect Bet Information:</td>
+	<td>
+	<input type=checkbox name="bet_aff" value="Y" ##TP_bet_aff##>
+	</td>
+</tr>
+<tr>
+	<td class=caption>BF Id#</td>
+	<td>
+	##TP_IF {[tpGetVar opAdd 0]}##
+		<input type=text name="bf_id" value="##TP_bf_id##" size=10>
+	##TP_ELSE##
+		<input type=hidden name="bf_id" value="##TP_bf_id##">
+		##TP_bf_id##
+	##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Program</td>
+	<td>
+	##TP_IF {[tpGetVar opAdd 0]}##
+	  <select name="prog_id">
+	    ##TP_LOOP aff_prg_idx $DATA(numProgs)##
+	    <option value=##TP_p_prog_id## ##TP_IF {[tpGetVar prog_id] == $DATA([tpGetVar aff_prg_idx],p_prog_id)}## selected ##TP_ENDIF##>
+	      ##TP_p_prog_name##
+	    </option>
+	    ##TP_ENDLOOP##
+	  </select>
+	##TP_ELSE##
+		<input type=hidden name="prog_id" value="##TP_prog_id##">
+		##TP_LOOP aff_prg_idx $DATA(numProgs)##
+			##TP_IF {[tpGetVar prog_id] == $DATA([tpGetVar aff_prg_idx],p_prog_id)}##
+				##TP_p_prog_name##
+			##TP_ENDIF##
+	    ##TP_ENDLOOP##
+	##TP_ENDIF##
+	</td>
+</tr>
+
+<tr>
+	<td class=caption>Status</td>
+	<td>
+		<select name="status">
+			<script>
+			write_select('##TP_status##','A','Active','S','Suspended')
+			</script>
+		</select>
+	</td>
+</tr>
+
+
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed ManageAff]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=button class="btn_def" value="Add Affiliate Program" onClick="return fs(this,'AffAdd')">
+		##TP_ELSE##
+			<input type=hidden name="AffId" value="##TP_AffId##">
+			<input type=button class="btn_def" value="Modify Program" onClick="return fs(this,'AffMod')">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="View Audit History" onClick="return fs(this,'GoAudit')">
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=AuditInfo value="BeFreeAffPrg">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::AFF::DoBeFreeAffPrg">
+</form>
+</table>
+<br>
+<br>
+
+</body>
+</html>

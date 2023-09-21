@@ -1,0 +1,43 @@
+<!-- $Id: alert_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<table border=0 cellspacing=0 cellpadding=2>
+<tr>
+	<th colspan=11 nowrap class=title>Alerts</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Acct Id</th>
+	<th nowrap class=colhead>Alert Id</th>
+	<th nowrap class=colhead>Cr Date</th>
+	<th nowrap class=colhead>Status</th>
+	<th nowrap class=colhead>Sent/Total</th>
+	<th nowrap class=colhead>Expiry</th>
+	<th nowrap class=colhead>Type</th>
+	<th nowrap class=colhead>Medium</th>
+	<th nowrap class=colhead>Email</th>
+	<th nowrap class=colhead>Mobile</th>
+	<th nowrap class=colhead>Source</th>
+</tr>
+##TP_IF {[tpGetVar NumAlerts]}##
+##TP_LOOP alert_idx {[tpGetVar NumAlerts]}##
+<tr>
+	<td>##TP_AlertAcctId##</td>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::ALERTS::GoAlert&AlertId=##TP_AlertAlertId##">##TP_AlertAlertId##</a></td>
+	<td>##TP_AlertCrDate##</td>
+	<td>##TP_AlertStatus##</td>
+	<td>##TP_AlertSent##/##TP_AlertTotal##</td>
+	<td>##TP_AlertExpiry##</td>
+	<td>##TP_AlertType##</td>
+	<td>##TP_AlertMedium##</td>
+	<td>##TP_AlertEmail##</td>
+	<td>##TP_AlertMobile##</td>
+	<td>##TP_AlertSource##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+	<td colspan=11 align=center>No alerts found.</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th colspan=11 nowrap class=buttons></th>
+</tr>
+</table>

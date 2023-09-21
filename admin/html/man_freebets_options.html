@@ -1,0 +1,69 @@
+<html>
+<!-- $Id: man_freebets_options.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Manual FreeBets</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<form method=get action="##TP_CGI_URL##">
+<input type="hidden" name="action" value="ADMIN::MAN_FREEBETS::do_man_freebets">
+<input type="hidden" name="filename" value="##TP_FILENAME##">
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	Manual FreeBets
+	</th>
+</tr>
+<tr>
+	<td class=caption>Filename</th>
+	<td>##TP_FILENAME##</td>
+</tr>
+<tr>
+	<td class=caption>Description</td>
+	<td>
+	<input type="text" size=40 maxlength=80 name="Description">
+
+	</td>
+</tr>
+<tr>
+	<td class=caption>Amount (GBP)</td>
+	<td nowrap>
+	<input type="text" name="Amount" size=14 maxlength=14>&nbsp;
+
+</tr>
+</tr>
+	<td>&nbsp;</td>
+	<td>
+	<font color=green>
+	A <b>positive</b> amount will result in
+	a <b>credit</b> to the customer's account. <!--'-->
+
+	</font>
+	<td>
+</tr>
+
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button class="btn_def" value="Process File" onClick="return fs(this,'CardSearch')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::MAN_FREEBETS::dSearch>
+</form>
+</table>
+
+</body>
+</html>

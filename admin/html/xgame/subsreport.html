@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>External Game Bets Report</title>
+  </head>
+
+  <body bgcolor=white>
+<table border=0 cellpadding=2 cellspacing=0 bgcolor=#cccccc>
+<tr bgcolor=#10137c>
+##TP_IF {[tpGetVar BREAKDOWN]==0}##
+<th colspan=4 align=left>
+##TP_ELSE##
+<th colspan=6 align=left>
+##TP_ENDIF##
+<font color=white size=+1>Subscriptions placed between ##TP_START## and ##TP_END##</font></th>
+</tr>
+      <tr bgcolor=#999999>
+	<th align=left>Game Sort</th>
+	##TP_IF {[tpGetVar BREAKDOWN]==1}##
+	<th align=left>Channel</th>
+	<th align=left>Affiliate</th>
+	##TP_ENDIF##
+	<th align=left>Total subscriptions purchased (a multiple entry subscription counts as 1)</th>
+	<th align=left>Total entries purchased (a subscription with <i>n</i> entries counts as <i>n</i>)</th>
+	<th align=left>Total Revenue (not taking acount of winnings or refunds)</th>
+      </tr>
+
+##TP_LOOP idx {[tpGetVar nrows]}##
+      <tr>
+      <td>##TP_sort##</td>
+##TP_IF {[tpGetVar BREAKDOWN]==1}##
+      <td>##TP_source##</td>
+      <td>##TP_aff_id##</td>
+##TP_ENDIF##
+      <td>##TP_total_subs##</td>
+      <td>##TP_total_entries##</td>
+      <td>##TP_total_takings##</td>
+      </tr>
+##TP_ENDLOOP##
+
+</table>
+
+  </body>
+</html>

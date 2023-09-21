@@ -1,0 +1,240 @@
+<html>
+<!-- $Id: game_input.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<title>Input Game</title>
+
+	<script language="javascript">
+
+	<!-- //
+
+	function fs(b,t)
+	{
+		if (t == "GameShow") {
+			//var s = b.form.TypeId.options[b.form.TypeId.selectedIndex].value;
+			//if (s == "0" || s.substring(0,1) == "C") {
+			//	alert ("Please choose an event type");
+			//	return false;
+			//}
+		}
+
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+
+	// -->
+
+	</script>
+</head>
+
+<body bgcolor="white" text="black" link="#0000ee" vlink="#3333ff" alink="#ff0000">
+
+	##TP_IF {[tpGetVar GameAdded]}##
+	<h3><font color=green>New Game Added</font></h3>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar GameUpdated]}##
+	<h3><font color=green>Game Updated</font></h3>
+	##TP_ENDIF##
+
+	##TP_PLAY error_rpt.html##
+
+	<table border="0" cellspacing="0" cellpadding="2" bgcolor="#10137c">
+
+		<form action="##TP_CGI_URL##" method="get">
+		<input type="hidden" name="SubmitName" value="">
+		<input type="hidden" name="action" value="DoInsertGame">
+
+		<tr>
+			<td colspan="2" align="left">
+			<font color="white" size="+1"><b>Game Details</b></font>
+			</td>
+		</tr>
+
+		<!-- Non alterable details of an existing game -->
+		##TP_IF {![tpGetVar NewGame]}##
+		<input type="hidden" name="GameID" value="##TP_GameID##">
+		<input type="hidden" name="AffID" value="##TP_AffID##">
+		<input type="hidden" name="Start" value="##TP_Start##">
+
+		<tr bgcolor="#993333">
+			<th colspan="3" align="left">
+			<font color="white">Main Details</font>
+			</th>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Game ID :</b></td>
+			<td><b>##TP_GameID##</b></td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Affiliate :</b></td>
+			<td align="left"><b>##TP_AffName##</b></td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align=right><b>Start :</b></td>
+			<td align="left"><b>##TP_Start##</b></td>
+		</tr>
+		##TP_ENDIF##
+
+		<!-- Input all details for a new game -->
+		##TP_IF {[tpGetVar NewGame]}##
+		<tr bgcolor="#993333">
+			<th colspan="2" align="left">
+			<font color="white">Game Variables</font>
+			</th>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Affiliate :</b></td>
+			<td align="left">
+			<select name="AffID">
+				<option value="">None</option>
+				##TP_LOOP aff_idx {[tpGetVar NumAffs]}##
+				<option value="##TP_AffID##">##TP_AffName##</option>
+				##TP_ENDLOOP##
+			</select>
+			</td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align=right><b>Start :</b></td>
+			<td><input type=text name="Start" size="20" value="##TP_Start##"></td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Period cycle :</b></td>
+			<td>
+			<select name="Period">
+				<option value="D" ##TP_IF {[tpGetVar Period] == "D"}##selected##TP_ENDIF##>Daily</option>
+				<option value="W" ##TP_IF {[tpGetVar Period] == "W"}##selected##TP_ENDIF##>Weekly</option>
+				<option value="F" ##TP_IF {[tpGetVar Period] == "F"}##selected##TP_ENDIF##>Fortnightly</option>
+			</select>
+			</td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Entry Price :</b></td>
+			<td><input type="text" name="Price" size="8" maxlength="8" value="##TP_Price##"></td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Starting Balance :</b></td>
+			<td><input type="text" name="Balance" size="8" maxlength="8" value="##TP_Balance##"></td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Status :</b></td>
+			<td>
+			<select name="Status">
+				<option value="A" ##TP_IF {[tpGetVar Status] == "A"}##selected##TP_ENDIF##>Active</option>
+				<option value="S" ##TP_IF {[tpGetVar Status] == "S"}##selected##TP_ENDIF##>Suspended</option>
+			</select>
+			</td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right" valign="top"><b>Blurb :</b></td>
+			<td>
+			<textarea cols="50" rows="6" wrap="virtual" name="Blurb">##TP_Blurb##</textarea><br>
+			<i>(Only 250 characters are stored)</i>
+			</td>
+		</tr>
+		##TP_ENDIF##
+
+		<!-- Can update an existing game -->
+		##TP_IF {![tpGetVar NewGame] && [tpGetVar GameUpdate]}##
+		<tr bgcolor="#993333">
+			<th colspan="3" align="left">
+			<font color="white">Game Variables</font>
+			</th>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Period Recurrence :</b></td>
+			<td>
+			<select name="Period">
+				<option value="D" ##TP_IF {[tpGetVar Period] == "D"}##selected##TP_ENDIF##>Daily</option>
+				<option value="W" ##TP_IF {[tpGetVar Period] == "W"}##selected##TP_ENDIF##>Weekly</option>
+				<option value="F" ##TP_IF {[tpGetVar Period] == "F"}##selected##TP_ENDIF##>Fortnightly</option>
+			</select>
+			</td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Entry Price :</b></td>
+			<td><input type="text" name="Price" size="8" maxlength="8" value="##TP_Price##"></td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Starting Balance :</b></td>
+			<td><input type="text" name="Balance" size="8" maxlength="8" value="##TP_Balance##"></td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Status :</b></td>
+			<td>
+			<select name="Status">
+				<option value="A" ##TP_IF {[tpGetVar Status] == "A"}##selected##TP_ENDIF##>Active</option>
+				<option value="S" ##TP_IF {[tpGetVar Status] == "S"}##selected##TP_ENDIF##>Suspended</option>
+			</select>
+			</td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right" valign="top"><b>Blurb :</b></td>
+			<td>
+			<textarea cols="50" rows="6" wrap="virtual" name="Blurb">##TP_Blurb##</textarea><br>
+			<i>(Only 250 characters are stored)</i>
+			</td>
+		</tr>
+		##TP_ENDIF##
+
+		<!-- view of existing game, no update permissions -->
+		##TP_IF {![tpGetVar NewGame] && ![tpGetVar GameUpdate]}##
+		<tr bgcolor="#993333">
+			<th colspan="3" align="left">
+			<font color="white">Game Variables</font>
+			</th>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Period Recurrence :</b></td>
+			<td>##TP_Period##</td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Entry Price :</b></td>
+			<td>##TP_Price##</td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Starting Balance :</b></td>
+			<td>##TP_Balance##</td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right"><b>Status :</b></td>
+			<td>##TP_Status##</td>
+		</tr>
+		<tr bgcolor="#cccccc">
+			<td align="right" valign="top"><b>Blurb :</b></td>
+			<td>##TP_Blurb##</td>
+		</tr>
+		##TP_ENDIF##
+
+		<tr>
+			<th colspan="2" align="left">
+			<table bgcolor=#10137c border=0 cellspacing=0 cellpadding=0 width=100%>
+				<tr>
+					<th width="75%" align="left">
+					<font color="white">
+					##TP_IF {[tpGetVar GameUpdate]}##
+					##TP_IF {[tpGetVar NewGame]}##
+					<input type=button class="btn_def" value="Add Game" onClick="return fs(this,'AddGame')">
+					##TP_ELSE##
+					<input type=button class="btn_def" value="Update Game" onClick="return fs(this,'UpdGame')">
+					##TP_ENDIF##
+					##TP_ENDIF##
+					##TP_IF {![tpGetVar NewGame]}##
+					<input type=button class="btn_def" value="Game Periods" onClick="return fs(this,'ShowPeriods')">
+					##TP_ENDIF##
+					<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+					</font>
+					</th>
+				</tr>
+			</table>
+			</th>
+		</tr>
+		</form>
+	</table>
+
+</body>
+</html>

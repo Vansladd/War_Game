@@ -1,0 +1,243 @@
+<html>
+<!-- $Id: lang_cfg.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+
+
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+
+	<title>OpenBet Administration</title>
+
+	<script type="text/javascript" src="##TP_OFFICE_STATIC_URL##/js/base.js"></script>
+	<script type="text/javascript">
+
+		// Order a selection of items with up/down buttons, etc.
+		// Get going with selectOrder.init(select_id, up_id, down_id, add_id, new_text_id, delete_id, sort_id);
+		var selectOrder = {
+			selId: null,     // The select element
+			newTxtId: null,  // Where to look for new text when the Add button is pressed
+			changed: 0,
+
+			init: function(selId, upId, dnId, addId, newTxtId, delId, srtId) {
+				selectOrder.selId = selId;
+				selectOrder.newTxtId = newTxtId;
+
+				// Handlers
+				var o = getObject(upId);
+				if (o) { o.onclick = selectOrder.moveSelectedUp; }
+				o = getObject(dnId);
+				if (o) { o.onclick = selectOrder.moveSelectedDown; }
+				o = getObject(addId);
+				if (o) { o.onclick= selectOrder.addOption; }
+				o = getObject(delId);
+				if (o) { o.onclick = selectOrder.deleteOption; }
+				o = getObject(srtId);
+				if (o) { o.onclick = selectOrder.doSort; }
+				o = getObject(selectOrder.selId);
+				if (o) { o.options.selectedIndex = 0; }
+
+				selectOrder.changed = 0;
+			},
+
+			moveSelectedUp: function() {
+				var sel = getObject(selectOrder.selId);
+				selectOrder.swapOption(sel.options, -1);
+				selectOrder.changed = 1;
+			},
+
+			moveSelectedDown: function() {
+				var sel = getObject(selectOrder.selId);
+				selectOrder.swapOption(sel.options, 1);
+				selectOrder.changed = 1;
+			},
+
+			addOption: function() {
+				var sel = getObject(selectOrder.selId);
+				var nw = getObject(selectOrder.newTxtId).value.replace(/^\s+|\s+$/g,''); // trim
+				getObject(selectOrder.newTxtId).value = '';
+				if (nw == '') { return; }
+				sel.options[sel.options.length] = new Option(nw, nw);
+				sel.options.selectedIndex = sel.options.length-1;
+				sel.options[sel.options.selectedIndex].style.minWidth = '300px';
+				sel.size++;
+				selectOrder.changed = 1;
+			},
+
+			deleteOption: function() {
+				var sel = getObject(selectOrder.selId);
+				var si = sel.options.selectedIndex;
+				sel.options[si] = null;
+				sel.options.selectedIndex = si;
+				sel.size--;
+				selectOrder.changed = 1;
+			},
+
+			doSort: function() {
+				var sel = getObject(selectOrder.selId);
+
+				var array = new Array();
+				for (var i = 0; i < sel.options.length; i++) {
+					array.push(sel.options[i].value);
+				}
+				array.sort();
+				for (var i = 0; i < sel.options.length; i++) {
+					var v = array.shift();
+					sel.options[i].value = v;
+					sel.options[i].text = v;
+				}
+				selectOrder.changed = 1;
+			},
+
+			swapOption: function(os, d) {
+				var a = os.selectedIndex;
+				var b = a + d;
+				if (a < 0 || a >= os.length || b < 0 || b >= os.length) { return; }
+
+				var tmpTxt = os[a].text;
+				var tmpVal = os[a].value;
+				os[a].text = os[b].text;
+				os[a].value = os[b].value;
+				os[b].text = tmpTxt;
+				os[b].value = tmpVal;
+				os.selectedIndex = b;
+			}
+		}
+
+		var langCfg = {
+			original: new Array(),
+
+			selectSave: function(e) {
+				var fm = getObject('select_form');
+				var el = getObject('select_values');
+
+				if (!selectOrder.changed) {
+					getObject('noSave').value = 'noSave';
+				}
+				else {
+					getObject('noSave').value = '';
+					// Create args
+					for (var i = 0; i < el.options.length; i++) {
+
+						var hidden = document.createElement('input');
+						hidden.type = 'hidden';
+						hidden.name = 'hidden_'+i;
+						hidden.value = el.options[i].value;
+
+						fm.appendChild(hidden);
+					}
+				}
+
+				fm.submit();
+			},
+
+			selectCancel: function(e) {
+				// Redisplay original options
+				var el = getObject('select_values');
+				for (var i in el.options) {
+					el.options[i] = null;
+				}
+				for (var i in langCfg.original) {
+					el.options[i] = new Option(langCfg.original[i], langCfg.original[i]);
+					el.options[i].style.minWidth = '300px';
+				}
+				el.size = langCfg.original.length;
+				getObject(selectOrder.selId).options.selectedIndex = 0;
+				selectOrder.changed = 0;
+			},
+
+			onload: function() {
+				selectOrder.init('select_values', 'select_up', 'select_dn', 'select_add', 'new_value', 'select_del', 'select_sort');
+				getObject('lang_cfg_submit').onclick = langCfg.selectSave;
+				getObject('lang_cfg_cancel').onclick = langCfg.selectCancel;
+				getObject('select_lang').onchange = langCfg.selectSave;
+				getObject('select_type').onchange = langCfg.selectSave;
+
+				// The lang/type when the page loaded
+				if (getObject('saveLang').value == '') {
+					getObject('saveLang').value = getObject('select_lang').options[getObject('select_lang').options.selectedIndex].value;
+				}
+				if (getObject('saveType').value == '') {
+					getObject('saveType').value = getObject('select_type').options[getObject('select_type').options.selectedIndex].value;
+				}
+
+				selectOrder.changed = 0;
+
+				var el = getObject('select_values');
+				for (var i = 0; i < el.options.length; i++) {
+					langCfg.original.push(el.options[i].value);
+				}
+			}
+		}
+
+		window.onload = langCfg.onload;
+	</script>
+</head>
+
+
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+	<form id="select_form" method="POST" action="##TP_CGI_URL##?action=ADMIN::LANG_CFG::DoLangCfg">
+		<input type="hidden" id="noSave" name="noSave" />
+		<input type="hidden" id="saveLang" name="saveLang" value="##TP_TCL {reqGetArg lang}##" />
+		<input type="hidden" id="saveType" name="saveType" value="##TP_TCL {reqGetArg type}##" />
+		<table>
+			<th colspan="2" class="title">Language Config</th>
+
+			<tr>
+				<td colspan="2">
+					Language:
+					<select id="select_lang" name="lang">
+						##TP_LOOP lang_idx {[tpGetVar num_langs]}##
+						<option value="##TP_lang##" ##TP_IF {[tpBindGet lang] eq [reqGetArg lang]}##selected="selected"##TP_ENDIF##>##TP_lang##</option>
+						##TP_ENDLOOP##
+					</select>
+					Type:
+					<select id="select_type" name="type">
+						##TP_LOOP type_idx {[tpGetVar num_types]}##
+						<option value="##TP_type##" ##TP_IF {[tpBindGet type] eq [reqGetArg type]}##selected="selected"##TP_ENDIF##>##TP_type##</option>
+						##TP_ENDLOOP##
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<select id="select_values" multiple="multiple" size="##TP_TCL {tpGetVar num_values}##">
+						##TP_LOOP value_idx {[tpGetVar num_values]}##
+						<option style="min-width: 300px" value="##TP_value##">##TP_value##</option>
+						##TP_ENDLOOP##
+					</select>
+
+
+				</td>
+				<td rowspan="2" style="vertical-align: top">
+					<input type="button" id="select_up" value="Up" />
+					<input type="button" id="select_dn" value="Down" />
+					<input type="button" id="select_sort" value="Sort" />
+					<input type="button" id="select_del" value="Delete" />
+				</td>
+			</tr>
+
+			<tr>
+				<td><input id="new_value" type="text" size="30" /><input type="button" id="select_add" value="Add value" /></td>
+			</tr>
+
+			<tr>
+				<th class="buttons" colspan="2">
+					<input id="lang_cfg_submit" type="button" value="Save" />
+					<input id="lang_cfg_cancel" type="button" value="Cancel" />
+				</th>
+			</tr>
+		</table>
+	</form>
+
+</body>
+
+
+
+</html>

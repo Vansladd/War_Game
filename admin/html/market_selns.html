@@ -1,0 +1,645 @@
+<html>
+<!-- $Id: market_selns.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Update Selections</title>
+
+##TP_PLAY JS_WriteSelect.html##
+
+<script language=JavaScript>
+
+##TP_INCL price_util.js##
+
+var errorList = "";
+
+var mktOcs = new Array();
+##TP_LOOP seln_idx {[tpGetVar NumMktSelns]}##
+	mktOcs.push('##TP_OcId##');
+##TP_ENDLOOP##
+
+var market_active = ##TP_MktActive##;
+
+// keep a note of the number of lp fields written
+// out and use this to set the tab ordering
+var tabindex_count = 0
+
+function add_err(e_str)
+{
+	if (errorList.length > 0) {
+		errorList += "\n";
+	}
+	errorList += e_str;
+}
+
+
+function write_odds(n,d)
+{
+	if (n != d) {
+		document.write("" + n + "/" + d);
+	} else {
+		document.write("evens");
+	}
+}
+
+function write_oc_frac(how,name,id,val,val_prev,num_rows)
+{
+	var content = "";
+
+	if (val_prev != "") {
+		content = ""+val_prev+"";
+	} else if (val != "") {
+		content = ""+val+"";
+	}
+
+	document.write('<td>');
+	if (how == "INPUT") {
+		document.write('<input type=text name="' + name + '_' + id
+				+ '" value="' + content + '" size=8 ');
+
+		if (name == "lp") {
+			##TP_IF {[OT_CfgGet FUNC_CALC_MAX_BET 0]}##
+			document.write('onBlur="calc_max_bet(' + id + ') && calculateMktOverround()";');
+			##TP_ENDIF##
+			document.write('tabindex="'+ ++tabindex_count +'" onBlur="calculateMktOverround()"/>');
+		} else if (name == "plp") {
+			document.write('tabindex="'+ ++tabindex_count +'" disabled/>');
+		} else {
+			document.write('tabindex="'+ tabindex_count+num_rows +'" onBlur="calculateMktOverround()"/>');
+		}
+	} else {
+		if (content == "") {
+			content = '&' + 'nbsp;';
+		}
+		document.write(content);
+	}
+	document.write('</td>\n');
+}
+
+##TP_IF {[OT_CfgGet FUNC_CALC_MAX_BET 0]}##
+// toggles the liab per cust box disabled/enabled depending on the value of the checkbox
+function toggle_lpc_val() {
+        document.UpdMktSelns['lpc_val'].disabled = !document.UpdMktSelns['use_lpc'].checked;
+}
+
+// calculate the value of the max bet field based on the formula: max bet = liab_per_customer / (lp - 1)
+// doing this on a per seln basis so pass in the current seln id to find its lp
+function calc_max_bet (id) {
+        if (document.UpdMktSelns['use_lpc'].checked) {
+		var liab = document.UpdMktSelns['lpc_val'].value;
+		var lp   = document.UpdMktSelns['lp_' + id].value;
+
+		if (liab != "" && lp != "") {
+			// check if a fractional price has been entered
+			var res = lp.split("/");
+			if (res.length == 2) {
+				// calculate a decimal price
+				lp = res[0]/res[1] ;
+			} else {
+				lp = lp - 1 ;
+			}
+			var mxbet = Math.round(liab/lp);
+			if (document.UpdMktSelns['max_' + id].value != mxbet) {
+				// add on the ".00" to keep the display consistant with what comes back
+				// when the selns are updated and the page reloaded
+				document.UpdMktSelns['max_' + id].value = mxbet + ".00";
+			}
+		}
+	}
+}
+##TP_ENDIF##
+
+var row_num = 0;
+var ev_oc_id_list = "";
+var num_active_selns = 0;
+
+##TP_IF {[op_allowed ManageEvOc]}##
+var can_edit = 1;
+##TP_ELSE##
+var can_edit = 0;
+##TP_ENDIF##
+
+function write_ev_oc_id_list()
+{
+	document.write('<input type="hidden" name="EvOcIdList" value="'
+		+ ev_oc_id_list + '">\n');
+}
+
+function add_ev_oc_id(id)
+{
+	if (ev_oc_id_list != "") {
+		ev_oc_id_list += ",";
+	}
+	ev_oc_id_list += id;
+}
+
+function write_oc_line(id,result,
+	lp,sp,desc,status,dispo,disp,lp_v,lp_prev,spg_v,spg_prev,place,min,max,sp_max,ep_max,multkey,stkorlbt,maxtotal,num_rows)
+{
+	// alternate row colours
+	row_num += 1;
+	if (row_num % 2 == 0) {
+		document.write('<tr bgcolor=#999999>\n');
+	} else {
+		document.write('<tr bgcolor=#cccccc>\n');
+	}
+
+	if (result != "-") {
+		num_active_selns += 1;
+	}
+
+	add_ev_oc_id(id);
+
+	document.write('<td nowrap>\n');
+	document.write('<a href="##TP_CGI_URL##?action=ADMIN::SELN::GoOc'
+		+'&MktId=##TP_MktId##&OcId='
+		+id+'">'+desc+'</a>\n');
+	document.write('</td>\n');
+
+	document.write('<td>\n');
+	if (can_edit) {
+		document.write('<input type=text size=6 name="dispo_'+id
+			+'" value="'+dispo+'">\n');
+	} else {
+		document.write(dispo);
+	}
+	document.write('</td>\n');
+
+	document.write('<td>\n');
+	if (can_edit) {
+		document.write('<select name="displayed_'+id+'">\n');
+		write_select(disp, 'Y','Yes','N','No');
+		document.write('</select>\n');
+	} else {
+		write_which(disp, 'Y','Yes','N','No');
+	}
+	document.write('</td>\n');
+
+	document.write('<td>\n');
+	if (can_edit) {
+		document.write('<select name="status_' + id + '">\n');
+		write_select(status, 'A','Active','S','Suspended');
+		document.write('</select>\n');
+	} else {
+		write_which(status, 'A','Active','S','Suspended');
+	}
+	document.write('</td>\n');
+
+	// write live price, if one exists
+	if (lp == "Y") {
+		##TP_IF {[op_allowed UpdEvOcPrice]}##
+			write_oc_frac('INPUT','lp',id,lp_v,lp_prev,num_rows);
+		##TP_ELSE##
+			write_oc_frac('TEXT','lp',id,lp_v,'',num_rows);
+		##TP_ENDIF##
+	}
+
+	// write place price calculated using the live price
+	write_oc_frac('INPUT','plp',id,place,"",num_rows);
+
+	// write sp guide, if sp specified
+	if (sp == "Y") {
+		if (can_edit) {
+			write_oc_frac('INPUT','spg',id,spg_v,spg_prev,num_rows);
+		} else {
+			write_oc_frac('TEXT','spg',id,spg_v,'',num_rows);
+		}
+	}
+	document.write('<td>\n');
+	if (can_edit) {
+		document.write('<input type=text size=8 name="min_'+id+'" value="'+min+'">\n');
+	} else {
+		document.write(min);
+	}
+	document.write('</td>\n');
+
+	document.write('<td>\n');
+	if (can_edit) {
+		document.write('<input type=text size=8 name="max_'+id+'" value="'+max+'">\n');
+	} else {
+		document.write(max);
+	}
+	document.write('</td>\n');
+
+	if (sp_max != "-") {
+		document.write('<td>\n');
+		if (can_edit) {
+			document.write('<input type=text size=8 name="sp_max_'+id+'" value="'+sp_max+'">\n');
+		} else {
+			document.write(sp_max);
+		}
+		document.write('</td>\n');
+	}
+	##TP_IF { [lsearch [OT_CfgGet EP_AVAILABLE_CLASSES "GREYHOUNDS HORSE_RACING"] [tpGetVar Category]] != -1}##
+	if (ep_max != "-") {
+		document.write('<td>\n');
+		if (can_edit) {
+			document.write('<input type=text size=8 name="ep_max_'+id+'" value="'+ep_max+'">\n');
+		} else {
+			document.write(ep_max);
+		}
+		document.write('</td>\n');
+	}
+	##TP_ENDIF##
+    document.write('<td>\n');
+	if (can_edit) {
+	    document.write('<input type=text size=6 name="mult_key_'+id+'" value="'+multkey+'">\n');
+	} else {
+	    document.write(multkey);
+	}
+    document.write('</td>\n');
+
+    document.write('<td>\n');
+	write_which(stkorlbt,'S','Stake','L','Liability');
+    document.write('</td>\n');
+
+    document.write('<td>\n');
+	if (can_edit) {
+	    document.write('<input type=text size=10 name="max_total_'+id+'" value="'+maxtotal+'">\n');
+	} else {
+	    document.write(maxtotal);
+	}
+    document.write('</td>\n');
+}
+
+function write_blank(lp,sp)
+{
+	var cols=6;
+	if (lp == "Y") {
+		cols += 1;
+	}
+	if (sp == "Y") {
+		cols += 1;
+	}
+	document.write('<tr bgcolor=white>\n');
+	document.write('<td colspan='+cols+'>&'+'nbsp;</td>\n');
+	document.write('</tr>\n');
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+//calculate mkt overround.
+//Returns
+function calculateMktOverround() {
+
+	##TP_IF {[op_allowed UpdEvOcPrice]}##
+
+	var res = 0.0;
+	var place_res = 0.0;
+
+	for (var i = 0; i < mktOcs.length; i++) {
+		eval('var status = document.forms["UpdMktSelns"].status_' + mktOcs[i] + '.value;');
+		if ( status == 'A') {
+			eval('var oc_lp = parsePrice(document.forms["UpdMktSelns"].lp_' + mktOcs[i] + '.value);');
+
+			if (oc_lp[0] != '' && oc_lp[0] != 'ERR' && oc_lp[1]!= '' ) {
+				res +=  ( oc_lp[1] / ( parseFloat(oc_lp[0]) + parseFloat(oc_lp[1])) );
+			}
+
+			var ew_place_text = "##TP_EWPL##";
+
+			var ew_place = parsePrice(ew_place_text);
+			ew_place[0] = ew_place[0] * oc_lp[0];
+			ew_place[1] = ew_place[1] * oc_lp[1];
+
+			if (ew_place_text != "" && ew_place[0] != 'NaN' && ew_place[1] != 0) {
+				ew_place = simplifyPrice(ew_place[0],ew_place[1]);
+			}
+
+			ew_place = ew_place[0] + "/" + ew_place[1];
+			eval('document.forms["UpdMktSelns"].plp_' + mktOcs[i] + '.value ="' +  ew_place + '";');
+
+			eval('var oc_place = parsePrice(document.forms["UpdMktSelns"].plp_' + mktOcs[i] + '.value);');
+			if (oc_place[0] != '' && oc_place[0] != 'ERR' && oc_place[1]!= '' && oc_place[0]!= 'NaN') {
+				place_res +=  ( oc_place[1] / ( parseFloat(oc_place[0]) + parseFloat(oc_place[1])) );
+			}
+		}
+
+	}
+	var margin = 100*res;
+	var place_margin = 100*place_res;
+	document.getElementById('margin').innerHTML = "<b>"+margin.toFixed(2)+"%"+"</b>";
+	document.getElementById('place_margin').innerHTML = "<b>"+place_margin.toFixed(2)+"%"+"</b>";
+	return 100*res;
+
+	##TP_ENDIF##
+
+}
+
+function doWarningOverround(button,warning_msg,onConfirm) {
+
+	##TP_IF {![op_allowed UpdEvOcPrice]}##
+		return fs(button,onConfirm);
+	##TP_ELSE##
+
+	var margin = calculateMktOverround();
+	var margin_disp = margin.toFixed(2);
+
+	if (parseFloat(margin) < 100 ) {
+		//QC 193 replace overround in the error msg by underround
+		var bool = confirm( warning_msg + '\n' + 'That action will result in an underround of ' + margin_disp + '%. Do you wish to continue?');
+		if (bool) {
+			return fs(button,onConfirm);
+		}
+		else {
+			for (var i = 0; i < mktOcs.length; i++) {
+				var input_name = 'lp_' + mktOcs[i] ;
+				eval("document.forms['UpdMktSelns']." + input_name + ".value" + "=" + "document.forms['UpdMktSelns']." + input_name + ".defaultValue;");
+			}
+		}
+	} else {
+		return fs(button,onConfirm);
+	}
+
+	##TP_ENDIF##
+
+}
+
+
+</script>
+
+</head>
+
+<body onload="calculateMktOverround()">
+##TP_PLAY error_rpt.html##
+<form name="UpdMktSelns" method=post action="##TP_CGI_URL##" >
+<table border=0 cellspacing=0 cellpadding=2>
+<tr>
+	<th class=title colspan=2>
+	##TP_EvDesc##, ##TP_EvStartTime##<br>##TP_MktName##
+	</th>
+</tr>
+##TP_IF {[tpGetVar MktType]=="A"}##
+	<tr>
+		<td class=caption>Handicap</td>
+		<td>
+		<select name=MktHcapValue>
+		<script>
+			write_select('##TP_MktHcapValue##',
+						##TP_IF {![OT_CfgGetTrue FUNC_HCAP_SIDE]}##
+							                   '-20','-5.0',
+							'-19','-4.5/-5.0', '-18','-4.5',
+							'-17','-4.0/-4.5', '-16','-4.0',
+							'-15','-3.5/-4.0', '-14','-3.5',
+							'-13','-3.0/-3.5', '-12','-3.0',
+							'-11','-2.5/-3.0', '-10','-2.5',
+ 							 '-9','-2.0/-2.5',  '-8','-2.0',
+ 							 '-7','-1.5/-2.0',  '-6','-1.5',
+ 							 '-5','-1.0/-1.5',  '-4','-1.0',
+ 							 '-3','-0.5/-1.0',  '-2','-0.5',
+					 	 	 '-1','-0.0/-0.5',
+						##TP_ENDIF##
+                         '0','0.0', '1','0.0/0.5',
+                         '2','0.5', '3','0.5/1.0',
+                         '4','1.0', '5','1.0/1.5',
+                         '6','1.5', '7','1.5/2.0',
+                         '8','2.0', '9','2.0/2.5',
+                        '10','2.5', '11','2.5/3.0',
+                        '12','3.0', '13','3.0/3.5',
+                        '14','3.5', '15','3.5/4.0',
+                        '16','4.0', '17','4.0/4.5',
+                        '18','4.5', '19','4.5/5.0',
+                        '20','5.0')
+		</script>
+		</select>
+		##TP_IF {[OT_CfgGetTrue FUNC_HCAP_SIDE]}##
+			&nbsp;<b>added to</b>&nbsp;
+			<select name="MktHcapSide">
+			<script>
+				write_select('##TP_MktHcapSide##','H','Home','A','Away')
+			</script>
+			</select>
+			<b>side</b>
+		##TP_ELSE##
+			<b>(added to home side)</b>
+		##TP_ENDIF##
+		</td>
+	</tr>
+##TP_ELSEIF {[tpGetVar MktType]=="H"}##
+	<tr>
+		<td class=caption>Handicap</td>
+		<td>
+		<input type="text" name="MktHcapValue" size=10 value="##TP_MktHcapValue##">
+		##TP_IF {[OT_CfgGetTrue FUNC_HCAP_SIDE]}##
+			&nbsp;added to&nbsp;
+			<select name="MktHcapSide">
+			<script>
+			write_select('##TP_MktHcapSide##','H','Home','A','Away')
+			</script>
+			</select>
+			<b>side</b>
+		##TP_ELSE##
+			<b>(added to home side)</b>
+		##TP_ENDIF##
+		<input type=hidden name=MktMakeupValue value="##TP_MktMakeupValue##">
+		</td>
+	</tr>
+##TP_ELSEIF {[tpGetVar MktType]=="L"}##
+	<tr>
+		<td class=caption>Hi/Lo value</td>
+		<td>
+		<input type="text" name="MktHcapValue" size=10 value="##TP_MktHcapValue##">
+		</td>
+	</tr>
+##TP_ELSEIF {[tpGetVar MktType]=="l"}##
+	<tr>
+		<td class=caption>Hi/Lo (split) value</td>
+		<td>
+		<input type="text" name="MktHcapValue" size=15 value="##TP_MktHcapValue##">
+		</td>
+	</tr>
+##TP_ELSEIF {[tpGetVar MktType]=="U"}##
+	<tr>
+		<td class=caption>Over/Under value</td>
+		<td>
+		<input type="text" name="MktHcapValue" size=5 value="##TP_MktHcapValue##">
+		</td>
+	</tr>
+##TP_ELSEIF {[tpGetVar MktType]=="N"}##
+    <tr>
+        <td class=caption>BIR index:</td>
+        <td>
+        <input type=text size=4 name=MktBirIndex value="##TP_BirIndex##">
+        </td>
+   </tr>
+##TP_ELSE##
+	<tr>
+		<td class=caption>Pricing</td>
+		<td>
+		##TP_IF {[tpGetVar MktLPAvail 0]}##
+			##TP_IF {[tpGetVar MktSPAvail 0]}##
+				Both live and starting prices
+			##TP_ELSE##
+				Live prices only
+			##TP_ENDIF##
+		##TP_ELSE##
+			Starting prices only
+		##TP_ENDIF##
+		</td>
+	</tr>
+##TP_ENDIF##
+</table>
+<br>
+
+##TP_IF {[OT_CfgGet FUNC_CALC_MAX_BET 0]}##
+	<table border="0" cellspacing="1" cellpadding="1">
+	<tr><th class="colhead" colspan="2">Liability / customer</th></tr>
+	<tr>
+	<td><input type="text" name="lpc_val" value="##TP_TCL {tpBufWrite [OT_CfgGet DEF_LIAB_PER_CUST 1000]}##"/></td>
+	<td><input type="checkbox" name="use_lpc" checked="checked" onClick="toggle_lpc_val();"/></td>
+	</tr>
+	</table>
+	<br/>
+##TP_ENDIF##
+
+<table border=0 cellspacing=1 cellpadding=1>
+##TP_IF {[tpGetVar NumMktSelns 0] > 0}##
+	<tr>
+		<th class=colhead>Selection</th>
+		<th class=colhead>Disporder</th>
+		<th class=colhead>Displayed</th>
+		<th class=colhead>Status</th>
+		##TP_IF {[tpGetVar MktLPAvail 0]}##
+			<th class=colhead>LP</th>
+		##TP_ENDIF##
+		<th class=colhead>Place</th>
+		##TP_IF {[tpGetVar MktSPAvail 0]}##
+			<th class=colhead>SP Guide</th>
+		##TP_ENDIF##
+		<th class=colhead>MinBet</th>
+		<th class=colhead>MaxBet</th>
+		##TP_IF {([OT_CfgGet FUNC_VARIABLE_MAX_STAKES 0] && ([lsearch [OT_CfgGet VAR_MAX_STAKE_CLASSES ""] [tpGetVar ClassId]] != -1)) || [OT_CfgGet FUNC_LAY_TO_LOSE] == 1}##
+		<th class=colhead>MaxSPBet</th>
+			##TP_IF { [lsearch [OT_CfgGet EP_AVAILABLE_CLASSES "GREYHOUNDS HORSE_RACING"] [tpGetVar Category]] != -1}##
+			<th class=colhead>MaxEPBet</th>
+			##TP_ENDIF##
+		##TP_ENDIF##
+		<th class=colhead>Mult Key</th>
+		<th class=colhead colspan=2>Max Total</th>
+		##TP_IF {[OT_CfgGet FUNC_CHANNELS 0]}##
+			<th class=colhead colspan="##TP_TCL {tpGetVar NumChannels}##">Channels</th>
+		##TP_ENDIF##
+	</tr>
+
+	##TP_LOOP seln_idx {[tpGetVar NumMktSelns]}##
+		##TP_IF {([OT_CfgGet FUNC_VARIABLE_MAX_STAKES 0] && ([lsearch [OT_CfgGet VAR_MAX_STAKE_CLASSES ""] [tpGetVar ClassId]] != -1)) || [OT_CfgGet FUNC_LAY_TO_LOSE] == 1}##
+		<script>
+		write_oc_line(
+			"##TP_OcId##",
+			"##TP_OcResult##",
+			"##TP_MktLPAvail##",
+			"##TP_MktSPAvail##",
+			"##TP_OcDesc##",
+			"##TP_OcStatus##",
+			"##TP_OcDisporder##",
+			"##TP_OcDisplayed##",
+			"##TP_OcLP##",
+			"##TP_OcLPPrice##",
+			"##TP_OcGP##",
+			"##TP_OcGPPrice##",
+			"##TP_OcLPL##",
+			"##TP_OcMinBet##",
+			"##TP_OcMaxBet##",
+			"##TP_OcSpMaxBet##",
+			##TP_IF { [lsearch [OT_CfgGet EP_AVAILABLE_CLASSES "GREYHOUNDS HORSE_RACING"] [tpGetVar Category]] != -1}##
+			"##TP_OcEpMaxBet##",
+			##TP_ELSE##
+			"-",
+			##TP_ENDIF##
+			"##TP_OcMultKey##",
+			"##TP_OcStkOrLbt##",
+			"##TP_OcMaxTotal##",
+			##TP_TCL {tpBufWrite [tpGetVar NumMktSelns]}##
+		);
+		</script>
+
+		##TP_ELSE##
+		<script>
+		write_oc_line(
+			"##TP_OcId##",
+			"##TP_OcResult##",
+			"##TP_MktLPAvail##",
+			"##TP_MktSPAvail##",
+			"##TP_OcDesc##",
+			"##TP_OcStatus##",
+			"##TP_OcDisporder##",
+			"##TP_OcDisplayed##",
+			"##TP_OcLP##",
+			"##TP_OcLPPrice##",
+			"##TP_OcGP##",
+			"##TP_OcGPPrice##",
+			"##TP_OcLPL##",
+			"##TP_OcMinBet##",
+			"##TP_OcMaxBet##",
+			"-",
+			"-",
+			"##TP_OcMultKey##",
+			"##TP_OcStkOrLbt##",
+			"##TP_OcMaxTotal##",
+			##TP_TCL {tpBufWrite [tpGetVar NumMktSelns]}##
+		);
+		</script>
+		##TP_ENDIF##
+		##TP_IF {[OT_CfgGet FUNC_CHANNELS 0]}##
+			##TP_LOOP chnnl_idx {[tpGetVar NumChannels]}##
+				<td nowrap>
+				<input type=checkbox name="CN_##TP_ChannelCd####TP_OcId##" value="Y" ##TP_ChannelUse##>
+				##TP_ChannelName##
+				</td>
+			##TP_ENDLOOP##
+		##TP_ENDIF##
+		</tr>
+	##TP_ENDLOOP##
+	<script>
+		write_ev_oc_id_list();
+	</script>
+	<script>cols=9;</script>
+	##TP_IF {[tpGetVar MktLPAvail 0]}##
+		<input type=hidden name="MktLPAvail" value="Y">
+		<script> cols+=1; </script>
+	##TP_ELSE##
+		<input type=hidden name="MktLPAvail" value="N">
+	##TP_ENDIF##
+	##TP_IF {[tpGetVar MktSPAvail 0]}##
+		<input type=hidden name="MktSPAvail" value="Y">
+		<script> cols+=1; </script>
+	##TP_ELSE##
+		<input type=hidden name="MktSPAvail" value="N">
+	##TP_ENDIF##
+	##TP_IF {[OT_CfgGet FUNC_CHANNELS 0]}##
+		<script>cols+=##TP_TCL {tpGetVar NumChannels}##;</script>
+	##TP_ENDIF##
+	<tr>
+		<script>document.write('<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td><div id="margin"></div></td><td><div id="place_margin"></div></td>');</script>
+	</tr>
+	<tr>
+		<script>document.write('<th colspan='+cols+' class=buttons>');</script>
+		##TP_IF {[op_allowed ManageEvOc]}##
+			<input type=button class="btn_def" value="Update Selections" onClick="if(market_active && ##TP_TCL {tpBufWrite [OT_CfgGet ENABLE_OVERROUND_WARNING 0] }##) {doWarningOverround(this,'You are trying to update selections on an active market','UpdSelns')} else {return fs(this,'UpdSelns')}">
+		##TP_ENDIF##
+		<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</td>
+	</tr>
+##TP_ELSE##
+	<tr>
+		<td>
+		<I>There are no selections specified for this market.</I>
+		</td>
+	</tr>
+##TP_ENDIF##
+</table>
+<input type=hidden name="EvId" value="##TP_EvId##">
+<input type=hidden name="MktId" value="##TP_MktId##">
+<input type=hidden name="MktSort" value="##TP_MktSort##">
+<input type=hidden name="MktType" value="##TP_MktType##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::SELN::DoOcsUpd>
+</form>
+</body>
+</html>

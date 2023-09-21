@@ -1,0 +1,195 @@
+<head>
+<!-- $Id: menu.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet_splash">
+<title>Top Navigation Bar</title>
+<script language="JavaScript">
+##TP_PLAY leftnav.js##
+</script>
+</head>
+<html>
+##TP_TCL -quiet {
+	global MENU
+
+	set menus {
+	{{Betting Setup} bet} {
+		{"Event Classes" "$CGI_URL?action=ADMIN::CLASS::GoClassList" FUNC_MENU_EVENT_CLASSES 0}
+		{Events "$CGI_URL?action=ADMIN::EV_SEL::GoEvSel" FUNC_MENU_EVENTS 0}
+		{"Event Upload" "$CGI_URL?action=ADMIN::UPLOAD::GoUpload&upload_type=EVT" FUNC_MENU_EVENT_UPLOAD 0}
+		{"Bet Highlights" "$CGI_URL?action=ADMIN::BESTBETS::go_bbets" FUNC_MENU_BET_HIGHLIGHTS 0}
+		{"News Stories" "$CGI_URL?action=ADMIN::STORIES::go_story_list" FUNC_MENU_NEWS_STORIES 0}
+		{"News Highlights" "$CGI_URL?action=ADMIN::NEWS::go_news_highlight_list" FUNC_MENU_NEWS_HIGHLIGHTS 0}
+		{"Lottery Setup" "$CGI_URL?action=GoXGameFind" FUNC_MENU_XGAME 0}
+		{"Lottery Charity Setup" "$CGI_URL?action=GoXGameCharityLst" FUNC_XGAME_CHARITY 0}
+		{"Balls Setup" "$CGI_URL?action=ADMIN::BALLS::GoBallsSetup" FUNC_MENU_BALLS_SETUP 0}
+		{"Games Setup" "$CGI_URL?action=ADMIN::GAMES::GoGameSetup" FUNC_MENU_GAMES_SETUP 0}
+		{"Pools" "$CGI_URL?action=ADMIN::POOLS::GoPools" FUNC_MENU_PM 0}
+	}
+
+	{{Quick Change} qchange FUNC_MENU_QUICK_CHANGE 0} {
+		{Event "$CGI_URL?action=ADMIN::QUICKMOD::GoSelEvent"}
+		{Selection "$CGI_URL?action=ADMIN::QUICKMOD::GoSelSeln"}
+	}
+
+	{Queries qrys} {
+		{"Fixed odds bet" "$CGI_URL?action=ADMIN::BET::GoBetQuery&type=sports" FUNC_MENU_BET_QUERY 0}
+		{"Lottery bet" "$CGI_URL?action=ADMIN::BET::GoBetQuery&type=xgame" FUNC_MENU_XGAMES_QUERY 0}
+		{{[OT_CfgGet IGF_HTML_SHORT_TITLE "FOG"] bet} "$CGI_URL?action=ADMIN::IGF::GoBetQuery" FUNC_MENU_CGAMES_QUERY 0}
+		{{[OT_CfgGet UG_MENU_TEXT "SNG"] bet} "##TP_CGI_URL##?action=ug::admin::go_bet_query" FUNC_UG 0}
+		{"Pools bet" "$CGI_URL?action=ADMIN::BET::GoBetQuery&type=pools" FUNC_MENU_PM 0}
+		{"Balls bet" "$CGI_URL?action=ADMIN::BALLS::GoBallsQuery" FUNC_MENU_BALLS_QUERY 0}
+		{Customers "$CGI_URL?action=ADMIN::CUST::GoCustQuery" FUNC_MENU_CUSTOMER 0}
+		{Payments "$CGI_URL?action=ADMIN::PMT::GoPmtQry" FUNC_MENU_PAY_METHODS 0}
+		{"Man Adjustments" "$CGI_URL?action=ADMIN::ADJ::GoAdjQry" FUNC_MENU_MAN_ADJUSTMENTS 0}
+		{Orders "$CGI_URL?action=ADMIN::ORDER::GoOrderQuery" FUNC_MENU_ORDER_QUERY 0}
+		{Calls "$CGI_URL?action=ADMIN::CALL::GoCallQry" FUNC_MENU_CALL_QUERY 0}
+		{"Shop Bets" "$CGI_URL?action=ADMIN::SLIP::GoSlipQuery" FUNC_MENU_SLIP_QUERY 0}
+		{"Fraud Screen" "$CGI_URL?action=ADMIN::FRAUD::GoFraudQuery" FUNC_FRAUD_SCREEN 0}
+	}
+
+	{{Index Trading} idx FUNC_INDEX_TRADE 0} {
+		{"Order Clearout" "$CGI_URL?action=ADMIN::IXCLEAROUT::GoOrderClearout"}
+	}
+
+	{Payments pmts FUNC_MENU_PAY_METHODS 0} {
+		{Schemes "$CGI_URL?action=ADMIN::PMT::GoPmtScheme"}
+		{"Pay Methods" "$CGI_URL?action=ADMIN::PMT::GoPmtAuthQry"}
+		{Upload "$CGI_URL?action=ADMIN::UPLOAD::GoUpload&upload_type=PMT"}
+		{"Payment G'ways" "$CGI_URL?action=ADMIN::PMT::GoPmtGateHost" FUNC_MENU_PMT_GATEWAYS 0 {op_allowed UpdatePmtGateway}}
+		{"Payment Checking" "$CGI_URL?action=ADMIN::PMT::GoPmtChecking" FUNC_MENU_PMT_CHECKING 0}
+		{"Payment G'way Rules" "$CGI_URL?action=ADMIN::PMT::GoPmtRules" FUNC_MENU_PMT_RULES 0}
+		{"Payment I'cepts" "$CGI_URL?action=ADMIN::PMTINTCPT::GoPmtIntercept" FUNC_MENU_PMT_INTERCEPT 0 {op_allowed ViewPmtIntercepts}}
+		{"Grp ClearDown" "$CGI_URL?action=ADMIN::AUTODBT::GoGroupClearDown" FUNC_MENU_AUTO_DBT_RETURN 0}
+		{"Debt Management" "$CGI_URL?action=ADMIN::DEBT_MANAGEMENT::GoDebtMan" FUNC_MENU_DEBT_MANAGEMENT 0}
+		{"Debt Chase" "$CGI_URL?action=ADMIN::DEBT_MANAGEMENT::GoDebtManSelArg" FUNC_MENU_DEBT_MANAGEMENT 0}
+		{"Debt Letters Config" "$CGI_URL?action=ADMIN::DEBT_MANAGEMENT::GoDebtManCfg" FUNC_MENU_DEBT_MANAGEMENT 0}
+	}
+
+	{Pools pools} {
+		{"PM Types" "$CGI_URL?action=ADMIN::POOLS::GoPoolTypes"}
+		{"PM Bets" "$CGI_URL?action=ADMIN::POOLS::GoBets"}
+		{"Pools Sources" "$CGI_URL?action=ADMIN::POOLS::SETUP::go_pools" FUNC_MENU_POOLS_SETUP 0}
+	}
+
+	{Tote tote} {
+		{"Type Linking" "$CGI_URL?action=ADMIN::TOTE::GoTypeLinks"}
+		{"Event Linking" "$CGI_URL?action=ADMIN::TOTE::GoEvLinks&today_only=on"}
+	}
+
+	{Games fse FUNC_MENU_FANTASY_BET 0} {
+		{Games "$CGI_URL?action=GoFBetGameSearch"}
+	}
+
+	{FreeBets freebets FUNC_MENU_FREEBETS {expr {[op_allowed ViewFreeBets] || [op_allowed ModifyFreeBets]}}} {
+		{"Freebet Upload" "$CGI_URL?action=ADMIN::UPLOAD::GoUpload&upload_type=FBT"}
+		{"Trigger Types" "$CGI_URL?action=ADMIN::FREEBETS::GoTriggerTypesList" FUNC_MENU_FREEBET_TRIGGERTYPES 0}
+		{Offers "$CGI_URL?action=ADMIN::FREEBETS::GoOffersList"}
+		{"Redemption Vals" "$CGI_URL?action=ADMIN::FREEBETS::GoRValList"}
+		{"Generate Vouchers" "$CGI_URL?action=ADMIN::FREEBETS::GoGenerateVouchers" FUNC_MENU_FREEBET_GENERATEVOUCHERS 0}
+	}
+
+	{Telebetting tbs FUNC_TELEBETTING 0} {
+		{Terminals "$CGI_URL?action=ADMIN::LDT::GoLocDeptTerm" FUNC_MENU_TERMINALS 0}
+		{"Cancel Call" "$CGI_URL?action=ADMIN::TB_CALL::GoCallCancel" FUNC_MENU_CALL_CANCEL 0}
+	}
+
+	{Poker poker FUNC_POKER 0} {
+		{Settings "$CGI_URL?action=ADMIN::POKER::SETTING::GoPokSetting"}
+		{"Prize Groups" "$CGI_URL?action=ADMIN::POKER::PRIZE::GoGrps"}
+		{Events "$CGI_URL?action=ADMIN::POKER::EV::GoPokEvs"}
+		{Hands "$CGI_URL?action=ADMIN::POKER::HAND::GoPokHandQry"}
+	}
+
+	{Monitor monitor FUNC_MONITOR 0} {
+		{Monitors "$CGI_URL?action=ADMIN::MONITOR::GoMonitorHome" FUNC_MENU_MONITOR_MONITOR 0}
+		{Groups "$CGI_URL?action=ADMIN::MONITOR::GoGroupHome" FUNC_MENU_MONITOR_GROUP 0}
+		{Reports "$CGI_URL?action=ADMIN::MONITOR::GoReportHome" FUNC_MENU_MONITOR_REPORT 0}
+		{"Field Xlations" "$CGI_URL?action=ADMIN::MONITOR::GoFldXlateHome" FUNC_MENU_MONITOR_FLD_XLATE 0}
+		{"Open Monitors" {[OT_CfgGet MONITOR_PORTAL_URL ""]\" target=\"_blank\"}}
+	}
+
+	{Betcards bcard FUNC_BETCARD 0 {op_allowed BetcardFunc}} {
+		{"Vendor Details" "$CGI_URL?action=ADMIN::BETCARD::GoVendorQuery" FUNC_BETCARD 0}
+	}
+
+	{{Auto Letters} ltrs FUNC_AUTO_LETTERS 0 {op_allowed AutoLettersFunc}} {
+		{"Templates, Fields" "$CGI_URL?action=ADMIN::AUTO_LETTERS::DoField"}
+		{Letters "$CGI_URL?action=ADMIN::AUTO_LETTERS::GoLetter"}
+		{Stralfors "$CGI_URL?action=ADMIN::STRALFORS::GoStralfors"}
+	}
+
+	{Search search} {
+		{"Synonyms" "$CGI_URL?action=ADMIN::SEARCH::GoSynonymSearch"}
+		{"Predefine" "$CGI_URL?action=ADMIN::SEARCH::GoPredefinedSearch"}
+		{"Upload" "$CGI_URL?action=ADMIN::UPLOAD::GoUpload&upload_type=SEARCH"}
+	}
+	}
+
+	if {[OT_CfgGet FUNC_MENU_IGF 0]} {
+		foreach a [ADMIN::IGF::get_menus] {
+			lappend menus $a
+		}
+	}
+
+	if {[OT_CfgGet FUNC_MENU_EXT 0]} {
+		foreach a [ADMIN::EXT::get_menus] {
+			lappend menus $a
+		}
+	}
+
+	foreach a {
+	{Miscellaneous misc} {
+		{Settings "$CGI_URL?action=ADMIN::CONTROL::GoControl" FUNC_MENU_MISCELLANEOUS 0}
+		{PaymentSettings "$CGI_URL?action=ADMIN::PMT_CONTROL::GoControl" FUNC_MENU_PAYMENT_CONTROL 0}
+		{Alarms "$CGI_URL?action=ADMIN::ALARM::GoAlarms" FUNC_MENU_ALARMS 0}
+		{"Bet Types" "$CGI_URL?action=ADMIN::BET_TYPE::GoBetTypes" FUNC_MENU_BET_TYPES 0}
+		{Users "$CGI_URL?action=ADMIN::USERS::GoUsers" FUNC_MENU_USERS 0}
+		{Currencies "$CGI_URL?action=ADMIN::CCY::GoCCYList" FUNC_MENU_CURRENCIES 0}
+		{Channels "$CGI_URL?action=ADMIN::CHANNEL::GoChannelList" FUNC_MENU_CHANNELS 0}
+		{Countries "$CGI_URL?action=ADMIN::COUNTRY::GoCountryList" FUNC_MENU_COUNTRIES 0}
+		{Views "$CGI_URL?action=ADMIN::VIEWS::GoViewList" FUNC_MENU_VIEWS 0}
+		{Affiliates "$CGI_URL?action=ADMIN::AFF::GoAffList" FUNC_MENU_AFFILIATES 0}
+		{"Intro Sources" "$CGI_URL?action=ADMIN::HEARABOUT::GoHearAboutList" FUNC_MENU_INTRO_SOURCES 0}
+		{"Customer Groups & Tiers" "$CGI_URL?action=ADMIN::CUST_GROUP::GoCustGroupSetup" FUNC_MENU_CUST_GROUPS 1}
+		{Partnerships "$CGI_URL?action=ADMIN::PARTNER::GoPartnerList" FUNC_MENU_PARTNERSHIPS 0}
+		{"Card Ranges" "$CGI_URL?action=ADMIN::CARD::GoCardQuery" FUNC_MENU_CARD_RANGES 0}
+		{CyberSource "$CGI_URL?action=ADMIN::CYBERSOURCE::GoParams" FUNC_MENU_CYBERSOURCE 0}
+		{"Customer Types" "$CGI_URL?action=ADMIN::CUSTSORT::GoCustSortList" FUNC_MENU_CUSTOMER_SORT 0}
+		{"Team Players" "$CGI_URL?action=ADMIN::TEAMPLAYER::doTeamPlayer" FUNC_MENU_TEAM_PLAYER 0}
+		{Messages "$CGI_URL?action=ADMIN::MSG::go_ml_msg" FUNC_MENU_MULTI_LANG_MSG 0 {op_allowed ManageMessages}}
+		{"Missing Translations" "$CGI_URL?action=ADMIN::XLATE::go_missing_xlations" FUNC_MENU_MISSING_XLATIONS 0}
+		{Password "$CGI_URL?action=ADMIN::USERS::GoPassword" FUNC_MENU_PASSWORD 0}
+		{"New Functionality" "$CGI_URL?action=ADMIN::NEW_FUNC::go_new_func_list" FUNC_MENU_NEW_FUNCTIONALITY 0}
+		{"Manual FreeBets" "$CGI_URL?action=ADMIN::MAN_FREEBETS::go_manual_freebets" FUNC_MENU_MANUAL_FREEBETS 0}
+		{"Memo Requests" "$CGI_URL?action=ADMIN::MEMO::GoMemoList" FUNC_MENU_MEMO 0}
+		{"Payment Methods" "$CGI_URL?action=ADMIN::PAY_MTHD::go_pay_mths" FUNC_MENU_PAY_METHODS 0 {op_allowed ManagePayMthd}}
+		{"Stmt Runs" "$CGI_URL?action=ADMIN::STMTRUN::GoStmtRunList" FUNC_MENU_STMT_RUN 0 {op_allowed ViewStmtRun}}
+		{"Stmt ReRuns" "$CGI_URL?action=ADMIN::STMTRUN::GoStmtReRunList" FUNC_MENU_STMT_RE_RUN 0 {op_allowed ViewStmtRun}}
+		{"Misc Uploads" "$CGI_URL?action=ADMIN::UPLOAD::GoUpload&upload_type=MISC" FUNC_MISC_UPLOAD 0}
+		{"Site Customise" "$CGI_URL?action=ADMIN::SITECUSTOM::GoSiteCustom" FUNC_MENU_SITE_CUSTOMISATION 0}
+		{"Country Check" "$CGI_URL?action=ADMIN::COUNTRY::GoCountryCheckSearch" FUNC_MENU_CNTRY_CHK_SCH 0}
+		{"IP Blocking" "$CGI_URL?action=ADMIN::IP_BLOCK::Home" FUNC_MENU_IP_BLOCKING 0}
+		{"TV Channels" "$CGI_URL?action=ADMIN::TV::GoTVChannelList" FUNC_TV_CHANNEL 1}
+		{"Product Codes" "$CGI_URL?action=ADMIN::PRODUCTCODE::GoProductSourceList" FUNC_MENU_PRODUCT_CODE 0}
+		{"Statments" "$CGI_URL?action=ADMIN::STMT_CONTROL::go_stmt_controls" FUNC_MENU_STMT_CONTROLS 0 {op_allowed ManageStmtControl}}
+		{"Change Language" "$CGI_URL?action=ADMIN::LOGIN::ChangeLang" FUNC_ADMIN_MULTI_LINGUAL 1}
+	}
+	} {
+		lappend menus $a
+	}
+
+	# Now bind up the info
+	ADMIN::MENU::bind_menu $menus
+}##
+<body>
+##TP_LOOP 1Idx {[tpGetVar menu_num]}##
+<a id="##TP_id##" href="javascript:node('##TP_id##');" class="menu1"><span id="##TP_id##+" class="symbol">+</span>##TP_name##</a><br/>
+<span id="_##TP_id##" style="display:none;">
+##TP_LOOP 2Idx {$MENU([tpGetVar 1Idx],num_subs)}##
+&nbsp;&nbsp;&nbsp;<a href="##TP_href##" target="MainArea" class="menu2">##TP_subname##</a><br/>
+##TP_ENDLOOP##
+</span>
+<br/>
+##TP_ENDLOOP##
+</body>
+</html>

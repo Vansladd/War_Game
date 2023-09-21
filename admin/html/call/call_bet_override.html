@@ -1,0 +1,85 @@
+<html>
+<!-- $Id: call_bet_override.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script>
+function wr_tr(status) {
+		if (status=="Y") {
+			document.write('<tr class=active>');
+		} else if (status=="N") {
+			document.write('<tr class=suspended>');
+		} else if (status=='U') {
+			document.write('<tr class=unknown>');
+		} else {
+			document.write('<tr class=settled>');
+		}
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+function write_auth_decl(status, pay_mthd, prefix, pmt_id)
+{
+	if (status=='P') {
+		document.write('<input type=checkbox name='+prefix+'_'+pmt_id+' value=Y></td>');
+	} else {
+		document.write('&nbsp;');
+	}
+}
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th colspan=11 class=title>
+			Overrides
+		</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>Override ID</th>
+		<th nowrap class=colhead>Username</th>
+		<th nowrap class=colhead>Operator</th>
+		<th nowrap class=colhead>Override By</th>
+		<th nowrap class=colhead>Date</th>
+		<th nowrap class=colhead>Action</th>
+		<th nowrap class=colhead>Reference ID</th>
+		<th nowrap class=colhead>Type</th>
+		<th nowrap class=colhead>Leg Number</th>
+		<th nowrap class=colhead>Part Number</th>
+		<th nowrap class=colhead>Reason</th>
+	</tr>
+	##TP_IF {[tpGetVar NumOR 0]==0}##
+	<tr>
+		<td colspan=10 align center>
+			No overrides for this bet
+		</td>
+	</tr>
+	##TP_ELSE##
+	##TP_LOOP or_idx {[tpGetVar NumOR]}##
+	<tr>
+		<td nowrap>##TP_OR_override_id##</td>
+		<td nowrap>##TP_OR_username##</td>
+		<td nowrap>##TP_OR_operator##</td>
+		<td nowrap>##TP_OR_or_operator##</td>
+		<td nowrap>##TP_OR_cr_date##</td>
+		<td nowrap>##TP_OR_action##</td>
+		<td nowrap>##TP_OR_ref_id##</td>
+		<td nowrap>##TP_OR_ref_key##</td>
+		<td nowrap>##TP_OR_leg_no##</td>
+		<td nowrap>##TP_OR_part_no##</td>
+		<td nowrap>##TP_OR_reason##</td>
+	</tr>
+	##TP_ENDLOOP##
+	##TP_ENDIF##
+</table>
+</body>
+</html>

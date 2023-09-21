@@ -1,0 +1,54 @@
+##TP_COMMENT $Id: bet_group_detail.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $##
+##TP_COMMENT Copyright (c) 2008 Orbis Technology Ltd. All rights reserved.##
+
+<!-- Bet Group Details -->
+<tr>
+	<th class="title" style="padding: 3px 3px 3px 3px; background-color: ##TP_liab_colour##" colspan="2">Bet Group Details</th>
+</tr>
+<tr>
+	<td colspan="2">
+		<table cellspacing="0" cellpadding="2" border="0" align="left">
+			<tr style="color: #FFFFFF; background: #0000CC;">
+				<th></th>
+				<th>Event</th>
+				<th>Selection</th>
+				<th>Stake</th>
+				<th>Terms</th>
+				<th>Referral Reason</th>
+			</tr>
+
+			##TP_LOOP grp_idx {[tpGetVar NumGrpBets]}##
+
+				##TP_IF {[tpBindGet GrpBetReason] != "GROUP_REFERRAL"}##
+					<tr style="color: #fff; background: #bb3333;">
+						<td>
+							##TP_IF {$GROUP_BETS([tpGetVar grp_idx],bet_id) == [tpGetVar betId]}##
+								<span style='font-weight: bold; color: black;'>&gt;&gt;</span>
+							##TP_ENDIF##
+						</td>
+						<td><a href="javascript:popupAsyncBetDetails(##TP_GrpBetId##, ##TP_GrpId##)">##TP_GrpBetEvName##</a></td>
+						<td>##TP_GrpBetSelnName##</td>
+						<td>##TP_GrpBetStake##</td>
+						<td>##TP_GrpBetType##</td>
+						<td>##TP_GrpBetReason##</td>
+					</tr>
+				##TP_ELSE##
+					<tr style="color: #000055; background: lightblue;">
+						<td></td>
+						<td>##TP_GrpBetEvName##</td>
+						<td>##TP_GrpBetSelnName##</td>
+						<td>##TP_GrpBetStake##</td>
+						<td>##TP_GrpBetType##</td>
+						<td></td>
+					</tr>
+				##TP_ENDIF##
+				
+
+			##TP_ENDLOOP##
+
+		</table>
+	</td>
+</tr>
+<!-- End Of Bet Group Details -->
+
+

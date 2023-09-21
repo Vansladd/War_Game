@@ -1,0 +1,106 @@
+<html>
+<!-- $Id: game_detail.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Channel</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+function write_select()
+{
+	var sel = arguments[0];
+	var i;
+ 
+	for (i = 1; i < arguments.length; i += 2) {
+		var v = arguments[i];
+		var n = arguments[i+1];
+		var sel_tag = (sel == v) ? " selected" : "";
+		document.writeln
+			('<option value="' + v + '"' + sel_tag + '>' + n + '</option>');
+	}
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	##TP_GAME_NAME## Details
+	</th>
+</tr>
+<form ACTION="##TP_CGI_URL##" method=get onSubmit="return validate(this);">
+
+<tr>
+	<td class=caption>Name</td>
+	<td>
+	<input type="text" name="GameName" value="##TP_GAME_NAME##" size=30>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Blurb</td>
+	<td>
+	<textarea name="GameBlurb" rows=4 cols=80 wrap=virtual>##TP_GAME_BLURB####TP_GAME_BLURB2##</textarea>
+	</td>
+</tr>
+<tr>
+	<td class=caption>URL</td>
+	<td>
+	<input type="text" name="GameURL" value="##TP_GAME_URL##" size=50>
+	</td>
+</tr>
+<tr>
+	<td class=caption>PopUp?</td>
+	<td>
+	<select name="GamePopup">
+	<script>
+	write_select('##TP_GAME_POPUP##','Y','Yes','N','No')
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>PopUp Size Horiz</td>
+	<td>
+	<input type="text" name="GameHoriz" value="##TP_GAME_HORIZ##" size=3>
+	</td>
+</tr>
+<tr>
+	<td class=caption>PopUp Size Vert</td>
+	<td>
+	<input type="text" name="GameVert" value="##TP_GAME_VERT##" size=3>
+	</td>
+</tr>
+<tr>
+<th colspan="2" class=buttons> 
+##TP_IF {[tpGetVar operation]=="Add"}##
+<input type=button class="btn_def" value="Add" onClick="return fs(this,'Add')">
+##TP_ELSE##
+<input type=button class="btn_def" value="Update" onClick="return fs(this,'Update')">
+&nbsp;
+<input type=button class="btn_def" value="Delete" onClick="return fs(this,'Delete')">
+&nbsp;
+##TP_ENDIF##
+</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name="action" value="ADMIN::GAMES::UpdateGame">
+<input type=hidden name="GameId" value="##TP_GAME_ID##">
+</form>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!-- $Id: alert_acct_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<table border=0 cellspacing=0 cellpadding=2>
+<tr>
+	<th colspan=4 nowrap class=title>Alert Account Settings</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Acct Id</th>
+	<th nowrap class=colhead>Free Count</th>
+	<th nowrap class=colhead>Total</th>
+	<th nowrap class=colhead>Cost</th>
+</tr>
+##TP_IF {[tpGetVar NumAlertAccts]}##
+##TP_LOOP alert_acct_idx {[tpGetVar NumAlertAccts]}##
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::ALERTS::GoAlertAcct&AcctId=##TP_AlertAcctAcctId##&CustId=##TP_CustId##">##TP_AlertAcctAcctId##</a></td>
+	<td>##TP_AlertAcctFreeCount##</td>
+	<td>##TP_AlertAcctTotal##</td>
+	<td>##TP_AlertAcctCost##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+	<td colspan=4 align=center>No alert account settings found.</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th colspan=4 nowrap class=buttons>
+		<form method=get action="##TP_CGI_URL##">
+			<input type=hidden name=action value="ADMIN::ALERTS::GoAlertAcct">
+			<input type=hidden name=CustId value="##TP_CustId##">
+			<input type=submit class="btn_def" name=SubmitName value="Add">
+		</form>
+	</th>
+</tr>
+</table>

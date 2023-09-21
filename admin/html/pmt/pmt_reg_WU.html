@@ -1,0 +1,70 @@
+##TP_COMMENT $Id: pmt_reg_WU.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $##
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+    <link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+    ##TP_PLAY JS_WriteSelect.html##
+    <script language=JavaScript>
+      <!--
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+        function validateForm ()
+        {
+          return true;
+        }
+      // -->
+    </script>
+  </head>
+  <body>
+    ##TP_PLAY error_rpt.html##
+    <table cellspacing="0" cellpadding="3" border="0">
+      <form name="cardform" action="##TP_CGI_URL##" method="post" onsubmit="return validateForm();">
+        <tr>
+           <th colspan="2" class="title">Add payment method (WU)</th>
+        </tr>
+        <!-- show the customers details -->
+        ##TP_PLAY pmt/pmt_detail_cust.html##
+        <tr>
+          <td colspan="2">&nbsp;</td>
+        </tr>
+        <!-- now wu pay details -->
+	<tr class=subtitle>
+		<th colspan=2 align=left>Account Details</th>
+	</tr>
+	<tr>
+		<td class="caption">Account Name</td>
+		<td><input type=text size=20 name=CustName value="##TP_CustName##"></td>
+	</tr>
+	<tr>
+		<td class="caption">Country</td>
+		<td>
+		<select name=CustCountryCode>
+		##TP_LOOP country_idx {[tpGetVar NumCountrys]}##
+		<option value="##TP_CountryCode##" ##TP_CountrySel##>##TP_CountryName##</option>
+		##TP_ENDLOOP##
+		</select>
+		</td>
+	</tr>
+        <tr>
+          <th colspan="2" class="buttons">
+            <input type="button" class="btn_def" value="Add Payment Method" onClick="return fs(this,'AddMthd')"/>
+            <input type="button" class="btn_def" value="Back" onClick="return fs(this,'Back')" />
+          </th>
+          <input type="hidden" name="SubmitName" value="AddMthd" />
+          <input type="hidden" name="CustId" value="##TP_CustId##" />
+          <input type="hidden" name="action" value="ADMIN::PMT::do_pay_mthd_add" />
+          <input type="hidden" name="pay_mthd" value="WU" />
+          <input type="hidden" name="Username" value="##TP_CustUsername##" />
+          <input type="hidden" name="AcctNo" value="##TP_AcctNo##" />
+          <input type="hidden" name="backAction" value="##TP_backAction##">
+        </tr>
+      </form>
+    </table>
+  </body>
+</html>

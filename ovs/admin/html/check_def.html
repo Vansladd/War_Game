@@ -1,0 +1,288 @@
+<html>
+	<!-- $Id: check_def.html,v 1.1 2011/10/04 12:41:14 xbourgui Exp $ -->
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<script language="JavaScript">
+			function fs(b,t)
+			{
+				b.disabled = true;
+				b.value = "Busy...";
+				b.form.SubmitName.value = t;
+				b.form.submit();
+				return true;
+			}
+
+			function setDefault(b)
+			{
+				var def_val = b.form.def_val.value;
+				if (!def_val.match(/^(-|)[0-9]+$/)) {
+					alert("Default value must be positive or negative integer");
+					b.form.def_val.value = "";
+					return;
+				}
+				var cells = b.form.elements;
+				for (var i = 0; i < cells.length; i++) {
+					if (cells[i].name.match("score_")) {
+						cells[i].setAttribute("value", def_val);
+					}
+				}
+				return true;
+			}
+
+			function wr_tr(status) {
+				if (status == "A") {
+					document.write('<tr class=active>');
+				} else if (status == "S") {
+					document.write('<tr class=suspended>');
+				} else {
+					document.write('<tr>');
+				}
+			}
+		</script>
+		</script>
+		##TP_PLAY JS_WriteSelect.html##
+	</head>
+	<body>
+		##TP_PLAY error_rpt.html##
+		##TP_PLAY msg_rpt.html##
+		<form action="##TP_CGI_URL##" method="post">
+			<input type="hidden" name="SubmitName">
+			<input type="hidden" name="action"         value="ADMIN::VERIFICATION::DoCheckDef">
+			<input type="hidden" name="profile_def_id" value="##TP_profile_def_id##">
+			<input type="hidden" name="channel_mask"   value="##TP_channel_mask##">
+			<table cellspacing="0" cellpadding="2" border="0">
+				<tr>
+					<th colspan="2" class="title">##TP_IF {[tpGetVar new 0]}##Create##TP_ELSE##Edit##TP_ENDIF## Verification Check Definition##TP_IF {[tpGetVar new 0] == 0}##: ##TP_name####TP_ENDIF##</th>
+				</tr>
+				##TP_IF {[tpGetVar new 0]}##
+				<tr>
+					<td>Check Type</td>
+					<td>
+						<select name="type">
+							<script>write_select(""##TP_LOOP idx {[tpGetVar type_count]}##, "##TP_type##", "##TP_name##"##TP_ENDLOOP##)</script>
+						</select>
+					</td>
+				</tr>
+				##TP_ELSE##
+				<tr>
+					<td>Status</td>
+					<td>
+						##TP_status##
+					</td>
+				</tr>
+				<tr>
+					<td>Creation Date</td>
+					<td>##TP_cr_date##</td>
+				</tr>
+				##TP_ENDIF##
+				<tr>
+					<td>Channels</td>
+					<td>
+					##TP_PLAY chan_sel.html##
+					</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="buttons">
+						##TP_IF {[tpGetVar new 0]}##
+						<input type="button" value="Create"   onClick="return fs(this,'NewCheck')">
+						##TP_ELSE##
+						<input type="button" value="Update"   onClick="return fs(this,'UpdCheck')"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##>
+						<input type="button" value="Default"  onClick="return setDefault(this)"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##>
+						<input name="def_val" size="5" maxlength="7"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##>
+						##TP_IF {[tpGetVar status 1]}##
+						<input type="button" value="Suspend"  onClick="return fs(this,'SusCheck')">
+						##TP_ELSE##
+						<input type="button" value="Activate" onClick="return fs(this,'ActCheck')">
+						##TP_ENDIF##
+						##TP_ENDIF##
+						<input type="button" value="Back"     onClick="return fs(this,'Back')">
+					</th>
+				</tr>
+			</table>
+			##TP_IF {[tpGetVar new 0] != 1}##
+			<br>
+			<table cellspacing="0" cellpadding="2" border="0">
+				<tr>
+					<th colspan="12" class="title">Check Responses</th>
+				</tr>
+				##TP_IF {[tpGetVar check_class] == "URU"}##
+					<tr>
+						<th class="colhead">Code</th>
+						<th class="colhead">Type</th>
+						<th class="colhead">Score</th>
+						<th class="colhead">Description</th>
+					</tr>
+					##TP_IF {[tpGetVar count] > 0}##
+					##TP_LOOP idx {[tpGetVar count]}##
+					<tr>
+						<td>##TP_response_no##</td>
+						<td>##TP_response_type##</td>
+						<td><input name="score_##TP_uru_id##" size="5" maxlength="7" value="##TP_score##"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##></td>
+						<td style="white-space: normal;">##TP_description##</td>
+					</tr>
+					##TP_ENDLOOP##
+					##TP_ELSE##
+					<tr>
+						<td colspan="12">No Responses found</td>
+					</tr>
+					##TP_ENDIF##
+				##TP_ELSEIF {[tpGetVar check_class] == "GEN"}##
+					<tr>
+						<th class="colhead">Code</th>
+						<th class="colhead">Type</th>
+						<th class="colhead">Score</th>
+						<th class="colhead">Description</th>
+					</tr>
+					##TP_IF {[tpGetVar count] > 0}##
+					##TP_LOOP idx {[tpGetVar count]}##
+					<tr>
+						<td>##TP_response_no##</td>
+						<td>##TP_response_type##</td>
+						<td><input name="score_##TP_gen_id##" size="5" maxlength="7" value="##TP_score##"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##></td>
+						<td style="white-space: normal;">##TP_description##</td>
+					</tr>
+					##TP_ENDLOOP##
+					##TP_ELSE##
+					<tr>
+						<td colspan="12">No Responses found</td>
+					</tr>
+					##TP_ENDIF##
+				##TP_ELSEIF {[tpGetVar check_class] == "IP"}##
+					<tr>
+						<th class="colhead">Country</th>
+						<th class="colhead">Match</th>
+						<th class="colhead">Mismatch</th>
+						<th class="colhead">Unknown</th>
+						<th class="colhead">Country</th>
+						<th class="colhead">Match</th>
+						<th class="colhead">Mismatch</th>
+						<th class="colhead">Unknown</th>
+						<th class="colhead">Country</th>
+						<th class="colhead">Match</th>
+						<th class="colhead">Mismatch</th>
+						<th class="colhead">Unknown</th>
+					</tr>
+					<tr>
+					##TP_LOOP idx {[tpGetVar count]}##
+					##TP_IF {[tpGetVar idx] % 9 == 0}##
+					</tr>
+					<tr>
+					##TP_ENDIF##
+					##TP_IF {[tpGetVar idx] % 3 == 0}##
+						<td>##TP_country##</td>
+						<td><input name="score_##TP_ip_id##" size="5" maxlength="7" value="##TP_score##"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##></td>
+					##TP_ELSE##
+						<td><input name="score_##TP_ip_id##" size="5" maxlength="7" value="##TP_score##"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##></td>
+					##TP_ENDIF##
+					##TP_ENDLOOP##
+					</tr>
+				##TP_ELSEIF {[tpGetVar check_class] == "CARD"}##
+
+					##TP_IF {[tpGetVar check_type] == "OB_CARD_BIN"}##
+						<!-- CARD BIN-->
+						<tr>
+							<th class="colhead">Bin Lo</th>
+							<th class="colhead">Bin Hi</th>
+							<th class="colhead">Score</th>
+							<th class="colhead">Status</th>
+						</tr>
+						##TP_LOOP idx {[tpGetVar count]}##
+						<script>wr_tr("##TP_bin_status##")</script>
+							<td>##TP_binlo##</td>
+							<td>##TP_binhi##</td>
+							<td><input name="score_##TP_card_bin_id##" size="5" maxlength="7" value="##TP_score##"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##></td>
+							<td>
+								<select name="status_##TP_card_bin_id##">
+									<option value="A" ##TP_IF {[tpBindGet bin_status] == "A"}##selected##TP_ENDIF##>Active</option>
+									<option value="S" ##TP_IF {[tpBindGet bin_status] == "S"}##selected##TP_ENDIF##>Suspended</option>
+								</select>
+							</td>
+						</tr>
+						##TP_ENDLOOP##
+					##TP_ELSE##
+						<!-- CARD SCHEME -->
+						<tr>
+							<th class="colhead">Scheme</th>
+							<th class="colhead">Score</th>
+						</tr>
+						##TP_LOOP idx {[tpGetVar count]}##
+						<tr>
+							<td>##TP_scheme##</td>
+							<td><input name="score_##TP_card_id##" size="5" maxlength="7" value="##TP_score##"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##></td>
+						</tr>
+						##TP_ENDLOOP##
+					##TP_ENDIF##
+					##TP_ELSE##
+					<tr>
+						<td colspan="4">##TP_check_class##</td>
+					</tr>
+					##TP_ENDIF##
+				##TP_IF {[tpGetVar check_class] == "AUTH_PRO"}##
+					<tr>
+						<th class="colhead">Code</th>
+						<th class="colhead">Type</th>
+						<th class="colhead">Score</th>
+						<th class="colhead">Description</th>
+					</tr>
+					##TP_IF {[tpGetVar count] > 0}##
+					##TP_LOOP idx {[tpGetVar count]}##
+					<tr>
+						<td>##TP_response_no##</td>
+						<td>##TP_response_type##</td>
+						<td><input name="score_##TP_auth_pro_id##" size="5" maxlength="7" value="##TP_score##"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##></td>
+						<td style="white-space: normal;">##TP_description##</td>
+					</tr>
+					##TP_ENDLOOP##
+					##TP_ELSE##
+					<tr>
+						<td colspan="12">No Responses found</td>
+					</tr>
+					##TP_ENDIF##
+				##TP_ENDIF##
+
+				##TP_IF {[tpGetVar check_type] == "OB_CARD_BIN"}##
+					<th colspan="12" class="buttons">
+						<input type="button" value="Update" onClick="return fs(this,'UpdCheck')"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##>
+						<input type="button" value="Back"   onClick="return fs(this,'Back')">
+					</th>	
+				##TP_ELSE##
+					<th colspan="12" class="buttons">
+						<input type="button" value="Update" onClick="return fs(this,'UpdCheck')"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##>
+						<input type="button" value="Back"   onClick="return fs(this,'Back')">
+					</th>
+				##TP_ENDIF##
+			</table>
+
+			##TP_IF {[tpGetVar check_type] == "OB_CARD_BIN"}##
+			<br>
+			<table>
+				<tr>
+					<th colspan="2" class="title">Add Card Bin Range</th>
+				</tr>
+				<tr>
+					<th>Bin Lo</th>
+					<td><input name="binlo_new" size="6" maxlength="6" value=""></td>
+				</tr>
+				<tr>
+					<th>Bin Hi</th>
+					<td><input name="binhi_new" size="6" maxlength="6" value=""></td>
+				</tr>
+				<tr>
+					<th>Score</th>
+					<td><input name="score_new" size="5" maxlength="7" value="0"></td>
+				</tr>
+				<th colspan="2" class="buttons">
+					<input type="button" value="Add BIN Range" onClick="return fs(this,'AddBinRange')"##TP_IF {![tpGetVar status 1]}## disabled##TP_ENDIF##>
+				</th>
+			</table>
+			##TP_ENDIF##
+
+
+			<input type="hidden" name="check_def_id" value="##TP_check_def_id##">
+			<input type="hidden" name="check_class"  value="##TP_check_class##">
+			##TP_ENDIF##
+		</form>
+
+	</body>
+</html>

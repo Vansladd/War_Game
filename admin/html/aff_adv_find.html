@@ -1,0 +1,68 @@
+<html>
+<!-- $Id: aff_adv_find.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<meta http-equiv="Expires" content="0">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Find Advertisers</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function selectCode(t)
+{
+	//var f = document.forms['AddAffUtdForm'];
+	opener.document.forms['AddAffUtdForm'].advCode.value = t;
+	window.close();
+
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table>
+<form action="##TP_CGI_URL##" method="post">
+<tr>
+	<th class="title" colspan="2">Advertiser Search</th>
+</tr>
+<tr>
+<td class="caption">Advertiser Code</td>
+<td><input type="text" size="45" name="advCode" /></td>
+</tr>
+<tr>
+<td colspan="2" class="buttons">
+	<input type=button class="btn_def" value="Find Advertiser" onClick="return fs(this,'SearchAdvCode');">
+</td>
+</tr>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::AFF::SearchAdvCode>
+</form>
+##TP_IF {[tpGetVar Results]}##
+<tr><th class="title" colspan="2">Results</th></tr>
+##TP_IF {[tpGetVar adv_nrows]}##
+##TP_LOOP adv_idx {[tpGetVar adv_nrows]}##
+<tr>
+<td class="caption">&nbsp;</td>
+<td><a href="javascript:void(0);" onclick="javascript:selectCode(##TP_Advertiser##);">##TP_Advertiser##</a></td>
+</tr>
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+<td class="caption">&nbsp;</td>
+<td>There are no codes starting with ##TP_SearchString##</a></td>
+</tr>
+##TP_ENDIF##
+##TP_ENDIF##
+</table>
+<br />
+<div style="text-align:center;">
+<input type=button class="btn_def" value="Close" onClick="window.close();"/>
+</div>
+</body>
+</html>

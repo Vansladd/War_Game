@@ -1,0 +1,152 @@
+<html>
+<!-- $Id: ramp_monitoring.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<title>Ramp Monitoring</title>
+
+	##TP_PLAY header_cal.html##
+
+	##TP_PLAY JS_WriteSelect.html##
+
+	<script language="javascript">
+	
+	var sort = new Object();
+	##TP_LOOP sort_idx {[tpGetVar NumSorts]}##
+	sort["##TP_SortType##"] = "##TP_TypeSort##";##TP_ENDLOOP##
+
+	##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+	sort["C:##TP_ClassId##"]="##TP_ClassSort##"; ##TP_ENDLOOP##
+
+	var nms = new Array();
+	var ids = new Array();
+	##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+	nms[##TP_ClassId##]=new Array(##TP_LOOP type_idx {$CLASS([tpGetVar class_idx],types)}##"##TP_TypeName##"##TP_IF {[tpGetVar type_idx]!=[expr $CLASS([tpGetVar class_idx],types)-1]}##, ##TP_ENDIF####TP_ENDLOOP##);
+	ids[##TP_ClassId##]=new Array(##TP_LOOP type_idx {$CLASS([tpGetVar class_idx],types)}##"##TP_TypeId##"##TP_IF {[tpGetVar type_idx]!=[expr $CLASS([tpGetVar class_idx],types)-1]}##, ##TP_ENDIF####TP_ENDLOOP##);
+	##TP_ENDLOOP##
+	
+	function updateTypeList() {
+
+		var c = document.evform.ClassId;
+		var opt = document.evform.TypeId.options;
+
+		var cId = c.options[c.selectedIndex].value;
+		var cName = c.options[c.selectedIndex].text;
+
+		// Delete everything
+		opt.length=0;
+
+		if (cId != "0") {
+
+			opt[opt.length] = new Option( "-- all "+cName+" --", "C:"+cId );
+
+			var nm = nms[cId];
+			var id = ids[cId];
+
+			for (i=0;i<nm.length;i++) {
+				opt[opt.length] = new Option( nm[i], id[i] );
+			}
+
+		} else {
+
+			opt[opt.length] = new Option("<< All classes selected >>", "0");
+		}
+
+		opt.selectedIndex = 0;
+	}
+
+	function displayCalendars() {
+		new Calendar(document.forms.evform.date_lo,null,false,"lo");
+		new Calendar(document.forms.evform.date_hi,null,false,"lo");
+	}
+	
+	function fs(b,t)
+	{
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+	
+	</script>
+
+</head>
+
+<body onload="displayCalendars(); updateTypeList();">
+	##TP_PLAY error_rpt.html##
+	<table border="0" cellspacing="0" cellpadding="2">
+	<form name="evform" method="post" action=##TP_CGI_URL##>
+	<tr>
+		<th colspan="2" class="title">
+		Sélection des marchés
+		</th>
+	</tr>
+	<input type="hidden" name="ClassSort" value="">
+	<tr>
+		<td class="caption">Classes | Types</td>
+		<td>
+		<select name="ClassId" size="10" onchange="updateTypeList()">
+			<option value="0" selected>-All Classes-</option>
+			##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+				<option value="##TP_ClassId##">##TP_ClassName##</option>
+			##TP_ENDLOOP##
+		</select>
+
+		<select name="TypeId" size="10">
+			<option value="C:0"></option>
+		</select>
+
+		</td>
+	</tr>
+	<tr>
+		<td class="caption">Periode de création</td>
+		<td>
+		<select name="date_range">
+			<option value="-2" >Les 3 derniers jours</option>
+			<option value="-1" >Hier</option>
+			<option value="-3" >Les 2 dernières heures</option>
+			<option value="0"  selected>Aujourd'hui</option>
+			<option value="-"  >--</option>
+		</select>&nbsp;&nbsp;ou&nbsp;
+		<input text="text" size="12" name="date_lo" value="">&nbsp;à&nbsp;
+		<input type="text" size="12" name="date_hi" value="">
+		</td>
+	</tr>
+	<tr>
+		<td class="caption">Affichage</td>
+		<td>
+		<select name="displayed">
+		<script>write_select('##TP_Ev_Displayed##','-','Les deux','Y','Oui','N','Non');</script>
+		</select>
+		</td>
+	</tr>
+	<tr>
+		<td class="caption">Status</td>
+		<td>
+		<select name="status">
+		<script>write_select('##TP_Ev_Status##','-','Les deux','A','Actif','S','Suspendu');</script>
+		</select>
+		</td>
+	</tr>
+
+	<tr>
+		<th colspan="2" class="buttons">
+			<table width="100%" border="0" cellspacing="0" cellpadding="2">
+				<tr>
+					<th class="buttons">		
+						<input type="button" class="btn_def" value="Voir les marchés" onClick="return fs(this,'RampShow')">
+					</th>
+				</tr>
+			</table>
+		</th>	
+	</tr>
+	</table>
+	<input type="hidden" name="settled" value="-">
+	<input type="hidden" name="allow_stl" value="-">
+	
+	<input type="hidden" name="SubmitName" value="">
+	<input type="hidden" name="action" value="ADMIN::EV_SEL::DoEvSel">
+	</form>
+</body>
+</html>

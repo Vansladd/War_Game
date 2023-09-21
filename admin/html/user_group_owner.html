@@ -1,0 +1,77 @@
+<html>
+	<!-- $Id: user_group_owner.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	<head>
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<title>Reassign Group Owner</title>
+
+		<script>
+			function fs(b,t)
+			{
+				b.disabled = true;
+				b.value = "Busy...";
+				b.form.SubmitName.value=t;
+				b.form.submit();
+				return true;
+			}
+		</script>
+	</head>
+	
+	<body>
+		<form method="post" action="##TP_CGI_URL##">
+			<table>
+				<tr>
+					<th class="title" colspan="2">&nbsp;Reassign Group Ownerships&nbsp;&nbsp;</th>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<p><i>This user is the owner of the following group(s).<br>
+						Please reassign the ownership.</i></p>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+				</tr>
+				##TP_LOOP group_idx {[tpGetVar numGroups]}##
+					<tr class="subtitle" >
+						<td colspan="2">
+							##TP_GroupName##
+							<input type="hidden" name="##TP_GroupID##_group_name" value="##TP_GroupName##">
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td class="caption">New owner</td>
+						<td>
+							<select name="##TP_GroupID##_group_owner">
+								<option value="" selected>--None--</option>
+								##TP_LOOP owner_idx {[tpGetVar numOwners]}##
+									<option value="##TP_OwnerID##">##TP_OwnerName##</option>
+								##TP_ENDLOOP##
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+					</tr>
+				##TP_ENDLOOP##
+				<tr>
+					<th class="buttons" colspan="2">
+						<input type="button" value="Apply Changes" onClick="return fs(this,'ReassignOwner')">
+					</th>
+				</tr>
+	
+				<input type="hidden" name="group_list" value="##TP_GroupList##">
+				<input type="hidden" name="SubmitName" value="">
+				<input type="hidden" name="action" value=ADMIN::USERS::DoGroup>
+			</table>
+		</form>
+	</body>
+</html>

@@ -1,0 +1,48 @@
+<html>
+<head>
+<title>Betfair Hierarchy</title>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<style type="text/css">
+ul {
+	list-style-type: none;
+}
+</style>
+</head>
+<body>
+
+<h1>Betfair Event Hierarchy</h1>
+<p>
+##TP_LOOP prev_hist_idx {[tpGetVar NumPrevHist 0]}##
+	##TP_IF {[expr [tpGetVar prev_hist_idx] + 1] == [tpGetVar NumPrevHist 0]}##
+		##TP_prev_hist_name##
+	##TP_ELSEIF {[tpGetVar prev_hist_idx] == 0}##
+		<a href="##TP_CGI_URL##?action=ADMIN::BF_DD_TOOLS::GoBFEvent&bf_type_id=##TP_prev_hist_id##&prev_hist=##TP_prev_hist_prev_hist##">##TP_prev_hist_name##</a> -&gt;
+	##TP_ELSE##
+		<a href="##TP_CGI_URL##?action=ADMIN::BF_DD_TOOLS::GoBFEvent&bf_parent_id=##TP_prev_hist_id##&prev_hist=##TP_prev_hist_prev_hist##">##TP_prev_hist_name##</a> -&gt;
+	##TP_ENDIF##
+##TP_ENDLOOP##
+</p>
+
+##TP_IF {[tpGetVar has_events 0] == 1}##
+	<h2>Events</h2>
+	<ul>
+	##TP_LOOP bf_ev_idx {[tpGetVar NumEvs 0]}##
+		<li><a href="##TP_CGI_URL##?action=ADMIN::BF_DD_TOOLS::GoBFEvent&bf_parent_id=##TP_bf_ev_id##&prev_hist=##TP_prev_hist##,##TP_bf_ev_id##:##TP_name##">##TP_name##</a></li>
+	##TP_ENDLOOP##
+	</ul>
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar has_markets 0] == 1}##
+	<h2>Markets</h2>
+	<ul>
+	##TP_LOOP bf_mkt_idx {[tpGetVar NumMkts 0]}##
+		<li><a href="##TP_CGI_URL##?action=ADMIN::BF_DD_TOOLS::GoBFMarket&bf_mkt_id=##TP_bf_mkt_id##&prev_hist=##TP_prev_hist##,##TP_bf_mkt_id##:##TP_mkt_name##">##TP_mkt_name##</a> (##TP_mkt_time##)
+		##TP_IF {$BF_MKT_DATA([tpGetVar bf_mkt_idx],mkt_dup) > 1}## <font color="red">[WARNING - Betfair Market duplicated in OpenBet bf_id=##TP_bf_id##]</font> ##TP_ENDIF##
+		</li>
+	##TP_ENDLOOP##
+	</ul>
+##TP_ENDIF##
+</body>
+</html>
+

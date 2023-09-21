@@ -1,0 +1,174 @@
+<HTML>
+<!-- $Id: news_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</HEAD>
+<BODY>
+##TP_IF {![op_allowed UpdHomepage]}##
+	You do not have permission in order to edit news<br><br>
+##TP_ENDIF##
+##TP_Error##
+
+##TP_IF {[OT_CfgGet FUNC_NEWS_GRPS 0]}##
+ ##TP_TCL {tpBindString colspan 11}##
+##TP_ELSE##
+ ##TP_TCL {tpBindString colspan 10}##
+##TP_ENDIF##
+
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+	<th colspan="##TP_colspan##" class=title>News</th>
+</tr>
+<form action="##TP_CGI_URL##" method="GET">
+<tr>
+	<td colspan="10">
+	<input type="hidden" name="action" value="ADMIN::NEWS::go_news_highlight_list">
+	<input type="hidden" name="SubmitName" value="">
+	##TP_IF {[OT_CfgGetTrue FUNC_VIEW_FLAGS]}##
+	&nbsp;View:
+	<select name="View">
+	<script>
+		write_select('##TP_View##'
+			##TP_LOOP c_idx {$VIEWARRAY(entries)}##
+				,'##TP_VIEW_CODE##',"##TP_VIEW_DESC##"
+			##TP_ENDLOOP##);
+	</script>
+	##TP_ELSE##
+	&nbsp;Language:
+	<select name="Language">
+	<script>
+		write_select('##TP_Language##'
+			##TP_LOOP c_idx {$LANGUAGEARRAY(entries)}##
+				,'##TP_LANG_CODE##',"##TP_LANG_DESC##"
+			##TP_ENDLOOP##);
+	</script>
+	##TP_ENDIF##
+	</select>
+	&nbsp;Type of item:
+	<select name="Type">
+	<script>
+	write_select('##TP_Type##'
+		##TP_LOOP t_idx {$TYPEARRAY(entries)}##
+			,'##TP_TYPE_CODE##',"##TP_TYPE_DESC##"
+		##TP_ENDLOOP##);
+	</script>
+	</select>
+	<input type="button" class="btn_def" VALUE="Refresh" onClick="return fs(this,'go_news_highlight_list');">
+	</td>
+</tr>
+</form>
+
+<tr class=subtitle><th colspan="##TP_colspan##" style="text-align: left">##TP_TypeDesc##</th></tr>
+
+<tr>
+	<th class=colhead>Type</th>
+	##TP_IF {[OT_CfgGet FUNC_NEWS_GRPS 0]}##<th class=colhead>Group</th>##TP_ENDIF##
+	<th class=colhead>Title</th>
+	<th class=colhead>URL</th>
+	<th class=colhead>Bet</th>
+	<th class=colhead>From</th>
+	<th class=colhead>To</th>
+	<th class=colhead>New Window</th>
+	<th class=colhead>Status</th>
+	<th class=colhead>Channels</th>
+	##TP_IF {![OT_CfgGetTrue FUNC_VIEW_FLAGS]}##
+	<th class=colhead>Languages</th>
+	##TP_ENDIF##
+</tr>
+##TP_LOOP news_idx {$NEWS(entries)}##
+##TP_IF {$NEWS([tpGetVar news_idx],displayed) =="N"}##
+	##TP_TCL {tpBindString tr_class "hidden"}##
+##TP_ELSEIF {$NEWS([tpGetVar news_idx],suspended)}##
+	##TP_TCL {tpBindString tr_class "suspended"}##
+##TP_ELSEIF {$NEWS([tpGetVar news_idx],disporder)=="-1"}##
+	##TP_TCL {tpBindString tr_class "unknown"}##
+##TP_ELSE##
+	##TP_TCL {tpBindString tr_class "active"}##
+##TP_ENDIF##
+<tr class="##TP_tr_class##">
+	<td>##TP_type##</td>
+	##TP_IF {[OT_CfgGet FUNC_NEWS_GRPS 0]}##
+	<td>
+	<a href="##TP_CGI_URL##?action=ADMIN::NEWS::go_news_group&grp_id=##TP_item_grp_id##">##TP_item_grp_title##</a>
+	</td>##TP_ENDIF##
+	<td>
+	##TP_IF {[op_allowed UpdHomepage]}##
+		<a href="##TP_CGI_URL##?action=ADMIN::NEWS::go_news_highlight&news_id=##TP_news_id##&list_view=##TP_View##&list_type=##TP_Type##">
+		##TP_title##&nbsp;</a>
+	##TP_ELSE##
+		##TP_title##&nbsp;
+	##TP_ENDIF##
+	</td>
+	<td >##TP_link_url##&nbsp;</td>
+	<td >##TP_highlight##&nbsp;</td>
+	<td >##TP_from_date##&nbsp;</td>
+	<td >##TP_to_date##&nbsp;</td>
+	<td >##TP_new_window##&nbsp;</td>
+	<td >##TP_status##&nbsp;</td>
+	<td >##TP_channels##&nbsp;</td>
+	##TP_IF {![OT_CfgGetTrue FUNC_VIEW_FLAGS]}##
+	<td >##TP_languages##&nbsp;</td>
+	##TP_ENDIF##
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[op_allowed UpdHomepage]}##
+<tr>
+	<form action="##TP_CGI_URL##" method="GET" name="fm_news">
+	<input type="hidden" name="action" value="ADMIN::NEWS::go_new_news_highlight">
+	<th colspan="##TP_colspan##" class="buttons">
+	<input type="button" class="btn_def" value="New News" onClick='document.fm_news.submit()'>
+	</th>
+	</form>
+</tr>
+##TP_ENDIF##
+</table>
+
+<br>
+<table>
+<thead>Legend</thead>
+<tr><td width="40" height="10" class="unknown">&nbsp</td><td>Unknown News Type - Please Add</td></tr>
+<tr><td width="40" height="10" class="hidden">&nbsp</td><td>Not Displayed</td></tr>
+<tr><td width="40" height="10" class="suspended">&nbsp</td><td>InActive</td></tr>
+<tr><td width="40" height="10" class="active">&nbsp</td><td>Active</td></tr>
+</table>
+
+##TP_IF {[OT_CfgGet FUNC_NEWS_GRPS 0]}##
+ ##TP_TCL {global NEWS_GRPS}##
+ <br/>
+ <table cellspacing="0" cellpadding="2" border="0">
+ <tr><th colspan="3" class="title">News Groups</th></tr>
+  ##TP_IF {$NEWS_GRPS(num_grps) == 0}##
+  <tr><td>No news groups created.</td></tr>
+  ##TP_ELSE##
+  <tr>
+   <th class="colhead">Title</th>
+   <th class="colhead">Disporder</th>
+  </tr>
+   ##TP_LOOP grp_idx {$NEWS_GRPS(num_grps)}##
+   <tr>
+    <td><a href="##TP_CGI_URL##?action=ADMIN::NEWS::go_news_group&grp_id=##TP_grp_id##">##TP_grp_title##</a></td>
+    <td>##TP_grp_disporder##</td>
+   </tr>
+   ##TP_ENDLOOP##
+  ##TP_ENDIF##
+  <form name="new_news_grp_fm" action="##TP_CGI_URL##" method="post">
+  <input type="hidden" name="action" value="ADMIN::NEWS::go_news_group"/>
+  <input type="hidden" name="grp_id" value="-1"/>
+  <th colspan="2" class="buttons"><input type="submit" class="btn_def" value="New News Group"/></th></form>
+  </table>
+##TP_ENDIF##
+
+</BODY>
+</HTML>

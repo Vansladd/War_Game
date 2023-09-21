@@ -1,0 +1,51 @@
+<html>
+<head>
+	<!-- $Header: /cvsroot-openbet/training/admin/html/pmt/pmt_reg_IKSH.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##" />
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet" />
+	<title>OpenBet Administration</title>
+</head>
+
+<script language="javascript">
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<form name="paypalform" action="##TP_CGI_URL##" method="post">
+	<input type="hidden" name="SubmitName" value="" />
+	<input type="hidden" name="CustId" value="##TP_CustId##" />
+	<input type="hidden" name="action" value="ADMIN::PMT::do_pay_mthd_add" />
+	<input type="hidden" name="pay_mthd" value="IKSH" />
+	<input type="hidden" name="Username" value="##TP_Username##" />
+	<input type="hidden" name="AcctNo" value="##TP_AcctNo##" />
+	<input type="hidden" name="SettleType" value="##TP_SettleType##" />
+	<input type="hidden" name="AcctType" value="##TP_AcctType##" />
+
+	<table cellspacing="0" cellpadding="2" border="0" width="300">
+		<tr><th colspan="2" class="title">Add payment method (IKSH)</th></tr>
+
+		<tr><td colspan="2">Click 'Add Payment Method' to register Ukash International as a payment method for customer '##TP_Username##'.</td></tr>
+
+		<!-- actions -->
+		<tr>
+			<th colspan="2" class="buttons">
+				<input type="button" name="AddMthd" value="Add Payment Method" onClick="return fs(this,'AddMthd')" />
+				<input type="button" value="Back" onClick="return fs(this,'Back')" />
+			</th>
+		</tr>
+	</table>
+</form>
+
+</body>
+</html>

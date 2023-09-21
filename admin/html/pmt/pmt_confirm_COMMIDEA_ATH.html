@@ -1,0 +1,93 @@
+<html>
+<!-- $Id: pmt_confirm_COMMIDEA_ATH.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Payment Confirmation (COMMIDEA)</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+var voidBets = "";
+function fs(b,t)
+{
+	if (t == "AuthoriseConfirm") {
+		var r = confirm("Authorise payment?")
+		if (r == false){
+		 	return false;
+		} else {
+			b.form.SR_type.value=t;
+			b.form.submit();
+			return true;
+	  	}
+	}
+	if (t == "DeclineConfirm") {
+		var r = confirm("Cancel payment?")
+		if (r == false){
+		 	return false;
+		} else {
+			b.form.SR_type.value=t;
+			b.form.submit();
+			return true;
+	  	}
+	}
+	if (t == "Back") {
+	  	b.form.SR_type.value=t;
+	  	b.form.submit();
+	  	return true;
+	}
+
+	b.disabled = true;
+	b.value = "Busy...";
+
+	b.form.SR_type.value=t;
+	b.form.submit();
+	return true;
+}
+function bet_desc(betid)
+{
+	document.form.action.value="ADMIN::BET::DoManualBetDesc";
+	document.form.BetId.value=betid;
+	document.form.SR_type.value="FromPmt";
+	document.form.submit();
+}
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+    ##TP_IF {[tpGetVar call_id] != ""}##
+	<tr>
+		<th colspan=3 class=title>Payment ###TP_ref_no## - Call ###TP_TCL {tpBufWrite [tpGetVar call_id]}##</th>
+	</tr>
+    ##TP_ELSE##
+	<tr>
+		<th colspan=3 class=title>Payment ###TP_ref_no##</th>
+	</tr>
+	##TP_ENDIF##
+    <!-- Confirmation Details (COMMIDEA)-->
+	<tr class=subtitle>
+		<th colspan=3 align=left>Confirmation Details (COMMIDEA)</th>
+	</tr>
+	<tr>
+		<td class=caption>Confirmation Result:</td>
+		<td colspan="2">##TP_COMMIDEA_result##</b></td>
+	</tr>
+	<tr>
+		<td class=caption>Confirmation Transaction Status:</td>
+		<td colspan="2">##TP_COMMIDEA_transaction_status##</b></td>
+	</tr>
+	<tr>
+		<td class=caption>TransactionID:</td>
+		<td>##TP_PMT_gw_uid_TID##</td>
+	</tr>
+	<tr>
+		<td class=caption>EFTSN:</td>
+		<td>##TP_PMT_gw_uid_EFTSN##</td>
+	</tr>
+	<tr>
+		<td colspan=2>##TP_PMT_status_blurb##</td>
+	</tr>
+</table>
+</body>
+</html>

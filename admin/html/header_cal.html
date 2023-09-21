@@ -1,0 +1,30 @@
+##TP_COMMENT CSS and Javascript headers needed for calendar popups##
+
+##TP_IF {[tpGetVar FuncOffice 0]}##
+
+<link rel="stylesheet" href="##TP_OFFICE_STATIC_URL##/css/base.css" type="text/css" id="theme">
+<link rel="stylesheet" href="##TP_OFFICE_STATIC_URL##/css/calendar.css" type="text/css" id="theme">
+
+##TP_IF {[tpGetVar USE_ALTERNATIVE_STYLE 0]}##
+	<!--Alternative CSS-->
+	<link href="##TP_ALTERNATIVE_STYLE_URL##" type="text/css" rel="stylesheet" />
+##TP_ENDIF##
+
+<script language="Javascript">
+document.calendarPng = "##TP_OFFICE_STATIC_URL##/images/calendar.png";
+</script>
+<script language="Javascript" src="##TP_OFFICE_STATIC_URL##/js/package.js"></script>
+<script language="Javascript" src="##TP_OFFICE_STATIC_URL##/js/base.js"></script>
+<script language="Javascript" src="##TP_OFFICE_STATIC_URL##/js/form.js"></script>
+<script language="Javascript" src="##TP_OFFICE_STATIC_URL##/js/date.js"></script>
+<script language="Javascript" src="##TP_OFFICE_STATIC_URL##/js/calendar.js"></script>
+
+##TP_ELSE##
+##TP_COMMENT We need to stub out the Calendar function when running in non-office mode##
+<script language="Javascript">
+function Calendar(_input, _childInput, _showTime, _def) {
+	//  Do nothing
+}
+</script>
+
+##TP_ENDIF##

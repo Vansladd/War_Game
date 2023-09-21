@@ -1,0 +1,32 @@
+<!-- $Id: mkt_template_header.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<table cellspacing="0" cellpadding="2" border="0" width="400">
+
+	<tr>
+		<th colspan="4" class="title">
+			Add Template Links
+		</th>
+	</tr>
+
+	<tr>
+		<td class="caption">Template:</td>
+
+		<td >##TP_mkt_tplate_name##
+		</td>
+
+		<td >Sport</td>
+		<td>
+
+			<select name="sport_filter" onchange="selchange(this,'FilterSport');" disabled>
+			##TP_LOOP sport_idx {[tpGetVar NumSports]}##
+				<option value="##TP_SportId##" ##TP_SportSel##>##TP_SportName##</option>
+			##TP_ENDLOOP##
+			</select>
+
+			##TP_LOOP sport_idx {[tpGetVar NumSports]}##
+				<input type="hidden" name="##TP_SportId##_ob_level" value="##TP_SportLev##" />
+			##TP_ENDLOOP##
+
+			</select>
+		</td>
+	</tr>
+</table>

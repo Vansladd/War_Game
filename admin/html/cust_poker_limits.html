@@ -1,0 +1,71 @@
+<!-- Poker Million Transfer Limits -->
+
+<form action="##TP_CGI_URL##" method="post" name="cust_poker_limit">
+
+<table border="0" cellspacing="0" cellpadding="2" bgcolor="#cccccc">
+
+<tr bgcolor="#10137c">
+	<th align="left" colspan="2"><font color="white" size="+1">PokerMillion Deposit Limits</font></th>
+</tr>
+
+<tr>
+	<td valign="top"><b>Level</b></td>
+	<td>
+
+		<input type="radio" name="level" value="0">
+			0 - user suspended from using poker account<br>
+		<input type="radio" name="level" value="1">
+			1 - fixed deposit/withdrawal level<br>
+		<input type="radio" name="level" value="2">
+			2 - fixed deposit/withdrawal level (higher limits than level 1)<br>
+		<input type="radio" name="level" value="3">
+			3 - specify individual transfer limits<br>
+
+		<script type="text/javascript">
+			document.forms["cust_poker_limit"].elemants["level"].selectedIndex
+				= ##TP_poker_level##;
+		</script>
+
+	</td>
+</tr>
+<tr>
+<tr>
+	<td valign="top"><b>Specify Limits (Level 3 only)</b></td>
+	<td>
+		<table cellspacing="0" cellpadding="1" border="0">
+			<tr>
+				<td>Max Deposit
+					(over ##TP_MCS_POKER_SRP_DAYS## days in ##TP_AcctCCY##)</td>
+				<td><input type="text"
+					name="poker_max_dep" value="##TP_poker_max_dep##"></td>
+			</tr>
+			<tr>
+				<td>Max Withdrawal
+					(over ##TP_MCS_POKER_SRP_DAYS## days in ##TP_AcctCCY##)</td>
+				<td><input type="text"
+					name="poker_max_wtd" value="##TP_poker_max_wtd##"></td>
+			</tr>
+		</table>
+	</td>
+</tr>
+<tr bgcolor="#10137c">
+	<th colspan="2" align="left">
+		<font color="white">
+			<input type="button" value="Update Customer Poker Limits"
+				onClick="return fs (this, 'DoCustPokerLimit')">
+		</font>
+	</th>
+</tr>
+<input type="hidden" name="CustId"            value="##TP_CustId##">
+<input type="hidden" name="OLD_POKER_MAX_DEP" value="##TP_poker_max_dep##">
+<input type="hidden" name="OLD_POKER_MAX_WTD" value="##TP_poker_max_wtd##">
+<input type="hidden" name="OLD_POKER_LEVEL"   value="##TP_poker_level##">
+<input type="hidden" name="SubmitName"        value="">
+<input type="hidden" name="action"            value="ADMIN::CUST::DoCust">
+<input type="hidden" name="ccy"               value="##TP_AcctCCY##">
+
+</table>
+
+</form>
+
+<br>

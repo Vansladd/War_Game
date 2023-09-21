@@ -1,0 +1,110 @@
+<html>
+<!-- $Id: language_menu_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Language Menu</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+
+function fs(b,t)
+{
+	if (t == "LangMod") {
+		if (!validate()) { return false; }
+	}
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function fsAudit(b,t,audit)
+{
+	b.form.SubmitName.value=t;
+	b.form.AuditInfo.value = audit;
+	b.form.submit();
+	return true;
+}
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=10 class=title>
+	Locales
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Code</th>
+	<th nowrap class=colhead>Name</th>
+	<th nowrap class=colhead>Translated Name</th>
+	<th nowrap class=colhead>View</th>
+	<th nowrap class=colhead>Language Code</th>
+	<th nowrap class=colhead>Status</th>
+	<th nowrap class=colhead>Disporder</th>
+	<th nowrap class=colhead>Displayed</th>
+	<th nowrap class=colhead>Price Display</th>
+	<th nowrap class=colhead>Flag Filename</th>
+</tr>
+##TP_LOOP locales_idx {[tpGetVar NumLocales]}##
+<tr>
+	<td align=center><a href="##TP_CGI_URL##?action=ADMIN::LANGMENU::GoLocale&LocaleID=##TP_LocaleID##">##TP_LocaleCode##</a></td>
+	<td align=center>##TP_LocaleName##</td>
+	<td align=center>##TP_LocaleXlName##</td>
+	<td align=center>##TP_LocaleView##</td>
+	<td align=center>##TP_LocaleLang##</td>
+	<td align=center>##TP_LocaleStatus##</td>
+	<td align=center>##TP_LocaleDisporder##</td>
+	<td align=center>##TP_LocaleDisplayed##</td>
+	<td align=center>##TP_IF { [tpBindGet LocalePriceDisplay] == "ODDS"}## FRACTIONAL ##TP_ELSE## ##TP_LocalePriceDisplay## ##TP_ENDIF##</td>
+	<td align=center>##TP_LocaleFlagFilename##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[tpGetVar NumLocales 0]==0}##
+<tr>
+	<td colspan=10>
+	<b><i>There are no locales defined</i></b>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th colspan=10 class=buttons>
+	##TP_IF {[op_allowed ManageLocale]}##
+		<form ACTION="##TP_CGI_URL##" method=get>
+		<input type=button class="btn_def" value="Add Locale" id="idAddLocale" onclick="return fs(this,'LocaleAdd')">
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value="ADMIN::LANGMENU::GoLocale">
+		</form>
+	##TP_ENDIF##
+</tr>
+</table>
+##TP_IF {[OT_CfgGet SPORTSBOOK_LANG_DROPDOWN_NUM_ROWS_PER_COL 0]}##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	Language rows per column in sportsbook
+	</th>
+</tr>
+<form ACTION="##TP_CGI_URL##" method=get onSubmit="return validate(this);">
+<tr>
+	<td class=caption>Number of rows per column</td>
+	<td>
+		<input type="text" id="idLangRowsPerColumn" name="LangRowsPerColumn" value="##TP_LangRowsPerColumn##" size=3>
+	</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed ManageLocale]}##
+		<input type=button class="btn_def" value="Save setting" onClick="return fs(this,'SaveLangRowsPerColumn')" id="idSaveSetting">
+	##TP_ENDIF##
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::LANGUAGE::DoLocale">
+</table>
+##TP_ENDIF##
+</body>
+</html>

@@ -1,0 +1,781 @@
+URU_UK_PHONE|7012|N|Telephone number and surname were not matched at this address #2|
+URU_UK_PHONE|7013|N|Telephone number and surname were not matched at this address #3|
+URU_UK_PHONE|7014|N|Telephone number and surname were not matched at this address #4|
+URU_UK_PHONE|7021|N|Incorrectly identified ex-directory and surname did not match for address #1|
+URU_UK_PHONE|7022|N|Incorrectly identified ex-directory and surname did not match for address #2|
+URU_UK_PHONE|7023|N|Incorrectly identified ex-directory and surname did not match for address #3|
+URU_UK_PHONE|7024|N|Incorrectly identified ex-directory and surname did not match for address #4|
+URU_UK_ELECTRICITY|101|C|Mailsort on bill not specified by user|
+URU_UK_ELECTRICITY|102|C|Postcode on bill not specified by user|
+URU_UK_ELECTRICITY|111|C|No details supplied for address #1|
+URU_UK_ELECTRICITY|112|C|No details supplied for address #2|
+URU_UK_ELECTRICITY|113|C|No details supplied for address #3|
+URU_UK_ELECTRICITY|114|C|No details supplied for address #4|
+URU_UK_ELECTRICITY|120|C|Supply number not specified by user|
+URU_UK_ELECTRICITY|181|C|No building details supplied by user for address #1|
+URU_UK_ELECTRICITY|182|C|No building details supplied by user for address #2|
+URU_UK_ELECTRICITY|183|C|No building details supplied by user for address #3|
+URU_UK_ELECTRICITY|184|C|No building details supplied by user for address #4|
+URU_UK_ELECTRICITY|1001|M|Address #1 is valid|
+URU_UK_ELECTRICITY|1002|M|Address #2 is valid|
+URU_UK_ELECTRICITY|1003|M|Address #3 is valid|
+URU_UK_ELECTRICITY|1004|M|Address #4 is valid|
+URU_UK_ELECTRICITY|1011|M|Supply Number valid for address #1|
+URU_UK_ELECTRICITY|1012|M|Supply Number valid for address #2|
+URU_UK_ELECTRICITY|1013|M|Supply Number valid for address #3|
+URU_UK_ELECTRICITY|1014|M|Supply Number valid for address #4|
+URU_UK_ELECTRICITY|1021|M|Mailsort code valid for postcode at address #1|
+URU_UK_ELECTRICITY|1022|M|Mailsort code valid for postcode at address #2|
+URU_UK_ELECTRICITY|1023|M|Mailsort code valid for postcode at address #3|
+URU_UK_ELECTRICITY|1024|M|Mailsort code valid for postcode at address #4|
+URU_UK_ELECTRICITY|1030|M|Mailsort code valid for postcode on bill|
+URU_UK_ELECTRICITY|4011|W|Many addresses found for address #1. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_ELECTRICITY|4012|W|Many addresses found for address #2. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_ELECTRICITY|4013|W|Many addresses found for address #3. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_ELECTRICITY|4014|W|Many addresses found for address #4. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_ELECTRICITY|7001|N|Could not validate address #1. Could not ascertain other items.|
+URU_UK_ELECTRICITY|7002|N|Could not validate address #2. Could not ascertain other items.|
+URU_UK_ELECTRICITY|7003|N|Could not validate address #3. Could not ascertain other items.|
+URU_UK_ELECTRICITY|7004|N|Could not validate address #4. Could not ascertain other items.|
+URU_UK_ELECTRICITY|7011|N|Supply Number not valid for address #1|
+URU_UK_ELECTRICITY|7012|N|Supply Number not valid for address #2|
+URU_UK_ELECTRICITY|7013|N|Supply Number not valid for address #3|
+URU_UK_ELECTRICITY|7014|N|Supply Number not valid for address #4|
+URU_UK_ELECTRICITY|7021|N|Mailsort code not valid for postcode at address #1|
+URU_UK_ELECTRICITY|7022|N|Mailsort code not valid for postcode at address #2|
+URU_UK_ELECTRICITY|7023|N|Mailsort code not valid for postcode at address #3|
+URU_UK_ELECTRICITY|7024|N|Mailsort code not valid for postcode at address #4|
+URU_UK_ELECTRICITY|7030|N|Mailsort code not valid for postcode on bill|
+URU_UK_MORTALITY|101|C|No middle initial specified by user|
+URU_UK_MORTALITY|111|C|No details supplied by user for address #1|
+URU_UK_MORTALITY|112|C|No details supplied by user for address #2|
+URU_UK_MORTALITY|113|C|No details supplied by user for address #3|
+URU_UK_MORTALITY|114|C|No details supplied by user for address #4|
+URU_UK_MORTALITY|140|C|Surname not supplied by user|
+URU_UK_MORTALITY|141|C|Forename not supplied by user|
+URU_UK_MORTALITY|181|C|No building details supplied by user for address #1|
+URU_UK_MORTALITY|182|C|No building details supplied by user for address #2|
+URU_UK_MORTALITY|183|C|No building details supplied by user for address #3|
+URU_UK_MORTALITY|184|C|No building details supplied by user for address #4|
+URU_UK_MORTALITY|1031|M|Middle initial matched address #1|
+URU_UK_MORTALITY|1032|M|Middle initial matched address #2|
+URU_UK_MORTALITY|1033|M|Middle initial matched address #3|
+URU_UK_MORTALITY|1034|M|Middle initial matched address #4|
+URU_UK_MORTALITY|1071|M|Mortascreen source indicates this person is not deceased at address #1|
+URU_UK_MORTALITY|1072|M|Mortascreen source indicates this person is not deceased at address #2|
+URU_UK_MORTALITY|1073|M|Mortascreen source indicates this person is not deceased at address #3|
+URU_UK_MORTALITY|1074|M|Mortascreen source indicates this person is not deceased at address #4|
+URU_UK_MORTALITY|4011|W|Many addresses found for address #1. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MORTALITY|4012|W|Many addresses found for address #2. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MORTALITY|4013|W|Many addresses found for address #3. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MORTALITY|4014|W|Many addresses found for address #4. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MORTALITY|4091|W|Halo source indicates this person (of a forename alias) is deceased at address #1|
+URU_UK_MORTALITY|4092|W|Halo source indicates this person (of a forename alias) is deceased at address #2|
+URU_UK_MORTALITY|4093|W|Halo source indicates this person (of a forename alias) is deceased at address #3|
+URU_UK_MORTALITY|4094|W|Halo source indicates this person (of a forename alias) is deceased at address #4|
+URU_UK_MORTALITY|7011|N|Middle initial did not match address #1|
+URU_UK_MORTALITY|7012|N|Middle initial did not match address #2|
+URU_UK_MORTALITY|7013|N|Middle initial did not match address #3|
+URU_UK_MORTALITY|7014|N|Middle initial did not match address #4|
+URU_UK_MORTALITY|7071|N|Mortascreen source indicates this person is deceased at address #1|
+URU_UK_MORTALITY|7072|N|Mortascreen source indicates this person is deceased at address #2|
+URU_UK_MORTALITY|7073|N|Mortascreen source indicates this person is deceased at address #3|
+URU_UK_MORTALITY|7074|N|Mortascreen source indicates this person is deceased at address #4|
+URU_UK_DOB|102|C|No day of birth specified by user|
+URU_UK_DOB|103|C|No month of birth specified by user|
+URU_UK_DOB|104|C|No year of birth specified by user|
+URU_UK_DOB|111|C|No details supplied by user for address #1|
+URU_UK_DOB|112|C|No details supplied by user for address #2|
+URU_UK_DOB|113|C|No details supplied by user for address #3|
+URU_UK_DOB|114|C|No details supplied by user for address #4|
+URU_UK_DOB|140|C|Surname not supplied by user|
+URU_UK_DOB|141|C|Forename not supplied by user|
+URU_UK_DOB|181|C|No building details supplied by user for address #1|
+URU_UK_DOB|182|C|No building details supplied by user for address #2|
+URU_UK_DOB|183|C|No building details supplied by user for address #3|
+URU_UK_DOB|184|C|No building details supplied by user for address #4|
+URU_UK_DOB|1001|M|Address #1 details are valid|
+URU_UK_DOB|1002|M|Address #2 details are valid|
+URU_UK_DOB|1003|M|Address #3 details are valid|
+URU_UK_DOB|1004|M|Address #4 details are valid|
+URU_UK_DOB|1011|M|Surname details matched address #1|
+URU_UK_DOB|1012|M|Surname details matched address #2|
+URU_UK_DOB|1013|M|Surname details matched address #3|
+URU_UK_DOB|1014|M|Surname details matched address #4|
+URU_UK_DOB|1021|M|Forename details matched address #1|
+URU_UK_DOB|1022|M|Forename details matched address #2|
+URU_UK_DOB|1023|M|Forename details matched address #3|
+URU_UK_DOB|1024|M|Forename details matched address #4|
+URU_UK_DOB|1031|M|Middle initial matched address #1|
+URU_UK_DOB|1032|M|Middle initial matched address #2|
+URU_UK_DOB|1033|M|Middle initial matched address #3|
+URU_UK_DOB|1034|M|Middle initial matched address #4|
+URU_UK_DOB|4011|W|Many addresses found for address #1. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_DOB|4012|W|Many addresses found for address #2. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_DOB|4013|W|Many addresses found for address #3. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_DOB|4014|W|Many addresses found for address #4. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_DOB|4091|W|Forename alias matched address #1|
+URU_UK_DOB|4092|W|Forename alias matched address #2|
+URU_UK_DOB|4093|W|Forename alias matched address #3|
+URU_UK_DOB|4094|W|Forename alias matched address #4|
+URU_UK_DOB|7001|N|Address #1 details did not match|
+URU_UK_DOB|7002|N|Address #2 details did not match|
+URU_UK_DOB|7003|N|Address #3 details did not match|
+URU_UK_DOB|7004|N|Address #4 details did not match|
+URU_UK_DOB|7011|N|Middle initial did not match address #1|
+URU_UK_DOB|7012|N|Middle initial did not match address #2|
+URU_UK_DOB|7013|N|Middle initial did not match address #3|
+URU_UK_DOB|7014|N|Middle initial did not match address #4|
+URU_UK_DOB|7021|N|Forename did not match address #1|
+URU_UK_DOB|7022|N|Forename did not match address #2|
+URU_UK_DOB|7023|N|Forename did not match address #3|
+URU_UK_DOB|7024|N|Forename did not match address #4|
+URU_UK_DOB|7031|N|Surname did not match address #1|
+URU_UK_DOB|7032|N|Surname did not match address #2|
+URU_UK_DOB|7033|N|Surname did not match address #3|
+URU_UK_DOB|7034|N|Surname did not match address #4|
+URU_UK_DOB|7041|N|Reference data accounts for none of the years in the range specified by user for address #1|
+URU_UK_DOB|7042|N|Reference data accounts for none of the years in the range specified by user for address #2|
+URU_UK_DOB|7043|N|Reference data accounts for none of the years in the range specified by user for address #3|
+URU_UK_DOB|7044|N|Reference data accounts for none of the years in the range specified by user for address #4|
+URU_UK_DOB|7051|N|Reference data suggests that years are unaccounted for by user for address #1|
+URU_UK_DOB|7052|N|Reference data suggests that years are unaccounted for by user for address #2|
+URU_UK_DOB|7053|N|Reference data suggests that years are unaccounted for by user for address #3|
+URU_UK_DOB|7054|N|Reference data suggests that years are unaccounted for by user for address #4|
+URU_UK_DOB|151|C|First year of residence for address #1 not supplied by user|
+URU_UK_DOB|152|C|Insufficient information at source to determine level of SHARE data match for address #2|
+URU_UK_DOB|153|C|Insufficient information at source to determine level of SHARE data match for address #3|
+URU_UK_DOB|154|C|Insufficient information at source to determine level of SHARE data match for address #4|
+URU_UK_DOB|192|C|Check not performed on address #2. Attempted to use real data in test mode.|
+URU_UK_DOB|193|C|Check not performed on address #3. Attempted to use real data in test mode.|
+URU_UK_DOB|194|C|Check not performed on address #2. Attempted to use real data in test mode.|
+URU_UK_DOB|201|C|No length of residence threshold supplied for address #1.|
+URU_UK_DOB|202|C|Check not performed on address #2. Attempted to use test data in live mode.|
+URU_UK_DOB|203|C|Check not performed on address #3. Attempted to use test data in live mode.|
+URU_UK_DOB|204|C|Check not performed on address #4. Attempted to use test data in live mode.|
+URU_UK_DOB|300|C|Title was truncated (to 20 characters).|
+URU_UK_DOB|301|C|Forename was truncated (to 30 characters).|
+URU_UK_DOB|302|C|Surname was truncated (to 30 characters).|
+URU_UK_DOB|311|C|Building for address #1 was truncated (to 50 characters).|
+URU_UK_DOB|312|C|Building for address #2 was truncated (to 50 characters).|
+URU_UK_DOB|313|C|Building for address #3 was truncated (to 50 characters).|
+URU_UK_DOB|314|C|Building for address #4 was truncated (to 50 characters).|
+URU_UK_DOB|321|C|Building number for address #1 was truncated (to 12 characters).|
+URU_UK_DOB|322|C|Building number for address #2 was truncated (to 12 characters).|
+URU_UK_DOB|323|C|Building number for address #3 was truncated (to 12 characters).|
+URU_UK_DOB|324|C|Building number for address #4 was truncated (to 12 characters).|
+URU_UK_DOB|331|C|Sub building for address #1 was truncated (to 30 characters).|
+URU_UK_DOB|332|C|Sub building for address #2 was truncated (to 30 characters).|
+URU_UK_DOB|333|C|Sub building for address #3 was truncated (to 30 characters).|
+URU_UK_DOB|334|C|Sub building for address #4 was truncated (to 30 characters).|
+URU_UK_DOB|341|C|Organisation for address #1 was truncated (to 50 characters).|
+URU_UK_DOB|342|C|Organisation for address #2 was truncated (to 50 characters).|
+URU_UK_DOB|343|C|Organisation for address #3 was truncated (to 50 characters).|
+URU_UK_DOB|344|C|Organisation for address #4 was truncated (to 50 characters).|
+URU_UK_DOB|351|C|Street for address #1 was truncated (to 50 characters).|
+URU_UK_DOB|352|C|Street for address #2 was truncated (to 50 characters).|
+URU_UK_DOB|353|C|Street for address #3 was truncated (to 50 characters).|
+URU_UK_DOB|354|C|Street for address #4 was truncated (to 50 characters).|
+URU_UK_DOB|361|C|Town for address #1 was truncated (to 25 characters).|
+URU_UK_DOB|362|C|Town for address #2 was truncated (to 25 characters).|
+URU_UK_DOB|363|C|Town for address #3 was truncated (to 25 characters).|
+URU_UK_DOB|364|C|Town for address #4 was truncated (to 25 characters).|
+URU_UK_DOB|371|C|Postcode for address #1 was truncated (to 8 characters).|
+URU_UK_DOB|372|C|Postcode for address #2 was truncated (to 8 characters).|
+URU_UK_DOB|373|C|Postcode for address #3 was truncated (to 8 characters).|
+URU_UK_DOB|374|C|Postcode for address #4 was truncated (to 8 characters).|
+URU_UK_DOB|400|C|Age under 18.|
+URU_UK_DOB|401|C|Age over 102.|
+URU_UK_DOB|402|C|Date of birth format supplied is not valid.|
+URU_UK_DOB|101|C|No middle initial specified by user.|
+URU_UK_DOB|161|C|Last year of residence for address #1 not supplied by user.|
+URU_UK_DOB|171|C|Last year of residence for address #1 not supplied by user.|
+URU_UK_DOB|172|C|Last year of residence for address #2 not supplied by user.|
+URU_UK_DOB|173|C|Last year of residence for address #3 not supplied by user.|
+URU_UK_DOB|174|C|Last year of residence for address #4 not supplied by user.|
+URU_UK_DOB|211|C|Length of residence is the same as the threshold for address#1.|
+URU_UK_DOB|221|C|Length of residence is the greater than the threshold foraddress #1.|
+URU_UK_DOB|231|C|Length of residence is the less than the threshold for address#1.|
+URU_UK_DOB|241|C|Person not currently resident at specified address #1.|
+URU_UK_DOB|1041|M|Reference data accounts for all years in range specified by user for address #1.|
+URU_UK_DOB|1042|M|Reference data accounts for all years in range specified by user for address #2.|
+URU_UK_DOB|1043|M|Reference data accounts for all years in range specified by user for address #3.|
+URU_UK_DOB|1044|M|Reference data accounts for all years in range specified by user for address #4.|
+URU_UK_DOB|1051|M|Reference data suggests that no years are unaccounted for by user for address #1.|
+URU_UK_DOB|1052|M|Reference data suggests that no years are unaccounted for by user for address #2.|
+URU_UK_DOB|1053|M|Reference data suggests that no years are unaccounted for by user for address #3.|
+URU_UK_DOB|1054|M|Reference data suggests that no years are unaccounted for by user for address #4.|
+URU_UK_DOB|4021|W|Reference data accounts for some years in range specified by user for address #1.|
+URU_UK_DOB|4022|W|Reference data accounts for some years in range specified by user for address #2.|
+URU_UK_DOB|4023|W|Reference data accounts for some years in range specified by user for address #3.|
+URU_UK_DOB|4024|W|Reference data accounts for some years in range specified by user for address #4.|
+URU_UK_DOB|4031|W|There were years specified by the user that cannot be supported by the data for address #1. (Data supports 1984 to 2003 inclusive)|
+URU_UK_DOB|4032|W|There were years specified by the user that cannot be supported by the data for address #2. (Data supports 1984 to 2003 inclusive)|
+URU_UK_DOB|4033|W|There were years specified by the user that cannot be supported by the data for address #3. (Data supports 1984 to 2003 inclusive)|
+URU_UK_DOB|4034|W|There were years specified by the user that cannot be supported by the data for address #4. (Data supports 1984 to 2003 inclusive)|
+URU_UK_DOB|4041|W|Reference data suggests that the target was not resident at address #1 during some years specified by the user.|
+URU_UK_DOB|4042|W|Reference data suggests that the target was not resident at address #2 during some years specified by the user.|
+URU_UK_DOB|4043|W|Reference data suggests that the target was not resident at address #3 during some years specified by the user.|
+URU_UK_DOB|4044|W|Reference data suggests that the target was not resident at address #4 during some years specified by the user.|
+URU_UK_DOB|4051|W|Many addresses found for address #1. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_DOB|4052|W|Many addresses found for address #2. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_DOB|4053|W|Many addresses found for address #3. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_DOB|4054|W|Many addresses found for address #4. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_DOB|251|C|Unable to perform date of birth check, no matching share verification details available.|
+URU_UK_DOB|261|C|Title not supplied by user.|
+URU_UK_DOB|271|C|Unable to determine share verification match level.|
+URU_UK_DOB|1101|M|Address #1 details are valid|
+URU_UK_DOB|1111|M|Surname details matched address #1|
+URU_UK_DOB|1121|M|Forename details matched address #1|
+URU_UK_DOB|1131|M|Middle initial details matched address #1|
+URU_UK_DOB|1071|M|Date of birth matches person at address #1|
+URU_UK_DOB|1091|M|Title details matched address #1|
+URU_UK_DOB|1191|M|Title details matched address #1|
+URU_UK_DOB|4100|W|Test mode active, only seed records will be processed.|
+URU_UK_DOB|4101|W|Test seed used in live mode, check not performed.|
+URU_UK_DOB|7101|N|Address #1 details are not valid.|
+URU_UK_DOB|7111|N|Middle initial did not match address #1.|
+URU_UK_DOB|7121|N|Forename did not match address #1.|
+URU_UK_DOB|7131|N|Surname did not match address #1.|
+URU_UK_DOB|7071|N|Date of birth did not match person at address #1.|
+URU_UK_DOB|7091|N|Title did not match address #1.|
+URU_UK_DOB|7191|N|Title did not match address #1.|
+URU_UK_RESIDENCY|101|C|No middle initial specified by user|
+URU_UK_RESIDENCY|111|C|No details supplied by user for address #1|
+URU_UK_RESIDENCY|112|C|No details supplied by user for address #2|
+URU_UK_RESIDENCY|113|C|No details supplied by user for address #3|
+URU_UK_RESIDENCY|114|C|No details supplied by user for address #4|
+URU_UK_RESIDENCY|140|C|Surname not supplied by user|
+URU_UK_RESIDENCY|141|C|Forename not supplied by user|
+URU_UK_RESIDENCY|181|C|No building details supplied by user for address #1|
+URU_UK_RESIDENCY|182|C|No building details supplied by user for address #2|
+URU_UK_RESIDENCY|183|C|No building details supplied by user for address #3|
+URU_UK_RESIDENCY|184|C|No building details supplied by user for address #4|
+URU_UK_RESIDENCY|1001|M|Address #1 details are valid|
+URU_UK_RESIDENCY|1002|M|Address #2 details are valid|
+URU_UK_RESIDENCY|1003|M|Address #3 details are valid|
+URU_UK_RESIDENCY|1004|M|Address #4 details are valid|
+URU_UK_RESIDENCY|1011|M|Forename details matched address #1|
+URU_UK_RESIDENCY|1012|M|Forename details matched address #2|
+URU_UK_RESIDENCY|1013|M|Forename details matched address #3|
+URU_UK_RESIDENCY|1014|M|Forename details matched address #4|
+URU_UK_RESIDENCY|1015|M|Surname details matched address #1|
+URU_UK_RESIDENCY|1016|M|Surname details matched address #2|
+URU_UK_RESIDENCY|1017|M|Surname details matched address #3|
+URU_UK_RESIDENCY|1018|M|Surname details matched address #4|
+URU_UK_RESIDENCY|1031|M|Middle initial matched address #1|
+URU_UK_RESIDENCY|1032|M|Middle initial matched address #2|
+URU_UK_RESIDENCY|1033|M|Middle initial matched address #3|
+URU_UK_RESIDENCY|1034|M|Middle initial matched address #4|
+URU_UK_RESIDENCY|4011|W|Many addresses found for address #1. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_RESIDENCY|4012|W|Many addresses found for address #2. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_RESIDENCY|4013|W|Many addresses found for address #3. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_RESIDENCY|4014|W|Many addresses found for address #4. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_RESIDENCY|4091|W|Forename alias matched address #1|
+URU_UK_RESIDENCY|4092|W|Forename alias matched address #2|
+URU_UK_RESIDENCY|4093|W|Forename alias matched address #3|
+URU_UK_RESIDENCY|4094|W|Forename alias matched address #4|
+URU_UK_RESIDENCY|7001|N|Address #1 details did not match|
+URU_UK_RESIDENCY|7002|N|Address #2 details did not match|
+URU_UK_RESIDENCY|7003|N|Address #3 details did not match|
+URU_UK_RESIDENCY|7004|N|Address #4 details did not match|
+URU_UK_RESIDENCY|7011|N|Middle initial did not match address #1|
+URU_UK_RESIDENCY|7012|N|Middle initial did not match address #2|
+URU_UK_RESIDENCY|7013|N|Middle initial did not match address #3|
+URU_UK_RESIDENCY|7014|N|Middle initial did not match address #4|
+URU_UK_RESIDENCY|7021|N|Forename did not match address #1|
+URU_UK_RESIDENCY|7022|N|Forename did not match address #2|
+URU_UK_RESIDENCY|7023|N|Forename did not match address #3|
+URU_UK_RESIDENCY|7024|N|Forename did not match address #4|
+URU_UK_RESIDENCY|7025|N|Surname did not match address #1|
+URU_UK_RESIDENCY|7026|N|Surname did not match address #2|
+URU_UK_RESIDENCY|7027|N|Surname did not match address #3|
+URU_UK_RESIDENCY|7028|N|Surname did not match address #4|
+URU_UK_CREDIT_DEBIT|101|C|No card holder supplied|
+URU_UK_CREDIT_DEBIT|102|C|No card number supplied|
+URU_UK_CREDIT_DEBIT|103|C|No card expiry date supplied|
+URU_UK_CREDIT_DEBIT|104|C|No card issue number supplied|
+URU_UK_CREDIT_DEBIT|105|C|No card type supplied|
+URU_UK_CREDIT_DEBIT|106|C|No card verification code supplied|
+URU_UK_CREDIT_DEBIT|107|C|No building number/name supplied|
+URU_UK_CREDIT_DEBIT|108|C|No postcode supplied|
+URU_UK_CREDIT_DEBIT|109|C|CSC was not checked (CVC/AVS response)|
+URU_UK_CREDIT_DEBIT|110|C|Postcode was not checked (CVC/AVS response)|
+URU_UK_CREDIT_DEBIT|111|C|Address was not checked (CVC/AVS response)|
+URU_UK_CREDIT_DEBIT|1001|M|Card was authorised successfully|
+URU_UK_CREDIT_DEBIT|1002|M|CSC matched card details (CVC/AVS response)|
+URU_UK_CREDIT_DEBIT|1003|M|Postcode matched card details (CVC/AVS response)|
+URU_UK_CREDIT_DEBIT|1004|M|Address numerics matched card details (CVC/AVS response)|
+URU_UK_CREDIT_DEBIT|4001|W|Card authorised but cancelled due to bank policy|
+URU_UK_CREDIT_DEBIT|4002|W|Authorisation referred|
+URU_UK_CREDIT_DEBIT|4003|W|CSC partially matched card details (CVC/AVS response)|
+URU_UK_CREDIT_DEBIT|4004|W|Postcode partially matched card details (CVC/AVS response)|
+URU_UK_CREDIT_DEBIT|4005|W|Address numerics partially matched card details (CVC/AVS response)|
+URU_UK_CREDIT_DEBIT|7001|N|Card transaction declined|
+URU_UK_CREDIT_DEBIT|7002|N|Invalid card details|
+URU_UK_CREDIT_DEBIT|7003|N|Card expired|
+URU_UK_CREDIT_DEBIT|7004|N|Invalid card type supplied|
+URU_UK_CREDIT_DEBIT|7005|W|CSC did not match card details (CVC/AVS response)|
+URU_UK_CREDIT_DEBIT|7006|W|Postcode did not match card details (CVC/AVS response)|
+URU_UK_CREDIT_DEBIT|7007|W|Address numerics did not match card details (CVC/AVS response)|
+URU_UK_MIN_ADDRESS|101|C|No middle initial specified by user|
+URU_UK_MIN_ADDRESS|111|C|No details supplied by user for address #1|
+URU_UK_MIN_ADDRESS|112|C|No details supplied by user for address #2|
+URU_UK_MIN_ADDRESS|113|C|No details supplied by user for address #3|
+URU_UK_MIN_ADDRESS|114|C|No details supplied by user for address #4|
+URU_UK_MIN_ADDRESS|140|C|Surname not supplied by user|
+URU_UK_MIN_ADDRESS|141|C|Forename not supplied by user|
+URU_UK_MIN_ADDRESS|151|C|First year of residence for address #1 not supplied by user.|
+URU_UK_MIN_ADDRESS|152|C|First year of residence for address #2 not supplied by user.|
+URU_UK_MIN_ADDRESS|153|C|First year of residence for address #3 not supplied by user.|
+URU_UK_MIN_ADDRESS|154|C|First year of residence for address #4 not supplied by user.|
+URU_UK_MIN_ADDRESS|161|C|Last year of residence for address #1 not supplied by user.|
+URU_UK_MIN_ADDRESS|162|C|Last year of residence for address #2 not supplied by user.|
+URU_UK_MIN_ADDRESS|163|C|Last year of residence for address #3 not supplied by user.|
+URU_UK_MIN_ADDRESS|164|C|Last year of residence for address #4 not supplied by user.|
+URU_UK_MIN_ADDRESS|171|C|Specified first year residence is after the stated last year of residence for address #1.|
+URU_UK_MIN_ADDRESS|172|C|Specified first year residence is after the stated last year of residence for address #2.|
+URU_UK_MIN_ADDRESS|173|C|Specified first year residence is after the stated last year of residence for address #3.|
+URU_UK_MIN_ADDRESS|174|C|Specified first year residence is after the stated last year of residence for address #4.|
+URU_UK_MIN_ADDRESS|181|C|No building details supplied by user for address #1|
+URU_UK_MIN_ADDRESS|182|C|No building details supplied by user for address #2|
+URU_UK_MIN_ADDRESS|183|C|No building details supplied by user for address #3|
+URU_UK_MIN_ADDRESS|184|C|No building details supplied by user for address #4|
+URU_UK_MIN_ADDRESS|211|C|Length of residence is the same as the threshold for address #1.|
+URU_UK_MIN_ADDRESS|221|C|Length of residence is the greater than the threshold for address #1.|
+URU_UK_MIN_ADDRESS|231|C|Length of residence is the less than the threshold for address #1.|
+URU_UK_MIN_ADDRESS|241|C|Person not currently resident at specified address #1.|
+URU_UK_MIN_ADDRESS|1001|M|Address #1 details matched|
+URU_UK_MIN_ADDRESS|1002|M|Address #2 details matched|
+URU_UK_MIN_ADDRESS|1003|M|Address #3 details matched|
+URU_UK_MIN_ADDRESS|1004|M|Address #4 details matched|
+URU_UK_MIN_ADDRESS|1011|M|Surname details matched address #1|
+URU_UK_MIN_ADDRESS|1012|M|Surname details matched address #2|
+URU_UK_MIN_ADDRESS|1013|M|Surname details matched address #3|
+URU_UK_MIN_ADDRESS|1014|M|Surname details matched address #4|
+URU_UK_MIN_ADDRESS|1021|M|Forename details matched address #1|
+URU_UK_MIN_ADDRESS|1022|M|Forename details matched address #2|
+URU_UK_MIN_ADDRESS|1023|M|Forename details matched address #3|
+URU_UK_MIN_ADDRESS|1024|M|Forename details matched address #4|
+URU_UK_MIN_ADDRESS|1031|M|Middle initial matched address #1|
+URU_UK_MIN_ADDRESS|1032|M|Middle initial matched address #2|
+URU_UK_MIN_ADDRESS|1033|M|Middle initial matched address #3|
+URU_UK_MIN_ADDRESS|1034|M|Middle initial matched address #4|
+URU_UK_MIN_ADDRESS|1041|M|Reference data accounts for all years in range specified by user for address #1|
+URU_UK_MIN_ADDRESS|1042|M|Reference data accounts for all years in range specified by user for address #2|
+URU_UK_MIN_ADDRESS|1043|M|Reference data accounts for all years in range specified by user for address #3|
+URU_UK_MIN_ADDRESS|1044|M|Reference data accounts for all years in range specified by user for address #4|
+URU_UK_MIN_ADDRESS|1051|M|Reference data suggests that no years are unaccounted for by user for address #1|
+URU_UK_MIN_ADDRESS|1052|M|Reference data suggests that no years are unaccounted for by user for address #2|
+URU_UK_MIN_ADDRESS|1053|M|Reference data suggests that no years are unaccounted for by user for address #3|
+URU_UK_MIN_ADDRESS|1054|M|Reference data suggests that no years are unaccounted for by user for address #4|
+URU_UK_MIN_ADDRESS|4021|W|Reference data accounts for some years in range specified by user for address #1|
+URU_UK_MIN_ADDRESS|4022|W|Reference data accounts for some years in range specified by user for address #2|
+URU_UK_MIN_ADDRESS|4023|W|Reference data accounts for some years in range specified by user for address #3|
+URU_UK_MIN_ADDRESS|4024|W|Reference data accounts for some years in range specified by user for address #4|
+URU_UK_MIN_ADDRESS|4031|W|There were years specified by the user that cannot be supported by the data for address #1.|
+URU_UK_MIN_ADDRESS|4032|W|There were years specified by the user that cannot be supported by the data for address #2.|
+URU_UK_MIN_ADDRESS|4033|W|There were years specified by the user that cannot be supported by the data for address #3.|
+URU_UK_MIN_ADDRESS|4034|W|There were years specified by the user that cannot be supported by the data for address #4.|
+URU_UK_MIN_ADDRESS|4041|W|Reference data suggests that the target was not resident at address #1 during some years specified by the user.|
+URU_UK_MIN_ADDRESS|4042|W|Reference data suggests that the target was not resident at address #2 during some years specified by the user.|
+URU_UK_MIN_ADDRESS|4043|W|Reference data suggests that the target was not resident at address #3 during some years specified by the user.|
+URU_UK_MIN_ADDRESS|4044|W|Reference data suggests that the target was not resident at address #4 during some years specified by the user.|
+URU_UK_MIN_ADDRESS|4051|W|Many addresses found for address #1. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MIN_ADDRESS|4052|W|Many addresses found for address #2. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MIN_ADDRESS|4053|W|Many addresses found for address #3. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MIN_ADDRESS|4054|W|Many addresses found for address #4. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MIN_ADDRESS|4091|W|Forename alias matched address #1|
+URU_UK_MIN_ADDRESS|4092|W|Forename alias matched address #2|
+URU_UK_MIN_ADDRESS|4093|W|Forename alias matched address #3|
+URU_UK_MIN_ADDRESS|4094|W|Forename alias matched address #4|
+URU_UK_MIN_ADDRESS|7001|N|Address #1 details are not valid|
+URU_UK_MIN_ADDRESS|7002|N|Address #2 details are not valid|
+URU_UK_MIN_ADDRESS|7003|N|Address #3 details are not valid|
+URU_UK_MIN_ADDRESS|7004|N|Address #4 details are not valid|
+URU_UK_MIN_ADDRESS|7011|N|Middle initial did not match address #1|
+URU_UK_MIN_ADDRESS|7012|N|Middle initial did not match address #2|
+URU_UK_MIN_ADDRESS|7013|N|Middle initial did not match address #3|
+URU_UK_MIN_ADDRESS|7014|N|Middle initial did not match address #4|
+URU_UK_MIN_ADDRESS|7021|N|Forename did not match address #1|
+URU_UK_MIN_ADDRESS|7022|N|Forename did not match address #2|
+URU_UK_MIN_ADDRESS|7023|N|Forename did not match address #3|
+URU_UK_MIN_ADDRESS|7024|N|Forename did not match address #4|
+URU_UK_MIN_ADDRESS|7031|N|Surname did not match address #1|
+URU_UK_MIN_ADDRESS|7032|N|Surname did not match address #2|
+URU_UK_MIN_ADDRESS|7033|N|Surname did not match address #3|
+URU_UK_MIN_ADDRESS|7034|N|Surname did not match address #4|
+URU_UK_MIN_ADDRESS|7041|N|Reference data accounts for none of the years in the range specified by user for address #1|
+URU_UK_MIN_ADDRESS|7042|N|Reference data accounts for none of the years in the range specified by user for address #2|
+URU_UK_MIN_ADDRESS|7043|N|Reference data accounts for none of the years in the range specified by user for address #3|
+URU_UK_MIN_ADDRESS|7044|N|Reference data accounts for none of the years in the range specified by user for address #4|
+URU_UK_MIN_ADDRESS|7051|N|Reference data suggests that some years are unaccounted for by user for address #1|
+URU_UK_MIN_ADDRESS|7052|N|Reference data suggests that some years are unaccounted for by user for address #2|
+URU_UK_MIN_ADDRESS|7053|N|Reference data suggests that some years are unaccounted for by user for address #3|
+URU_UK_MIN_ADDRESS|7054|N|Reference data suggests that some years are unaccounted for by user for address #4|
+URU_UK_MAX_ADDRESS|101|C|No middle initial specified by user|
+URU_UK_MAX_ADDRESS|111|C|No details supplied by user for address #1|
+URU_UK_MAX_ADDRESS|112|C|No details supplied by user for address #2|
+URU_UK_MAX_ADDRESS|113|C|No details supplied by user for address #3|
+URU_UK_MAX_ADDRESS|114|C|No details supplied by user for address #4|
+URU_UK_MAX_ADDRESS|140|C|Surname not supplied by user|
+URU_UK_MAX_ADDRESS|141|C|Forename not supplied by user|
+URU_UK_MAX_ADDRESS|151|C|First year of residence for address #1 not supplied by user.|
+URU_UK_MAX_ADDRESS|152|C|First year of residence for address #2 not supplied by user.|
+URU_UK_MAX_ADDRESS|153|C|First year of residence for address #3 not supplied by user.|
+URU_UK_MAX_ADDRESS|154|C|First year of residence for address #4 not supplied by user.|
+URU_UK_MAX_ADDRESS|161|C|Last year of residence for address #1 not supplied by user.|
+URU_UK_MAX_ADDRESS|162|C|Last year of residence for address #2 not supplied by user.|
+URU_UK_MAX_ADDRESS|163|C|Last year of residence for address #3 not supplied by user.|
+URU_UK_MAX_ADDRESS|164|C|Last year of residence for address #4 not supplied by user.|
+URU_UK_MAX_ADDRESS|171|C|Specified first year residence is after the stated last year of residence for address #1.|
+URU_UK_MAX_ADDRESS|172|C|Specified first year residence is after the stated last year of residence for address #2.|
+URU_UK_MAX_ADDRESS|173|C|Specified first year residence is after the stated last year of residence for address #3.|
+URU_UK_MAX_ADDRESS|174|C|Specified first year residence is after the stated last year of residence for address #4.|
+URU_UK_MAX_ADDRESS|181|C|No building details supplied by user for address #1|
+URU_UK_MAX_ADDRESS|182|C|No building details supplied by user for address #2|
+URU_UK_MAX_ADDRESS|183|C|No building details supplied by user for address #3|
+URU_UK_MAX_ADDRESS|184|C|No building details supplied by user for address #4|
+URU_UK_MAX_ADDRESS|201|C|No length of residence threshold supplied by user for address #1.|
+URU_UK_MAX_ADDRESS|211|C|Length of residence is the same as the threshold for address #1.|
+URU_UK_MAX_ADDRESS|221|C|Length of residence is the greater than the threshold for address #1.|
+URU_UK_MAX_ADDRESS|231|C|Length of residence is the less than the threshold for address #1.|
+URU_UK_MAX_ADDRESS|241|C|Person not currently resident at specified address #1.|
+URU_UK_MAX_ADDRESS|1001|M|Address #1 details matched|
+URU_UK_MAX_ADDRESS|1002|M|Address #2 details matched|
+URU_UK_MAX_ADDRESS|1003|M|Address #3 details matched|
+URU_UK_MAX_ADDRESS|1004|M|Address #4 details matched|
+URU_UK_MAX_ADDRESS|1011|M|Surname details matched address #1|
+URU_UK_MAX_ADDRESS|1012|M|Surname details matched address #2|
+URU_UK_MAX_ADDRESS|1013|M|Surname details matched address #3|
+URU_UK_MAX_ADDRESS|1014|M|Surname details matched address #4|
+URU_UK_MAX_ADDRESS|1021|M|Forename details matched address #1|
+URU_UK_MAX_ADDRESS|1022|M|Forename details matched address #2|
+URU_UK_MAX_ADDRESS|1023|M|Forename details matched address #3|
+URU_UK_MAX_ADDRESS|1024|M|Forename details matched address #4|
+URU_UK_MAX_ADDRESS|1031|M|Middle initial matched address #1|
+URU_UK_MAX_ADDRESS|1032|M|Middle initial matched address #2|
+URU_UK_MAX_ADDRESS|1033|M|Middle initial matched address #3|
+URU_UK_MAX_ADDRESS|1034|M|Middle initial matched address #4|
+URU_UK_MAX_ADDRESS|1041|M|Reference data accounts for all years in range specified by user for address #1|
+URU_UK_MAX_ADDRESS|1042|M|Reference data accounts for all years in range specified by user for address #2|
+URU_UK_MAX_ADDRESS|1043|M|Reference data accounts for all years in range specified by user for address #3|
+URU_UK_MAX_ADDRESS|1044|M|Reference data accounts for all years in range specified by user for address #4|
+URU_UK_MAX_ADDRESS|1051|M|Reference data suggests that no years are unaccounted for by user for address #1|
+URU_UK_MAX_ADDRESS|1052|M|Reference data suggests that no years are unaccounted for by user for address #2|
+URU_UK_MAX_ADDRESS|1053|M|Reference data suggests that no years are unaccounted for by user for address #3|
+URU_UK_MAX_ADDRESS|1054|M|Reference data suggests that no years are unaccounted for by user for address #4|
+URU_UK_MAX_ADDRESS|4021|W|Reference data accounts for some years in range specified by user for address #1|
+URU_UK_MAX_ADDRESS|4022|W|Reference data accounts for some years in range specified by user for address #2|
+URU_UK_MAX_ADDRESS|4023|W|Reference data accounts for some years in range specified by user for address #3|
+URU_UK_MAX_ADDRESS|4024|W|Reference data accounts for some years in range specified by user for address #4|
+URU_UK_MAX_ADDRESS|4031|W|There were years specified by the user that cannot be supported by the data for address #1.|
+URU_UK_MAX_ADDRESS|4032|W|There were years specified by the user that cannot be supported by the data for address #2.|
+URU_UK_MAX_ADDRESS|4033|W|There were years specified by the user that cannot be supported by the data for address #3.|
+URU_UK_MAX_ADDRESS|4034|W|There were years specified by the user that cannot be supported by the data for address #4.|
+URU_UK_MAX_ADDRESS|4041|W|Reference data suggests that the target was not resident at address #1 during some years specified by the user.|
+URU_UK_MAX_ADDRESS|4042|W|Reference data suggests that the target was not resident at address #2 during some years specified by the user.|
+URU_UK_MAX_ADDRESS|4043|W|Reference data suggests that the target was not resident at address #3 during some years specified by the user.|
+URU_UK_MAX_ADDRESS|4044|W|Reference data suggests that the target was not resident at address #4 during some years specified by the user.|
+URU_UK_MAX_ADDRESS|4051|W|Many addresses found for address #1. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MAX_ADDRESS|4052|W|Many addresses found for address #2. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MAX_ADDRESS|4053|W|Many addresses found for address #3. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MAX_ADDRESS|4054|W|Many addresses found for address #4. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_MAX_ADDRESS|4091|W|Forename alias matched address #1|
+URU_UK_MAX_ADDRESS|4092|W|Forename alias matched address #2|
+URU_UK_MAX_ADDRESS|4093|W|Forename alias matched address #3|
+URU_UK_MAX_ADDRESS|4094|W|Forename alias matched address #4|
+URU_UK_MAX_ADDRESS|7001|N|Address #1 details are not valid|
+URU_UK_MAX_ADDRESS|7002|N|Address #2 details are not valid|
+URU_UK_MAX_ADDRESS|7003|N|Address #3 details are not valid|
+URU_UK_MAX_ADDRESS|7004|N|Address #4 details are not valid|
+URU_UK_MAX_ADDRESS|7011|N|Middle initial did not match address #1|
+URU_UK_MAX_ADDRESS|7012|N|Middle initial did not match address #2|
+URU_UK_MAX_ADDRESS|7013|N|Middle initial did not match address #3|
+URU_UK_MAX_ADDRESS|7014|N|Middle initial did not match address #4|
+URU_UK_MAX_ADDRESS|7021|N|Forename did not match address #1|
+URU_UK_MAX_ADDRESS|7022|N|Forename did not match address #2|
+URU_UK_MAX_ADDRESS|7023|N|Forename did not match address #3|
+URU_UK_MAX_ADDRESS|7024|N|Forename did not match address #4|
+URU_UK_MAX_ADDRESS|7031|N|Surname did not match address #1|
+URU_UK_MAX_ADDRESS|7032|N|Surname did not match address #2|
+URU_UK_MAX_ADDRESS|7033|N|Surname did not match address #3|
+URU_UK_MAX_ADDRESS|7034|N|Surname did not match address #4|
+URU_UK_MAX_ADDRESS|7041|N|Reference data accounts for none of the years in the range specified by user for address #1|
+URU_UK_MAX_ADDRESS|7042|N|Reference data accounts for none of the years in the range specified by user for address #2|
+URU_UK_MAX_ADDRESS|7043|N|Reference data accounts for none of the years in the range specified by user for address #3|
+URU_UK_MAX_ADDRESS|7044|N|Reference data accounts for none of the years in the range specified by user for address #4|
+URU_UK_MAX_ADDRESS|7051|N|Reference data suggests that some years are unaccounted for by user for address #1|
+URU_UK_MAX_ADDRESS|7052|N|Reference data suggests that some years are unaccounted for by user for address #2|
+URU_UK_MAX_ADDRESS|7053|N|Reference data suggests that some years are unaccounted for by user for address #3|
+URU_UK_MAX_ADDRESS|7054|N|Reference data suggests that some years are unaccounted for by user for address #4|
+URU_UK_DRIVERS|101|C|Drivers license number was not specified in full|
+URU_UK_DRIVERS|102|C|Forename was not specified|
+URU_UK_DRIVERS|103|C|Surname was not specified|
+URU_UK_DRIVERS|104|C|Middle initial was not specified|
+URU_UK_DRIVERS|105|C|Date of birth was not specified in full|
+URU_UK_DRIVERS|106|C|Gender was not specified|
+URU_UK_DRIVERS|107|C|License postcode was not supplied|
+URU_UK_DRIVERS|108|C|License mailsort was not supplied|
+URU_UK_DRIVERS|201|C|Part 1 was not sufficiently supplied by user.|
+URU_UK_DRIVERS|202|C|Part 2 was not sufficiently supplied by user.|
+URU_UK_DRIVERS|203|C|Part 3 was not sufficiently supplied by user.|
+URU_UK_DRIVERS|204|C|Part 4 was not sufficiently supplied by user.|
+URU_UK_DRIVERS|1001|M|License number part 1 is valid|
+URU_UK_DRIVERS|1002|M|License number part 2a is valid|
+URU_UK_DRIVERS|1003|M|License number part 2b is valid|
+URU_UK_DRIVERS|1004|M|License number part 3 is valid|
+URU_UK_DRIVERS|1005|M|Mailsort is valid for the postcode on the license|
+URU_UK_DRIVERS|1006|M|License number part 4 is valid|
+URU_UK_DRIVERS|4001|W|License number part 1 could not be validated|
+URU_UK_DRIVERS|4002|W|License number part 2a could not be validated|
+URU_UK_DRIVERS|4003|W|License number part 2b could not be validated|
+URU_UK_DRIVERS|4004|W|License number part 3 could not be validated|
+URU_UK_DRIVERS|7001|N|License number part 1 is not valid|
+URU_UK_DRIVERS|7002|N|License number part 2a is not valid|
+URU_UK_DRIVERS|7003|N|License number part 2b is not valid|
+URU_UK_DRIVERS|7004|N|License number part 3 is not valid|
+URU_UK_DRIVERS|7005|N|Mailsort is not valid for the postcode on the license|
+URU_UK_DRIVERS|7006|N|License number part 4 is not valid|
+URU_UK_PASSPORT|102|C|Checking against part 2 is unsupported at this time.|
+URU_UK_PASSPORT|111|C|Date of birth not supplied by user|
+URU_UK_PASSPORT|112|C|Date of expiry not supplied by user|
+URU_UK_PASSPORT|113|C|Gender not supplied by user|
+URU_UK_PASSPORT|114|C|No part of passport number supplied by user|
+URU_UK_PASSPORT|120|C|Part 1 was not sufficiently supplied by user.|
+URU_UK_PASSPORT|220|C|Part 2 was not sufficiently supplied by user.|
+URU_UK_PASSPORT|221|C|Part 3 was not sufficiently supplied by user for checksum check|
+URU_UK_PASSPORT|222|C|Part 3 was not sufficiently supplied by user for match check|
+URU_UK_PASSPORT|240|C|Part 4 was not sufficiently supplied by user.|
+URU_UK_PASSPORT|250|C|Part 5 was not sufficiently supplied by user for checksum check|
+URU_UK_PASSPORT|251|C|Part 5 was not sufficiently supplied by user for match check|
+URU_UK_PASSPORT|260|C|Part 6 was not sufficiently supplied by user.|
+URU_UK_PASSPORT|1011|M|Part 1 is valid. Passport number checksum is valid.|
+URU_UK_PASSPORT|1031|M|Part 3 is valid. Date of birth matched.|
+URU_UK_PASSPORT|1032|M|Part 3 is valid. Date of birth checksum is valid.|
+URU_UK_PASSPORT|1041|M|Part 4 is valid. Gender is valid.|
+URU_UK_PASSPORT|1051|M|Part 5 is valid. Date of expiry matched.|
+URU_UK_PASSPORT|1052|M|Part 5 is valid. Date of expiry checksum is valid.|
+URU_UK_PASSPORT|1006|M|Part 6 is valid. Passport checksum is valid.|
+URU_UK_PASSPORT|7011|N|Part 1 is not valid. Checksum is invalid.|
+URU_UK_PASSPORT|7032|N|Part 3 is not valid. Checksum is invalid.|
+URU_UK_PASSPORT|7033|N|Part 3 is not valid. Day of birth does not match|
+URU_UK_PASSPORT|7034|N|Part 3 is not valid. Month of birth does not match|
+URU_UK_PASSPORT|7035|N|Part 3 is not valid. Year of birth does not match|
+URU_UK_PASSPORT|7041|N|Part 4 is not valid. Gender does not match|
+URU_UK_PASSPORT|7052|N|Part 5 is not valid. Checksum is invalid.|
+URU_UK_PASSPORT|7053|N|Part 5 is not valid. Day of expire does not match|
+URU_UK_PASSPORT|7054|N|Part 5 is not valid. Month of expire does not match|
+URU_UK_PASSPORT|7055|N|Part 5 is not valid. Year of expire does not match|
+URU_UK_PASSPORT|7061|N|Part 6 is not valid. Passport checksum does not match|
+URU_UK_PHONE|101|C|No details supplied for address #1|
+URU_UK_PHONE|102|C|No details supplied for address #2|
+URU_UK_PHONE|103|C|No details supplied for address #3|
+URU_UK_PHONE|104|C|No details supplied for address #4|
+URU_UK_PHONE|110|C|Telephone number not specified by user.|
+URU_UK_PHONE|111|C|Active month not specified by user.  Using default.|
+URU_UK_PHONE|112|C|Active year not specified by user.  Using default.|
+URU_UK_PHONE|113|C|Surname not specified by user|
+URU_UK_PHONE|114|C|Forename not specified by user|
+URU_UK_PHONE|181|C|No building details supplied by user for address #1|
+URU_UK_PHONE|182|C|No building details supplied by user for address #2|
+URU_UK_PHONE|183|C|No building details supplied by user for address #3|
+URU_UK_PHONE|184|C|No building details supplied by user for address #4|
+URU_UK_PHONE|1001|M|Address #1 is valid|
+URU_UK_PHONE|1002|M|Address #2 is valid|
+URU_UK_PHONE|1003|M|Address #3 is valid|
+URU_UK_PHONE|1004|M|Address #4 is valid|
+URU_UK_PHONE|1011|M|Telephone number, surname, first initial and date matched for address #1|
+URU_UK_PHONE|1012|M|Telephone number, surname, first initial and date matched for address #2|
+URU_UK_PHONE|1013|M|Telephone number, surname, first initial and date matched for address #3|
+URU_UK_PHONE|1014|M|Telephone number, surname, first initial and date matched for address #4|
+URU_UK_PHONE|1021|M|Correctly identified ex-directory and surname, first initial and date matched for address #1|
+URU_UK_PHONE|1022|M|Correctly identified ex-directory and surname, first initial and date matched for address #2|
+URU_UK_PHONE|1023|M|Correctly identified ex-directory and surname, first initial and date matched for address #3|
+URU_UK_PHONE|1024|M|Correctly identified ex-directory and surname, first initial and date matched for address #4|
+URU_UK_PHONE|1031|M|Telephone number, surname and first initial matched at address #1 (date did not match)|
+URU_UK_PHONE|1032|M|Telephone number, surname and first initial matched at address #2 (date did not match)|
+URU_UK_PHONE|1033|M|Telephone number, surname and first initial matched at address #3 (date did not match)|
+URU_UK_PHONE|1034|M|Telephone number, surname and first initial matched at address #4 (date did not match)|
+URU_UK_PHONE|1041|M|Correctly identified ex-directory and surname and first initial matched for address #1 (date did not match)|
+URU_UK_PHONE|1042|M|Correctly identified ex-directory and surname and first initial matched for address #2 (date did not match)|
+URU_UK_PHONE|1043|M|Correctly identified ex-directory and surname and first initial matched for address #3 (date did not match)|
+URU_UK_PHONE|1044|M|Correctly identified ex-directory and surname and first initial matched for address #4 (date did not match)|
+URU_UK_PHONE|4011|W|Telephone number matched at address #1 but not with surname (date matched)|
+URU_UK_PHONE|4012|W|Telephone number matched at address #2 but not with surname (date matched)|
+URU_UK_PHONE|4013|W|Telephone number matched at address #3 but not with surname (date matched)|
+URU_UK_PHONE|4014|W|Telephone number matched at address #4 but not with surname (date matched)|
+URU_UK_PHONE|4021|W|Telephone number and surname matched at address #1 but not first initial (date matched)|
+URU_UK_PHONE|4022|W|Telephone number and surname matched at address #2 but not first initial (date matched)|
+URU_UK_PHONE|4023|W|Telephone number and surname matched at address #3 but not first initial (date matched)|
+URU_UK_PHONE|4024|W|Telephone number and surname matched at address #4 but not first initial (date matched)|
+URU_UK_PHONE|4031|W|Telephone number and first initial did not match at address #1 but surname did match (date matched)|
+URU_UK_PHONE|4032|W|Telephone number and first initial did not match at address #2 but surname did match (date matched)|
+URU_UK_PHONE|4033|W|Telephone number and first initial did not match at address #3 but surname did match (date matched)|
+URU_UK_PHONE|4034|W|Telephone number and first initial did not match at address #4 but surname did match (date matched)|
+URU_UK_PHONE|4041|W|Telephone number did not match at address #1 but surname and first initial did match (date matched)|
+URU_UK_PHONE|4042|W|Telephone number did not match at address #2 but surname and first initial did match (date matched)|
+URU_UK_PHONE|4043|W|Telephone number did not match at address #3 but surname and first initial did match (date matched)|
+URU_UK_PHONE|4044|W|Telephone number did not match at address #4 but surname and first initial did match (date matched)|
+URU_UK_PHONE|4051|W|Telephone number matched at address #1 but not with surname (date did not match)|
+URU_UK_PHONE|4052|W|Telephone number matched at address #2 but not with surname (date did not match)|
+URU_UK_PHONE|4053|W|Telephone number matched at address #3 but not with surname (date did not match)|
+URU_UK_PHONE|4054|W|Telephone number matched at address #4 but not with surname (date did not match)|
+URU_UK_PHONE|4061|W|Telephone number and surname matched at address #1 but not with first initial (date did not match)|
+URU_UK_PHONE|4062|W|Telephone number and surname matched at address #2 but not with first initial (date did not match)|
+URU_UK_PHONE|4063|W|Telephone number and surname matched at address #3 but not with first initial (date did not match)|
+URU_UK_PHONE|4064|W|Telephone number and surname matched at address #4 but not with first initial (date did not match)|
+URU_UK_PHONE|4081|W|Telephone number and first initial did not match at address #1 but surname did match (date did not match)|
+URU_UK_PHONE|4082|W|Telephone number and first initial did not match at address #2 but surname did match (date did not match)|
+URU_UK_PHONE|4083|W|Telephone number and first initial did not match at address #3 but surname did match (date did not match)|
+URU_UK_PHONE|4084|W|Telephone number and first initial did not match at address #4 but surname did match (date did not match)|
+URU_UK_PHONE|4091|W|Telephone number did not match at address #1 but surname and first initial did match (date matched)|
+URU_UK_PHONE|4092|W|Telephone number did not match at address #2 but surname and first initial did match (date matched)|
+URU_UK_PHONE|4093|W|Telephone number did not match at address #3 but surname and first initial did match (date matched)|
+URU_UK_PHONE|4094|W|Telephone number did not match at address #4 but surname and first initial did match (date matched)|
+URU_UK_PHONE|4101|W|Incorrectly identified that this is ex-directory, but surname and first initial matched for address #1 (date matched)|
+URU_UK_PHONE|4102|W|Incorrectly identified that this is ex-directory, but surname and first initial matched for address #2 (date matched)|
+URU_UK_PHONE|4103|W|Incorrectly identified that this is ex-directory, but surname and first initial matched for address #3 (date matched)|
+URU_UK_PHONE|4104|W|Incorrectly identified that this is ex-directory, but surname and first initial matched for address #4 (date matched)|
+URU_UK_PHONE|4111|W|Incorrectly identified that this is ex-directory, but surname and first initial matched for address #1 (date did not match)|
+URU_UK_PHONE|4112|W|Incorrectly identified that this is ex-directory, but surname and first initial matched for address #2 (date did not match)|
+URU_UK_PHONE|4113|W|Incorrectly identified that this is ex-directory, but surname and first initial matched for address #3 (date did not match)|
+URU_UK_PHONE|4114|W|Incorrectly identified that this is ex-directory, but surname and first initial matched for address #4 (date did not match)|
+URU_UK_PHONE|4121|W|Incorrectly identified that this is ex-directory and first initial did not match, but surname matched for address #1 (date matched)|
+URU_UK_PHONE|4122|W|Incorrectly identified that this is ex-directory and first initial did not match, but surname matched for address #2 (date matched)|
+URU_UK_PHONE|4123|W|Incorrectly identified that this is ex-directory and first initial did not match, but surname matched for address #3 (date matched)|
+URU_UK_PHONE|4124|W|Incorrectly identified that this is ex-directory and first initial did not match, but surname matched for address #4 (date matched)|
+URU_UK_PHONE|4131|W|Incorrectly identified that this is ex-directory and first initial did not match, but surname matched for address #1 (date did not match)|
+URU_UK_PHONE|4132|W|Incorrectly identified that this is ex-directory and first initial did not match, but surname matched for address #2 (date did not match)|
+URU_UK_PHONE|4133|W|Incorrectly identified that this is ex-directory and first initial did not match, but surname matched for address #3 (date did not match)|
+URU_UK_PHONE|4134|W|Incorrectly identified that this is ex-directory and first initial did not match, but surname matched for address #4 (date did not match)|
+URU_UK_PHONE|4151|W|Correctly identified ex-directory and surname matched, but first initial did not match for address #1 (date matched)|
+URU_UK_PHONE|4152|W|Correctly identified ex-directory and surname matched, but first initial did not match for address #2 (date matched)|
+URU_UK_PHONE|4153|W|Correctly identified ex-directory and surname matched, but first initial did not match for address #3 (date matched)|
+URU_UK_PHONE|4154|W|Correctly identified ex-directory and surname matched, but first initial did not match for address #4 (date matched)|
+URU_UK_PHONE|4161|W|Correctly identified ex-directory and surname matched, but first initial did not match for address #1 (date did not match)|
+URU_UK_PHONE|4162|W|Correctly identified ex-directory and surname matched, but first initial did not match for address #2 (date did not match)|
+URU_UK_PHONE|4163|W|Correctly identified ex-directory and surname matched, but first initial did not match for address #3 (date did not match)|
+URU_UK_PHONE|4164|W|Correctly identified ex-directory and surname matched, but first initial did not match for address #4 (date did not match)|
+URU_UK_PHONE|4171|W|Correctly identified ex-directory, but surname did not match for address #1 (date matched)|
+URU_UK_PHONE|4172|W|Correctly identified ex-directory, but surname did not match for address #2 (date matched)|
+URU_UK_PHONE|4173|W|Correctly identified ex-directory, but surname did not match for address #3 (date matched)|
+URU_UK_PHONE|4174|W|Correctly identified ex-directory, but surname did not match for address #4 (date matched)|
+URU_UK_PHONE|4181|W|Correctly identified ex-directory, but surname did not match for address #1 (date did not match)|
+URU_UK_PHONE|4182|W|Correctly identified ex-directory, but surname did not match for address #2 (date did not match)|
+URU_UK_PHONE|4183|W|Correctly identified ex-directory, but surname did not match for address #3 (date did not match)|
+URU_UK_PHONE|4184|W|Correctly identified ex-directory, but surname did not match for address #4 (date did not match)|
+URU_UK_PHONE|4191|W|This is not an ex-directory number, but surname and first initial did match address #1 (date matched)|
+URU_UK_PHONE|4192|W|This is not an ex-directory number, but surname and first initial did match address #2 (date matched)|
+URU_UK_PHONE|4193|W|This is not an ex-directory number, but surname and first initial did match address #3 (date matched)|
+URU_UK_PHONE|4194|W|This is not an ex-directory number, but surname and first initial did match address #4 (date matched)|
+URU_UK_PHONE|4201|W|This is not an ex-directory number, but surname and first initial did match address #1 (date did not match)|
+URU_UK_PHONE|4202|W|This is not an ex-directory number, but surname and first initial did match address #2 (date did not match)|
+URU_UK_PHONE|4203|W|This is not an ex-directory number, but surname and first initial did match address #3 (date did not match)|
+URU_UK_PHONE|4204|W|This is not an ex-directory number, but surname and first initial did match address #4 (date did not match)|
+URU_UK_PHONE|4211|W|This is not an ex-directory number and the first initial did not match, but surname did match at address #1 (date matched)|
+URU_UK_PHONE|4212|W|This is not an ex-directory number and the first initial did not match, but surname did match at address #2 (date matched)|
+URU_UK_PHONE|4213|W|This is not an ex-directory number and the first initial did not match, but surname did match at address #3 (date matched)|
+URU_UK_PHONE|4214|W|This is not an ex-directory number and the first initial did not match, but surname did match at address #4 (date matched)|
+URU_UK_PHONE|4221|W|This is not an ex-directory number and the first initial did not match, but surname did match at address #1 (date did no match)|
+URU_UK_PHONE|4222|W|This is not an ex-directory number and the first initial did not match, but surname did match at address #2 (date did no match)|
+URU_UK_PHONE|4223|W|This is not an ex-directory number and the first initial did not match, but surname did match at address #3 (date did no match)|
+URU_UK_PHONE|4224|W|This is not an ex-directory number and the first initial did not match, but surname did match at address #4 (date did no match)|
+URU_UK_PHONE|4301|W|Many addresses found for address #1. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_PHONE|4302|W|Many addresses found for address #2. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_PHONE|4303|W|Many addresses found for address #3. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_PHONE|4304|W|Many addresses found for address #4. Insufficient address information provided by user to obtain a unique match.|
+URU_UK_PHONE|4310|W|User provided an active date that is outside of the date range supported by the data.|
+URU_UK_PHONE|7001|N|Address #1 is not valid|
+URU_UK_PHONE|7002|N|Address #2 is not valid|
+URU_UK_PHONE|7003|N|Address #3 is not valid|
+URU_UK_PHONE|7004|N|Address #4 is not valid|
+URU_UK_PHONE|7011|N|Telephone number and surname were not matched at this address #1|
+URU_UK_DOB|191|W|Check not performed.  Attempted to use real data in test mode.|
+URU_UK_RESIDENCY|191|W|Check not performed.  Attempted to use real data in test mode.|
+URU_UK_MIN_ADDRESS|191|W|Check not performed.  Attempted to use real data in test mode.|
+URU_UK_MAX_ADDRESS|191|W|Check not performed.  Attempted to use real data in test mode.|
+URU_UK_CREDIT_DEBIT|191|W|Check not performed.  Attempted to use real data in test mode.|
+URU_UK_CREDIT_DEBIT|4006|W|Authorisation failure - Buynet cannot contact the banks validation process|
+URU_UK_CREDIT_DEBIT|7008|N|Card declined, card should be retained|
+URU_UK_ELECTORAL_ROLL|0102|C|No day of birth specified by user|
+URU_UK_ELECTORAL_ROLL|0103|C|No month of birth specified by user|
+URU_UK_ELECTORAL_ROLL|0104|C|No year of birth specified by user|
+URU_UK_ELECTORAL_ROLL|0400|C|Supplied subject age <18|
+URU_UK_ELECTORAL_ROLL|0401|C|Supplied subject age >102|
+URU_UK_ELECTORAL_ROLL|0402|N|Date of birth format supplied is not valid|
+URU_UK_ELECTORAL_ROLL|0131|C|No date of birth is available on the electoral roll at address #1|
+URU_UK_ELECTORAL_ROLL|0132|C|No date of birth is available on the electoral roll at address #2|
+URU_UK_ELECTORAL_ROLL|0133|C|No date of birth is available on the electoral roll at address #3|
+URU_UK_ELECTORAL_ROLL|0134|C|No date of birth is available on the electoral roll at address #4|
+URU_UK_ELECTORAL_ROLL|1061|M|Date of birth matched against electoral roll at address #1|
+URU_UK_ELECTORAL_ROLL|1062|M|Date of birth matched against electoral roll at address #2|
+URU_UK_ELECTORAL_ROLL|1063|M|Date of birth matched against electoral roll at address #3|
+URU_UK_ELECTORAL_ROLL|1064|M|Date of birth matched against electoral roll at address #4|
+URU_UK_ELECTORAL_ROLL|4161|C|Date of birth on electoral roll at address #1 indicates this person may be under 18|
+URU_UK_ELECTORAL_ROLL|4162|C|Date of birth on electoral roll at address #2 indicates this person may be under 18|
+URU_UK_ELECTORAL_ROLL|4163|C|Date of birth on electoral roll at address #3 indicates this person may be under 18|
+URU_UK_ELECTORAL_ROLL|4164|C|Date of birth on electoral roll at address #4 indicates this person may be under 18|
+URU_UK_ELECTORAL_ROLL|7061|N|Date of birth mismatched against the electoral roll at address #1|
+URU_UK_ELECTORAL_ROLL|7062|N|Date of birth mismatched against the electoral roll at address #2|
+URU_UK_ELECTORAL_ROLL|7063|N|Date of birth mismatched against the electoral roll at address #3|
+URU_UK_ELECTORAL_ROLL|7064|N|Date of birth mismatched against the electoral roll at address #4|
+URU_UK_CALLID|0400|C|Supplied subject age <18|
+URU_UK_CALLID|0401|C|Supplied subject age >102|
+URU_UK_CALLID|0131|C|No date of birth is available on the electoral roll at address #1|
+URU_UK_CALLID|0132|C|No date of birth is available on the electoral roll at address #2|
+URU_UK_CALLID|0133|C|No date of birth is available on the electoral roll at address #3|
+URU_UK_CALLID|0134|C|No date of birth is available on the electoral roll at address #4|
+URU_UK_CALLID|1061|M|Date of birth matched against electoral roll at address #1|
+URU_UK_CALLID|1062|M|Date of birth matched against electoral roll at address #2|
+URU_UK_CALLID|1063|M|Date of birth matched against electoral roll at address #3|
+URU_UK_CALLID|1064|M|Date of birth matched against electoral roll at address #4|
+URU_UK_CALLID|4161|C|Date of birth on electoral roll at address #1 indicates this person may be under 18|
+URU_UK_CALLID|4162|C|Date of birth on electoral roll at address #2 indicates this person may be under 18|
+URU_UK_CALLID|4163|C|Date of birth on electoral roll at address #3 indicates this person may be under 18|
+URU_UK_CALLID|4164|C|Date of birth on electoral roll at address #4 indicates this person may be under 18|
+URU_UK_CALLID|7061|N|Date of birth mismatched against the electoral roll at address #1|
+URU_UK_CALLID|7062|N|Date of birth mismatched against the electoral roll at address #2|
+URU_UK_CALLID|7063|N|Date of birth mismatched against the electoral roll at address #3|
+URU_UK_CALLID|7064|N|Date of birth mismatched against the electoral roll at address #4|
+URU_UK_DOB|2|W|Execution of this item check was ignored (profile conditions were not met).|
+URU_UK_MIN_ADDRESS|102|C|No day of birth specified by user.|
+URU_UK_MIN_ADDRESS|103|C|No month of birth specified by user.|
+URU_UK_MIN_ADDRESS|104|C|No year of birth specified by user.|
+URU_UK_MIN_ADDRESS|115|C|No date of birth is available on the electoral roll.|
+URU_UK_MIN_ADDRESS|131|C|No date of birth is available on the electoral roll at address #1.|
+URU_UK_MIN_ADDRESS|132|C|No date of birth is available on the electoral roll at address #2.|
+URU_UK_MIN_ADDRESS|133|C|No date of birth is available on the electoral roll at address #3.|
+URU_UK_MIN_ADDRESS|134|C|No date of birth is available on the electoral roll at address #4.|
+URU_UK_MIN_ADDRESS|400|W|Supplied subject age <18.|
+URU_UK_MIN_ADDRESS|401|W|Supplied subject age >102.|
+URU_UK_MIN_ADDRESS|402|W|Date of birth format supplied is not valid.|
+URU_UK_MIN_ADDRESS|4115|W|Date of birth on electoral roll indicates this person may be under 18.|
+URU_UK_MIN_ADDRESS|4161|W|Date of birth on electoral roll at address #1 indicates this person may be under 18.|
+URU_UK_MIN_ADDRESS|4162|W|Date of birth on electoral roll at address #2 indicates this person may be under 18.|
+URU_UK_MIN_ADDRESS|4163|W|Date of birth on electoral roll at address #3 indicates this person may be under 18.|
+URU_UK_MIN_ADDRESS|4164|W|Date of birth on electoral roll at address #4 indicates this person may be under 18.|
+URU_UK_MIN_ADDRESS|1061|M|Date of birth matched against electoral roll at address #1.|
+URU_UK_MIN_ADDRESS|1062|M|Date of birth matched against electoral roll at address #2.|
+URU_UK_MIN_ADDRESS|1063|M|Date of birth matched against electoral roll at address #3.|
+URU_UK_MIN_ADDRESS|1064|M|Date of birth matched against electoral roll at address #4.|
+URU_UK_MIN_ADDRESS|7061|M|Date of birth mismatched against the electoral roll at address #1.|
+URU_UK_MIN_ADDRESS|7062|M|Date of birth mismatched against the electoral roll at address #2.|
+URU_UK_MIN_ADDRESS|7063|M|Date of birth mismatched against the electoral roll at address #3.|
+URU_UK_MIN_ADDRESS|7064|M|Date of birth mismatched against the electoral roll at address #4.|
+URU_UK_DOB|131|C|No date of birth is available on the electoral roll at address #1|
+URU_UK_DOB|132|C|No date of birth is available on the electoral roll at address #2|
+URU_UK_DOB|133|C|No date of birth is available on the electoral roll at address #3|
+URU_UK_DOB|134|C|No date of birth is available on the electoral roll at address #4|
+URU_UK_DOB|1061|M|Date of birth matched against electoral roll at address #1|
+URU_UK_DOB|1062|M|Date of birth matched against electoral roll at address #2|
+URU_UK_DOB|1063|M|Date of birth matched against electoral roll at address #3|
+URU_UK_DOB|1064|M|Date of birth matched against electoral roll at address #4|
+URU_UK_DOB|4161|W|Date of birth on electoral roll at address #1 indicates this person may be under 18|
+URU_UK_DOB|4162|W|Date of birth on electoral roll at address #2 indicates this person may be under 18|
+URU_UK_DOB|4163|W|Date of birth on electoral roll at address #3 indicates this person may be under 18|
+URU_UK_DOB|4164|W|Date of birth on electoral roll at address #4 indicates this person may be under 18|
+URU_UK_DOB|7061|N|Date of birth mismatched against the electoral roll at address #1|
+URU_UK_DOB|7062|N|Date of birth mismatched against the electoral roll at address #2|
+URU_UK_DOB|7063|N|Date of birth mismatched against the electoral roll at address #3|
+URU_UK_DOB|7064|N|Date of birth mismatched against the electoral roll at address #4|

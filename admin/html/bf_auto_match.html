@@ -1,0 +1,330 @@
+<html>
+<!-- $Id: bf_auto_match.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Betfair Auto Match</title>
+
+##TP_PLAY header_cal.html##
+
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+##TP_IF {![tpGetVar SEARCH]}##
+
+var sort = new Object();
+##TP_LOOP sort_idx {[tpGetVar NumSorts]}##
+sort["##TP_SortType##"] = "##TP_TypeSort##";##TP_ENDLOOP##
+
+##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+sort["C:##TP_ClassId##"]="##TP_ClassSort##"; ##TP_ENDLOOP##
+
+var nms = new Array();
+var ids = new Array();
+##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+	##TP_IF {[OT_CfgGet FUNC_ADMIN_CLONE_EVENTS 0]}##
+	nms[##TP_ClassId##]=new Array(##TP_LOOP type_idx {$CLASS([tpGetVar class_idx],types)}##"##TP_TypeName##(##TP_TypePricingType##)"##TP_IF {[tpGetVar type_idx]!=[expr $CLASS([tpGetVar class_idx],types)-1]}##, ##TP_ENDIF####TP_ENDLOOP##);
+	##TP_ELSE##
+	nms[##TP_ClassId##]=new Array(##TP_LOOP type_idx {$CLASS([tpGetVar class_idx],types)}##"##TP_TypeName##"##TP_IF {[tpGetVar type_idx]!=[expr $CLASS([tpGetVar class_idx],types)-1]}##, ##TP_ENDIF####TP_ENDLOOP##);
+	##TP_ENDIF##
+ids[##TP_ClassId##]=new Array(##TP_LOOP type_idx {$CLASS([tpGetVar class_idx],types)}##"##TP_TypeId##"##TP_IF {[tpGetVar type_idx]!=[expr $CLASS([tpGetVar class_idx],types)-1]}##, ##TP_ENDIF####TP_ENDLOOP##);
+##TP_ENDLOOP##
+
+function fs(b,t)
+{
+	var flag=0;
+	if (t == "Search" ) {
+		var s_date=document.forms.evform.start_date.value;
+		var e_date=document.forms.evform.end_date.value;
+		if(s_date != "" && e_date!="")
+		{
+			var flag1=check_date(s_date);
+			var flag2=check_date(e_date);
+			if(flag1 && flag2)
+			{
+				s_date=s_date.split("-");
+				var date1 = new Date();
+				date1.setYear(s_date[0]);
+				date1.setMonth(s_date[1]);
+				date1.setDate(s_date[2]);
+
+				e_date=e_date.split("-");
+				var date2 = new Date();
+				date2.setYear(e_date[0]);
+				date2.setMonth(e_date[1]);
+				date2.setDate(e_date[2]);
+
+				if(date1.valueOf() > date2.valueOf())
+				{
+					alert("First Date cannot be greater than Second Date")
+					return false;
+				}
+			}
+			else
+			{
+			flag=1;
+			}
+		}
+		b.form.action.value="ADMIN::BETFAIR_MATCH::GoSearchBFMatch"
+	}
+	if (flag == 0 ) {
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+}
+
+function check_date(date1) {
+
+	date=date1.split("-");
+	if (date.length == 3)
+	{
+		yy=isNaN(date[0]);
+		mm=isNaN(date[1]);
+		dd=isNaN(date[2]);
+		if(yy || dd || mm || date[1] == '00' || date[2] == '00' )
+		{
+			alert("Date should have Numeric values Greater than zero");
+			return 0;
+		}
+		var rg_yy= /\d{4}/;
+		var rg_md=/\d/;
+		var rg_mmdd=/\d{2}/;
+		if(!rg_yy.exec(date[0]))
+		{
+			alert("Invalid Year :: Should be of format YYYY");
+			return 0;
+		}
+		if(!rg_mmdd.exec(date[1]) && !rg_md.exec(date[1]))
+		{
+			alert("Invalid Month :: Should be of format MM");
+			return 0;
+		}
+		if(!rg_mmdd.exec(date[2]) && !rg_md.exec(date[2]))
+		{
+			alert("Invalid Days :: Should be of format DD");
+			return 0;
+		}
+	}
+	else
+	{
+		alert(date1 +"::Should be in the format \"YYYY-MM-DD\"");
+		return 0;
+	}
+	return 1;
+}
+
+function updateTypeList() {
+
+	var c = document.evform.ClassId;
+	var opt = document.evform.TypeId.options;
+
+	var cId = c.options[c.selectedIndex].value;
+	var cName = c.options[c.selectedIndex].text;
+
+	// Delete everything
+	opt.length=0;
+
+	if (cId != "0") {
+
+		##TP_IF {[OT_CfgGet FUNC_ADMIN_CLONE_EVENTS 0]}##
+		opt[opt.length] = new Option( "-- all "+cName+"(Pricing Type) --", 0 );
+		##TP_ELSE##
+		opt[opt.length] = new Option( "-- all "+cName+" --", 0 );
+		##TP_ENDIF##
+
+		var nm = nms[cId];
+		var id = ids[cId];
+
+		for (i=0;i<nm.length;i++) {
+			opt[opt.length] = new Option( nm[i], id[i] );
+		}
+
+	} else {
+
+		opt[opt.length] = new Option("<< All classes selected >>", "0");
+	}
+
+	opt.selectedIndex = 0;
+}
+
+function displayCalendars() {
+	new Calendar(document.forms.evform.start_date,null,false,"lo")
+	new Calendar(document.forms.evform.end_date,null,false,"lo")
+}
+##TP_ENDIF##
+</script>
+</head>
+##TP_IF {![tpGetVar SEARCH]}##
+	<body onload="updateTypeList(); displayCalendars()">
+	##TP_PLAY error_rpt.html##
+	<form action="##TP_CGI_URL##" method=get name="evform">
+		<table border=0 cellspacing=0 cellpadding=2>
+			<tr>
+				<th colspan=2 class=title> Betfair Match Search </th>
+			</tr>
+			<tr>
+				<td class=caption>Classes</td>
+				<td>
+				<select name=ClassId size=10 onchange="updateTypeList()">
+					<option value=0 selected>-All Classes-</option>
+					##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+						<option value="##TP_ClassId##">##TP_ClassName##</option>
+					##TP_ENDLOOP##
+				</select>
+
+				<select name=TypeId size=10>
+					<option value="0"></option>
+				</select>
+
+				</td>
+			</tr>
+			<tr>
+				<td class=caption>Map Date range</td>
+				<td>
+				<select name=date_range>
+					<option value="-">N/A</option>
+					<option value="0">Today</option>
+					<option value="-1">Yesterday</option>
+					<option value="-3">Last 3 days</option>
+					<option value="-7">Last 7 days</option>
+					<option value="-30">Last Month</option>
+				</select>&nbsp;&nbsp;or&nbsp;
+				<input text="text" size=12 name="start_date" value="">&nbsp;to&nbsp;
+				<input type="text" size=12 name="end_date" value="">
+				<script language="javascript">
+				</script>
+				</td>
+			</tr>
+			<tr>
+				<td class=caption>Map Type</td>
+				<td>
+					<select name="map_type">
+							<option value="ALL" selected>ALL</option>
+							<option value="SKP">Skip</option>
+							<option value="ADD">Add</option>
+							<option value="STR">Straight</option>
+							<option value="HR">Horse Racing</option>
+							<option value="GR">Greyhound Racing</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class=caption>Username</td>
+				<td>
+					<input type="text" name="username" value="">&nbsp;
+					(exact:<input type="checkbox" name="ExactName" value="Y" checked>
+					&nbsp; case insensitive&nbsp;
+					<input type="checkbox" name="UpperName" value="Y" checked>
+					&nbsp;)
+				</td>
+			</tr>
+			<tr>
+				<td class=caption>Match Type</td>
+				<td>
+					<select name="match_type">
+							<option value="B" selected>Either</option>
+							<option value="A">Auto</option>
+							<option value="M">Manual</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class=caption>Match String</td>
+				<td>
+					<input type="text" name="desc" value="">
+				</td>
+			</tr>
+			<tr>
+				<td class=caption>Exclude String</td>
+				<td>
+					<input type="text" name="exclude_desc" value="">
+				</td>
+			</tr>
+			<tr>
+				<th colspan="2" class="buttons">
+					<input type="button" value="Search" onClick="return fs (this,'Search')">
+				</th>
+			</tr>
+		</table>
+<br/>
+	##TP_IF {[op_allowed BFMatch]}##
+	<table border=0 cellspacing=0 cellpadding=3>
+
+	<tr>
+	  <th colspan=2 class=title>
+	  Betfair Auto Match
+	  </th>
+	</tr>
+	<tr>
+	  <td class=caption>Betfair Auto Match</td>
+	  <td>
+	  <select name="bf_auto_match">
+	  <script>
+	  write_select('##TP_BFMatch##','Y','Yes','N','No')
+	  </script>
+	  </select>
+	  </td>
+	</tr>
+	<tr>
+	  <th class="buttons" colspan="2">
+	    <input type="button" value="Update" onClick="return fs(this,'UpdateBFControl')">
+	  </th>
+	</tr>
+	<input type="hidden" name="SubmitName" value="">
+	<input type="hidden" name="action" value="ADMIN::BETFAIR_MATCH::DoBFAutoMatch">
+
+	</table>
+	</form>
+	<br><br>
+	##TP_ENDIF##
+##TP_ELSE##
+<body>
+	<table border=1 cellspacing=0 cellpadding=3>
+		<tr>
+		  <th colspan=7 class=title>
+		  	##TP_IF {[tpGetVar MatchType] == "M"}##
+		  		Betfair Manual Mappings
+			##TP_ELSEIF {[tpGetVar MatchType] == "A"}##
+				Betfair Auto Mappings
+			##TP_ELSE##
+				Betfair Mappings
+			##TP_ENDIF##
+		  </th>
+		</tr>
+		<tr>
+			<th> User Name </th>
+			<th> OpenBet Level </th>
+			<th> OpenBet Name </th>
+			<th> Betfair Name </th>
+			<th> Map Type </th>
+			<th> Map Description </th>
+			<th> Map Exclude String </th>
+		</tr>
+
+		##TP_IF {[tpGetVar MapRows] == 0}##
+			<tr>
+			<td colspan=7 ><b><font color="#FF0000">No Rows Found</font></b> </td>
+			</tr>
+		##TP_ELSE##
+			##TP_LOOP map_idx {[tpGetVar MapRows]}##
+			<tr>
+				<td> ##TP_MapUserName##&nbsp;</td>
+				<td> ##TP_IF {[tpBindGet MapOBType] == "ET"}## Type ##TP_ELSE## Event ##TP_ENDIF## </td>
+				##TP_IF {[tpBindGet MapOBType] == "EV"}##
+					<td><a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_MapOBId##">##TP_MapOBName##&nbsp;</a></td>
+				##TP_ELSE##
+					<td> ##TP_MapOBName##&nbsp;</td>
+				##TP_ENDIF##
+				<td> ##TP_MapBFDesc##&nbsp;</td>
+				<td> ##TP_MapType##&nbsp;</td>
+				<td> ##TP_MapGlob##&nbsp;</td>
+				<td> ##TP_MapGlobExclude##&nbsp;</td>
+			</tr>
+			##TP_ENDLOOP##
+		##TP_ENDIF##
+	</table>
+##TP_ENDIF##
+</body>
+</html>

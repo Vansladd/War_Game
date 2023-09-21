@@ -1,0 +1,195 @@
+<html>
+<!-- $Id: topx_hierarchy.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Modify Top X Bets/HMDYWTW Settings</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	if (get_current_selection() == false) {
+		alert("Please choose a selection.");
+		return false;
+	}
+
+	if (document.getElementById("weight").value == "") {
+		alert("Please enter a manual weighting");
+		return false;
+	}
+	return true;
+}
+function fs(b,t)
+{
+	if (validate(b.form)) {
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function update_total_weight() {
+	var w = document.getElementById("weight").value;
+	if (w == "") w = "0";
+	
+	var s = document.getElementById("spots").value;
+	if (s == "") {
+		s = "0";
+		document.getElementById("spots").value = 0;
+	}
+
+	document.getElementById("total_weight").value = 
+		  parseInt(s,10) 
+		+ parseInt(w,10);
+}
+
+function get_current_selection() {
+	if (typeof document.main_form.ev_oc_id != 'undefined') {
+		// Check for single radio element
+		if (typeof document.main_form.ev_oc_id.length == 'undefined'
+			&& document.main_form.ev_oc_id.checked == true) {
+			return document.main_form.ev_oc_id.value;
+		}
+	
+		for (var i = 0; i < document.main_form.ev_oc_id.length; i++) {
+			if (document.main_form.ev_oc_id[i].checked == true) {
+				return document.main_form.ev_oc_id[i].value;
+			}
+		}
+	}
+
+	return false;
+}
+
+var spots  = new Array();
+var weight = new Array();
+##TP_LOOP seln_idx {[tpGetVar NumSeln]}##
+spots[##TP_SelectionId##]  = "##TP_SelectionSpots##";
+weight[##TP_SelectionId##] = "##TP_SelectionWeight##";
+##TP_ENDLOOP##
+
+function update_spots(e) {
+	var ev_oc_id = e.value;
+	e.form.spots.value  = spots[ev_oc_id];
+	document.getElementById("weight").value = weight[ev_oc_id];
+
+	update_total_weight();
+}
+</script>
+<style>
+div.col {
+	float:left;
+	width: 33%;
+}
+
+div.col a {
+	display: inline-block;
+	padding: 2px;
+	text-decoration: underline;
+}
+</style>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+<form ACTION="##TP_CGI_URL##" name="main_form" method=post onSubmit="return validate(this);">
+<input type="hidden" name="SubmitName" value="" />
+<input type="hidden" name="action" value="ADMIN::TOPX::DoTopx" />
+<input type="hidden" name="view" value="##TP_View##" />
+
+<table border=0 cellspacing=0 cellpadding=3 style="margin: 50px auto; width: 60%;">
+	<tr>
+		<th colspan=4 class=title>
+		Amend Manual Weighting for <i>##TP_ViewName##</i>
+		</th>
+	</tr>
+	<tr><td style="padding: 10px;border-bottom: 1px solid #CCCCCC">
+
+		##TP_LOOP crumb_idx {[tpGetVar NumCrumbs]}##
+			##TP_IF {[tpGetVar crumb_idx] != 0}## > ##TP_ENDIF##
+					##TP_IF {[tpBindGet CrumbHref] != ""}##
+				<a href="##TP_CrumbHref##&view=##TP_View##">##TP_CrumbText##</a>
+			##TP_ELSE##
+				##TP_CrumbText##
+			##TP_ENDIF##
+		##TP_ENDLOOP##
+
+	</td></tr>
+	<tr><td>
+
+						
+			##TP_IF {[tpGetVar Stage] == "market"}##
+				<input type="hidden" name="MarketId" value="##TP_MarketId##" />
+				<input type="hidden" name="select" value="true" />
+
+
+				##TP_TCL {tpSetVar _ColCount [expr ([tpGetVar NumSeln] / 3) + 1]}##
+
+				<div class="col">
+				##TP_LOOP seln_idx {[tpGetVar NumSeln]}##
+					##TP_IF {[tpGetVar seln_idx] != 0 && [expr {[tpGetVar seln_idx] % [tpGetVar _ColCount]}] == 0}##
+						</div><div class="col">
+					##TP_ENDIF##
+					<input type="radio" name="ev_oc_id" value="##TP_SelectionId##" onClick="update_spots(this);" /> ##TP_SelectionName##
+					<br />
+				##TP_ENDLOOP##
+				</div>
+
+				<br style="clear:both;" /><br />
+
+				
+				<div style="width: 50%;text-align:right;float:left">
+					Actual Spots: <input id="spots" name="spots" type="text" disabled="disabled" 
+						size="2" value="##TP_Spots##" /> <br />
+					+ Manual Weighting: <input id="weight" type="text" name="weight" 
+						size="2" value="##TP_Weight##" onKeyUp="update_total_weight();" />
+				</div>
+	
+				<div style="float:left;vertical-align:bottom;padding-top:20px">
+					&nbsp; = Total Weight: <input id="total_weight" type="text" disabled="disabled"
+						size="2" value="" />
+				</div>
+
+				<br style="clear:both;" />
+			
+				<script>update_total_weight();</script>
+				<br /><br />
+	
+				<div style="text-align:center">
+					<input type="button" value="Update" onClick="fs(this,'UpdateWeight')" />
+					<input type="button" value="Cancel"
+						onClick="document.location='?action=ADMIN::TOPX::GoTopx&view=##TP_View##'" />
+				</div>
+			##TP_ELSE##
+				##TP_TCL {tpSetVar _ColCount [expr ([tpGetVar NumMenu] / 3) + 1]}##
+
+				<div class="col">
+				##TP_LOOP menu_idx {[tpGetVar NumMenu]}##
+					##TP_IF {[tpGetVar menu_idx] != 0 && [expr {[tpGetVar menu_idx] % [tpGetVar _ColCount]}] == 0}##
+					</div><div class="col">
+					##TP_ENDIF##
+					<a href="##TP_MenuHref##&view=##TP_View##">##TP_MenuText##</a><br />
+				##TP_ENDLOOP##
+				</div>
+				<br style="clear:both" />
+			##TP_ENDIF##
+
+		</div>
+		
+	</td></tr>
+	<tr><td class="buttons">
+
+		##TP_IF {[tpGetVar Stage] != "market"}##
+			<input type="button" value="Cancel" 
+				onClick="document.location='?action=ADMIN::TOPX::GoTopx&view=##TP_View##'" />
+		##TP_ENDIF##
+	</td></tr>
+</table>
+</form>
+
+</body>
+</html>

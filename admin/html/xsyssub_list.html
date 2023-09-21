@@ -1,0 +1,154 @@
+<html>
+<!-- $Id: xsyssub_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	<head>
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<script language="javascript">
+			##TP_PLAY office_lib/js/base.js##
+			##TP_PLAY office_lib/js/sortable_table.js##
+
+			function fs(b,t) {
+				b.form.SubmitName.value=t;
+				b.form.submit();
+				return true;
+			}
+
+			function csv(b,t) {
+
+				b.disabled = true;
+				var btn_name = b.value;
+
+				b.form.SubmitName.value=t;
+				b.form.submit();
+
+				b.disabled = false;
+				b.value = btn_name;
+
+				return true;
+
+			}
+
+			function initSortTable () {
+				var tab = new SortableTable(getObject('resultstable'),getObject('resultsheaders'));
+				tab.addSortType('Ccy',null,function (txt1,txt2) {
+						// special case : '--' for no value
+						if (txt1 == "--" && txt2 == "--") {
+							return 0;
+						} else if (txt1 == "--") {
+							return 1;
+						} else if (txt2 == "--") {
+							return -1;
+						} else {
+							var ccyRE = /^\s*(\D+)\s*(\d+)\.(\d+)\s*$/;
+							var match1 = ccyRE.exec(txt1);
+							var match2 = ccyRE.exec(txt2);
+							for (var i=1;i < 4;i++) {
+								if (match1[i] != match2[i]) {
+									return (match1[i] > match2[i] ? 1 : -1);
+								}
+							}
+							return 0;
+						}
+				});
+			}
+		</script>
+	</head>
+	<body onload="javascript:initSortTable();">
+		##TP_PLAY error_rpt.html##
+		<form action="##TP_CGI_URL##" method="get">
+			<table border="0" cellspacing="0">
+				<tr>
+					<th colspan="12" class="title">
+						External System Subscription History ##TP_IF {[tpBindGet system_name] != ""}##- ##TP_system_name####TP_ENDIF##
+					</th>
+				</tr>
+				<tr>
+					<td colspan="12">
+						<table id="resultstable" class="Sortable" border="0" cellspacing="0" cellpadding="4">
+							<thead>
+								<tr id="resultsheaders">
+									<th nowrap class="colheadSortNumber">Sub ID</th>
+									<th nowrap class="colheadSortText">Username</th>
+									<th nowrap class="colheadSortText">Acct No</th>
+									<th nowrap class="colheadSortText">System</th>
+									<th nowrap class="colheadSortText">External Sub Id</th>
+									<th nowrap class="colheadSortText">Description</th>
+									<th nowrap class="colheadSortDate">Session Start</th>
+									<th nowrap class="colheadSortDate">Session End</th>
+									<th nowrap class="colheadSortText">Session Status</th>
+									<th nowrap class="colheadSortCcy">Cash To Table</th>
+									<th nowrap class="colheadSortCcy">Cash From Table</th>
+								</tr>
+							</thead>
+							<tbody>
+								##TP_IF {[tpGetVar num_subs 0] > 0}##
+								##TP_LOOP sub_idx {[tpGetVar num_subs 0]}##
+								<tr id="##TP_TCL {tpGetVar sub_idx}##">
+									<td>
+										<a href="##TP_CGI_URL##?action=ADMIN::XSYSSUB::DoSubDetails&xsys_sub_id=##TP_SubXSysSubId##">##TP_SubXSysSubId##</a>
+									</td>
+									<td>
+										<a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_SubCustId##">##TP_SubUsername##</a>
+									</td>
+									<td>##TP_SubAcctNo##</td>
+									<td>##TP_SubSysName##</td>
+									<td>##TP_SubExtSubId##</td>
+									<td>##TP_SubDescription##</td>
+									<td align="center">##TP_SubStartDate##</td>
+									<td align="center">##TP_SubEndDate##</td>
+									<td align="center">
+										<a href="##TP_CGI_URL##?action=ADMIN::XSYSSUB::DoSubDetails&xsys_sub_id=##TP_SubXSysSubId##">##TP_SubStatus##</a>
+									</td>
+									<td align="right">##TP_SubCashStaked##</td>
+									<td align="right">##TP_SubCashReturns##</td>
+								</tr>
+								##TP_ENDLOOP##
+								##TP_ELSE##
+								<tr>
+									<td colspan="11" align="left">
+										<b>No subscriptions in the given period</b>
+									</td>
+								</tr>
+								##TP_ENDIF##
+							</tbody>
+							<tfoot>
+								<tr>
+									<th class="buttons" colspan="12">
+										##TP_IF {[tpGetVar show_prev 0]}##
+										<input type="button" value="Previous" onClick="return fs(this,'DoPrevious')">
+										##TP_ENDIF##
+										##TP_IF {[tpGetVar show_next 0]}##
+										<input type="button" value="Next" onClick="return fs(this,'DoNext')">
+										##TP_ENDIF##
+										<input type="button" value="New Search" onClick="return fs(this,'NewSearch')">
+										<input type="button" value="Get CSV" onclick="javascript:return csv(this,'DoCSV');" />
+									</th>
+								</tr>
+							</tfoot>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<input type="hidden" name="SubmitName"            value="">
+			<input type="hidden" name="action"                value="ADMIN::XSYSSUB::DoSubQuery">
+			<input type="hidden" name="cust_id"               value="##TP_cust_id##">
+			<input type="hidden" name="username"              value="##TP_username##">
+			<input type="hidden" name="case_insens"           value="##TP_case_insens##">
+			<input type="hidden" name="first_name"            value="##TP_acct_no##">
+			<input type="hidden" name="last_name"             value="##TP_last_name##">
+			<input type="hidden" name="email"                 value="##TP_email##">
+			<input type="hidden" name="acct_no"               value="##TP_acct_no##">
+			<input type="hidden" name="date_from"             value="##TP_date_from##">
+			<input type="hidden" name="date_to"               value="##TP_date_to##">
+			<input type="hidden" name="system_id"             value="##TP_system_id##">
+			<input type="hidden" name="system_name"           value="##TP_system_name##">
+			<input type="hidden" name="ext_sub_id"            value="##TP_ext_sub_id##">
+			<input type="hidden" name="status"                value="##TP_status##">
+			<input type="hidden" name="items_per_page"        value="##TP_items_per_page##">
+			<input type="hidden" name="curr_max_cr_date"      value="##TP_curr_max_cr_date##">
+			<input type="hidden" name="curr_min_cr_date"      value="##TP_curr_min_cr_date##">
+			<input type="hidden" name="curr_last_sub_id"      value="##TP_curr_last_sub_id##">
+			<input type="hidden" name="curr_first_sub_id"     value="##TP_curr_first_sub_id##">
+			<input type="hidden" name="page_no"               value="##TP_page_no##">
+		</form>
+	</body>
+</html>

@@ -1,0 +1,69 @@
+<html>
+<!-- $Id: regions.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+
+<title>Regions</title>
+
+</head>
+
+<script>
+function fs(b)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.submit();
+	return true;
+}
+</script>
+
+<body>
+
+<table border=0 cellspacing=0 cellpadding=2 bgcolor=#cccccc>
+<tr>
+	<th class=title colspan=3>
+		Regions
+	</th>
+</tr>
+
+<tr>
+	<th nowrap class=colhead>Name</th>
+	<th nowrap class=colhead>Status</th>
+	<th nowrap class=colhead>Languages</th>
+</tr>
+
+##TP_IF {[tpGetVar num_regions 0] > 0}##
+
+##TP_LOOP region_idx {[tpGetVar num_regions 0]}##
+	<tr class="##TP_TCL {string map { "A" "active" "S" "suspended" } [tpBindGet region_status ] }##">
+		<td><a href="##TP_CGI_URL##?action=ADMIN::REGION::GoRegion&region_id=##TP_region_id##">##TP_region_name##</a></td>
+		<td>##TP_region_status##</td>
+		<td>##TP_region_languages##</td>
+	</tr>
+
+##TP_ENDLOOP##
+
+##TP_ELSE##
+
+<tr>
+
+	<td>No regions found</td>
+
+</tr>
+
+##TP_ENDIF##
+
+<tr>
+	<th class=buttons colspan=3>
+	<form action="##TP_CGI_URL##" method=get>
+	<input type=button class="btn_def" value="Add Region" onClick="return fs(this)">
+	</th>
+	<input type=hidden name=action value=ADMIN::REGION::GoRegion>
+	</form>
+</tr>
+
+</body>
+
+
+</html>

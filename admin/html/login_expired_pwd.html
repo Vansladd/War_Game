@@ -1,0 +1,126 @@
+<html>
+<!-- $Id: login_expired_pwd.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	##TP_IF {[tpGetVar FuncOffice 0]}##
+		<script src="##TP_OFFICE_STATIC_URL##/js/package.js" language="javascript" type="text/javascript"></script>
+		<script src="##TP_OFFICE_STATIC_URL##/js/base.js" language="javascript" type="text/javascript"></script>
+		<style type="text/css">
+			@import "##TP_OFFICE_STATIC_URL##/css/base.css";
+			body {
+				color: black;
+			}
+			#adminLogin table {
+				border: solid 1px #cecece;
+			}
+			#adminLogin table table {
+				border: none;
+			}
+			#adminLoginTitle {
+				font-size: 14px;
+				font-weight: bold;
+			}
+			#adminLoginTitle span {
+				color: red;
+			}
+			td.adminLoginDesc {
+				font-size: 10px;
+			}
+			td.adminLoginButton {
+				padding-top: 10px;
+			}
+		</style>
+	##TP_ELSE##
+		<style type="text/css">
+			body {
+				background-color: black;
+				font-family: verdana, arial, helvetica;
+				color: white;
+			}
+			#adminLoginTitle span {
+				color: orange;
+			}
+			#adminLoginTitle {
+				font-size: 24px;
+			}
+			#adminLoginTitle span {
+				padding-bottom: 20px;
+			}
+			td.adminLoginButton {
+				padding-top: 20px;
+			}
+		</style>
+	##TP_ENDIF office##
+	<style type="text/css">
+		#adminLogin {
+			padding: 35px 0 0 60px;
+		}
+		#adminLoginTitle {
+			padding-bottom: 20px;
+		}
+		td.adminLoginButton {
+			text-align: left;
+		}
+		td.adminLoginDesc {
+			text-align: right;
+			font-weight: bold;
+			padding-right: 10px;
+		}
+	</style>
+	<title>Openbet Administrator Login</title>
+
+	<script type="text/javascript" language="javascript">
+		function bodyInit() {
+			document.getElementById('username').focus();
+			##TP_IF {[tpGetVar FuncOffice 0]}##
+				officePaneTarget('loginForm');
+			##TP_ENDIF##
+		}
+	</script>
+
+</head>
+<body onLoad="javascript:bodyInit()">
+	<div id="adminLogin">
+		##TP_PLAY error_rpt.html##
+		<table border=0 cellpadding=0 cellspacing=0 style="width: 271px;">
+			<tr>
+				<td id="adminLoginTitle">
+					##TP_IF {[tpGetVar Error 0]}##
+						<span>##TP_ErrorMessage##</span><br />
+					##TP_ENDIF##
+					Please provide your current username and password
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<form id="loginForm" name="Login" ACTION="##TP_CGI_URL##" method=post target=_top>
+						<table border=0 cellpadding=0 cellspacing=0>
+							<tr>
+								<td class="adminLoginDesc">Username</td>
+								<td>
+									<input type="text" name="username" id="username" value="" size=20 maxlength=32>
+								</td>
+							</tr>
+							<tr>
+								<td class="adminLoginDesc">Password</td>
+								<td>
+									<input type="password" name="password" value="" size=20 maxlength=32>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td class="adminLoginButton">
+									<input type=submit value="Login">
+								</td>
+							</tr>
+						</table>
+					<input type=hidden name=loginuid value="##TP_LoginUID##">
+					<input type=hidden name=SubmitName value="Login">
+					<input type=hidden name=action value=ADMIN::LOGIN::DoLogin>
+					</form>
+				<td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

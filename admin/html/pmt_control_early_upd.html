@@ -1,0 +1,58 @@
+<html>
+<!-- $Id -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Payment Control</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+
+<form name="upd_limit" method="POST" action="##TP_CGI_URL##">
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>Early Payment Settings for ##TP_PayMthd##</th>
+</tr>
+
+<tr>
+	<th nowrap class="caption">First Wtd Period (hours)</th>
+	<td nowrap><input type="text" size="12" name="Period" value="##TP_Period##"></td>
+</tr>
+<tr>
+	<th nowrap class="caption">Max Amount</th>
+	<td nowrap><input type="text" size="12" name="MaxAmount" value="##TP_MaxAmount##"></td>
+</tr>
+<tr>
+	<th nowrap class="caption">Time Between Witdrawals</th>
+	<td nowrap><input type="text" size="12" name="TimeBetweenWtds" value="##TP_TimeBetweenWtds##"></td>
+</tr>
+<tr>
+	<td colspan=2 nowrap>
+		<input type="button" name="UpdBtn" value="Submit" onClick="return fs(this,'UpdEarly')">
+		<input type="button" name="DelBtn" value="Remove" onClick="return fs(this,'DelEarly')">
+		<input type="button" name="Back"   value="Back"   onClick="return fs(this,'Back')">
+	</td>
+</tr>
+
+<input type="hidden" name="PayMthd" value="##TP_PayMthd##">
+<input type="hidden" name="action" value="ADMIN::PMT_CONTROL::DoControl">
+<input type="hidden" name="SubmitName" value="">
+</form>
+
+
+
+</table>
+
+
+</body>
+</html>

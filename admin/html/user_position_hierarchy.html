@@ -1,0 +1,84 @@
+##TP_COMMENT $Id: user_position_hierarchy.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $##
+##TP_COMMENT $Name: RC_Training $##
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>User Position Hierarchy</title>
+</head>
+<body bgcolor="#000000">
+  <table cellpadding="2" cellspacing="0" border="0">
+    <tr>
+      <th class="title">Position Hierarchy</th>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>ROOT</td>
+    </tr>
+    <tr>
+      <td>
+        <table cellspacing="0" cellpadding="0" border="0" >
+          ##TP_LOOP row_idx {[tpGetVar nrows]}##
+          <tr height="11">
+            ##TP_LOOP col_idx {[tpGetVar ncols]}##
+              <td>
+              ##TP_TCL {tpSetVar branch $POSN_DESC_ARRAY([tpGetVar row_idx],[tpGetVar col_idx],branching)}##
+              ##TP_IF {[tpGetVar branch]=="-"}##
+                ##TP_IF {[tpGetVar unfinished]}##
+                  ##TP_TCL {tpSetVar branch CO}##
+                ##TP_ELSE##&nbsp;##TP_ENDIF##
+              ##TP_ENDIF##
+              ##TP_IF {[tpGetVar branch]!="-"}##
+              <table height="11" width="100%" border="0" cellspacing="0" cellpadding="0" >
+                <tr height="5">
+                  <td width="15%"><img src="##TP_GIF_URL##/spacer.gif" border="0" height="5" width="1" /></td>
+                  <td width="1"##TP_IF {[tpGetVar branch] == "FC" || [tpGetVar branch] == "OC"}## bgcolor="#10137c"##TP_ENDIF##><img src="##TP_GIF_URL##/spacer.gif" border="0" height="5" width="1" /></td>
+                  <td width="85%"><img src="##TP_GIF_URL##/spacer.gif" border="0" height="5" width="1" /></td>
+                </tr>
+                <tr height="1">
+                  <td width="15%"##TP_IF {[tpGetVar branch] == "LC" || [tpGetVar branch] == "NC" || [tpGetVar branch] == "CO"}## bgcolor="#10137c"##TP_ENDIF##><img src="##TP_GIF_URL##/spacer.gif" border="0" height="1" width="1" /></td>
+                  <td width="1" bgcolor="#10137c"><img src="##TP_GIF_URL##/spacer.gif" border="0" height="1" width="1" /></td>
+                  <td width="85%"##TP_IF {[tpGetVar branch] == "FC" || [tpGetVar branch] == "NC" || [tpGetVar branch] == "CO"}## bgcolor="#10137c"##TP_ENDIF##><img src="##TP_GIF_URL##/spacer.gif" border="0" height="1" width="1" /></td>
+                </tr>
+                <tr height="5">
+                  <td width="15%"><img src="##TP_GIF_URL##/spacer.gif" border="0" height="5" width="1" /></td>
+                  <td width="1"##TP_IF {[tpGetVar branch] != "CO"}## bgcolor="#10137c"##TP_ENDIF##><img src="##TP_GIF_URL##/spacer.gif" border="0" height="5" width="1" /></td>
+                  <td width="85%"><img src="##TP_GIF_URL##/spacer.gif" border="0" height="5" width="1" /></td>
+                </tr>
+              </table>
+              ##TP_COMMENT may need to extend automatically branch over areas without children. ("CO" means 'continue')##
+              ##TP_TCL {if {[tpGetVar branch]=="FC" || [tpGetVar branch]=="NC" || [tpGetVar branch] == "CO"} {
+                tpSetVar unfinished 1
+                } else {
+                tpSetVar unfinished 0}
+              }##
+              ##TP_ENDIF##
+              </td>
+            ##TP_ENDLOOP##
+          </tr>    
+          <tr>
+            ##TP_LOOP col_idx {[tpGetVar ncols]}##
+            <td>
+              ##TP_IF {$POSN_DESC_ARRAY([tpGetVar row_idx],[tpGetVar col_idx],branching)!="-"}##<a href="##TP_CGI_URL##?action=ADMIN::USERS::GoPosition&PositionId=##TP_PositionId##">##TP_ENDIF##
+              ##TP_PositionName####TP_IF {$POSN_DESC_ARRAY([tpGetVar row_idx],[tpGetVar col_idx],branching)!="-"}##</a>##TP_ENDIF##&nbsp;&nbsp;
+            </td>
+            ##TP_ENDLOOP##
+          </tr>
+          ##TP_ENDLOOP##
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>&nbsp</td>
+    </tr>
+    <tr>
+      <th class="buttons">  
+        <input type="button" class="btn_def" value="Back" onClick="window.location='##TP_CGI_URL##?action=ADMIN::USERS::GoUsers'" />
+        <input type="button" class="btn_def" value="Add New Admin Position" onClick="window.location='##TP_CGI_URL##?SubmitName=AddPosition&action=ADMIN::USERS::GoPosition'" />
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -1,0 +1,13 @@
+##TP_COMMENT $Id: error_rpt.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $##
+##TP_COMMENT Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.##
+
+##TP_IF {[tpGetVar IsError 0]}##
+<table cellspacing=0 cellpadding=3 border=0>
+<tr class=infono>
+	<td>&nbsp;&nbsp;
+	<b>An error occurred: ##TP_ErrMsg## ##TP_ERROR## ##TP_ErrorSite##</b>
+	&nbsp;&nbsp;</td>
+</tr>
+</table>
+<br>
+##TP_ENDIF##

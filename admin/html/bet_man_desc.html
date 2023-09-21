@@ -1,0 +1,227 @@
+<html>
+<!-- $Id: bet_man_desc.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script language="JavaScript">
+isIe4=true;
+if (navigator.appName=="Netscape") {
+   isIe4=false;
+}
+
+var evclass=Array();
+var evclassid=Array();
+var evclassidsel;
+var evtype=Array();
+var evtypeid=Array();
+var evtypeclassid=Array();
+var evtypeidsel;
+
+
+	evclass[0]="None";
+	evclassid[0]="";
+	##TP_LOOP evclass_idx {[tpGetVar NumEvClass]}##
+	evclass[##TP_TCL {tpGetVar evclass_idx}##+1]="##TP_EvClass##";
+	evclassid[##TP_TCL {tpGetVar evclass_idx}##+1]="##TP_EvClassId##";
+	##TP_ENDLOOP##         
+	evclassidsel="##TP_EvClassSel##";
+
+	##TP_LOOP evtype_idx {[tpGetVar NumEvType]}##
+	evtype[##TP_TCL {tpGetVar evtype_idx}##]="##TP_EvType##";
+	evtypeid[##TP_TCL {tpGetVar evtype_idx}##]="##TP_EvTypeId##";
+	evtypeclassid[##TP_TCL {tpGetVar evtype_idx}##]="##TP_EvTypeClassId##";
+	##TP_ENDLOOP##         
+	evtypeidsel="##TP_EvTypeSel##";
+
+	<!-- Build the event type option box, by filtering event types on the -->
+	<!-- passed event class id -->
+	function build_evtype_list(class_id) {
+		var i;
+		var tmp;
+		// empty out select box
+		var length=document.bet_man_desc.evtypeid.options.length;
+		for (i=0; i<length; i++) {
+			if (isIe4) {
+				document.bet_man_desc.evtypeid.options.remove(0);
+			} else {
+				document.bet_man_desc.evtypeid.options[0]=null;
+			}
+		}
+		// rebuild select box
+		var count=0;
+		for (i=0; i<evtype.length; i++) {
+			if (evtypeclassid[i] == class_id) {
+				if (isIe4) {
+					var tmp=document.createElement("OPTION");
+					tmp.text=evtype[i];
+					tmp.value=evtypeid[i];
+					document.bet_man_desc.evtypeid.options.add(tmp);
+				} else {
+					document.bet_man_desc.evtypeid.options[count++]=new Option(evtype[i],evtypeid[i],false,false);
+				}
+			}
+		}
+		document.bet_man_desc.evtypeid.selectedIndex=0;
+	}
+
+var voidBets = "";
+function fs(b,t) 
+{	  
+	if (t == "GoManualBetDescUpd") {
+		var r = confirm("Update Manual Bet Description ?");
+		if (r == false){
+			return false; 
+		} else {
+			var s = b.form.current.value;
+			if (s.length > 1020){
+				alert("Description text is too long (1020 max).");
+				return false;
+			}
+			b.disabled = true;
+			b.value = "Busy...";
+			b.form.SubmitName.value=t;
+			b.form.submit();
+			return true;
+		}
+	} else {
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+}
+</script>
+</head>
+<body>
+<form name="bet_man_desc" method=post action=##TP_CGI_URL##>
+<table cellspacing=0 cellpadding=2 border=0>
+##TP_IF {![tpGetVar FromPmt 0]}##
+<input type=hidden name="SR_UseSub" value="##TP_SR_UseSub##">
+<input type=hidden name="SR_Customer" value="##TP_SR_Customer##">
+<input type=hidden name="SR_UpperCust" value="##TP_SR_UpperCust##">
+<input type=hidden name="SR_FName" value="##TP_SR_FName##">
+<input type=hidden name="SR_LName" value="##TP_SR_LName##">
+<input type=hidden name="SR_Email" value="##TP_SR_Email##">
+<input type=hidden name="SR_AcctNo" value="##TP_SR_AcctNo##">
+<input type=hidden name="SR_Receipt" value="##TP_SR_Receipt##">
+<input type=hidden name="SR_CompNo" value="##TP_SR_CompNo##">
+<input type=hidden name="SR_BetDate1" value="##TP_SR_BetDate1##">
+<input type=hidden name="SR_BetDate2" value="##TP_SR_BetDate2##">
+<input type=hidden name="SR_StlDate1" value="##TP_SR_StlDate1##">
+<input type=hidden name="SR_StlDate2" value="##TP_SR_StlDate2##">
+<input type=hidden name="SR_Stake1" value="##TP_SR_Stake1##">
+<input type=hidden name="SR_Stake2" value="##TP_SR_Stake2##">
+<input type=hidden name="SR_Wins1" value="##TP_SR_Wins1##">
+<input type=hidden name="SR_Wins2" value="##TP_SR_Wins2##">
+<input type=hidden name="SR_Settled" value="##TP_SR_Settled##">
+<input type=hidden name="SR_BetTypeOp" value="##TP_SR_BetTypeOp##">
+<input type=hidden name="SR_BetType" value="##TP_SR_BetType##">
+<input type=hidden name="SR_Manual" value="##TP_SR_Manual##">
+<input type=hidden name="SR_GameType" value="##TP_SR_GameType##">
+<input type=hidden name="SR_BetBetPlacedFrom" value="##TP_SR_BetPlacedFrom##">
+##TP_ELSE##
+<input type=hidden name="SR_type" value="FromPmt">
+<input type="hidden" name="SR_username" value="##TP_SR_username##">
+<input type="hidden" name="SR_upper_username" value="##TP_SR_upper_username##">
+<input type="hidden" name="SR_fname" value="##TP_SR_fname##">
+<input type="hidden" name="SR_lname" value="##TP_SR_lname##">
+<input type="hidden" name="SR_email" value="##TP_SR_email##">
+<input type="hidden" name="SR_acct_no_exact" value="##TP_SR_acct_no_exact##">
+<input type="hidden" name="SR_acct_no" value="##TP_SR_acct_no##">
+<input type="hidden" name="SR_date_1" value="##TP_SR_date_1##">
+<input type="hidden" name="SR_date_2" value="##TP_SR_date_2##">
+<input type="hidden" name="SR_date_range" value="##TP_SR_date_range##">
+<input type="hidden" name="SR_status" value="##TP_SR_status##">
+<input type="hidden" name="SR_payment_sort" value="##TP_SR_payment_sort##">
+<input type="hidden" name="SR_channel" value="##TP_SR_channel##">
+<input type="hidden" name="SR_pay_mthd" value="##TP_SR_pay_mthd##">
+##TP_ENDIF##
+
+<input type=hidden name=action value=ADMIN::BET::GoManualBetDescUpd>
+<input type=hidden name=SubmitName value="">
+<input type="hidden" name="BetId" value="##TP_BetId##">
+<input type="hidden" name="batch_ref_id" value="##TP_BatchRefId##">
+<input type="hidden" name="man_only" value="##TP_ManOnly##">
+<input type="hidden" name="ManBetOrd" value="##TP_ManBetOrd##">
+<input type="hidden" name="BetDate1" value="##TP_BetDate1##">
+<input type="hidden" name="BetDate2" value="##TP_BetDate2##">
+##TP_IF {[tpGetVar DescUpd] == "1"}##
+<tr>
+	<th class=info colspan=3>Description Updated</th>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th class=title colspan=3>Manual Bet Description (Original)</th>
+</tr>
+<tr>
+	<td><textarea name="original" readonly wrap=virtual cols=80 rows=13>##TP_TempDesc##</textarea></td>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_MAN_BET_CLASS 0]}##
+<tr>         
+	<td>
+		<b>Event Class</b>
+		<select name="evclassid" onChange="build_evtype_list(parseInt(this.options[this.selectedIndex].value));">
+			<script language="JavaScript">
+				var output="";
+				var i;
+				for (i=0; i<evclass.length; i++) {
+					if (evclassidsel == evclassid[i])
+						output+="<option value="+evclassid[i]+" SELECTED>"+evclass[i]+"</option>";
+					else	
+						output+="<option value="+evclassid[i]+">"+evclass[i]+"</option>";
+				}
+				document.write(output);
+			</script>
+		</select>
+	</td>
+</tr>
+<tr>         
+	<td>	
+		<b>Event Type</b>
+		<select name="evtypeid">
+			<script language="JavaScript">
+				var output="";
+				var i=0;
+				for (i=0; i<evtype.length; i++) {
+					if (evtypeclassid[i] == evclassidsel) {
+						if (evtypeidsel == evtypeid[i])
+							output+="<option value="+evtypeid[i]+" SELECTED>"+evtype[i]+"</option>";
+						else
+							output+="<option value="+evtypeid[i]+">"+evtype[i]+"</option>";
+					}
+				}
+				document.write(output);
+			</script>
+		</select>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<td colspan=2>
+		<b>To Settle On:</b> <input type="text" name="ToStlAt" value="##TP_ToSettleAt##" size=10>
+		<br>
+		<br>
+	</td>
+</tr>
+<tr>
+	<th class=title colspan=3>Manual Bet Description (Configurable)</th>
+</tr>
+<tr>
+	<td><textarea name="current" wrap=virtual cols=80 rows=13>##TP_Desc##</textarea></td>
+</tr>
+<tr align="left">
+	<th class="buttons">
+		<input type=button class="btn_def" value="Update" name="UpdDesc" onClick="return fs(this,'GoManualBetDescUpd')" class="buttons">
+		<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')" class="buttons">
+		##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+		<input type=button class="btn_def" value="View Audit History" onClick="return fs(this,'GoAudit')">
+		<input type=hidden name=AuditInfo value="ManBet">
+		##TP_ENDIF##
+	</th>
+</tr>
+</table>
+</form>
+</body>
+</html>

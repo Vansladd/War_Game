@@ -1,0 +1,147 @@
+<html>
+<!-- $Id: email_body.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Email Manager</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+
+##TP_PLAY dynamic_text.js##
+
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function insertAtCursor(myField, myValue) {
+	//IE support
+	if (document.selection) {
+		myField.focus();
+		sel = document.selection.createRange();
+		sel.text = myValue;
+	}
+	//MOZILLA/NETSCAPE support
+	
+	else if (myField.selectionStart || myField.selectionStart == '0') {
+		var startPos = myField.selectionStart;
+		var endPos = myField.selectionEnd;
+		myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos, myField.value.length);
+	} else {
+		myField.value += myValue;
+	}
+}
+
+function checkformat () {
+	var bIE = document.all ? true:false;;
+	var makeVisible="block";
+	if(!bIE){
+		makeVisible="table-row";
+	}
+	obj=document.getElementById("char_count_row");
+	if (document.email_form.format.value == "S") {
+		obj.style.display=makeVisible;
+	} else {
+		obj.style.display="none";
+	}
+}
+
+function updatecount () {
+	changeHTML("char_count",document.email_form.body.value.length)
+}
+
+</script>
+</head>
+<body onload="checkformat();updatecount();">
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=9 class=title>
+	Email/SMS Body&nbsp;
+	</th>
+</tr>
+<form action="##TP_CGI_URL##" method="post" enctype="multipart/form-data" name=email_form>
+<input type=hidden name="language_old" value="##TP_language##">
+<input type=hidden name="format_old" value="##TP_format##">
+<tr>
+	<td class=caption>Language</td>
+	<td>
+		<select name=language>
+			##TP_LOOP lang_idx {[tpGetVar NumLangs]}##
+			<option ##TP_LangSel## value=##TP_LangCode##>##TP_LangName##</option>
+			##TP_ENDLOOP##
+		</select>
+	</td>
+	<td class=caption>Format</td>
+	<td><select name=format onChange="checkformat()">
+			<option ##TP_FormatSel_P## value="P">Plain Text</option>
+			<option ##TP_FormatSel_H## value="H">Html</option>
+			<option ##TP_FormatSel_S## value="S">SMS</option>
+		</select>
+	</td>
+</tr>
+<tr id="char_count_row" style="display:none;">
+	<td class=caption>Character count</td><td><div id="char_count"></div></td>
+</tr>
+<tr>
+	<td class=caption>Subject</td>
+	<td colspan="9"><input type="text" name="subject" value="##TP_subject##" size="60" maxlength="64"></td>
+</tr>
+<tr>
+	<td class=caption>Body</td>
+	<td colspan=9>
+	<textarea name="body" rows=12 cols=60 onkeypress="updatecount()">##TP_body##</textarea>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Insert Place Holder</td>
+	<td colspan=9>
+
+	<select name=placeholder>
+		##TP_LOOP pholder_idx {[tpGetVar NumPHolders]}##
+		<option value="##TP_pholder_code##">##TP_pholder_value##</option>
+		##TP_ENDLOOP##
+	</select>
+	
+	<BUTTON name="place_holder" value="place_holder" type="button" onclick="javascript:insertAtCursor(document.forms[0].body, forms[0].placeholder.value);">Insert Place Holder</BUTTON>
+	
+</td>
+</tr>
+
+
+<tr>
+	<th colspan=8 class=buttons>
+	<input type=hidden name="email_id" value="##TP_email_id##">
+	<input type=hidden name=action value="ADMIN::EMAILS::DoEmailBody">
+	##TP_IF {[op_allowed ManageEmails]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=button value="Add Email Body" onClick="return fs(this,'EmailBodyAdd')">
+		##TP_ELSE##
+			<input type=hidden name="body_id" value="##TP_body_id##">
+			<input type=button value="Modify Email Body" onClick="return fs(this,'EmailBodyMod')">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button value="Back" onClick="return fs(this,'Back')">
+	<input type=file name=uploadfile>
+	<input type=button value="Upload Email Template" onClick="return fs(this,'UploadEmail')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+</form>
+</table>
+<br>
+<br>
+
+
+
+</body>
+</html>

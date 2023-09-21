@@ -1,0 +1,74 @@
+##TP_COMMENT $Id: login.html,v 1.1 2011/10/04 12:37:26 xbourgui Exp $##
+##TP_COMMENT Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.##
+
+##TP_TCL -quiet {tpSetVar JS_LOGIN 1}##
+##TP_PLAY nav/header.html##
+
+<!-- Login -->
+##TP_IF {[tpGetVar OFFICE_MODAL_POPUP 0]}##
+	<div class="modalPopup" id="loginDivModal" style="display: none">
+##TP_ENDIF##
+<div class="popup" id="loginDiv" style="display:none">
+	<div class="popupTitle" id="loginTitle">##TP_OFFICE_LOGIN_TITLE##</div>
+##TP_IF {![tpGetVar FUNC_REMOTE_LOGIN 0]}##
+	<form name="loginForm" action="##TP_CGI_URL##" method="post" onSubmit="return checkSubmit(this,'ob_office::DoLogin',##TP_VAL_UNAME##)">
+		<input type="hidden" name="uid" value="##TP_uid##" />
+		<table class="popup" id="loginTable" cellspacing="0" cellpadding="0" border="0">
+			<tbody>
+				##TP_IF {[ob_office::err::get_total ob_office::DoLogin]}##
+					<tr>
+						<td class="popupError" colspan="2">
+							##TP_TCL {tpBufWrite [ob_office::err::get ob_office::DoLogin]}##
+						</td>
+					</tr>
+				##TP_ENDIF##
+				<tr>
+					<td class="popupDesc">Username</td>
+					<td class="popupValue">
+						<input type="text" name="username" value="##TP_username##"
+						       size="18" maxlength="32" id="loginUsername" />
+					</td>
+				</tr>
+				<tr>
+					<td class="popupDesc">Password</td>
+					<td class="popupValue">
+						<input type="password" name="password" value="" size="18" maxlength="32" />
+					</td>
+				</tr>
+				<tr>
+					<td class="popupButton" colspan="2">
+						<input type="submit" name="login" value="Login" />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+##TP_ELSE##
+	<table class="popup" id="loginTable" cellspacing="0" cellpadding="0" border="0">
+		<tbody>
+			##TP_IF {[ob_office::err::get_total ob_office::DoLogin]}##
+				<tr>
+					<td class="popupError" colspan="2">
+						##TP_TCL {tpBufWrite [ob_office::err::get ob_office::DoLogin]}##
+					</td>
+				</tr>
+			##TP_ENDIF##
+		</tbody>
+	</table>
+##TP_ENDIF##
+</div>
+##TP_IF {[tpGetVar OFFICE_MODAL_POPUP 0]}##
+	</div>
+##TP_ENDIF##
+
+<script language="javascript" type="text/javascript">
+
+	var fn = function() {
+		loginOpen();
+		return 1;
+	}
+	document.bodyOnLoad.push(fn);
+</script>
+<!-- End Login -->
+
+##TP_PLAY nav/footer.html##

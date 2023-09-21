@@ -1,0 +1,167 @@
+
+<script type="text/javascript">
+
+
+	var vrf_subtype_desc = new Array();
+	var vrf_subtype = new Array();
+
+	/* sub-types */
+	##TP_LOOP vrf_type_idx {[tpGetVar NumCustAgeVerTypes 0]}##
+		##TP_IF {[tpBindGet CustAgeVerNumSubTypes] != 0}##
+			vrf_subtype["##TP_CustAgeVerType##"]=new Array(##TP_LOOP vrf_subtype_idx {[tpBindGet CustAgeVerNumSubTypes]}##"##TP_CustAgeVerSubType##"##TP_IF {[tpGetVar vrf_subtype_idx]!=[expr {[tpBindGet CustAgeVerNumSubTypes]-1}]}##, ##TP_ENDIF####TP_ENDLOOP##);
+			vrf_subtype_desc["##TP_CustAgeVerType##"]=new Array(##TP_LOOP vrf_subtype_idx {[tpBindGet CustAgeVerNumSubTypes]}##"##TP_CustAgeVerSubTypeDesc##"##TP_IF {[tpGetVar vrf_subtype_idx]!=[expr {[tpBindGet CustAgeVerNumSubTypes]-1}]}##, ##TP_ENDIF####TP_ENDLOOP##);
+		##TP_ELSE##
+			vrf_subtype["##TP_CustAgeVerType##"]=new Array();
+			vrf_subtype_desc["##TP_CustAgeVerType##"]=new Array();
+		##TP_ENDIF##
+	##TP_ENDLOOP##
+
+	function updateCustAgeVerSubTypeList(_selected) {
+
+		var c = document.age_ver.av_status;
+		var opt = document.age_ver.av_reason_code.options;
+
+		var cId = c.options[c.selectedIndex].value;
+		var cName = c.options[c.selectedIndex].text;
+
+		// Delete everything
+		opt.length=0;
+
+		if (vrf_subtype[cId]) {
+
+			opt[opt.length] = new Option( "n/a" , "" );
+
+			var nm = vrf_subtype_desc[cId];
+
+			if (!nm) {
+				return
+			}
+
+			var id = vrf_subtype[cId];
+
+			for (i=0;i<nm.length;i++) {
+				if (_selected == id[i]) {
+					var sel_opt = i+1
+				}
+
+				opt[opt.length] = new Option( nm[i], id[i] );
+			}
+
+			document.age_ver.av_reason_code.style.display = "";
+
+		} else {
+			opt[opt.length] = new Option( "No available subtypes." , "" );
+		}
+
+		if (sel_opt) {
+			opt.selectedIndex = sel_opt;
+		} else {
+			opt.selectedIndex = 0;
+		}
+	}
+
+
+
+	function age_ver_fs(b,t)
+	{
+		var status = b.form.av_status.value;
+		var reason = b.form.av_reason_code.value;
+
+		if (status == 'N') {
+			alert("A status of 'Nothing' can only be set by the system");
+			return;
+		}
+
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.submit();
+		return true;
+	}
+</script>
+
+<form action="##TP_CGI_URL##" method="post" name="age_ver">
+<input type="hidden" name="action" value="ADMIN::VERIFICATION::DoCust"/>
+<input type="hidden" name="CustId" value="##TP_CustId##"/>
+<table border="0" cellspacing="0" cellpadding="3">
+	<thead>
+		<tr>
+			<th colspan="2" class="title">Age Verification Status</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<tr>
+			<td class="caption">Status</td>
+			<td>
+				##TP_IF {[op_allowed VrfAgeManage]}##
+					<select name="av_status" onchange="updateCustAgeVerSubTypeList()">
+						<script type="text/javascript">
+							write_select('##TP_CustAgeVerStatus##','N','N/A','A','Activated','P','Restricted','S','Suspended','U','Underage');
+						</script>
+					</select>
+				##TP_ELSE##
+					<script type="text/javascript">
+							write_which('##TP_CustAgeVerStatus##','N','N/A','A','Activated','P','Restricted','S','Suspended','U','Underage');
+					</script>
+				##TP_ENDIF##
+			</td>
+		</tr>
+		<tr>
+			<td class="caption">Reason</td>
+			<td>
+				##TP_IF {[op_allowed VrfAgeManage]}##
+					<select name="av_reason_code">
+						<script type="text/javascript">
+							write_select('##TP_CustAgeVerReason##','','N/A'
+								##TP_LOOP vrf_type_idx {[tpGetVar NumCustAgeVerTypes 0]}##
+									,'##TP_CustAgeVerType##','##TP_CustAgeVerDesc##'
+								##TP_ENDLOOP##
+							);
+						</script>
+					</select>
+				##TP_ELSE##
+					<script type="text/javascript">
+						write_which('##TP_CustAgeVerReason##','','N/A'
+							##TP_LOOP vrf_type_idx {[tpGetVar NumCustAgeVerTypes 0]}##
+								,'##TP_CustAgeVerType##','##TP_CustAgeVerDesc##'
+							##TP_ENDLOOP##
+						);
+					</script>
+				##TP_ENDIF##
+				<script type="text/javascript">
+					updateCustAgeVerSubTypeList('##TP_CustAgeVerReason##');
+				</script>
+
+				&nbsp;<select name="SubType" id="SubType" style="display:none">
+						<option value="">n/a</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="caption">Notes</td>
+			<td>
+				##TP_IF {[op_allowed VrfAgeManage]}##
+					<textarea name="av_notes" cols="40" rows="4">##TP_CustAgeVerNotes##</textarea>
+				##TP_ELSE##
+					##TP_notes##
+				##TP_ENDIF##
+			</td>
+		</tr>
+		##TP_IF {[op_allowed VrfAgeManage]}##
+			<tr>
+				<td class="buttons" colspan="1">
+					<input type="button" value="Update" onClick="return age_ver_fs(this)"/>
+				</td>
+		##TP_ELSE##
+			<tr>
+		##TP_ENDIF##
+			<input type=hidden name=AuditInfo value="">
+			<input type=hidden name=SubmitName value="">
+			<td class="buttons" colspan="1">
+				<input type="button" value="View AV history" onClick="return doAudit('ageVerCust', this)"/>
+			</td>
+		</tr>
+	</tbody>
+
+</table>
+</form>

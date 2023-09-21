@@ -1,0 +1,78 @@
+##TP_PLAY error_rpt.html##
+
+##TP_IF {[tpGetVar EvResConfStl 0]}##
+	<h3><font color=green>Result confirmed for ##TP_NumConf## events.</font></h3>
+	<h3><font color=green>Result unconfirmed for ##TP_NumUnconf## events.</font></h3>
+	<h3><font color=green>Number of events settled is ##TP_NumStl##.</font></h3>
+##TP_ENDIF##
+
+<form name=DoEvConfStl method=get action="##TP_CGI_URL##">
+
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::AUTOCONF::DoEvConfStl>
+<input type=hidden name=TypeId value="##TP_TypeId##">
+<input type=hidden name=CSort  value="##TP_CSort##">
+<input type=hidden name=date_lo  value="##TP_date_lo##">
+<input type=hidden name=date_hi  value="##TP_date_hi##">
+
+<table border=0 cellspacing=0 cellpadding=2>
+<tr>
+	<th class=title colspan=10>
+	Result Confirmation / Settlement:&nbsp;
+    ##TP_ClassName##,&nbsp;##TP_TypeName##
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Event</th>
+	<th class=colhead>Result</th>
+	<th class=colhead>Score</th>
+	<th class=colhead>HT/FT</th>
+	<th class=colhead>Markets</th>
+	<th class=colhead>Action</th>
+	<th class=colhead>Status</th>
+</tr>
+##TP_LOOP ev_idx {[tpGetVar NumEvents]}##
+<tr>
+	<td nowrap>
+	<a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_EVENT_ID##">##TP_EVENT_NAME##</a>
+	</td>
+	<td>##TP_EVENT_RESULT##</td>
+	<td>##TP_EVENT_SCORE##</td>
+	<td>##TP_EVENT_HTFT##</td>
+	<td>
+	<script>
+		write_mkt_tr('N','N','-','##TP_EVENT_UNRESULTED##');
+		write_mkt_tr('N','N','*','##TP_EVENT_UNCONFIRMED##');
+		write_mkt_tr('N','Y','-','##TP_EVENT_UNSETTLED##');
+		write_mkt_tr('Y','Y','-','##TP_EVENT_SETTLED##');
+	</script>
+	</td>
+	<td>
+	<select name="E##TP_EVENT_ID##">
+	<script>
+	write_select('##TP_ACTCODE##',##TP_ACTOPTIONS##);
+	</script>
+	</select>
+	</td>
+	<td>##TP_STATUS##</td>
+</tr>
+##TP_ENDLOOP##
+<tr>
+    <th colspan=10 class=buttons>
+    <table border=0 cellspacing=0 cellpadding=0 width=100%>
+    <tr>
+        <th width=75% class=buttons>
+        <input type=button class="btn_def" value="GO"   onClick="return fs(this,'EvConfStl')">
+        <input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+        </th>
+    </tr>
+    </table>
+    </th>
+</tr>
+</table>
+
+</form>
+
+</body>
+
+</html>

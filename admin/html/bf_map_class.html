@@ -1,0 +1,17 @@
+
+<tr>
+	<td class=caption>Betfair Account</td>
+	<td>
+	<select name= "BF_Account">
+		<option value = "" >-</option>
+		##TP_LOOP bf_acct_idx {[tpGetVar AcctRows]}##
+			##TP_IF {[tpBindGet status] == "A"}##
+				<option value = "##TP_id##" ##TP_IF {[tpBindGet BFAcctId] == [tpBindGet id]}## selected ##TP_ENDIF##>
+					##TP_Name##
+				</option>
+			##TP_ENDIF##
+		##TP_ENDLOOP##	
+	</select>
+	</td>
+</tr>
+<input type=hidden name=BFAcctId value="##TP_BFAcctId##">

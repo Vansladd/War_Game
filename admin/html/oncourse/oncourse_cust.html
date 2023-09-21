@@ -1,0 +1,136 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- $Id: oncourse_cust.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##" />
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>On-Course Summary</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+##TP_PLAY upload/JS_CheckFileName.html##
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<form method="post" action="##TP_CGI_URL##" enctype="multipart/form-data">
+<input type="hidden" name="returl" value="##TP_CGI_URL##" />
+<input type="hidden" name="retaction" value="ADMIN::ONCOURSE::GoOnCourse" />
+<input type="hidden" name="action" value="ADMIN::ONCOURSE::DoOnCourse">
+<input type="hidden" name="SubmitName" value="download_punters">
+<table style="spacing:1px; border:none padding:1px;">
+<tr>
+	<th colspan="3" class="title">
+	Download On-Course Punters File
+	</th>
+</tr>
+
+<tr>
+	<td class=caption>Destination</td>
+	<td>##TP_DownloadPunterPath##</a></td>
+	<td><input type="submit" class="btn_def" name="DoIt" value="Download File"/></td>
+</tr>
+</table>
+</form>
+
+
+<form method="post" action="##TP_CGI_URL##" enctype="multipart/form-data" onsubmit="return checkFileName(this.filename.value);">
+<input type="hidden" name="returl" value="##TP_CGI_URL##" />
+<input type="hidden" name="retaction" value="ADMIN::ONCOURSE::GoOnCourse" />
+<input type="hidden" name="action" value="ADMIN::ONCOURSE::DoOnCourse">
+<input type="hidden" name="SubmitName" value="upload_punters">
+<table style="spacing:1px; border:none padding:1px;">
+<tr>
+	<th colspan="2" class="title">
+		Upload OnCourse Punters File
+	</th>
+</tr>
+<tr>
+	<td class="caption">
+		Filename
+	</td>
+	<td>
+		<input type="hidden" name="filetype" value="oncourse">
+		<input type="file" name="filename" size="40" />
+	</td>
+</tr>
+<tr>
+	<th colspan="2" class="buttons">
+	<input type="submit" class="btn_def" name="DoIt" value="Upload File" />
+	</th>
+</tr>
+</table>
+</form>
+
+
+
+<br />
+<b>Notes</b><br />
+Files to be uploaded must be in <a href="#CSV">CSV</a> format. <br />
+The First Line of the file must be the ID of the Track ("GENERAL" will add to all tracks)<br/>
+The row formats are as follows: <br />
+<br />
+
+<table style="spacing:1px; border:none padding:1px;">
+<tr>
+	<th colspan="5" class="title">
+	OnCourse Punters Row Formats
+	</th>
+</tr>
+<tr>
+	<th class="colhead">Meeting Name </th>
+	<th class="colhead">Details of Punter</th>
+</tr>
+<tr>
+	<td valign="top" style="text-align:left;">
+		<ol>
+			<li>Meeting Name*</li>
+			* Must be first row
+		</ol>
+	</td>
+
+	<td valign="top" style="text-align:left;">
+		<ol>
+			<li>Account ID</li>
+			<li>Title</li>
+			<li>Initials</li>
+			<li>Last Name</li>
+		</ol>
+	</td>
+</tr>
+</table>
+
+
+<br />
+<table style="spacing:1px; border:none padding:1px;">
+<tr>
+	<th colspan="5" class="title">
+	On-Course Punters
+	</th>
+</tr>
+<tr>
+	<th class="colhead">Punter Name</th>
+	<th class="colhead">Acct #</th>
+	<th class="colhead">Remove from List</th>
+</tr>
+##TP_LOOP punterIndex {[tpGetVar numPunters]}##
+<tr>
+	<td>##TP_CustTitle## ##TP_CustFInit## ##TP_CustMInit## ##TP_CustLName##</td>
+	<td>##TP_CustAcctNo##</td>
+	<td><a HREF="##TP_CGI_URL##?action=ADMIN::ONCOURSE::DoOnCourse&SubmitName=remove_punter&acct_no=##TP_CustAcctNo##">[remove]</a></td>
+</tr>
+##TP_ENDLOOP##
+</table>
+<br /><br />
+<a name="CSV"><b>CSV Files</b></a><br />
+<p>A CSV file is a comma-separated file. Fields which themselves contain commas need to be enclosed in double quotes.</p>
+
+
+</body>
+</html>

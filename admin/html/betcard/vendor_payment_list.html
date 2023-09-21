@@ -1,0 +1,190 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+
+<script>
+function write_resolve_link(status, type, id){
+	if(status=='P' && type == 'VW'){
+		url = "\"##TP_CGI_URL##?action=ADMIN::BETCARD::GoReconcilePayment&vendor_pmt_id=" +id+ "\"";
+		
+		document.writeln("<a href='javascript:open_puw(" +url+ ", 350,110)' class='type_" +type+ "'>Resolve</a>");
+	} else {
+		document.writeln('&nbsp;');
+	}
+}
+
+// Open pop-up
+function open_puw(url,sx,sy) {
+	puw = null;
+	puw = window.open(url, 'puw', 'status=yes,scrollbars=yes,height='+sy+',width='+sx+',screenX=20,screenY=20');
+	if (puw && puw.focus) puw.focus();
+	return;
+}
+
+function write_status(status){
+	if (status=='P') {
+		document.writeln('Pending');
+	} else if (status=='C') {
+		document.writeln('Complete');
+	} else if (status=='R') {
+		document.writeln('Rejected');
+	} else {
+		document.writeln('&nbsp;');
+	}
+}
+
+function write_type(type){
+	if (type=='CP') {
+		document.writeln('Customer Purchase');
+	} else if (type=='CW') {
+		document.writeln('Customer Withdrawal');
+	} else if (type=='VP') {
+		document.writeln('Vendor Purchase');
+	} else if (type=='VW') {
+		document.writeln('Vendor Withdrawal');
+	} else if (type=='BT') {
+		document.writeln('Balance Transfer');
+	} else if (type=='SC') {
+		document.writeln('Suspended Betcard');
+	} else if (type=='LR') {
+		document.writeln('Vendor Refund');
+	} else if (type=='LW') {
+		document.writeln('Ladbrokes Withdrawal');
+	} else if (type=='MD') {
+		document.writeln('Man Adj (deposist)');
+	} else if (type=='MW') {
+		document.writeln('Man Adj (withdrawal)');
+	} else {
+		document.writeln('&nbsp;');
+	}
+}
+
+</script>
+
+<STYLE TYPE="text/css" MEDIA=screen>
+<!--
+  .type_CP { background-color:#33ccff;color:black; }
+  .type_CW { background-color:#FFFF99;color:black; }
+  .type_VP { color:black; }
+  .type_VW { background-color:#9900cc;color:white; }
+  
+  
+  .type_BT { background-color:#cc9966;color:black; }
+  .type_SC { background-color:#003399;color:white; }
+  
+  
+  .type_LR { background-color:#ffffff;color:black; }
+  .type_LW { background-color:#CCFF99;color:black; }
+  .type_MD { background-color:#FFCCFF;color:black; }
+  .type_MW { background-color:#cccc00;color:black; }
+  .status_P { color:orange; }
+  .status_C { color:green; }
+  .status_R { color:red; }
+-->
+</STYLE>
+
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th colspan=16 class=title>
+	Payment search results
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Reconcile</th>
+	<th nowrap class=colhead>Vendor Username</th>
+	<th nowrap class=colhead>Date</th>
+	<th nowrap class=colhead>Status</th>
+	<th nowrap class=colhead>Type</th>
+	<th nowrap class=colhead>Amount</th>
+	<th nowrap class=colhead>Commission</th>
+	<th nowrap class=colhead>Completed</th>
+	<th nowrap class=colhead>Completed By</th>
+	<th nowrap class=colhead>Rejected</th>
+	<th nowrap class=colhead>Rejected By</th>
+	<th nowrap class=colhead>Rejected Reason</th>
+	<th nowrap class=colhead>Adjustmeent Reason</th>
+</tr>
+##TP_IF {[tpGetVar NumPayments 0]==0}##
+<tr>
+	<td colspan=16 align=center>
+	No payments match your search criteria
+	</td>
+</tr>
+##TP_ELSE##
+##TP_LOOP vendor_pmt_idx {[tpGetVar NumPayments]}##
+
+<tr class="type_##TP_pmt_type##">
+	
+	<td><script>write_resolve_link("##TP_status##", "##TP_pmt_type##", "##TP_vendor_pmt_id##")</script></td>
+	<td>##TP_vendor_uname##</td>
+	<td>##TP_cr_date##</td>
+	<td class="status_##TP_status##"><script>write_status("##TP_status##")</script></td>
+	<td><script>write_type("##TP_pmt_type##")</script></td>
+	<td>##TP_amount##</td>
+	<td>##TP_commission##</td>
+	<td>##TP_completed_date##</td>
+	<td>##TP_completed_by_name##</td>
+	<td>##TP_rejected_date##</td>
+	<td>##TP_rejected_by_name##</td>
+	<td>##TP_rejected_reason##</td>
+	<td>##TP_adjustment_reason##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ENDIF##
+</table>
+
+<br>
+<br>
+
+<table>
+	<tr><td colspan=2 class=caption>Key</td></tr>
+	
+	<tr class="type_CP">
+	<td><script>write_type("CP")</script></td>
+	</tr>
+	
+	<tr class="type_CW">
+	<td><script>write_type("CW")</script></td>
+	</tr>
+	
+	<tr class="type_VP">
+	<td><script>write_type("VP")</script></td>
+	</tr>
+	
+	<tr class="type_VW">
+	<td><script>write_type("VW")</script></td>
+	</tr>
+	
+	<tr class="type_BT">
+	<td><script>write_type("BT")</script></td>
+	</tr>
+	
+	<tr class="type_SC">
+	<td><script>write_type("SC")</script></td>
+	</tr>
+	
+	<tr class="type_LR">
+	<td><script>write_type("LR")</script></td>
+	</tr>
+	
+	<tr class="type_LW">
+	<td><script>write_type("LW")</script></td>
+	</tr>
+	
+	<tr class="type_MD">
+	<td><script>write_type("MD")</script></td>
+	</tr>
+	
+	<tr class="type_MW">
+	<td><script>write_type("MW")</script></td>
+	</tr>
+</table>
+
+</body>
+</html>

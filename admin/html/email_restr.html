@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- $Id: email_restr.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##" />
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>E-Mail Address Restrictions</title>
+</head>
+
+
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<form method="post" action="##TP_CGI_URL##" enctype="multipart/form-data">
+<input type="hidden" name="returl" value="##TP_CGI_URL##" />
+<input type="hidden" name="retaction" value="ADMIN::EMAIL_RESTR::Go" />
+<input type="hidden" name="action" value="ADMIN::EMAIL_RESTR::Do">
+<input type="hidden" name="SubmitName" value="add_restr">
+<table style="spacing:1px; border:none padding:1px;">
+<tr>
+	<th colspan="5" class="title">
+	Manage E-Mail Address Restrictions
+	</th>
+</tr>
+<tr>
+	<th class="colhead">Type</th>
+	<th class="colhead">Text</th>
+	<th class="colhead">Remove</th>
+</tr>
+##TP_LOOP restrIndex {[tpGetVar numRestr]}##
+<tr>
+	<td>##TP_RestrType##</td>
+	<td>##TP_Restriction##</td>
+	<td><a HREF="##TP_CGI_URL##?action=ADMIN::EMAIL_RESTR::Do&SubmitName=remove_restr&restr_id=##TP_RestrID##">[remove]</a></td>
+</tr>
+##TP_ENDLOOP##
+<tr>
+	<td>
+		<select name="restr_type">
+		##TP_LOOP restrTypeIdx {[tpGetVar numTypes]}##
+			<option value="##TP_RestrTypeCode##">##TP_RestrTypeText##</option>
+		##TP_ENDLOOP##
+		</select>
+	</td>
+	<td>
+		<input type="text" size="10" name="restriction" value="" />
+	</td>
+	<td>
+		<input type="submit" class="btn_def" name = "DoIt" value="Add Restriction" />
+	</td>
+</table>
+</form>
+
+</body>
+</html>

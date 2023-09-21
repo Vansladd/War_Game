@@ -1,0 +1,50 @@
+##TP_TCL {ADMIN::PMT::bind_detail_ENVO [tpGetVar cpm_id]}##
+
+<tr>
+	<td class="caption">Envoy Submethod:</td>
+	<td> ##TP_PM_sub_mthd_desc##
+	    <input type="hidden" name="sub_mthd_code" value="##TP_PM_sub_mthd_code##"></td>
+</tr>
+<tr>
+	<td class="caption">Envoy Unique Ref:</td>
+	<td>##TP_PM_envoy_uniq_ref##</td>
+</tr>
+
+##TP_IF {[op_allowed EditCPMEnvoyEwallet] && [tpBindGet PM_envoy_add_info_type] == "REMOTE"}##
+
+	<tr>
+		<td class="caption">Envoy eWallet ID:</td>
+		<td><input name="envoy_additional_info" type="text" size=50 value="##TP_PM_envoy_additional_info##"></td>
+	</tr>
+	<tr>
+		<td class="caption">Envoy eWallet Currency:</td>
+		<td>
+		<select name="envoy_remote_ccy">
+			<script>
+			write_select("##TP_PM_envoy_remote_ccy##" ##TP_LOOP ccy_idx {[tpGetVar NumCcy]}##, "##TP_PayMthdCcyCode##", "##TP_PayMthdCcyName##"##TP_ENDLOOP##);
+			</script>
+		</select>
+		</td>
+	</tr>
+	<tr>
+		<th colspan=2 class=buttons>
+		<input type=button class="btn_def" value="Update" onClick="return fs(this,'UpdEnvoyDetails')">
+
+		##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+		<input type=button class="btn_def" value="View Audit History" onClick="return doAudit('PM_envoy', this)">
+		##TP_ENDIF##
+
+		</th>
+	</tr>
+##TP_ELSE##
+
+	<tr>
+		<td class="caption">Envoy eWallet ID:</td>
+		<td>##TP_PM_envoy_additional_info##</td>
+	</tr>
+	<tr>
+		<td class="caption">Envoy eWallet Currency:</td>
+		<td>##TP_PM_envoy_remote_ccy##</td>
+	</tr>
+
+##TP_ENDIF##

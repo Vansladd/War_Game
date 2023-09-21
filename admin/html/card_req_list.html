@@ -1,0 +1,70 @@
+<html>
+<!-- $Id: card_req_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Card Requirements</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=7 class=title>
+	Card Requirements
+	</td>
+</tr>
+<tr>
+	<th nowrap class=colhead>Range</th>
+	<th nowrap class=colhead>Scheme</th>
+	<th nowrap class=colhead>Digits</th>
+	<th nowrap class=colhead>Issue Number</th>
+	<th nowrap class=colhead>Start</th>
+	<th nowrap class=colhead>Expiry</th>
+	##TP_IF {[OT_CfgGet 3DSECURE_RESUBMIT_POLICY_CODES 0]}##
+	<th nowrap class=colhead>3ds Policy</th>
+	##TP_ENDIF##
+</tr>
+##TP_LOOP req_idx {[tpGetVar NumCardReqs]}##
+	<tr>
+		<td>
+		<a href="##TP_CGI_URL##?action=ADMIN::CARD::GoCardReq&bin_lo=##TP_CardReqBinLo##&bin_hi=##TP_CardReqBinHi##">##TP_CardReqBinLo## - ##TP_CardReqBinHi##</a>
+		</td>
+		<td>##TP_CardReqType##</td>
+		<td>##TP_CardReqDigits##</td>
+		<td>##TP_CardReqIssue##</td>
+		<td>##TP_CardReqStart##</td>
+		<td>##TP_CardReqExpiry##</td>
+		##TP_IF {[OT_CfgGet 3DSECURE_RESUBMIT_POLICY_CODES 0]}##
+		<td>##TP_CardReq3dsPol##</td>
+		##TP_ENDIF##
+	</tr>
+##TP_ENDLOOP##
+##TP_IF {[op_allowed ManageCardBin 0]}##
+	<tr>
+		<th class=buttons colspan=7>
+		<form action="##TP_CGI_URL##" method=get>
+		<input type=button class="btn_def" value="Add New Range" onClick="return fs(this,'CardReqAdd')">
+		</th>
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value=ADMIN::CARD::GoCardReq>
+		</form>
+	</tr>
+##TP_ENDIF##
+</table>
+</body>
+</html>

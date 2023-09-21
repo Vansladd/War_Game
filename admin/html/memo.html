@@ -1,0 +1,66 @@
+<html>
+<!-- $Id: memo.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Introduction Sources</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	##TP_MemoCode## Details
+	</th>
+</tr>
+<form ACTION="##TP_CGI_URL##" method=get onSubmit="return validate(this);">
+##TP_IF {[tpGetVar opAdd 0]}##
+<tr>
+	<td class=caption>Memo Request</td>
+	<td>
+	<input type=text name="MemoCode" value="" size=15 maxlength=60>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<td class=caption>Disporder</td>
+	<td>
+	<input type="text" name="MemoDisporder" value="##TP_MemoDisporder##" size=5>
+	</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed ManageMemoRequest]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=button class="btn_def" value="Add Memo Request" onClick="return fs(this,'MemoAdd')">
+		##TP_ELSE##
+			<input type=hidden name=MemoCode value="##TP_MemoCode##">
+			<input type=button class="btn_def" value="Modify Memo Request" onClick="return fs(this,'MemoMod')">
+			<input type=button class="btn_def" value="Delete Memo Request" onClick="return fs(this,'MemoDel')">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::MEMO::DoMemo">
+</form>
+</table>
+</body>
+</html>
+

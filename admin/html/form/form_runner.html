@@ -1,0 +1,184 @@
+<html>
+<!-- $Id: form_runner.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Form data Jockey and Trainer</title>
+
+<script>
+
+function validate(f)
+{
+	return true;
+}
+
+function fs(b,t)
+{
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+</script>
+ 
+</head>
+<body>
+##TP_IF {[tpGetVar RunnerUpdated 0]}##
+	<h3><font color=green>Runner Updated</font></h3>
+##TP_ENDIF##
+##TP_PLAY error_rpt.html##
+
+<form method=get action="##TP_CGI_URL##" name="runner_form">
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th class="title" colspan=2>
+			Form Feed Runner Information
+		</th>
+	</tr>
+	<tr>
+		<td class=caption>OpenBet Selection</td>
+		<td>##TP_EvOcName##</td>
+	</tr>
+	<tr>
+		<td class=caption>Runner No</td>
+		<td>##TP_runner_num##</td>
+	</tr>
+	<tr>
+		<td class=caption>Draw No</td>
+		<td><input type=text name=Draw value="##TP_draw##" size="4"></td>
+	</tr>
+	<tr>
+		<td class=caption>Weight Stone</td>
+		<td><input type=text name=WgtStone value="##TP_wgt_stone##" size="4"></td>
+	</tr>
+	<tr>
+		<td class=caption>Weight Pounds</td>
+		<td><input type=text name=WgtPound value="##TP_wgt_pound##" size="4"></td>
+	</tr>
+	<tr>
+		<td class=caption>Age</td>
+		<td><input type=text name=Age value="##TP_age##" size="4"></td>
+	</tr>
+	<tr>
+		<td class=caption>RP Rating</td>
+		<td><input type=text name=RpRating value="##TP_rp_rating##" size="4"></td>
+	</tr>
+	<tr>
+		<td class=caption>Unadjusted Master Rating</td>
+		<td><input type=text name=UnAdjMasterRating value="##TP_unadj_master_rating##" size="4"></td>
+	</tr>
+	<tr>
+		<td class=caption>Adjusted Master Rating</td>
+		<td><input type=text name=AdjMasterRating value="##TP_adj_master_rating##" size="4"></td>
+	</tr>
+	<tr>
+		<td class=caption>Trainer</td>
+		<td><input type=text name=Trainer value="##TP_trainer##" size="50"></td>
+	</tr>
+	<tr>
+		<td class=caption>Days Since Last Run</td>
+		<td><input type=text name=DaysSinceRun value="##TP_days_since_run##" size="4"></td>
+	</tr>
+	<tr>
+		<td class=caption>Jockey</td>
+		<td><input type=text name=Jockey value="##TP_jockey##" size="50"></td>
+	</tr>
+	<tr>
+		<td class=caption>Owner</td>
+		<td><input type=text name=Owner value="##TP_owner##" size="50"></td>
+	</tr>
+	<tr>
+		<td class=caption>Silk Name</td>
+		<td><input type=text name=SilkName value="##TP_silk_name##" size="10"></td>
+	</tr>
+	<tr>
+		<td class=caption>Form Guide</td>
+		<td><input type=text name=FormGuide value="##TP_form_guide##" size="10"></td>
+	</tr>
+	<tr>
+		<td class=caption>Overview</td>
+		<td><textarea cols=60 rows=6 wrap=virtual name=Overview>##TP_overview##</textarea></td>
+	</tr>
+	<tr>
+		<td class=caption>Sire Overview</td>
+		<td><textarea cols=60 rows=6 wrap=virtual name=SireOverview>##TP_sire_overview##</textarea></td>
+	</tr>
+	<tr>
+		<td class=caption>Breeding Overview</td>
+		<td><textarea cols=60 rows=6 wrap=virtual name=BreedingOverview>##TP_breeding_overview##</textarea></td>
+	</tr>
+	<tr>
+		<td class=caption>Runner Feed Updateable</td>
+		<td>
+			<select name="RunnerUpdateable">
+			##TP_IF {[tpGetVar RunnerUpdateable] == "N"}##
+				<option value="Y">Yes</option>
+				<option value="N" SELECTED>No</option>
+			##TP_ELSE##
+				<option value="Y" SELECTED>Yes</option>
+				<option value="N">No</option>
+			##TP_ENDIF##
+			</select>
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<th class="title" colspan=2>
+			Form Feed Competitor Information
+		</th>
+	</tr>
+	<tr>
+		<td class=caption>Name</td>
+		<td><input type=text name=Name value="##TP_name##" size="50"></td>
+	</tr>
+	<tr>
+		<td class=caption>Sex</td>
+		<td><input type=text name=Sex value="##TP_sex##" size="10"></td>
+	</tr>
+	<tr>
+		<td class=caption>Colour</td>
+		<td><input type=text name=Colour value="##TP_colour##" size="10"></td>
+	</tr>
+	<tr>
+		<td class=caption>Competitor Feed Updateable</td>
+		<td>
+			<select name="CompetitorUpdateable">
+			##TP_IF {[tpGetVar CompetitorUpdateable] == "N"}##
+				<option value="Y">Yes</option>
+				<option value="N" SELECTED>No</option>
+			##TP_ELSE##
+				<option value="Y" SELECTED>Yes</option>
+				<option value="N">No</option>
+			##TP_ENDIF##
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th colspan=2 class=buttons>
+		##TP_IF {[tpGetVar OpAdd 0]}##
+			<input type=button class="btn_def" value="Insert" onClick="return fs(this,'RunnerAdd')">
+		##TP_ELSE##
+			<input type=button class="btn_def" value="Update" onClick="return fs(this,'RunnerMod')">
+		##TP_ENDIF##
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</th>
+	</tr>
+</table>
+<input type=hidden name=OcId value="##TP_OcId##">
+<input type=hidden name=EvId value="##TP_EvId##">
+<input type=hidden name=FormProviderId value="##TP_FormProviderId##">
+<input type=hidden name=RunnerId value="##TP_runner_id##">
+<input type=hidden name=CompetitorId value="##TP_competitor_id##">
+<input type=hidden name=RaceId value="##TP_race_id##">
+<input type=hidden name=ExtCompetitorId value="##TP_ext_competitor_id##">
+<input type=hidden name=RunnerNum value="##TP_runner_num##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::FORM::DoRunner">
+</form>
+
+</table>
+</body>
+</html>
+

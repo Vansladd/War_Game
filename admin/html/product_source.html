@@ -1,0 +1,55 @@
+<html>
+<!-- $Id: product_source.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+
+<table cellspacing="0" cellpadding="3" border="0">
+<tr>
+	<th colspan=4 class=title>
+	Product Codes
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Code</td>
+	<th class=colhead>Product Name</td>
+</tr>
+##TP_LOOP idx {[tpGetVar NumCodes]}##
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::PRODUCTCODE::GoProductCode&Code=##TP_Code##">##TP_Code##</a></td>
+	<td>##TP_Name##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[op_allowed AddProductCode]}##
+<tr>
+	<th class=buttons colspan=4>
+	<form action="##TP_CGI_URL##" method=get>
+	<input type=button class="btn_def" value="Add New Code" onClick="return fs(this,'CodeAdd')">
+	</th>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::PRODUCTCODE::GoProductCode>
+	</form>
+</tr>
+##TP_ENDIF##
+</form>
+</table>
+
+
+</body>
+</html>

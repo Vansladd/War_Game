@@ -1,0 +1,373 @@
+<html>
+<!-- $Id: rg_edit_amount.html -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script language="Javascript">
+
+// Look after older browser which use JScript instead of DOM
+if (document.all && !document.getElementById) {
+  document.getElementById = function(id) {
+  return document.all[id];
+  }
+}
+
+
+function add(from, to)
+{
+	var selectFrom = this.document.getElementById(from);
+	var selectTo = this.document.getElementById(to);
+	var selectedList = new Array();
+	var leftoverList = new Array();
+
+	// build list of selected items
+	var selectedListIndex = 0;
+	var oldListIndex = 0;
+	for (var i = 0; i < selectFrom.options.length; i++) {
+		if (selectFrom.options[i].selected) {
+	    selectedList[selectedListIndex++] = selectFrom.options[i].value;
+		}
+	  else {
+	    leftoverList[oldListIndex++] = selectFrom.options[i].value;
+	  }
+	}
+
+	if (selectTo.options.length == 0) {
+	  // empty list, we can add the items as we like...
+	  for (var i = 0; i < selectedListIndex; i++) {
+	    selectTo.options[i] = new Option(selectedList[i], selectedList[i], false, false);
+	  }
+	}
+	else
+	{
+	  // existing list, need to find where to add new entry/entries
+	  for (var k = 0; k < selectedList.length; k++) {
+  	  for (var i = 0; i < selectTo.options.length; i++) {
+	      if (selectTo.options[i].value > selectedList[k]) {
+	        // need to move down the rest of the list to fit entry in here
+	        var oldValue = "";
+	        var nextOldValue = "";
+	        var oldSelectToLength = selectTo.options.length;
+	        for (var j = i + 1; j < oldSelectToLength + 1; j++) {
+	          if (nextOldValue == "") {
+  	          oldValue = selectTo.options[j - 1].value;
+	          }
+	          else
+	          {
+	            oldValue = nextOldValue;
+	          }
+	          if (j > selectTo.options.length - 1) {
+  	          nextOldValue = "";
+	          }
+	          else
+	          {
+	            nextOldValue = selectTo.options[j].value;
+	          }
+	          selectTo.options[j] = new Option(oldValue, oldValue, false, false);
+	        }
+ 	        // now insert the new selection
+       	  selectTo.options[i] = new Option(selectedList[k], selectedList[k], false, false);
+	        break;
+	      }
+	      if (i == selectTo.options.length - 1) {
+	        // got as far as last position without finding somewhere to insert the
+	        // new entry so just add it at the bottom
+	        selectTo.options.length++;
+	        selectTo.options[i + 1] = new Option(selectedList[k], selectedList[k], false, false);
+	        break;
+	      }
+	    }
+	  }
+	}
+
+	// create new list of left behind items
+	selectFrom.options.length = oldListIndex;
+	for (var i = 0; i < selectFrom.options.length; i++) {
+		selectFrom.options[i] = new Option(leftoverList[i], leftoverList[i], false, false);
+	}
+
+	return true;
+}
+
+function remove(from, to)
+{
+	add(to, from);
+	return true;
+}
+
+function validAmount(amount)
+{
+	// make sure we have a proper numeric amount.
+	var errorString = "";
+
+	var amountPattern = /^(\d{1,10})$/;
+	var amountArray = amount.match(amountPattern);
+
+	if (amountArray == null) {
+		errorString = amount + ' is not a valid amount.';
+	  return errorString;
+	}
+
+	return "true";
+}
+
+function move(ccyID, newEntry, to)
+{
+  var newField = this.document.getElementById(newEntry);
+	var ccy = this.document.getElementById(ccyID);
+
+	if (ccy.options.length == 0) {
+	  window.alert("You cannot add any more amounts as all currencies have been used");
+	  return false;
+	}
+
+	var errorString = validAmount(newField.value);
+	if (errorString != "true") {
+		window.alert(errorString);
+		return false;
+	}
+
+	// move value from newCardBin to the 'to' list
+	var selectTo = this.document.getElementById(to);
+
+	if (selectTo.options.length == 0) {
+	  // empty list, we can add the items as we like...
+	  selectTo.options[0] = new Option(newField.value + ' ' + ccy.value, newField.value + ' ' + ccy.value, false, false);
+	}
+	else
+	{
+    for (var i = 0; i < selectTo.options.length; i++) {
+      if (selectTo.options[i].value > newField.value) {
+        // need to move down the rest of the list to fit entry in here
+        var oldValue = "";
+        var nextOldValue = "";
+        var oldSelectToLength = selectTo.options.length;
+        for (var j = i + 1; j < oldSelectToLength + 1; j++) {
+          if (nextOldValue == "") {
+            oldValue = selectTo.options[j - 1].value;
+          }
+          else
+          {
+            oldValue = nextOldValue;
+          }
+          if (j > selectTo.options.length - 1) {
+            nextOldValue = "";
+          }
+          else
+          {
+            nextOldValue = selectTo.options[j].value;
+          }
+          selectTo.options[j] = new Option(oldValue, oldValue, false, false);
+        }
+        // now insert the new selection
+   	    selectTo.options[i] = new Option(newField.value + ' ' + ccy.value, newField.value + ' ' + ccy.value, false, false);
+        break;
+      }
+      if (i == selectTo.options.length - 1) {
+        // got as far as last position without finding somewhere to insert the
+        // new entry so just add it at the bottom
+        selectTo.options.length++;
+        selectTo.options[i + 1] = new Option(newField.value + ' ' + ccy.value, newField.value + ' ' + ccy.value, false, false);
+        break;
+      }
+    }
+	}
+
+	// now remove the currency we just added to the selected list from the available currencies
+	var numLeftOvers = 0;
+	var numStartCurrencies = ccy.options.length;
+	var newCurrencyList = new Array();
+	for (var i = 0; i < numStartCurrencies; i++) {
+	  if (!ccy.options[i].selected) {
+	    // build list of remaining currencies
+	    newCurrencyList[numLeftOvers++] = ccy.options[i].value;
+	  }
+	}
+	ccy.options.length = numStartCurrencies - 1;
+	for (var i = 0; i < ccy.options.length; i++) {
+		ccy.options[i] = new Option(newCurrencyList[i], newCurrencyList[i], false, false);
+	}
+
+	this.document.getElementById('newAmount').value = "";
+
+	return true;
+}
+
+function edit(to)
+{
+	var selectTo = this.document.getElementById(to);
+
+	// make sure we only have one item selected for 'edit'
+	// this is because it only makes sense to push one item down to the edit
+	// section at any one time.
+	var selectedOptions = 0;
+	var selectedVal = "";
+	var selectToList = new Array();
+
+	for (var i = 0; i < selectTo.options.length; i++) {
+	  selectToList[i] = selectTo.options[i].value;
+
+	  if (selectTo.options[i].selected == true) {
+	    selectedVal = selectTo.options[i].value;
+	    selectedOptions++;
+	  }
+	}
+	if (selectedOptions > 1) {
+	  window.alert("You can only select one item at a time for editing");
+	  return false;
+	}
+
+	if (selectedOptions == 0) {
+	  return false;
+	}
+
+	// push the selected value down to the edit/new boxes
+	var val = new String(selectedVal);
+
+	var spaceIndex = val.indexOf(" ");
+	var amount = val.substring(0, spaceIndex);
+	var ccy_code = val.substring(spaceIndex + 1);
+
+	this.document.getElementById('newAmount').value = amount;
+
+	var ccySelect = this.document.getElementById('ccy');
+	if (ccySelect.options.length == 0) {
+	  // empty list, we can add the items as we like...
+	  ccySelect.options[0] = new Option(ccy_code, ccy_code, false, true);
+	}
+	else
+	{
+    for (var i = 0; i < ccySelect.options.length; i++) {
+      if (ccySelect.options[i].value > ccy_code) {
+        // need to move down the rest of the list to fit entry in here
+        var oldValue = "";
+        var nextOldValue = "";
+        var oldCcySelectLength = ccySelect.options.length;
+        for (var j = i + 1; j < oldCcySelectLength + 1; j++) {
+          if (nextOldValue == "") {
+            oldValue = ccySelect.options[j - 1].value;
+          }
+          else
+          {
+            oldValue = nextOldValue;
+          }
+          if (j > ccySelect.options.length - 1) {
+            nextOldValue = "";
+          }
+          else
+          {
+            nextOldValue = ccySelect.options[j].value;
+          }
+          ccySelect.options[j] = new Option(oldValue, oldValue, false, false);
+        }
+        // now insert the new selection
+   	    ccySelect.options[i] = new Option(ccy_code, ccy_code, false, true);
+        break;
+      }
+      if (i == ccySelect.options.length - 1) {
+        // got as far as last position without finding somewhere to insert the
+        // new entry so just add it at the bottom
+        ccySelect.options.length++;
+        ccySelect.options[i + 1] = new Option(ccy_code, ccy_code, false, true);
+        break;
+      }
+    }
+	}
+
+	// now remove the selected item from the 'selectedList'
+	if (selectToList.length == 1) {
+		selectTo.options.length = 0;
+	}
+	else
+	{
+  	for (var i = 0; i < selectToList.length; i++) {
+	    if (selectToList[i] != selectedVal) {
+    		selectTo.options[i] = new Option(selectToList[i], selectToList[i], false, false);
+	  	  selectTo.options.length = i + 1;
+	    }
+	  }
+	}
+
+	return true;
+}
+
+function save(b, to)
+{
+	var selectTo = this.document.getElementById(to);
+
+	// make all the options in the 'selected' side selected.
+	for (var i = 0; i < selectTo.options.length; i++) {
+	  selectTo.options[i].selected = true;
+	}
+
+	b.form.action.value = "ADMIN::RISKGUARDIAN::GoInsertCondition";
+	b.form.type.value = "amount";
+	b.form.submit();
+
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<form method="get" name="AmountForm" action="##TP_CGI_URL##">
+<input type="hidden" name="action" value="">
+<input type="hidden" name="type" value="">
+<tr>
+	<th colspan="3" class="title">
+	Risk Guardian Minimum Amount Condition
+	</th>
+</tr>
+<tr>
+	<th>Deselected Amounts</th>
+	<th>&nbsp;</th>
+	<th>Selected Amounts</th>
+</tr>
+<tr>
+	<td>
+	  <select id="from" multiple name="from" size="15">
+	  </select>
+  </td>
+	<td>
+	  <table>
+	    <tr>
+	      <td align="center"><input type="button" value="add ->" onClick="return add('from','to');"></td>
+	    </tr>
+	    <tr>
+	      <td align="center"><input type="button" value="<- remove" onClick="return remove('from','to');"></td>
+	    </tr>
+	    <tr>
+	      <td align="center"><input type="button" value="edit selected" onClick="return edit('to');"></td>
+	    </tr>
+	  </table>
+	</td>
+  <td>
+	  <select id="to" multiple name="to" size="15">
+	  ##TP_LOOP amount_idx {[tpGetVar numAmounts]}##
+	    <option value="##TP_amount##">##TP_amount##</option>
+	  ##TP_ENDLOOP##
+	  </select>
+	</td>
+</tr>
+<tr>
+	<td align="right">
+	  <select id="ccy" name="ccy">
+	  ##TP_LOOP availCurrency_idx {[tpGetVar numAvailCurrencies]}##
+	    <option value="##TP_availCurrency##">##TP_availCurrency##</option>
+	  ##TP_ENDLOOP##
+  	</select>
+	</td>
+	<td><input id="newAmount" type="text" size="6" maxsize="6" name="newAmount"></td>
+	<td align="center"><input type="button" value="Move new amount to list" onClick="return move('ccy','newAmount','to');"></td>
+</tr>
+<tr>
+	<td colspan="3" align="center"><input type="button" value="Submit Changes" onClick="return save(this,'to');"></td>
+</tr>
+</form>
+</table>
+</body>
+</html>
+

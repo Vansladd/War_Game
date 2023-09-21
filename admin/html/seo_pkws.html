@@ -1,0 +1,77 @@
+<html>
+<!-- $Id: seo_pkws.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+	<head>
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<title>SEO Title Tags - Problem Key Words</title>
+		##TP_PLAY JS_WriteSelect.html##
+
+		<script>
+			function fs(b,t)
+			{
+				if ((t == 'addPKW') && (document.getElementById('pkw').value == '')) {
+					alert ('Error: PKW entry field is blank');
+					return false;
+				} else {
+					b.disabled = true;
+					b.value = "Busy...";
+					b.form.SubmitName.value=t;
+					b.form.submit();
+					return true;
+				}
+			}
+		</script>
+
+	</head>
+	<!--seo_pkws.html-->
+	<body>
+		<form name="pkwform" method=get action="##TP_CGI_URL##">
+			<input type="hidden" name="action" value="ADMIN::SEO::GoSEOMain">
+			<input type="hidden" name="SubmitName" value="changeLang">
+			<input type="hidden" name="from" value="pkw">
+
+			##TP_MSG##
+
+			<table>
+				<tr>
+					<th class="title">
+						##TP_XL Admin.SEO.PKW##
+					</th>
+					<th class="title">
+						<select name="language" onChange="document.pkwform.submit();">
+							##TP_LOOP lang_idx {[tpGetVar NumLangs 0]}##
+								<option value="##TP_lang_code##" ##TP_IF {[tpBindGet lang_code] == [tpBindGet LangSel]}##selected##TP_ENDIF##>##TP_lang_name##</option>
+							##TP_ENDLOOP##
+						</select>
+					</th>
+				</tr>
+				##TP_IF {[tpGetVar numPKW] == 0}##
+                                  <tr >    
+					<td colspan="2">
+						##TP_XL Admin.SEO.PKW_NONE##
+					</td>
+                                 </tr>
+				##TP_ELSE##
+				##TP_LOOP pkw_idx {[tpGetVar numPKW]}##
+					<tr>
+						<td>
+							##TP_PKW##
+						</td>
+						<td>
+							<a href="##TP_CGI_URL##?action=ADMIN::SEO::GoSEOMain&SubmitName=deletePKW&pkwID=##TP_PKW_ID##&language=##TP_LangSel##">##TP_XL Admin.SEO.PKW_DELETE##</a>
+						</td>
+					</tr>
+				##TP_ENDLOOP##
+				##TP_ENDIF##
+				<tr>
+					<th class="buttons">
+						<input type="text" size="20" id="pkw" name="pkw">
+					</th>
+					<th class="buttons">
+						<input type="button" value="##TP_XL Admin.SEO.ADD_BUTTON##"  onClick="return fs(this,'addPKW')">
+						<input type="button" value="##TP_XL Admin.SEO.BACK_BUTTON##" onClick="return fs(this,'Back')">
+					</th>
+				</tr>
+			</table>
+		</form>
+	</body>
+</html>

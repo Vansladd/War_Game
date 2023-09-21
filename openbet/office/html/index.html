@@ -1,0 +1,35 @@
+##TP_COMMENT $Id: index.html,v 1.1 2011/10/04 12:30:14 xbourgui Exp $##
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="##TP_HTML_LANG##">
+
+<!--
+Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.
+-->
+
+<head>
+	<title>OpenBet Office</title>
+	<link rel="icon" href="##TP_OFFICE_STATIC_URL##/images/favicon.ico" type="image/x-icon">
+	<link rel="shortcut icon" href="##TP_OFFICE_STATIC_URL##/images/favicon.ico" type="image/x-icon">
+
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_HTML_CHARSET##" />
+	<link href="##TP_CSS_URL##/base.css" type="text/css" rel="stylesheet" />
+</head>
+
+<frameset framespacing="0" frameborder="0" border="0" rows="40,*">
+	<frame frameborder="0"
+	       marginheight="0"
+	       marginwidth="0"
+	       noresize
+	       name="officeMenu"
+	       scrolling="no"
+	       src="##TP_CGI_URL##?action=GoOfficeMenu"/>
+	<frame frameborder="0"
+	       marginheight="0"
+	       marginwidth="0"
+	       noresize
+	       name="officePane"
+	       scrolling="auto"
+	       src="##TP_CGI_URL##?action=GoOfficePane"/>
+</frameset>
+</html>

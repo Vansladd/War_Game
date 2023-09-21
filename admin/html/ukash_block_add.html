@@ -1,0 +1,62 @@
+<html>
+<!-- $Id: ukash_block_add.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add Ukash Block</title>
+##TP_PLAY JS_WriteSelect.html##	
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<form action=##TP_CGI_URL## method=get>
+<table border=0 cellspacing=0 cellpadding=2>
+<tr>
+	<th colspan="3" class=title>
+	Add Ukash Block
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Voucher Code</th>
+	<th class=colhead>Ban Status</th>
+	<th class=colhead>Comment</th>
+</tr>
+<tr>
+	<td>
+		<input type=text name=voucher value="">
+	</td>
+	<td>
+		<select name="status">
+			<script>
+				write_select("","A","Active","S","Suspended");
+			</script>
+		</select>
+	</td>
+	<td>
+		<input type=text name=comment value="">
+	</td>
+</tr>
+
+<tr>
+	<th colspan=6 class=buttons>
+	<input type=button value="Back" onClick="return fs(this,'Back')">
+	<input type=button value="Add" onClick="return fs(this,'DoBlkAdd')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::PMT::GoUkashBlocks>
+<input type=hidden name=UkashBlockId value=##TP_UkashBlockId##>
+</table>
+</form>
+</body>
+</html>
+

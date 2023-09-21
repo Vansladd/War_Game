@@ -1,0 +1,75 @@
+<html>
+	<!-- $Id: country_matrix.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<title>Currency Table</title>
+		<script language="javascript">
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+		</script>
+	</head>
+	<body>
+		##TP_PLAY error_rpt.html##
+		<table border="1" cellspacing="0" cellpadding="3">
+			<tr>
+				<th colspan="##TP_TCL {tpBufWrite [expr {[tpGetVar num_ops] + 5}]}##" class="title">Countries Permission Matrix</th>
+			</tr>
+			<tr>
+				<th class="colhead">Country</th>
+				##TP_LOOP op_idx {[tpGetVar num_ops]}##
+				<th class="colhead">##TP_op_desc##</th>
+				##TP_ENDLOOP##
+				<th class="colhead">Banned Categories</th>
+				<th class="colhead">Banned Lottery Games</th>
+				<th class="colhead">Banned Channels</th>				
+				##TP_IF {[tpGetVar app_id] == 2}##
+				  <th class="colhead">Banned Systems</th>
+				##TP_ENDIF##
+				##TP_IF {[tpGetVar app_id] == 1}##
+				  <th class="colhead">Additional Banned Items</th>
+				##TP_ENDIF##
+			</tr>
+			##TP_LOOP country_idx {[tpGetVar num_countries]}##
+			<tr>
+				<td><a href="##TP_CGI_URL##?action=ADMIN::COUNTRY::GoCountry&CountryCode=##TP_country_code##">##TP_country_name##</a></td>
+				##TP_LOOP op_idx {[tpGetVar num_ops]}##
+				    ##TP_IF {$THE_MATRIX([tpGetVar country_idx],[tpGetVar op_idx],perm) == "tick"}##
+					  <td align="center"><font color="green">Y</font></td>
+					##TP_ELSE##
+					  <td align="center"><font color="red">N</font></td>
+					##TP_ENDIF##
+				##TP_ENDLOOP##
+				<td>##TP_banned_cats##&nbsp;</td>
+				<td>##TP_banned_lots##&nbsp;</td>
+				<td>##TP_banned_chans##&nbsp;</td>
+				
+				##TP_IF {[tpGetVar app_id] == 2}##
+				  <td>##TP_banned_sys##&nbsp;</td>
+				##TP_ENDIF##
+
+				##TP_IF {[tpGetVar app_id] == 1}##
+				  <td>##TP_banned_adds##&nbsp;</td>
+				##TP_ENDIF##
+				
+				
+			</tr>
+			##TP_ENDLOOP##
+			<tr>
+				<form action="##TP_CGI_URL##" method="get">
+					<th class="buttons" colspan="##TP_TCL {tpBufWrite [expr {[tpGetVar num_ops] + 5}]}##">&nbsp;
+						<input type="submit" class="btn_def" value="Back" />
+						<input type="hidden" name="SubmitName" value="" />
+						<input type="hidden" name="action" value="ADMIN::COUNTRY::GoCountryList" />
+					</th>
+				</form>
+			</tr>
+		</table>
+	</body>
+</html>

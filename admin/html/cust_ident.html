@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<!--
+$Id: cust_ident.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $
+Copyright (c) 2008 Orbis Technology Ltd. All rights reserved
+-->
+
+<head>
+	<meta name="copyright" content="2008 Orbis Technology Ltd. All rights reserved" />
+	<meta http-equiv="Content-Script-Type" content="text/javascript" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet" />
+	<title>Customer Identification</title>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_HTML_CHARSET##" />
+
+	##TP_PLAY JS_WriteSelect.html##
+
+	<script type="text/javascript">
+
+		var cc_no_original;
+
+		function fs(_b,_t)
+		{
+			_b.disabled = true;
+			_b.value = "Busy...";
+			_b.form.SubmitName.value = _t;
+			_b.form.submit();
+
+			return true;
+		}
+
+		function add_new_card(btn)
+		{
+			if (btn.checked) {
+				//enter new card
+
+				// backup the old number
+				cc_no_original = document.ident.cc_no.value;
+
+				// enable the field and blank it
+				document.ident.cc_no.disabled = false;
+				document.ident.cc_no.value = "";
+				document.ident.update_cc_no.value = 1;
+			} else {
+				// submit the old card
+				document.ident.cc_no.disabled = true;
+				document.ident.cc_no.value = cc_no_original;
+				document.ident.update_cc_no.value = 0;
+			}
+		}
+
+	</script>
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<form action="##TP_CGI_URL##" method="post" name="ident">
+<input type="hidden" name="action" value="ADMIN::CUSTIDENT::DoIdent"/>
+<input type="hidden" name="SubmitName" value=""/>
+<input type="hidden" name="CustId" value="##TP_CustId##"/>
+
+<table border="0" cellspacing="0" cellpadding="3">
+	<thead>
+		<tr>
+			<th colspan="3" class="title">Customer Identification</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<tr>
+			<td class="caption">Telephone No.</td>
+			<td colspan="2"><input type="text" name="tel_no" size="32" value="##TP_CustIdent_tel_no##"></td>
+		</tr>
+		<tr>
+			<td class="caption">Mobile No.</td>
+			<td colspan="2"><input type="text" name="mob_no" size="32" value="##TP_CustIdent_mob_no##"></td>
+		</tr>
+		<tr>
+			<td class="caption">Contact No.</td>
+			<td colspan="2"><input type="text" name="contact_no" size="32" value="##TP_CustIdent_contact_no##"></td>
+		</tr>
+		<tr>
+			<td class="caption">Credit Card No.</td>
+
+			##TP_IF {[op_allowed ViewCardNumber] || ![tpGetVar IsUpdate 0] || [tpBindGet CustIdent_cc_no] == ""}##
+			<td colspan="2">
+				<input type="text"   name="cc_no" size="32" value="##TP_CustIdent_cc_no##">
+				<input type="hidden" name="update_cc_no" value="1">
+			</td>
+			##TP_ELSE##
+			<td>
+				<input type="text"   name="cc_no" size="32" value="##TP_CustIdent_cc_no##" disabled>
+				<input type="hidden" name="update_cc_no" value="0">
+			</td>
+			<td>
+				Change card
+				<input type="checkbox" name="cc_no_btn" onClick="javascript:add_new_card(this)">
+			</td>
+			##TP_ENDIF##
+
+		</tr>
+		<tr>
+			<td class="caption">Passport No.</td>
+			<td colspan="2"><input type="text" name="passport_no" size="32" value="##TP_CustIdent_passport_no##"></td>
+		</tr>
+		<tr>
+			<td class="caption">National ID No.</td>
+			<td colspan="2"><input type="text" name="nat_id_no" size="32" value="##TP_CustIdent_nat_id_no##"></td>
+		</tr>
+		<tr>
+			<td class="caption">Previous Address</td>
+			<td colspan="2">
+				<textarea name="prev_addr" rows="4" id="prev_addr">##TP_CustIdent_prev_addr##</textarea>
+			</td>
+		</tr>
+		<tr>
+			<th colspan="3" class="buttons">
+				##TP_IF {[tpGetVar IsUpdate 0]}##
+					<input type="button" value="Update" onClick="return fs(this,'Update');">
+					<input type="button" value="Delete" onClick="return fs(this,'Delete');">
+					##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+						<input type=hidden name=AuditInfo value="CustIdent">
+						<input type="button" value="View Audit History" onClick="return fs(this,'GoAudit');">
+					##TP_ENDIF##
+				##TP_ELSE##
+					<input type="button" value="Insert" onClick="return fs(this,'Insert');">
+				##TP_ENDIF##
+				<input type="button" value="Back" onClick="return fs(this,'Back');">
+			</th>
+		</tr>
+	</tbody>
+</table>
+</form>
+</body>
+</html>

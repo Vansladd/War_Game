@@ -1,0 +1,159 @@
+<html>
+<!-- $Id: bet_list_retro_pools.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<title>OpenBet Administration</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+
+<body>
+##TP_PLAY error_rpt.html##
+
+
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th class=title colspan=17>Bet Query Result</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Receipt</th>
+	<th nowrap class=colhead>Customer</th>
+	<th nowrap class=colhead>Account No</th>
+	<th nowrap class=colhead>Placed at</th>
+	<th nowrap class=colhead>Settled</th>
+	<th nowrap class=colhead>Pool</th>
+	<th nowrap class=colhead>Meeting</th>
+	<th nowrap class=colhead>Has Dividend</th>
+	<th nowrap class=colhead>CCY</th>
+	<th nowrap class=colhead>Pool CCY</th>
+	<th nowrap class=colhead>Stake</th>
+	<th nowrap class=colhead>Unit Stake</th>
+	<th nowrap class=colhead>Num. Lines</th>
+	<th nowrap class=colhead>Winnings</th>
+	<th nowrap class=colhead>Refund</th>
+	<th nowrap class=colhead>Leg</th>
+	<th nowrap class=colhead>Event</th>
+	<th nowrap class=colhead>Selection</th>
+	<th nowrap class=colhead>&nbsp;##TP_IF {[tpGetVar DispOrigPrice 0]}##Old Price##TP_ENDIF##</th>
+</tr>
+
+##TP_IF {[tpGetVar NumPoolBets 0]>0}##
+	##TP_LOOP bet_idx {[tpGetVar NumPoolBets]}##
+	##TP_LOOP seln_idx {$POOL_BET([tpGetVar bet_idx],num_selns)}##
+	<tr>
+		##TP_IF {[tpGetVar seln_idx]==0}##
+			<td nowrap align=center><input type="checkbox" name="settle_bet" value="##TP_BetId##"</input></td>
+			<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoPoolsReceipt&BetId=##TP_PoolBetId##">##TP_PoolBetReceipt##</a></td>
+			<td nowrap>##TP_PoolCustName##</td>
+			<td nowrap>##TP_PoolAcctNo##</td>
+			<td nowrap>##TP_PoolBetTime##</td>
+			<td align=center nowrap>##TP_PoolBetSettled##</td>
+			<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::POOLS::GoPoolInfo&PoolId=##TP_PoolId##">##TP_PoolType##</a></td>
+			<td nowrap>##TP_Meeting##</td>
+			<td align=center nowrap>##TP_PoolRecDividend##</td>
+			<td nowrap>##TP_PoolAcctCCY##</td>
+			<td nowrap>##TP_PoolCCY##</td>
+			<td nowrap align=right>##TP_PoolStake##</td>
+			<td nowrap align=right>##TP_UnitStake##</td>
+			<td nowrap align=right>##TP_NumLines##</td>
+			<td nowrap align=right>##TP_PoolWinnings##</td>
+			<td nowrap align=right>##TP_PoolRefund##</td>
+			##TP_ELSE##
+			<td colspan=15>&nbsp;</td>
+			##TP_ENDIF##
+			<td nowrap align=right>##TP_PoolBetLegNo##</td>
+			<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_PoolEvId##">##TP_PoolEvDesc##</a></td>
+			<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::SELN::GoOc&OcId=##TP_PoolEvOcId##">##TP_PoolSelnDesc##</a></td>
+			<td nowrap>&nbsp;##TP_IF {[tpGetVar DispOrigPrice 0]}####TP_OldPrice####TP_ENDIF##</td>
+	</tr>
+	##TP_ENDLOOP##
+	##TP_ENDLOOP##
+
+	<tr>
+		<th class="buttons" colspan="20">
+		<input type=button class="btn_def" value="Settle Bets" onClick="return fs(this,'SettleBets')">
+		</th>
+	</tr>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::BET::DoStlRetroBet>
+
+##TP_ELSE##
+	<tr>
+		<td colspan=19 align=center>
+		No pool bets found.
+		</td>
+	</tr>
+##TP_ENDIF##
+</table>
+
+<br>
+
+
+<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th colspan=14 class=title>
+		Call search results (Calls with ##TP_TCL {tpGetVar OverrideType}## Overrides)
+		</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>Call ID</th>
+		<th nowrap class=colhead>Operator</th>
+		<th nowrap class=colhead>Term Code</th>
+		<th nowrap class=colhead>Telephone</th>
+		<th nowrap class=colhead>Username</th>
+		<th nowrap class=colhead>AccountNo</th>
+		<th nowrap class=colhead>Name</th>
+		<th nowrap class=colhead>Start Time</th>
+		<th nowrap class=colhead>End Time</th>
+		<th nowrap class=colhead>Bets</th>
+		<th nowrap class=colhead>Groups</th>
+		<th nowrap class=colhead>Cancel Code</th>
+		<th nowrap class=colhead>Cancel Text</th>
+	</tr>
+	##TP_IF {[tpGetVar NumCalls 0]==0}##
+	<tr>
+		<td colspan=14 align=center>
+		No calls match your search criteria
+		</td>
+	</tr>
+	##TP_ELSE##
+	<input type=hidden name=NumCalls value="##TP_TCL {tpGetVar NumCalls}##">
+	##TP_LOOP call_idx {[tpGetVar NumCalls]}##
+	<input type=hidden name="row_##TP_TCL {tpGetVar call_idx}##" value="##TP_pmt_id##">
+	<input type=hidden name="pay_mthd_##TP_TCL {tpGetVar call_idx}##" value="##TP_PmtMthd##">
+	<tr>
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::CALL::GoCall&call_id=##TP_CallId##&SR_username=##TP_SR_username##&SR_upper_username=##TP_SR_upper_username##&SR_fname=##TP_SR_fname##&SR_lname=##TP_SR_lname##&SR_email=##TP_SR_email##&SR_acct_no=##TP_SR_acct_no##&SR_date_1=##TP_SR_date1##&SR_date_2=##TP_SR_date2##&SR_date_range=##TP_SR_date_range##&SR_operator=##TP_SR_operator##&SR_term_code=##TP_SR_term_code##&SR_bet_min=##TP_SR_bet_min##&SR_bet_max=##TP_SR_bet_max##&SR_grp_min=##TP_SR_grp_min##&SR_grp_max=##TP_SR_grp_max##&SR_cancel_code=##TP_SR_cancel_code##">##TP_CallId##</a></td>
+		<td nowrap>##TP_Operator##</td>
+		<td nowrap>##TP_TermCode##</td>
+		<td nowrap>##TP_Telephone##</td>
+		##TP_IF {[tpGetVar PERM_ViewCustInfo 0]}##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_Username##</a></td>
+		##TP_ELSE##
+		##TP_Username##
+		##TP_ENDIF##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_Acct##</a></td>
+		<td nowrap>##TP_FName## ##TP_LName##</td>
+		<td nowrap>##TP_StartTime##</td>
+		<td nowrap>##TP_EndTime##</td>
+		<td nowrap align=right>##TP_BetNum##</td>
+		<td nowrap align=right>##TP_GrpNum##</td>
+		<td nowrap>##TP_CancelCode##</td>
+		<td nowrap>##TP_CancelText##</td>
+	</tr>
+	##TP_ENDLOOP##
+	##TP_ENDIF##
+</table>
+
+
+</form>
+</body>
+</html>

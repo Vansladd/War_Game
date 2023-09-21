@@ -1,0 +1,123 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Filter Customer Messages</title>
+<style>
+	.fixed { width : 150 }
+</style>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+
+var users = new Array('Any'
+##TP_LOOP op_idx {[tpGetVar NumOperators]}##
+						 ,'##TP_operator##'
+##TP_ENDLOOP##);
+var status = new Array('A'
+##TP_LOOP op_idx {[tpGetVar NumOperators]}##
+						 ,'##TP_op_status##'
+##TP_ENDLOOP##);
+
+
+function cancel()
+{
+	document.forms[0].SubmitName.value = 'GoCustMsgs';
+	document.forms[0].submit();
+}
+
+function filter()
+{
+	document.forms[0].SubmitName.value = "FilterMsgs";
+	document.forms[0].submit();
+}
+
+function toggleSuspUsers()
+{
+		var drop = document.getElementById("CustMsgUser");
+		var current = drop.options[drop.selectedIndex].value;
+    var num = 0;
+    drop.length = users.length;
+    for (var i=0; i < users.length; i++)
+    {
+        if(status[i] == "A" || document.forms[0].showSusp.checked)
+        {
+            drop.options[num].text = users[i];
+            drop.options[num].value = users[i];
+            if (users[i] == current) 
+            {
+                drop.options[num].selected = true;
+            }
+            num++;
+        }
+    }
+    drop.length = num;
+}
+
+</script>
+</head>
+<body>
+<form action=##TP_CGI_URL## name=filterForm>
+
+	<input type=hidden name="SubmitName" value="SetMsg">
+	<input type=hidden name="CustMsgId" value="0">
+	<input type=hidden name=CustId value="##TP_CustId##">
+	<input type=hidden name=action value=ADMIN::CUST::DoCust>
+
+	<table border=0 cellspacing=0 cellpadding=2>
+		<tr>
+			<th class=title colspan=2>
+			Filter Messages
+		</th>
+		</tr>
+		<tr>
+			<td><b>Message type </b></td>			
+			<td><select name="CustMsgSort" id="CustMsgSort" class=fixed>
+			<script>
+			write_select('##TP_sortFilter##','A','All Types','C','Customer Services','O','Operator','X','Security'
+			             ##TP_IF {[op_allowed ManSupCustMsg]}##,'S','Supervisor'##TP_ENDIF##);
+			</script>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td colspan=2><b>Message date</b> <small>(YYYY-MM-DD / YYYY-MM-DD hh:mm:ss)</small></td>
+		</tr>
+		<tr>
+			<td>From</td>
+			<td><input type=text name=CustMsgStartDate class=fixed value="##TP_startDateFilter##"></td>
+		</tr>
+		<tr>
+			<td>To</td>
+			<td><input type=text name=CustMsgEndDate class=fixed value="##TP_endDateFilter##"></td>
+		</tr>
+		<tr>
+			<td><b>User</b></td>
+			<td><select id="CustMsgUser" name="CustMsgUser" class=fixed>
+			<script>
+			write_select('##TP_userFilter##','Any','Any'
+			##TP_LOOP op_idx {[tpGetVar NumOperators]}####TP_IF {$OPERATORS([tpGetVar op_idx],status) == "A"}##
+							     ,'##TP_operator##','##TP_operator##'
+			##TP_ENDIF####TP_ENDLOOP##
+			);
+			</script>
+			
+		</select></td>
+		</tr>
+		<tr>
+			<td colspan=2 align=left><input type=checkbox name=showSusp onClick="toggleSuspUsers()">
+			    <small>Show suspended</small>
+			</td>
+		</tr>
+		<tr>
+			<td><b>Containing words</b></td>
+			<td><input type=text name=CustMsgKeys class=fixed value="##TP_keysFilter##"></td>
+		</tr>
+		<tr>
+			<th colspan=2 class=buttons>
+			<input type=button class="btn_def" value="Filter" onClick="filter();">
+			<input type=button class="btn_def" value="Back" onClick="history.back();">
+			</th>
+		</th>
+	</table>
+</form>
+</html>  

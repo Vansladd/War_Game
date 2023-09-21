@@ -1,0 +1,364 @@
+<html>
+<!-- $Id: ok_to_delete.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+
+<style type="text/css">
+<!--
+
+	.passed {
+		background-color : #339900;
+		color : black;
+		font-weight : bold;
+		border-bottom : 6px solid #000000;
+	}
+
+	.failed {
+		background-color : #FF3333;
+		color : white;
+		font-weight : bold;
+		border-bottom : 6px solid #000000;
+	}
+
+	.result_code_0 {
+		border : 1px solid #FF3333;
+		color : #FF3333;
+	}
+
+	.result_code_1 {
+		border : 1px solid #339900;
+		color : #339900;
+	}
+
+	.result_code_2 {
+		border : 1px solid #3300CC;
+		color : #3300CC;
+	}
+
+	.msg_code_0 {
+		border : 1px solid #FF3333;
+		border-left : 0px;
+		color : #FF3333;
+	}
+
+	.msg_code_1 {
+		border : 1px solid #339900;
+		border-left : 0px;
+		color : #339900;
+	}
+
+	.msg_code_2 {
+		border : 1px solid #3300CC;
+		border-left : 0px;
+		color : #3300CC;
+	}
+-->
+</style>
+
+<script language=javascript>
+	function fs(b,t)
+	{
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+</script>
+
+</head>
+
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<table cellspacing="0" cellpadding="2" border="0">
+
+	<tr>
+		<th colspan="3" class="title">Card Change Allowed ?</th>
+	</tr>
+
+	##TP_IF {[tpGetVar SUCCESS 0] == 1}##
+	<tr>
+		<td colspan="3" class="passed">Yes. Check successful.</td>
+	</tr>
+	##TP_ELSEIF {[tpGetVar SUCCESS 0] == 2}##
+	<tr>
+		<td colspan="3" class="failed">No checks performed.</td>
+	</tr>
+	##TP_ELSE##
+	<tr>
+		<td colspan="3" class="failed">No. Check failed.</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar unknown_xfer_warn 0]}##
+	<tr>
+		<td colspan="3" class="failed">##TP_unknown_xfer_msg##
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_BALANCE 0] == 1}##
+	<tr>
+		<td>
+			Is the customer's <b>balance</b> less than the maximum limit?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_BALANCE_CODE##">
+			##TP_CC_CHANGE_BALANCE_SUCCESS##
+		</td>
+		<td width="200" class="msg_code_##TP_CC_CHANGE_BALANCE_CODE##">
+			##TP_CC_CHANGE_BALANCE_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_GAME_ACCT_BALANCE 0] == 1}##
+	<tr>
+		<td>
+			Is the customer's game account <b>balance</b> less than the maximum limit?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_GAME_ACCT_BALANCE_CODE##">
+			##TP_CC_CHANGE_GAME_ACCT_BALANCE_SUCCESS##
+		</td>
+		<td width="200" class="msg_code_##TP_CC_CHANGE_GAME_ACCT_BALANCE_CODE##">
+			##TP_CC_CHANGE_GAME_ACCT_BALANCE_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_PLAYTECH_RING_TOURN_FUNDS 0] == 1}##
+	<tr>
+		<td>
+			Is the customer's poker <b>balance</b> less than the maximum limit?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_PLAYTECH_RING_TOURN_FUNDS_CODE##">
+			##TP_CC_CHANGE_PLAYTECH_RING_TOURN_FUNDS_SUCCESS##
+		</td>
+		<td width="200" class="msg_code_##TP_CC_CHANGE_PLAYTECH_RING_TOURN_FUNDS_CODE##">
+			##TP_CC_CHANGE_PLAYTECH_RING_TOURN_FUNDS_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_TOTAL_BALANCE 0] == 1}##
+	<tr>
+		<td>
+			Is the customer's total <b>balance</b> less than the maximum limit?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_TOTAL_BALANCE_CODE##">
+			##TP_CC_CHANGE_TOTAL_BALANCE_SUCCESS##
+		</td>
+		<td width="200" class="msg_code_##TP_CC_CHANGE_TOTAL_BALANCE_CODE##">
+			##TP_CC_CHANGE_TOTAL_BALANCE_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_CASINOBALANCE 0] == 1}##
+	<tr>
+		<td>
+			Is the customer's <b>casino balance</b> zero?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_CASINOBALANCE_CODE##">
+		##TP_CC_CHANGE_CASINOBALANCE_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_CASINOBALANCE_CODE##">
+			##TP_CC_CHANGE_CASINOBALANCE_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+	##TP_IF {[OT_CfgGet FUNC_CARD_CHANGE_MCS_RIOBAY 0]}##
+	<tr>
+		<td>
+			Is the customer's <b>Rio Bay casino balance</b> zero?
+		</td>
+		<td class="result_code_##TP_RES_rb_cas_bal_ok##">
+		##TP_TXT_rb_cas_bal_ok##
+		</td>
+		<td class="msg_code_##TP_RES_rb_cas_bal_ok##">
+			##TP_MSG_rb_cas_bal##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_HELDFUNDS 0] == 1}##
+	<tr>
+		<td>
+			Does the customer have <b>held funds</b>?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_HELDFUNDS_CODE##">
+			##TP_CC_CHANGE_HELDFUNDS_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_HELDFUNDS_CODE##">
+			##TP_CC_CHANGE_HELDFUNDS_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGet FUNC_CARD_CHANGE_MCS_VIP 0]}##
+	<tr>
+		<td>
+			Is the customer's <b>Viper casino balance</b> zero?
+		</td>
+		<td class="result_code_##TP_RES_vip_cas_bal_ok##">
+		##TP_TXT_vip_cas_bal_ok##
+		</td>
+		<td class="msg_code_##TP_RES_vip_cas_bal_ok##">
+			##TP_MSG_vip_cas_bal_bal##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_UNSETTLEDBETS 0] == 1}##
+	<tr>
+		<td>
+			Has the customer no <b>unsettled bets</b>?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_UNSETTLEDBETS_CODE##">
+			##TP_CC_CHANGE_UNSETTLEDBETS_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_UNSETTLEDBETS_CODE##">
+			##TP_CC_CHANGE_UNSETTLEDBETS_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_GAMESMULTISTATE 0] == 1}##
+	<tr>
+		<td>
+			Has the customer no <b>open games</b>?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_GAMESMULTISTATE_CODE##">
+			##TP_CC_CHANGE_GAMESMULTISTATE_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_GAMESMULTISTATE_CODE##">
+			##TP_CC_CHANGE_GAMESMULTISTATE_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_BALLSSUB 0] == 1}##
+	<tr>
+		<td>
+			Has the customer no <b>open Balls sessions</b>?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_BALLSSUB_CODE##">
+			##TP_CC_CHANGE_BALLSSUB_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_BALLSSUB_CODE##">
+			##TP_CC_CHANGE_BALLSSUB_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_PENDINGPMTS 0] == 1}##
+	<tr>
+		<td>
+		Has the customer no <b>pending payments</b>?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_PENDINGPMTS_CODE##">
+		##TP_CC_CHANGE_PENDINGPMTS_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_PENDINGPMTS_CODE##">
+			##TP_CC_CHANGE_PENDINGPMTS_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_XSYSFER 0] == 1}##
+	<tr>
+		<td>
+			Has the customer transfered funds to <b>external systems</b>?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_XSYSFER_CODE##">
+		##TP_CC_CHANGE_XSYSFER_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_XSYSFER_CODE##">
+			##TP_CC_CHANGE_XSYSFER_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_BOSSMEDIA 0] == 1}##
+	<tr>
+		<td>
+			Has the customer any outstanding <b>BossMedia Casino sessions</b>?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_BOSSMEDIA_CODE##">
+		##TP_CC_CHANGE_BOSSMEDIA_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_BOSSMEDIA_CODE##">
+			##TP_CC_CHANGE_BOSSMEDIA_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	##TP_IF {[tpGetVar CC_CHANGE_SNGSUB 0] == 1}##
+	<tr>
+		<td>
+			Has the customer any outstanding <b>SNG Balls subscriptions </b>?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_SNGSUB_CODE##">
+		##TP_CC_CHANGE_SNGSUB_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_SNGSUB_CODE##">
+			##TP_CC_CHANGE_SNGSUB_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+	
+	##TP_IF {[tpGetVar CC_CHANGE_ACCT_OPEN 0] == 1}##
+	<tr>
+		<td>
+		Is the customer account status <b>open </b>?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_ACCT_OPEN_CODE##">
+		##TP_CC_CHANGE_ACCT_OPEN_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_ACCT_OPEN_CODE##">
+		##TP_CC_CHANGE_ACCT_OPEN_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+	
+	##TP_IF {[tpGetVar CC_CHANGE_CARD_CHANGES 0] == 1}##
+	<tr>
+		<td>
+			Has the customer changed cards less than the specified number of times recently?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_CARD_CHANGES_CODE##">
+            ##TP_CC_CHANGE_CARD_CHANGES_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_CARD_CHANGES_CODE##">
+			##TP_CC_CHANGE_CARD_CHANGES_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+	
+	##TP_IF {[tpGetVar CC_CHANGE_CHECK_OPEN_SUBS 0] == 1}##
+	<tr>
+		<td>
+			Has the customer any active <b>subscriptions</b> that are not allowed?
+		</td>
+		<td class="result_code_##TP_CC_CHANGE_CHECK_OPEN_SUBS_CODE##">
+			##TP_CC_CHANGE_CHECK_OPEN_SUBS_SUCCESS##
+		</td>
+		<td class="msg_code_##TP_CC_CHANGE_CHECK_OPEN_SUBS_CODE##">
+			##TP_CC_CHANGE_CHECK_OPEN_SUBS_MSG##
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	<tr>
+		<th class="buttons" colspan="3">
+			<input type="button" class="btn_def" value="Close" onClick="javascript:window.close();">
+		</th>
+	</tr>
+</table>
+
+</body>
+</html>

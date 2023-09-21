@@ -1,0 +1,74 @@
+<html>
+<head>
+	<!-- $Id: view.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<title>Blocked Machine IDs </title>
+	<script>
+		function loaded() {
+			document.block_form.back_button.disabled = false;
+			document.block_form.update_button.disabled = false;
+		}
+
+		function busy(element) {
+			element.disabled = true;
+			element.value = "Busy...";
+		}
+
+		function fs(element) {
+			switch (element.name) {
+				case "update_button":
+					busy(element);
+					element.form.action.value="ADMIN::MACHINE_ID::UpdateMachine";
+					element.form.submit();
+					return true;
+					break;
+
+				case "back_button":
+					element.form.action.value="ADMIN::MACHINE_ID::Home";
+					element.form.submit();
+					return true;
+					break;
+			}
+		}
+	</script>
+</head>
+
+<body onload="loaded()">
+##TP_PLAY error_rpt.html##
+
+<table border="0" cellspacing="0" cellpadding="3">
+	<tr>
+		<th class="title">
+			##TP_Title##
+		</th>
+	</tr>
+
+	<tr>
+		<td><b>Creation date:</b> ##TP_cr_date##</td>
+	</tr>
+	<tr>
+		<td><b>Machine ID:</b> ##TP_machine_code##</td>
+	</tr>
+	<tr>
+		<td><b>Machine Status:</b> ##TP_status##</td>
+	</tr>
+	<tr>
+		<td><b>Machine Comment:</b>##TP_description##</td>
+	</tr>
+
+
+	<tr>
+		<td>
+			<form name="block_form" action="##TP_CGI_URL##"  method="get">
+				<input type="hidden" name="action" />
+				<input type="hidden" name="machine_id" value="##TP_TCL {reqGetArg machine_id}##" />
+				<input name="back_button" type="submit" class="btn_def" value="Back" onClick="fs(this)"/>
+				<input name="update_button" type="submit" class="btn_def" value="Update" onClick="fs(this)"/>
+			</form>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
+

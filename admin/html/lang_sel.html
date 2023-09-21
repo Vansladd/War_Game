@@ -1,0 +1,27 @@
+<!-- $Id: lang_sel.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<!-- This fragment should be included for language selection -->
+##TP_IF {[tpGetVar NumLangs 0]>0}##
+	<table cellspacing=0 cellpadding=0 border=0>
+	##TP_LOOP lang_idx {[expr {4*(([tpGetVar NumLangs]+3)/4)}]}##
+		##TP_IF {[tpGetVar lang_idx]%4 == 0}##
+			<tr>
+		##TP_ENDIF##
+		##TP_IF {[tpGetVar lang_idx]<[tpGetVar NumLangs]}##
+			<td>
+			<input type=checkbox name="LG_##TP_LangCode##" ##TP_LangSel##>
+			##TP_LangName##
+			</td>
+		##TP_ELSE##
+			<td>&nbsp;</td>
+		##TP_ENDIF##
+		##TP_IF {([tpGetVar lang_idx]+1)%4 == 0}##
+			</tr>
+		##TP_ENDIF##
+	##TP_ENDLOOP##
+	</table>
+##TP_ELSE##
+	<font color=yellow>
+	<b>No languages available</b>
+	</font>
+##TP_ENDIF##
+

@@ -1,0 +1,70 @@
+<html>
+<!-- $Id: retail_search.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	
+	<script>
+		function fs(button,action) {
+			button.disabled = true;
+			button.value = "Busy...";
+			button.form.action.value = "ADMIN::RETAIL::" + action;
+			button.form.submit();
+			return true;
+		}
+	</script>
+</head>
+<body onLoad="ac_init();">
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<!-- Shop search -->
+
+	<table cellspacing="0" cellpadding="2" border="0">
+		<form action="##TP_CGI_URL##" onsubmit="return false;">
+			<tr>
+				<th colspan="2" class="title">
+					Shop Search
+				</th>
+			</tr>
+			<tr>
+				<td class="caption" style="width:80px">Shop Number</td>
+				<td>##TP_PLAY auto_complete_shop.html##</td>
+			</tr>
+			<tr>
+				<th class="buttons" colspan="2">
+					<input type="button" class="btn_def" value="Search" onClick="fs(this,'GoShop');"/>
+					<input type="button" class="btn_def" value="Add" onClick="fs(this,'GoAddShop');"/>
+				</th>
+			</tr>
+			<input type="hidden" name="action" value=""/>
+		</form>
+	</table>
+
+<!-- District search -->
+
+	<br>
+	<table cellspacing="0" cellpadding="2" border="0">
+		<form action="##TP_CGI_URL##" onsubmit="return false;">
+			<tr>
+				<th colspan="2" class="title">
+					District Search
+				</th>
+			</tr>
+			<tr>
+				<td class="caption" style="width:80px">District No.</td>
+				<td>
+					<input type="text" name="DistrictNo" value="" maxlength="5" style="width:100px"/>
+				</td>
+			</tr>
+			<tr>
+				<th class="buttons" colspan="2">
+					<input type="button" class="btn_def" value="Search" onClick="fs(this,'GoDistrict');"/>
+					<input type="button" class="btn_def" value="Add" onClick="fs(this,'GoAddDistrict');"/>
+				</th>
+			</tr>
+			<input type="hidden" name="action" value=""/>
+		</form>
+	</table>
+</body>
+</html>

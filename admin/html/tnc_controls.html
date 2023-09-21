@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<!--
+ 		$Id: tnc_controls.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $
+		(C)2006 Orbis Technology Ltd. All rights reserved.
+	-->
+	<head>
+		<title>Terms and Conditions</title>
+		<meta http-equiv="Content-Type"
+			content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css"
+			href="##TP_CGI_URL##?action=stylesheet">
+	</head>
+	<body>
+		##TP_PLAY error_rpt.html##
+		##TP_PLAY msg_rpt.html##
+		<table cellspacing="0">
+			<thead>
+				<tr>
+					<th colspan=6" class="title">
+						Terms and Conditions
+					</th>
+				</tr>
+				<tr>
+					<th class="colhead">Name</th>
+					<th class="colhead">Channels</th>
+					<th class="colhead">Host Group</th>
+					<th class="colhead">Version</th>
+					<th class="colhead">Url</th>
+					<th class="colhead">Updated</th>
+				</tr>
+			</thead>
+			<tbody>
+				##TP_IF {[tpGetVar nrows] == 0}##
+				<tr>
+					<td colspan="6">
+						No rows found
+					</td>
+				</tr>
+				##TP_ENDIF##
+				##TP_LOOP idx {[tpGetVar nrows]}##
+				<tr>
+					<td><a href="##TP_CGI_URL##?action=ADMIN::TERMS_AND_CONDITIONS::go_tnc&amp;tnc_name=##TP_tnc_name##"
+						>##TP_tnc_name##</a></td>
+					<td>##TP_channels##</td>
+					<td>##TP_xsys_host_grp##</td>
+					<td>##TP_version##</td>
+					<td>##TP_url##</td>
+					<td>##TP_updated##</td>
+				</tr>
+				##TP_ENDLOOP##
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="6" class="buttons">
+						<input type="button" value="Insert" onclick="document.location.href='##TP_CGI_URL##?action=ADMIN::TERMS_AND_CONDITIONS::go_tnc';" name="addTnCBtn" class="btn_def"/>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</body>
+</html>

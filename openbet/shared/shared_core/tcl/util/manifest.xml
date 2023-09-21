@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<artifact created="2016-04-20 21:55:19" projectName="OpenBet Core Utils" type="sources" groupId="com.openbet.core.util" artifactId="openbet-core-util" version="3.55">
+    <openbet corporatePomVersion="2" teamPomVersion="11.29" pluginVersion="2.17.0"/>
+    <scm module="" server="stash.int.openbet.com:7999" tag="HEAD" type="git" branch="UNKNOWN" repo="https://stash.int.openbet.com/scm/obcore/util.git"/>
+    <artifactory url="https://artifactory.int.openbet.com/artifactory/openbet-release-local/com/openbet/core/util/openbet-core-util/3.55" buildTag="openbet-core-util-3.55-20160420.215412"/>
+    <files>
+        <file location="assert.tcl" sha1sum="99163eba92e9456496f954d2d84f6c4fa21c7854"/>
+        <file location="bitwise.tcl" sha1sum="f87847b9606db03e4274c7aa1c0a329561a99925"/>
+        <file location="blurb.tcl" sha1sum="fce3407859246098b5364e0d5773bdca42d0bc1d"/>
+        <file location="control.tcl" sha1sum="0f3ffc3bb9bdd3789f85eb8c8cd330ffe450f6de"/>
+        <file location="date.tcl" sha1sum="840151c85aa3b2c484fc50cd944bae00440bfc02"/>
+        <file location="dynatrace.tcl" sha1sum="c049c658f5dae0dd85bcd7b212f92a5703b90363"/>
+        <file location="email.tcl" sha1sum="4ed7a4d7b8fb05227b162d20b05e5970be9e9a0d"/>
+        <file location="gc.tcl" sha1sum="48748c46864e02b05a772133f6c03c3f1fba75ba"/>
+        <file location="handicap.tcl" sha1sum="8fa459a010aeb8a0621ad3da77e558185e0d79d4"/>
+        <file location="interface.tcl" sha1sum="295eca063a0a5e4f9fff7ee3224026a41c901696"/>
+        <file location="json.tcl" sha1sum="ec4bf08036a68329f2f0b38704d0ceb41b08117a"/>
+        <file location="lock.tcl" sha1sum="d8660a05c02fdbd48454d0545cc1f0d5b182d4ec"/>
+        <file location="multitenant.tcl" sha1sum="c1e081856d401ddbe7517b1cc582fb9e4e998357"/>
+        <file location="pkgIndex.tcl" sha1sum="903bd9e3b2ed9fd8129d49d1f956588bdc1cea4e"/>
+        <file location="plugin.tcl" sha1sum="2b01036fadbe3b82089fbd959c440240bdde95b7"/>
+        <file location="pom.xml" sha1sum="0f6f119dcc577e6d4cbfc4a686fa4d121b01cd18"/>
+        <file location="price.tcl" sha1sum="14473a7f1ac2e022adeac538567048161eaba1aa"/>
+        <file location="profile.tcl" sha1sum="e7d78d60af75ae84356abb7fbb2a0a5abad5b7d2"/>
+        <file location="queue.tcl" sha1sum="988484b3a71e9b2e47472e1fab10d08a07562ba2"/>
+        <file location="random.tcl" sha1sum="e887d13ea1cd2541d56b7745a6ad09fb4ba4c359"/>
+        <file location="safe.tcl" sha1sum="ed245e7b8576d52309b7819c72b309c3a1773669"/>
+        <file location="soap.tcl" sha1sum="d3b7dbf67741fe3cb259604882b1a59448d82fde"/>
+        <file location="socket.tcl" sha1sum="6786a9d371a3cca3f6657c6aa61f8cf34d9a38a5"/>
+        <file location="socket_appserv.tcl" sha1sum="958540d4ab70aa051838c12c67fe5803cda5692a"/>
+        <file location="socket_client.tcl" sha1sum="367fad5c56b7b5d0c992a1f289f6a684353a3e7f"/>
+        <file location="standalone.tcl" sha1sum="ffc07b8bd9698e8159f84346ccfafbfbb8809847"/>
+        <file location="timezone.tcl" sha1sum="55c18390d94715e621ee6b38e551b6b424e5512d"/>
+        <file location="util.tcl" sha1sum="6ca809f77673bc52ceac947c3b09f9183d295336"/>
+        <file location="uuid.tcl" sha1sum="41a39cc3994a730639453447e7dff8e446a1fd4d"/>
+        <file location="xl.tcl" sha1sum="01137e5b92d490159c401b8a7fc469cfbb7cb324"/>
+        <file location="xml.tcl" sha1sum="df647c3bfcf262b089e3047d82af57109c969d98"/>
+    </files>
+</artifact>

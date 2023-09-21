@@ -1,0 +1,104 @@
+##TP_COMMENT $Id: user_position.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $##
+##TP_COMMENT $Name: RC_Training $##
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>User Positions</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY msg_rpt.html##
+##TP_PLAY error_rpt.html##
+<form method=post action="##TP_CGI_URL##" >
+<table border="0" cellspacing="0" cellpadding="1">
+  <tr>
+    <th class="title" colspan="3">
+      ##TP_IF {[tpGetVar opAdd 0]}##
+      Add Position      
+      ##TP_ELSE##
+      ##TP_PositionName## Update
+      ##TP_ENDIF##
+    </th>
+  </tr>
+  <tr>
+    <td class="caption">Name</td>
+    <td><input type="text" name="PositionName" size="30" value="##TP_PositionName##" /></td>
+  </tr>
+  <tr>
+    <td class=caption>Parent</td>
+    <td>
+      <select name="PositionParentId">        
+        <option value="">--ROOT--</option>
+        ##TP_LOOP pos_idx {[tpGetVar NumPositions]}##
+        <option value="##TP_ParentPosId##" ##TP_ParentPosSelected##>##TP_ParentPosName##</option>
+        ##TP_ENDLOOP##
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <th colspan=2 class=buttons>
+    ##TP_IF {[tpGetVar opAdd 0]}##
+    <input type=button class="btn_def" value="Add Position" onClick="return fs(this,'PosnAdd')">
+    ##TP_ELSE##
+    <input type=button class="btn_def" value="Update Position" onClick="return fs(this,'PosnMod')">
+    <input type=button class="btn_def" value="Delete Position" onClick="return fs(this,'PosnDel')">
+    ##TP_ENDIF##
+    <input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+    </td>
+  </tr>
+</table>
+<input type=hidden name=PositionId value="##TP_PositionId##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::USERS::DoPosition>
+</form>
+
+##TP_IF {[tpGetVar opAdd 0]==0}##
+<br />
+<form method="post" action="##TP_CGI_URL##" name=perm_form>
+  <table border="0" cellspacing="0" cellpadding="1">
+  <tr>
+    <th class="title" colspan="3">
+    ##TP_PositionName## group permissions
+    </th>
+  </tr>
+  ##TP_LOOP group_idx {[expr {2*(([tpGetVar NumGroups]+1)/2)}]}##
+    ##TP_IF {[tpGetVar group_idx]%2 == 0}##
+      <tr>
+    ##TP_ENDIF##
+    ##TP_IF {[tpGetVar group_idx] < [tpGetVar NumGroups]}##
+      <td>
+      <input value="Y" type="checkbox" name="AG_##TP_GroupId##" ##TP_GroupSelected##>&nbsp;
+      ##TP_GroupName##&nbsp;
+      </td>
+    ##TP_ELSE##
+      <td>&nbsp;</td>
+    ##TP_ENDIF##
+    ##TP_IF {([tpGetVar group_idx]+1)%2 == 0}##
+      </tr>
+    ##TP_ENDIF##
+  ##TP_ENDLOOP##
+  <tr>
+    <th colspan="3" class="buttons">  
+    <input type=button class="btn_def" value="Update Permissions" onClick="return fs(this,'UpdPerms')">
+    <input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+    </td>
+  </tr>
+</table>
+<input type=hidden name=PositionId value="##TP_PositionId##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::USERS::DoPosition>
+</form>
+##TP_ENDIF##
+
+</body>
+</html>

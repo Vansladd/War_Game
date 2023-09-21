@@ -1,0 +1,162 @@
+<html>
+<!-- $Header: /cvsroot-openbet/training/admin/html/video/perform_search.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+
+##TP_PLAY JS_WriteSelect.html##
+##TP_PLAY header_cal.html##
+<script type="text/javascript">
+	function fs (b,t) {
+	
+		if (t == "EvAdd" || t == "EvAddAuto" || t == "EvResAuto" || t == "EvConfStlAuto") {
+			var type_id = document.forms['evform'].elements['TypeId'];
+			if (type_id.selectedIndex == -1 ||
+					type_id.options[type_id.selectedIndex].value == 0) {
+				alert ("Please select an event class or event type from the list.");
+				return false;
+			}
+		}
+	
+		if (t == "EvAdd") {
+			var s = b.form.TypeId.options[b.form.TypeId.selectedIndex].value;
+			if (s == "0" || s.substring(0,1) == "C") {
+				alert ("Please choose an event type.");
+				return false;
+			}
+		}
+
+		if (t == "DoMapHorseEv") {
+			b.form.action.value = "ADMIN::PERFORM::DoMapHorseRacing"
+		}
+
+		if (t == "DoMapTodayHorseEv") {
+			b.form.days.value = 1
+			b.form.dateStart.value = ""
+			b.form.dateEnd.value = ""
+			b.form.mapped.value = "-"
+			b.form.action.value = "ADMIN::PERFORM::DoMapHorseRacing"
+		}
+
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+
+	function displayCalendars() {
+	new Calendar(document.forms.perform_search.dateStart,null,false,"lo")
+		new Calendar(document.forms.perform_search.dateEnd,null,false,"lo")
+
+	new Calendar(document.forms.vod_perform_search.dateStart,null,false,"lo")
+		new Calendar(document.forms.vod_perform_search.dateEnd,null,false,"lo")
+	}
+</script>
+
+<title>OpenBet Administration</title>
+</head>
+
+<body onload="displayCalendars()">
+
+##TP_PLAY error_rpt.html##
+
+<!-- $Header:  -->
+<form name="perform_search" method="get" action="##TP_CGI_URL##">
+<input type="hidden" name="perftype" value="PERFORM">
+<table border="0" cellspacing="0" cellpadding="2">
+<tr><th colspan="2" class="title">Perform Stream Mapping</th></tr>
+<tr>
+	<td class="caption">Date Range</td>
+	<td>
+		<select name="days">
+			<script>write_select('##TP_TCL {OT_CfgGet EVENT_SEL_DATE_RANGE_DFLT 0}##'
+				,'-', '--'
+				,'1', 'Today'
+				,'3', 'Next 3 Days'
+				,'7', 'Next 7 Days'
+			);</script>
+		</select>&nbsp;&nbsp;or&nbsp;
+		<input type="text" size="13" name="dateStart" value="" id="date_lo">
+		##TP_IF {[OT_CfgGet CALENDAR 0]}##
+			##TP_TCL {ADMIN::CALENDAR::get_calendar date_lo 0 lo}##
+		##TP_ENDIF##
+		&nbsp;to&nbsp;
+		<input type="text" size="13" name="dateEnd" value="" id="date_hi">
+		##TP_IF {[OT_CfgGet CALENDAR 0]}##
+			##TP_TCL {ADMIN::CALENDAR::get_calendar date_hi 0 hi}##
+		##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class="caption">Mapped</td>
+	<td>
+	<select name="mapped">
+		<script>write_select('N','-', 'Either','N', 'No','Y', 'Yes');</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<th colspan="2" class="buttons">
+		<input type="button" value="Show Events" onClick="return fs(this,'DoEvSearch')">
+		<input type="button" value="Map Live Horse Racing" onClick="return fs(this,'DoMapHorseEv')">
+		<input type="button" value="Map Today's Live Horse Racing" onClick="return fs(this,'DoMapTodayHorseEv')">
+	</th>
+</tr>
+</table>
+<input type="hidden" name="SubmitName" value="">
+<input type="hidden" name="action" value="ADMIN::PERFORM::GoStreamRequest">
+
+</form>
+
+<br/>
+
+<form name="vod_perform_search" method="get" action="##TP_CGI_URL##">
+<input type="hidden" name="perftype" value="PERFVOD">
+<table border="0" cellspacing="0" cellpadding="2">
+<tr><th colspan="2" class="title">Perform Video on Demand Stream Mapping</th></tr>
+<tr>
+	<td class="caption">Date Range</td>
+	<td>
+		<select name="days">
+			<script>write_select('##TP_TCL {OT_CfgGet EVENT_SEL_DATE_RANGE_DFLT 0}##'
+				,'-', '--'
+				,'1', 'Today'
+				,'2', 'Prev 2 Days'
+				,'4', 'Prev 4 Days'
+			);</script>
+		</select>&nbsp;&nbsp;or&nbsp;
+		<input type="text" size="10" name="dateStart" value="" id="date_lo">
+		##TP_IF {[OT_CfgGet CALENDAR 0]}##
+			##TP_TCL {ADMIN::CALENDAR::get_calendar date_lo 0 lo}##
+		##TP_ENDIF##
+		&nbsp;to&nbsp;
+		<input type="text" size="10" name="dateEnd" value="" id="date_hi">
+		##TP_IF {[OT_CfgGet CALENDAR 0]}##
+			##TP_TCL {ADMIN::CALENDAR::get_calendar date_hi 0 hi}##
+		##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class="caption">Mapped</td>
+	<td>
+	<select name="mapped">
+		<script>write_select('N','-', 'Either','N', 'No','Y', 'Yes');</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<th colspan="2" class="buttons">
+		<input type="button" value="Show Events" onClick="return fs(this,'DoEvSearch')">
+		<input type="button" value="Map VoD Horse Racing" onClick="return fs(this,'DoMapHorseEv')">
+		<input type="button" value="Map Today's VoD Horse Racing" onClick="return fs(this,'DoMapTodayHorseEv')">
+	</th>
+</tr>
+</table>
+<input type="hidden" name="SubmitName" value="">
+<input type="hidden" name="action" value="ADMIN::PERFORM::GoStreamRequest">
+
+</form>
+
+</body>
+</html>

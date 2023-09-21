@@ -1,0 +1,420 @@
+Group,Code,en
+Admin Xlations,Admin.ACCT_NO,Acct No
+Admin Xlations,Admin.ACCT_STATUS.CLOSED,Acct No
+Admin Xlations,Admin.ACCT_STATUS.SUSP,Acct No
+Admin Xlations,Admin.ACCT_STATUS_ACTIVE,Active
+Admin Xlations,Admin.ACCT_STATUS_CLOSED,Closed
+Admin Xlations,Admin.ACCT_STATUS_SUSP,Suspended
+Admin Xlations,Admin.Adjustment_Search.ACCT_NO,Account No
+Admin Xlations,Admin.Adjustment_Search.ADJUSTMENT_SEARCH,Manual Adjustment Search
+Admin Xlations,Admin.Adjustment_Search.ADJUST_DATE,Date Range
+Admin Xlations,Admin.Adjustment_Search.ADJUST_DETAILS,Adjustment details
+Admin Xlations,Admin.Adjustment_Search.AUTH_OPERATOR,Auth Operator
+Admin Xlations,Admin.Adjustment_Search.CUST_INFO,Customer information
+Admin Xlations,Admin.Adjustment_Search.FIND_ADJUSTMENTS,Find Adjustments
+Admin Xlations,Admin.Adjustment_Search.POST_OPERATOR,Post Operator
+Admin Xlations,Admin.Adjustment_Search.RAISE_OPERATOR,Raise Operator
+Admin Xlations,Admin.Adjustment_Search.STATUS,Status
+Admin Xlations,Admin.Adjustment_Search.TYPE,Type
+Admin Xlations,Admin.Adjustment_Search_Results.ADJUSTMENT_AUTHORISE,Authorise Adjustments
+Admin Xlations,Admin.Adjustment_Search_Results.ADJUSTMENT_DECLINE,Decline Adjustments
+Admin Xlations,Admin.Adjustment_Search_Results.ADJUSTMENT_POST,Post Adjustments
+Admin Xlations,Admin.Adjustment_Search_Results.SEARCH_RESULTS,Manual adjustments search results
+Admin Xlations,Admin.BACK_BUTTON,Back
+Admin Xlations,Admin.BET_STATUS_ACTIVE,Active
+Admin Xlations,Admin.BET_STATUS_CANCELLED,Cancelled
+Admin Xlations,Admin.BET_STATUS_PENDING,Pending
+Admin Xlations,Admin.Bet_List.ACCT_NO,Account No
+Admin Xlations,Admin.Bet_List.BET,Bet
+Admin Xlations,Admin.Bet_List.BET_QUERY_RESULT,Bet Query Result
+Admin Xlations,Admin.Bet_List.CCY,Currency
+Admin Xlations,Admin.Bet_List.CUSTOMER,Customer
+Admin Xlations,Admin.Bet_List.EVENT,Event
+Admin Xlations,Admin.Bet_List.EVENT_CLASS,Event Class
+Admin Xlations,Admin.Bet_List.EXPECT_TO_SETTLE,Expect to Settle
+Admin Xlations,Admin.Bet_List.HCAP,HCap
+Admin Xlations,Admin.Bet_List.LATE_BET,Late Bet
+Admin Xlations,Admin.Bet_List.LEG,Leg
+Admin Xlations,Admin.Bet_List.LEG_TYPE,Leg Type
+Admin Xlations,Admin.Bet_List.MARKET,Market
+Admin Xlations,Admin.Bet_List.NO_BETS_FOUND,No bets found
+Admin Xlations,Admin.Bet_List.PLACED_AT,Placed at
+Admin Xlations,Admin.Bet_List.PRICE,Price
+Admin Xlations,Admin.Bet_List.RECEIPT,Receipt
+Admin Xlations,Admin.Bet_List.REFUND,Refund
+Admin Xlations,Admin.Bet_List.RESULT,Result
+Admin Xlations,Admin.Bet_List.SELECTION,Selection
+Admin Xlations,Admin.Bet_List.SETTLED,Settled
+Admin Xlations,Admin.Bet_List.SORT,Sort
+Admin Xlations,Admin.Bet_List.STAKE,Stake
+Admin Xlations,Admin.Bet_List.WINNINGS,Winnings
+Admin Xlations,Admin.Bet_Receipt.AFF_ID,Affiliate ID
+Admin Xlations,Admin.Bet_Receipt.ANTEPOST_BET,Antepost Bet
+Admin Xlations,Admin.Bet_Receipt.BET_DATE,Date placed (in OpenBet)
+Admin Xlations,Admin.Bet_Receipt.BET_DESCRIPTION,Description
+Admin Xlations,Admin.Bet_Receipt.BET_DETAILS,Bet Details
+Admin Xlations,Admin.Bet_Receipt.BET_HAS_BEEN_CANCELLED,This bet has been cancelled
+Admin Xlations,Admin.Bet_Receipt.BET_HAS_BEEN_SETTLED,This bet has been settled
+Admin Xlations,Admin.Bet_Receipt.BET_NOT_SETTLED_YET,This bet hasn&apos;t been settled yet
+Admin Xlations,Admin.Bet_Receipt.BET_TYPE,Bet Type
+Admin Xlations,Admin.Bet_Receipt.CANCEL_BET_BUTTON,Cancel Bet
+Admin Xlations,Admin.Bet_Receipt.CANNOT_BE_COMBINED,Cannot be combined
+Admin Xlations,Admin.Bet_Receipt.CCY,Currency
+Admin Xlations,Admin.Bet_Receipt.COMBI_BANKER,Banker
+Admin Xlations,Admin.Bet_Receipt.COMBI_KEY,Key
+Admin Xlations,Admin.Bet_Receipt.COMMENT,Comment
+Admin Xlations,Admin.Bet_Receipt.CREATE_MAN_ADJ_BUTTON,Create Manual Adjustment
+Admin Xlations,Admin.Bet_Receipt.EVENT,Event
+Admin Xlations,Admin.Bet_Receipt.EVENT_CLASS,Event Class
+Admin Xlations,Admin.Bet_Receipt.EVENT_TYPE,Event Type
+Admin Xlations,Admin.Bet_Receipt.FIELD,Field
+Admin Xlations,Admin.Bet_Receipt.IN_RUNNING,In Running
+Admin Xlations,Admin.Bet_Receipt.LEG,Leg
+Admin Xlations,Admin.Bet_Receipt.LEG_TYPE,Leg Type
+Admin Xlations,Admin.Bet_Receipt.LINES,Lines
+Admin Xlations,Admin.Bet_Receipt.LOSE_LINES,Lose lines
+Admin Xlations,Admin.Bet_Receipt.MANUAL_SETTLEMENT,Manual Settlement
+Admin Xlations,Admin.Bet_Receipt.MAN_BET_DESC_CONFIGURABLE,Manual Bet Description (Configurable)
+Admin Xlations,Admin.Bet_Receipt.MAN_BET_DESC_ORIG,Manual Bet Description (Original)
+Admin Xlations,Admin.Bet_Receipt.MAX_PAYOUT,Max Payout
+Admin Xlations,Admin.Bet_Receipt.NEEDS_SETTLE_CONFIRM,This needs settlement confirmation
+Admin Xlations,Admin.Bet_Receipt.NUM_LINES,Number of lines
+Admin Xlations,Admin.Bet_Receipt.OPERATOR,Call Operator
+Admin Xlations,Admin.Bet_Receipt.OVERRIDES,Overrides
+Admin Xlations,Admin.Bet_Receipt.PAID,Paid
+Admin Xlations,Admin.Bet_Receipt.PRICE,Price
+Admin Xlations,Admin.Bet_Receipt.REAL_BET_DATE,Actual Date Placed
+Admin Xlations,Admin.Bet_Receipt.RECEIPT,Receipt
+Admin Xlations,Admin.Bet_Receipt.REFUND,Refund
+Admin Xlations,Admin.Bet_Receipt.REFUNDS,Refunds
+Admin Xlations,Admin.Bet_Receipt.RESULT,Result
+Admin Xlations,Admin.Bet_Receipt.RETRO_DATE,Retrospective date
+Admin Xlations,Admin.Bet_Receipt.RETRO_TERM_CODE,Retrospective line no
+Admin Xlations,Admin.Bet_Receipt.SELN,Selection
+Admin Xlations,Admin.Bet_Receipt.SELN_DETAILS,Selection Details
+Admin Xlations,Admin.Bet_Receipt.SETTLED_AT,Settled at
+Admin Xlations,Admin.Bet_Receipt.SETTLED_BY,Settled by
+Admin Xlations,Admin.Bet_Receipt.SETTLED_BY_SETTLER,by settler
+Admin Xlations,Admin.Bet_Receipt.SETTLED_MANUALLY,manually
+Admin Xlations,Admin.Bet_Receipt.SETTLE_BET_BUTTON,Settle Bet
+Admin Xlations,Admin.Bet_Receipt.SETTLE_INFO,Comment
+Admin Xlations,Admin.Bet_Receipt.SORT,Sort
+Admin Xlations,Admin.Bet_Receipt.SOURCE,Source
+Admin Xlations,Admin.Bet_Receipt.STAKE,Stake
+Admin Xlations,Admin.Bet_Receipt.STAKE_PER_LINE,Stake per line
+Admin Xlations,Admin.Bet_Receipt.TAX,Tax
+Admin Xlations,Admin.Bet_Receipt.TERMINAL_ID,Line no
+Admin Xlations,Admin.Bet_Receipt.TOKEN_VALUE,Token Value
+Admin Xlations,Admin.Bet_Receipt.TOTAL_NUM_LINES_SHOULD_BE,Total number of lines should be
+Admin Xlations,Admin.Bet_Receipt.TO_SETTLE_ON,To Settle On
+Admin Xlations,Admin.Bet_Receipt.UNPAID,Unpaid
+Admin Xlations,Admin.Bet_Receipt.UPDATE_BUTTON,Update
+Admin Xlations,Admin.Bet_Receipt.VALUE,Value
+Admin Xlations,Admin.Bet_Receipt.VOID_LINES,Void Lines
+Admin Xlations,Admin.Bet_Receipt.WINNINGS,Winnings
+Admin Xlations,Admin.Bet_Receipt.WINNINGS_TAX,Winnings Tax
+Admin Xlations,Admin.Bet_Receipt.WIN_LINES,Win lines
+Admin Xlations,Admin.Bet_Search.ACCT_NO,Account No
+Admin Xlations,Admin.Bet_Search.ALL,All
+Admin Xlations,Admin.Bet_Search.ALLOW_STARTED_EVS_IN_BET,Allow started events in bet
+Admin Xlations,Admin.Bet_Search.ALLOW_SUSP_SELNS_IN_BET,Allow suspended selections in bet
+Admin Xlations,Admin.Bet_Search.ANTEPOST_BET,Antepost Bet
+Admin Xlations,Admin.Bet_Search.ANTEPOST_BET_PAID,Paid
+Admin Xlations,Admin.Bet_Search.ANTEPOST_BET_UNPAID,Unpaid
+Admin Xlations,Admin.Bet_Search.BATCH_REF,Batch Reference
+Admin Xlations,Admin.Bet_Search.BETS_PENDING_SETTLEMENT,Bets pending settlement
+Admin Xlations,Admin.Bet_Search.BETS_TO_BE_STLD_MANUALLY,Bets to be settled manually
+Admin Xlations,Admin.Bet_Search.BETTOR_NAME,Name
+Admin Xlations,Admin.Bet_Search.BET_DETAILS,Bet details
+Admin Xlations,Admin.Bet_Search.BET_IS,Bet is
+Admin Xlations,Admin.Bet_Search.BET_PLACED_BETWEEN,Bet placed between
+Admin Xlations,Admin.Bet_Search.BET_SEARCH_CRITERIA,Bet Search Criteria
+Admin Xlations,Admin.Bet_Search.BET_STATUS_IS,Bet status is
+Admin Xlations,Admin.Bet_Search.BET_TYPE,Bet Type
+Admin Xlations,Admin.Bet_Search.BLOCKED_BETS_STATUS_FLAG,BLOCKED Bets Status Flag
+Admin Xlations,Admin.Bet_Search.BY_SETTLER,By settler
+Admin Xlations,Admin.Bet_Search.CHANNEL,Channel
+Admin Xlations,Admin.Bet_Search.CREDIT_LIMIT,Credit Limit
+Admin Xlations,Admin.Bet_Search.CUST_INFO,Customer information
+Admin Xlations,Admin.Bet_Search.DENOTES_MAN_SETTLEMENT,Denotes manual settlement
+Admin Xlations,Admin.Bet_Search.DEP_ACCT_WITH_LOW_FUNDS,Deposit account bet with low funds
+Admin Xlations,Admin.Bet_Search.DEP_NOT_ALLOWED_FLAG,DEPOSITS not allowed Status Flag
+Admin Xlations,Admin.Bet_Search.DISP_ORIGINAL_PRICE,Display Original Price
+Admin Xlations,Admin.Bet_Search.EARLIEST_SELN,Earliest selection
+Admin Xlations,Admin.Bet_Search.ELITE_ONLY,Elite Only
+Admin Xlations,Admin.Bet_Search.EMAIL_LIKE,Email like
+Admin Xlations,Admin.Bet_Search.EVENT_DATE_BETWEEN,Event date between
+Admin Xlations,Admin.Bet_Search.EVENT_STATUS_IS,Event Status is
+Admin Xlations,Admin.Bet_Search.FAILED_FRAUD_FLAG,FRAUD check failed Status Flag
+Admin Xlations,Admin.Bet_Search.FIELDED_BETS,Fielded bets
+Admin Xlations,Admin.Bet_Search.FIND_BETS_BUTTON,Find Bets
+Admin Xlations,Admin.Bet_Search.HEDGED_BETS,Hedged Bets
+Admin Xlations,Admin.Bet_Search.IBALL_DRAW_NR,Draw Number
+Admin Xlations,Admin.Bet_Search.INCLUDE_VOID_BETS,Include void bets
+Admin Xlations,Admin.Bet_Search.LATEST_SELN,Latest selection
+Admin Xlations,Admin.Bet_Search.LBO_ACCOUNT,LBO account
+Admin Xlations,Admin.Bet_Search.LOGIN_RESTRICTED_STATUS_FLAG,LOGIN restricted Status Flag
+Admin Xlations,Admin.Bet_Search.MANUALLY_SETTLED,Manually
+Admin Xlations,Admin.Bet_Search.MANUAL_BET,Manual
+Admin Xlations,Admin.Bet_Search.MEETING,Meeting
+Admin Xlations,Admin.Bet_Search.MONITOR_BETS_STATUS_FLAG,MONITOR Bets Status Flag
+Admin Xlations,Admin.Bet_Search.MOST_RECENT_STLD_SELN,Most recently settled selection
+Admin Xlations,Admin.Bet_Search.NOTE_NORMAL,normal
+Admin Xlations,Admin.Bet_Search.NOT_SETTLED,Not settled
+Admin Xlations,Admin.Bet_Search.NO_PMT_GWAY_CONN,No payment gateway connection
+Admin Xlations,Admin.Bet_Search.ONLY_FOR_SYS_PRICE_OVERRIDES,Only available for &apos;System Price&apos; Overrides
+Admin Xlations,Admin.Bet_Search.ORDER_BY_BET_WITH,Order by bet with
+Admin Xlations,Admin.Bet_Search.OVERRIDE_DATE,Override Date
+Admin Xlations,Admin.Bet_Search.OVERRIDE_MAX_BET_AMOUNT,Override the maximum bet amount for selections
+Admin Xlations,Admin.Bet_Search.OVERRIDE_MIN_BET_AMOUNT,Override the minimum bet amount for selections
+Admin Xlations,Admin.Bet_Search.OVERRIDE_TYPE,Override type
+Admin Xlations,Admin.Bet_Search.PMT_REFERRAL,Payment Referral
+Admin Xlations,Admin.Bet_Search.POOL_TYPE,Pool type
+Admin Xlations,Admin.Bet_Search.RECEIPT_LIKE,Receipt like
+Admin Xlations,Admin.Bet_Search.RESTRICTED_BETTING_TO_SUPERVISOR_FLAG,RESTRICTED Betting to supervisors Status Flag
+Admin Xlations,Admin.Bet_Search.RETRO_BETS,Retrospective Bets
+Admin Xlations,Admin.Bet_Search.RETRO_BETS_OVERRIDE,Retrospective Bets (Override)
+Admin Xlations,Admin.Bet_Search.SETTLED,Settled
+Admin Xlations,Admin.Bet_Search.SETTLED_DATE_BETWEEN,Settled date between
+Admin Xlations,Admin.Bet_Search.SETTLEMENT,Settlement
+Admin Xlations,Admin.Bet_Search.SETTLEMENT_DATE_BETWEEN,Settlement date between
+Admin Xlations,Admin.Bet_Search.SETTLEMENT_EXPECTED_BETWEEN,Settlement expected between
+Admin Xlations,Admin.Bet_Search.SHOP_NUMBER,Shop Number
+Admin Xlations,Admin.Bet_Search.STAKE_BETWEEN,Stake between
+Admin Xlations,Admin.Bet_Search.SYSTEM_PRICE,System Price
+Admin Xlations,Admin.Bet_Search.UNIT_STAKE_BETWEEN,Unit stake between
+Admin Xlations,Admin.Bet_Search.UNVETTED_MAN_BET_DESCS,Unvetted manual<br > bet descriptions
+Admin Xlations,Admin.Bet_Search.USERNAME_LIKE,Username like
+Admin Xlations,Admin.Bet_Search.WINNINGS_BETWEEN,Winnings between
+Admin Xlations,Admin.Bet_Search.WINNINGS_GREATER_THAN,Winnings greater than
+Admin Xlations,Admin.Bet_Search.WTD_BLOCKED_FLAG,WITHDRAWALS blocked Status Flag
+Admin Xlations,Admin.Bet_Search.XGAME_COMP_NO,Competition Number
+Admin Xlations,Admin.Bet_Search.XGAME_SORT,Sort
+Admin Xlations,Admin.Bet_Summ.CHANNELS,Channels
+Admin Xlations,Admin.Bet_Summ.CUMULATED,Cumulated
+Admin Xlations,Admin.Bet_Summ.DETAILED_BREAKDOWN_BY,Detailed breakdown by
+Admin Xlations,Admin.Bet_Summ.NUM_BETS,Num Bets
+Admin Xlations,Admin.Bet_Summ.RETURNS,Returns
+Admin Xlations,Admin.Bet_Summ.SPORT,Sport
+Admin Xlations,Admin.Bet_Summ.STAKES,Stakes
+Admin Xlations,Admin.Bet_Summ.TOTAL,Total
+Admin Xlations,Admin.Bet_Summ.XGAME_TITLE,Lottery/XGames summary by year and channel
+Admin Xlations,Admin.CASE_INSENSITIVE,case insensitive
+Admin Xlations,Admin.Cust_Details.ACCEPTABLE_CONTACT_METHODS,Acceptable Contact Methods
+Admin Xlations,Admin.Cust_Details.ACCTNO,Account No
+Admin Xlations,Admin.Cust_Details.ACCT_BAL,Account balance
+Admin Xlations,Admin.Cust_Details.ACCT_CCY,Account currency
+Admin Xlations,Admin.Cust_Details.ACCT_INFORMATION,Account information
+Admin Xlations,Admin.Cust_Details.ACCT_TYPE,Account Type
+Admin Xlations,Admin.Cust_Details.ADDR_CONTACT_OK,Address OK?
+Admin Xlations,Admin.Cust_Details.AMEND_STATUS_FLAGS,Amend Status Flags
+Admin Xlations,Admin.Cust_Details.BET_SEARCH_BUTTON,Bet Search
+Admin Xlations,Admin.Cust_Details.BET_XFER_BUTTON,Bet Transfer
+Admin Xlations,Admin.Cust_Details.BY_CLASS,by class
+Admin Xlations,Admin.Cust_Details.BY_MARKETING,by marketing
+Admin Xlations,Admin.Cust_Details.BY_PARTNERS,by partners
+Admin Xlations,Admin.Cust_Details.BY_US,by us
+Admin Xlations,Admin.Cust_Details.CONTACTABLE,Contactable
+Admin Xlations,Admin.Cust_Details.CREDIT_LIMIT,Credit Limit
+Admin Xlations,Admin.Cust_Details.CUST_ATTRIBUTES,Customer Attributes
+Admin Xlations,Admin.Cust_Details.CUST_CAT,Customer Category
+Admin Xlations,Admin.Cust_Details.CUST_DETAILS,Customer Details
+Admin Xlations,Admin.Cust_Details.CUST_GROUP,Customer Group
+Admin Xlations,Admin.Cust_Details.CUST_IN_SELF_EXCL_PERIOD,This customer is currently within a self-exclusion period
+Admin Xlations,Admin.Cust_Details.CUST_NOTES,Notes
+Admin Xlations,Admin.Cust_Details.CUST_OUT_SELF_EXCL_PERIOD,The customer is outside their self exclusion period and needs clearing.
+Admin Xlations,Admin.Cust_Details.DAILY_TOTALS_BUTTON,Daily Totals
+Admin Xlations,Admin.Cust_Details.DOB,DOB
+Admin Xlations,Admin.Cust_Details.ELITE_CUST,Elite Customer
+Admin Xlations,Admin.Cust_Details.EMAIL_CONTACT_OK,Email OK?
+Admin Xlations,Admin.Cust_Details.FB_TOK_OPEN,Free bet tokens (open)
+Admin Xlations,Admin.Cust_Details.FB_TOK_RDMD,Free bet tokens (redeemed)
+Admin Xlations,Admin.Cust_Details.FNAME,First Name
+Admin Xlations,Admin.Cust_Details.FRAUD_STATUS,Fraud Status
+Admin Xlations,Admin.Cust_Details.GRAND_TOTALS,Grand Totals
+Admin Xlations,Admin.Cust_Details.LAST_BET,Last bet
+Admin Xlations,Admin.Cust_Details.LIABILITY_GROUP,Liability Group
+Admin Xlations,Admin.Cust_Details.LNAME,Last Name
+Admin Xlations,Admin.Cust_Details.LOGIN_HIST_BUTTON,Login History
+Admin Xlations,Admin.Cust_Details.MASTER_ACCT,Master Account
+Admin Xlations,Admin.Cust_Details.MNAME,Middle Name
+Admin Xlations,Admin.Cust_Details.MOBILE_CONTACT_OK,Mobile OK?
+Admin Xlations,Admin.Cust_Details.MSF,Max stake scale
+Admin Xlations,Admin.Cust_Details.NICKNAME,Nickname
+Admin Xlations,Admin.Cust_Details.NON_WTD,non-withdrawable
+Admin Xlations,Admin.Cust_Details.NOTIFYABLE,notifyable
+Admin Xlations,Admin.Cust_Details.NUM_LINKED_ACCT,links %s account
+Admin Xlations,Admin.Cust_Details.NUM_LINKED_ACCTS,links %s accounts
+Admin Xlations,Admin.Cust_Details.NR_BETS,Number of bets
+Admin Xlations,Admin.Cust_Details.POOLS_STKE_TOTAL_STLD ,Total Pools Staked (settled)
+Admin Xlations,Admin.Cust_Details.POOLS_BET_SUMM,Pools Bet summary
+Admin Xlations,Admin.Cust_Details.REG_CHANNEL,Registration Channel
+Admin Xlations,Admin.Cust_Details.REG_DATE,Registered at
+Admin Xlations,Admin.Cust_Details.REG_INFO,Registration Information
+Admin Xlations,Admin.Cust_Details.SELF_EXCLUSION,Customer Self Exclusion
+Admin Xlations,Admin.Cust_Details.SELF_EXCL_ENDS,Self-Exclusion Ends
+Admin Xlations,Admin.Cust_Details.SELF_EXCL_STARTED,Self-Exclusion Started
+Admin Xlations,Admin.Cust_Details.SPORTS_BET_SUMM,Sports Bet summary
+Admin Xlations,Admin.Cust_Details.SPORTS_BET_SUMM_VIEW,View
+Admin Xlations,Admin.Cust_Details.SPORTS_STKE_STLD,Total Sports Staked (settled)
+Admin Xlations,Admin.Cust_Details.SPORTS_STKE_UNSTLD,Total Sports Staked (unsettled)
+Admin Xlations,Admin.Cust_Details.STATUS,Status
+Admin Xlations,Admin.Cust_Details.TITLE,Title
+Admin Xlations,Admin.Cust_Details.TOTALS_BUTTON,Totals
+Admin Xlations,Admin.Cust_Details.TOTAL_POOLS_STKE,Total Pools Staked (unsettled)
+Admin Xlations,Admin.Cust_Details.TOTAL_REFD,Total Refunds
+Admin Xlations,Admin.Cust_Details.TOTAL_STKE,Total Staked
+Admin Xlations,Admin.Cust_Details.TOTAL_WIN,Total Winnings
+Admin Xlations,Admin.Cust_Details.TOTAL_XGAME_STKE_UNSTL,Total XGames Staked (unsettled)
+Admin Xlations,Admin.Cust_Details.TXN_QUERY_BUTTON,Transaction Query
+Admin Xlations,Admin.Cust_Details.UPDATE_CUST,Update Customer
+Admin Xlations,Admin.Cust_Details.UPDATE_CUST_BUTTON,Update Customer
+Admin Xlations,Admin.Cust_Details.USERNAME,Username
+Admin Xlations,Admin.Cust_Details.VIEW_AUDIT_HIST,View Audit History
+Admin Xlations,Admin.Cust_Details.VRF_CHECK_BUTTON,Verification Check
+Admin Xlations,Admin.Cust_Details.XGAME_BET_SUMM,Lottery/XGames Bet summary
+Admin Xlations,Admin.Cust_Details.XGAME_STKE_TOTAL_STLD,Total XGames Staked (settled)
+Admin Xlations,Admin.Cust_List.ACCTNO,Acct No
+Admin Xlations,Admin.Cust_List.ACCT_STATUS,Status
+Admin Xlations,Admin.Cust_List.BALANCE,Balance
+Admin Xlations,Admin.Cust_List.BETS,Acct No
+Admin Xlations,Admin.Cust_List.MSF,Scale Factor
+Admin Xlations,Admin.Cust_List.REG_DATE,Registration<br />Date
+Admin Xlations,Admin.Cust_List.RESULTS,Customer Search Results
+Admin Xlations,Admin.Cust_Search.ACCTNO,Account No
+Admin Xlations,Admin.Cust_Search.ACCT_BAL,Account balance
+Admin Xlations,Admin.Cust_Search.ACCT_STATUS,Account Status
+Admin Xlations,Admin.Cust_Search.BET_COUNT,Bet Count
+Admin Xlations,Admin.Cust_Search.BUTTON,Find Customers
+Admin Xlations,Admin.Cust_Search.CRITERIA,Customer Search Criteria
+Admin Xlations,Admin.Cust_Search.ELITE_CUST,Elite Customer
+Admin Xlations,Admin.Cust_Search.MSF,Max stake factor
+Admin Xlations,Admin.Cust_Search.REG_DATE,Registered between
+Admin Xlations,Admin.EVENT_STATUS_ACTIVE,Active
+Admin Xlations,Admin.EVENT_STATUS_SUSP,Suspended
+Admin Xlations,Admin.EXACT,exact
+Admin Xlations,Admin.Man_Adj.AMOUNT,Amount
+Admin Xlations,Admin.Man_Adj.BET_STKE,Bet stakes
+Admin Xlations,Admin.Man_Adj.BOOKMAKER_ACCT,Bookmaker Account
+Admin Xlations,Admin.Man_Adj.CASH_DEP_WTD,Cash (deposits/withdrawals)
+Admin Xlations,Admin.Man_Adj.CUST_ACCT_ADJ,Customer account adjustment
+Admin Xlations,Admin.Man_Adj.DATE_RANGE,Date Range
+Admin Xlations,Admin.Man_Adj.DESCRIPTION,Description
+Admin Xlations,Admin.Man_Adj.DO_MAN_ADJ_BUTTON,Do Manual Adjustment
+Admin Xlations,Admin.Man_Adj.MANUAL_ADJUSTMENT,Manual Adjustment
+Admin Xlations,Admin.Man_Adj.OPERATOR_NOTES,Operator Notes
+Admin Xlations,Admin.Man_Adj.TYPE,Type
+Admin Xlations,Admin.Man_Adj.VIEW_MAN_ADJ_BUTTON,View Manual Adjustments
+Admin Xlations,Admin.Man_Adj.WITHDRAWABLE,Withdrawable
+Admin Xlations,Admin.NEXT_BUTTON,Next
+Admin Xlations,Admin.Open_Tok_List.EXPIRY_DATETIME,Expiry Date & Time
+Admin Xlations,Admin.Open_Tok_List.OFFER_NAME,Offer Name
+Admin Xlations,Admin.Open_Tok_List.POSSIBLE_BETS,Possible Bets
+Admin Xlations,Admin.Open_Tok_List.REDEMPTION_AMOUNT,Redemption Amount
+Admin Xlations,Admin.Open_Tok_List.TITLE,Free Token List - Open
+Admin Xlations,Admin.PREVIOUS_BUTTON,Previous
+Admin Xlations,Admin.Redeem_Tok_List.ID,ID
+Admin Xlations,Admin.Redeem_Tok_List.REDEMPTION_AMOUNT,Redemption Amount
+Admin Xlations,Admin.Redeem_Tok_List.REDEMPTION_DATE,Redemption Date
+Admin Xlations,Admin.Redeem_Tok_List.TITLE,Free Token List - Redeemed
+Admin Xlations,Admin.Txn_List.ACCT_CCY,Account Currency
+Admin Xlations,Admin.Txn_List.ACCT_NO,Acct No
+Admin Xlations,Admin.Txn_List.AMOUNT,Amount
+Admin Xlations,Admin.Txn_List.BALANCE,Balance
+Admin Xlations,Admin.Txn_List.CUSTOMER_BUTTON,Customer
+Admin Xlations,Admin.Txn_List.CUST_TXN_HISTORY,Customer transaction history
+Admin Xlations,Admin.Txn_List.DATE,Date
+Admin Xlations,Admin.Txn_List.NEW_SEARCH_BUTTON,New Search
+Admin Xlations,Admin.Txn_List.TXN_DESCRIPTION,Description
+Admin Xlations,Admin.Txn_List.TXN_SORT,Sort
+Admin Xlations,Admin.Txn_List.USERNAME,Username
+Admin Xlations,Admin.Txn_Query.ACCT_NO,Acct No
+Admin Xlations,Admin.Txn_Query.DAILY_TOTALS_BUTTON,Daily Totals
+Admin Xlations,Admin.Txn_Query.DATE_RANGE,Date Range
+Admin Xlations,Admin.Txn_Query.LIST_TXN_BUTTON,List transactions
+Admin Xlations,Admin.Txn_Query.TXNS_PER_PAGE,Transactions per page
+Admin Xlations,Admin.Txn_Query.TXN_TYPE,Transaction Type
+Admin Xlations,Admin.Txn_Query.USERNAME,Username
+Admin Xlations,Admin.VIEW_AUDIT_HIST_BUTTON,View Audit History
+Admin Xlations,Admin.VIEW_EXT_ID_AUDIT_BUTTON,View ExtId Audit History
+Admin Xlations,Either,Either
+Admin Xlations,In the last 3 days,In the last 3 days
+Admin Xlations,In the last Week,In the last Week
+Admin Xlations,Last 3 Days,Last 3 Days
+Admin Xlations,Last 7 Days,Last 7 Days
+Admin Xlations,Last Month,Last Month
+Admin Xlations,Lose,Lose
+Admin Xlations,MADJ_TYPE_DESC_AFF,Affiliate Payments
+Admin Xlations,MADJ_TYPE_DESC_BNKC,Bank Charges
+Admin Xlations,MADJ_TYPE_DESC_CADJ,Commission Adjustments
+Admin Xlations,MADJ_TYPE_DESC_CSH,Cash Adjustments
+Admin Xlations,MADJ_TYPE_DESC_GWIL,Gesture of Goodwill
+Admin Xlations,MADJ_TYPE_DESC_LFND,Lost/Trapped Funds
+Admin Xlations,MADJ_TYPE_DESC_WOFF,Write Off
+Admin Xlations,N/A,N/A
+Admin Xlations,No,No
+Admin Xlations,Please Specify,Please Specify
+Admin Xlations,So Far this Month,So Far this Month
+Admin Xlations,So Far this Year,So Far this Year
+Admin Xlations,Today,Today
+Admin Xlations,Void,Void
+Admin Xlations,Win,Win
+Admin Xlations,Yes,Yes
+Admin Xlations,Yesterday,Yesterday
+Admin Xlations,and,and
+Admin Xlations,between,between
+Admin Xlations,is,is
+Admin Xlations,is from,is from
+Admin Xlations,is not,is not
+Admin Xlations,is not from,is not from
+Admin Xlations,or,or
+Admin Xlations,to,to
+Admin Xlations,Admin.Bet_Search.FAILED_BET_SEARCH_CRITERIA,Failed Bet Search Criteria
+Admin Xlations,Admin.Bet_Search.FAILED_BET_DETAILS,Failed Bet Details
+Admin Xlations,Admin.SEO.ADD_BUTTON,Add
+Admin Xlations,Admin.SEO.BACK_BUTTON,Back
+Admin Xlations,Admin.SEO.CURRENT_TAG_LEVEL,Current tag level
+Admin Xlations,Admin.SEO.DEFAULT_TAG,Default Tags
+Admin Xlations,Admin.SEO.DELETE_TAG_BUTTON,Delete Tag
+Admin Xlations,Admin.SEO.GLOBAL_DEFAULTS,Global Defaults
+Admin Xlations,Admin.SEO.GLOBAL_DEFAULTS_DESC," - <i>Contains a full set of default tags for Coupons, Campaigns and the entire hierarchy</i>"
+Admin Xlations,Admin.SEO.GO_BUTTON,Go
+Admin Xlations,Admin.SEO.GO_SPECIFIC,Go To Specific
+Admin Xlations,Admin.SEO.HOMEPAGE,Homepage
+Admin Xlations,Admin.SEO.HOME_PAGE,Homepage
+Admin Xlations,Admin.SEO.HOME_PAGE_TAGS,Home Page tags
+Admin Xlations,Admin.SEO.ID,ID =
+Admin Xlations,Admin.SEO.INVALID_SELECTION,Invalid Selection
+Admin Xlations,Admin.SEO.META_DESC,Description
+Admin Xlations,Admin.SEO.META_DKIS,DKIs
+Admin Xlations,Admin.SEO.META_DKI_OPTIONAL_TAGS,Optional Tags
+Admin Xlations,Admin.SEO.META_DKI_TAG,<i>Double-Click to add<br>a DKI to the tag</i>
+Admin Xlations,Admin.SEO.META_EXAMPLE,"<i>Optional sections of text may be included using square brackets.<br>	These should include <b>ONE</b> placeholder only (eg. [and <>EVENT<> betting] )<br> and should always be separated by a space. (eg [<>EVENT<>] [<>EVENT<>])<br><br> Also please note that it is not advisable to mix and match regular &amp; optional placeholders.<br> eg. <b><>CLASS<> betting [with <>TYPE<> odds] [and <>TYPE<> odds]</b> is fine <br>	and <b><>CLASS<> betting with <>TYPE<> odds and <>TYPE<> odds</b> is fine <br> but <b><>CLASS<> betting with <>TYPE<> odds [and <>TYPE<> odds]</b> is not advised </i>"
+Admin Xlations,Admin.SEO.META_H1_H2_TAGS,H1 / H2 Tags
+Admin Xlations,Admin.SEO.META_KEYWORDS,Keywords
+Admin Xlations,Admin.SEO.META_REMAINING,Remaining
+Admin Xlations,Admin.SEO.META_TITLE,Title
+Admin Xlations,Admin.SEO.PKW,Problem Keywords (PKWs)
+Admin Xlations,Admin.SEO.PKW_DELETE,Delete
+Admin Xlations,Admin.SEO.PKW_DESC," - <i>Contains a list of words which will be removed during tag build to prevent duplication</i>"
+Admin Xlations,Admin.SEO.PKW_NONE,None
+Admin Xlations,Admin.SEO.SAVE_ALL_BUTTON,Save All
+Admin Xlations,Admin.SEO.STATIC_PAGES,Static Pages
+Admin Xlations,Admin.SEO.STATIC_PAGE_DELETE_TAG,Delete Tag
+Admin Xlations,Admin.SEO.STATIC_PAGE_EDIT_EXISTING_PAGE,Edit Existing Page
+Admin Xlations,Admin.SEO.STATIC_PAGE_META_TAGS,Meta Tags
+Admin Xlations,Admin.SEO.STATIC_PAGE_TAGS,Static Page Tags
+Admin Xlations,Admin.SEO.STATIC_PAGE_TITLE,Title
+Admin Xlations,Admin.SEO.STATIC_PAGE_URL,URL
+Admin Xlations,Admin.SEO.TAGS,tags
+Admin Xlations,Admin.SEO.TITLE_TAG,SEO Title Tagging
+Admin Xlations,Admin.SUPPORT_EMAIL_MESSAGE,Please go through your helpdesk process
+Admin Xlations,Admin.Y_N.Y, Yes
+Admin Xlations,Admin.Y_N.N, No
+Admin Xlations,Admin.Cust_Daily_Totals.DAILY_TOTALS,Daily Totals
+Admin Xlations,Admin.Cust_Daily_Totals.BETS,Bets
+Admin Xlations,Admin.Cust_Daily_Totals.TYPE,Type
+Admin Xlations,Admin.Cust_Daily_Totals.STAKED,Staked
+Admin Xlations,Admin.Cust_Daily_Totals.SETTLED,Settled
+Admin Xlations,Admin.Cust_Daily_Totals.UNSETTLED,Unsettled
+Admin Xlations,Admin.Cust_Daily_Totals.WINNINGS,Winnings

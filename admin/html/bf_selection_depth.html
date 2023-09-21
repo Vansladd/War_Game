@@ -1,0 +1,50 @@
+<html>
+<!-- $Id: bf_selection_depth.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Betfair Selection Depth</title>
+
+<script language=javascript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+
+<body>
+<form action="##TP_CGI_URL##" method="POST">
+<input type=hidden name=action value="ADMIN::BETFAIR::GoBFSelnDepth">
+<input type=hidden name=SubmitName>
+<table cellspacing=0 cellpadding=3 border=0>
+<tr>
+        <th colspan=3 class=title>
+        Betfair Selection Depth - ##TP_OcDesc##
+        </th>
+</tr>
+<tr>
+	<th class=colhead>Price</th>
+	<th class=colhead>Back Available</th>
+	<th class=colhead>Lay Available</th>
+</tr>
+##TP_LOOP depth_idx {[tpGetVar BFDepth]}##
+	<tr>
+		<td>##TP_BFPrice##</td>
+		<td>##TP_BFBackAmt##</td>
+		<td>##TP_BFLayAmt##</td>
+	</tr>
+##TP_ENDLOOP##
+<tr>
+	<td class=buttons colspan=3>
+	<input type=button value=Close  onClick="window.close()">
+	</td>
+</form>
+</tr>
+</table>
+</body>
+</html>

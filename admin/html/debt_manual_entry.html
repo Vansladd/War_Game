@@ -1,0 +1,95 @@
+<html>
+<!-- $Id: debt_manual_entry.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY header_cal.html##
+
+<script>
+function fs(b,t)
+{
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function displayCalendars() {
+	new Calendar(document.forms.debt_management.review_date,null,false,"lo");
+}
+
+function checkDate() {
+	var dateArray = new Array();
+	dateArray = document.forms.debt_management.review_date.value.split('-');
+	if (dateArray.length != 3) {
+		alert ('Error in date field format (should be yyyy-MM-DD)');
+		document.forms.debt_management.review_date.value = '';
+		return;
+	}
+}
+
+function doAudit(audit, b) {
+	b.form.AuditInfo.value = audit;
+	return fs(b, "GoAudit");
+}
+</script>
+
+</head>
+<body onload="displayCalendars()">
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<!--
+	cust_id         int 
+	
+	status          char(1)  - set to A
+	debt_state_id   int      - allow to choose
+	review_date     datetime - allow to choose
+	notes           char(255)
+-->
+<form name="debt_management" action="##TP_CGI_URL##">
+	<input type="hidden" name="SubmitName" value="">
+	<input type="hidden" name="action" value="ADMIN::DEBT_MANAGEMENT::DoDebtManualEntry">
+	<input type="hidden" name="AuditInfo" value="">
+	
+	<table border=0 cellspacing=0 cellpadding=3 bgcolor=#10137c>
+	<tr>
+		<th colspan=2 class=title>
+			Debt diary - manual entry
+		</th>
+	</tr>
+	<tr>
+		<td class="caption">Account number</td>
+		<td><input type="text" name="acct_no" value=""></td>
+	</tr>
+	<tr>
+		<td class="caption">Balance</td>
+		<td><input type="text" name="balance" value=""></td>
+	</tr>
+	<tr>
+		<td class="captionindex">
+			Debt State
+		</td>
+		<td>
+			<select name="DebtState">
+				##TP_LOOP row_idx {[tpGetVar debt_num_states]}##
+				<option value="##TP_state_id##">##TP_debt_code##</option>
+				##TP_ENDLOOP##
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class="caption">Note</td>
+		<td><textarea name="notes" cols="40" rows="4" value="##TP_notes##">##TP_notes##</textarea></td>
+	</tr>
+
+	<tr>
+		<td colspan=3 class=buttons>
+			<input type="button" class="btn_def" value="Add diary entry" onClick="return fs(this,'DoDebtManualEntry')">
+			<input type="button" class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</td>
+	</tr>
+	</table>
+	
+</form>
+</body>
+</html>

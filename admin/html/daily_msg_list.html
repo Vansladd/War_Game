@@ -1,0 +1,62 @@
+<html>
+<!-- $Id: daily_msg_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Telebet Daily Trading Messages</title>
+</head>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=6 class=title>
+		Telebet Daily Message
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Message</th>
+	<th nowrap class=colhead>Valid From</th>
+	<th nowrap class=colhead>Valid To</th>
+	<th nowrap class=colhead>Status</th>
+	<th nowrap class=colhead>Department</th>
+	<th nowrap class=colhead>Location</th>
+</tr>
+##TP_LOOP dailymsg_idx {[tpGetVar NumDailyMsg]}##
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::TB_DMSG::GoDailyMsgDetails&MsgId=##TP_MsgId##">##TP_MsgTxt##</a></td>
+	<td class=ra>##TP_ValidFrom##</td>
+	<td class=ra>##TP_ValidTo##</td>
+	<td class=ra>##TP_Status##</td>
+	<td class=ra>##TP_DeptName##</td>
+	<td class=ra>##TP_LocName##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[tpGetVar NumDailyMsg 0]==0}##
+<tr>
+	<td colspan=5>
+			<b><i>There are no trading daily messages defined</i></b>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th class=buttons colspan=6>
+	<form action="##TP_CGI_URL##" method=get>
+			<input type=button class="btn_def" value="Add New Daily Message" onClick="return fs(this,'MsgAdd')">
+	</th>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::TB_DMSG::GoDailyMsgAdd>
+	</form>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<html>
+<!-- $Id: period_view.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<title>Input Game</title>
+
+<script language="javascript">
+
+<!-- //
+
+function write_tr(t)
+{
+	if (t == "F") {
+		col="#cc9999";
+	}
+	if (t == "R") {
+		col="#99cc99"
+	}
+	if (t == "S") {
+		col="#cccc99"
+	}
+	document.write('<tr bgcolor="'+col+'">');
+}
+
+function fs(b,t)
+{
+	if (t == "GameShow") {
+		//var s = b.form.TypeId.options[b.form.TypeId.selectedIndex].value;
+		//if (s == "0" || s.substring(0,1) == "C") {
+		//	alert ("Please choose an event type");
+		//	return false;
+		//}
+	}
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+// -->
+
+	</script>
+</head>
+
+<body bgcolor="white" text="black" link="#0000ee" vlink="#3333ff" alink="#ff0000">
+
+	##TP_PLAY error_rpt.html##
+
+	<table border="0" cellspacing="0" cellpadding="2" bgcolor="#10137c">
+		<tr>
+			<td colspan="2" align="left">
+			<font color="white" size="+1"><b>Period Details</b></font>
+			</td>
+		</tr>
+		##TP_IF {[tpGetVar PeriodStatus] == "F"}##
+		<script>write_tr('##TP_Status##')</script>
+			<td align="center" colspan="2"><font size="+2"><b>This period has finished.</b></font></td>
+		</tr>
+		##TP_ELSEIF {[tpGetVar PeriodStatus] == "S"}##
+		<script>write_tr('##TP_Status##')</script>
+			<td align="center" colspan="2"><font size="+2"><b>This period is currently suspended.</b></font></td>
+		</tr>
+		##TP_ENDIF##
+		<script>write_tr('##TP_Status##')</script>
+			<td align="right"><b>Period Number :</b></td>
+			<td><b>##TP_PeriodNumber##</b></td>
+		</tr>
+		<script>write_tr('##TP_Status##')</script>
+			<td align="right"><b>Start :</b></td>
+			<td align="left"><b>##TP_Start##</b></td>
+		</tr>
+		<script>write_tr('##TP_Status##')</script>
+			<td align=right><b>End :</b></td>
+			<td align="left"><b>##TP_End##</b></td>
+		</tr>
+		<script>write_tr('##TP_Status##')</script>
+			<td align=right colspan="2"><br></td>
+		</tr>
+		<script>write_tr('##TP_Status##')</script>
+			<td align="center" colspan="2"><b><i>Positions correct as of ##TP_PosCalcAt##</b><i></td>
+		</tr>
+	</table><br>
+
+	<table border="0" cellspacing="0" cellpadding="2" bgcolor="#10137c">
+
+		<!-- If any standings exist -->
+		<tr bgcolor="#999999">
+			<th align="left">Position</th>
+			<th align="left">Username</th>
+			<th align="left">Available</th>
+			<th align="left">Unsettled</th>
+			<th align="left">Total</th>
+		</tr>
+		##TP_IF {[tpGetVar standings_rows] > 0}##
+		##TP_LOOP period_idx {[tpGetVar standings_rows]}##
+		<tr bgcolor="#999999">
+			<th align="left">##TP_Position##</th>
+			<th align="left">##TP_Username##</th>
+			<th align="left">##TP_Available##</th>
+			<th align="left">##TP_Unsettled##</th>
+			<th align="left">##TP_Total##</th>
+		</tr>
+		##TP_ENDLOOP##
+
+		##TP_ELSE##
+		<tr bgcolor="#cc3333">
+			<th align="center" colspan="6">
+			<font color="white">
+			There are no customers currently playing this game.
+			</th>
+		</tr>
+		##TP_ENDIF##
+
+		<tr>
+			<form action="##TP_CGI_URL##" method="get">
+			<input type="hidden" name="SubmitName" value="">
+			<input type="hidden" name="action" value="GoFBetGameUpdate">
+			<input type="hidden" name="GameID" value="##TP_GameID##">
+
+			<th colspan="2" align="left">
+			<table bgcolor=#10137c border=0 cellspacing=0 cellpadding=0 width=100%>
+				<tr>
+					<th width="75%" align="left">
+					<font color="white">
+					<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+					</font>
+					</th>
+				</tr>
+			</table>
+			</th>
+		</tr>
+		</form>
+	</table>
+
+</body>
+</html>

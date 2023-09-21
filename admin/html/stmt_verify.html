@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<!--
+ 		$Id: stmt_verify.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $
+		(C)2006 Orbis Technology Ltd. All rights reserved.
+	-->
+	<head>
+		<title>Statement Verify</title>
+		<meta http-equiv="Content-Type"
+			content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css"
+			href="##TP_CGI_URL##?action=stylesheet">
+	</head>
+	<body>
+		##TP_PLAY error_rpt.html##
+		##TP_PLAY msg_rpt.html##
+		<table cellspacing="0">
+				<tr>
+					<th colspan="2" class="title">
+						Statement Verification
+					</th>
+				</tr>
+				<tr>
+					<td nowrap class="caption">Date</td>
+					<td>&nbsp;##TP_Date##</td>
+				</tr>
+				<tr>
+					<td nowrap class="caption">Number of statements</td>
+					<td>&nbsp;##TP_Statements##</td>
+				</tr>
+				<tr>
+					<td nowrap class="caption">Value of statements</td>
+					<td>&nbsp;##TP_Total_Value##</td>
+				</tr>
+				<tr>
+					<td nowrap class="caption">Number of cheques</td>
+					<td>&nbsp;##TP_Cheques##</td>
+				</tr>
+				<tr>
+					<td nowrap class="caption">Start Cheque #</td>
+					<td>&nbsp;##TP_Cheque_Min##</td>
+				</tr>
+				<tr>
+					<td nowrap class="caption">End Cheque #</td>
+					<td>&nbsp;##TP_Cheque_Max##</td>
+				</tr>
+				<tr>
+					<td nowrap class="caption">Value of cheques</td>
+					<td>&nbsp;##TP_Cheque_Value##</td>
+				</tr>
+			<tfoot>
+				<tr>
+					##TP_IF {[tpGetVar Verified] eq Y}##
+						<td nowrap class="caption">Verified</td>
+						<td>&nbsp;##TP_Verified_Date##</td>
+					##TP_ELSE##
+					<td colspan="2" class="buttons">
+						<a href="##TP_CGI_URL##?action=ADMIN::STMT_CONTROL::go_verify_stmt&amp;runId=##TP_stmtRunId##"
+							>Verify Statement</a>
+					</td>
+					##TP_ENDIF##
+				</tr>
+			</tfoot>
+		</table>
+	</body>
+</html>

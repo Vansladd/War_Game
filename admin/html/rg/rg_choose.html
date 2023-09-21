@@ -1,0 +1,67 @@
+<html>
+<!-- $Id: rg_choose.html -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script>
+function edit(b)
+{
+  b.form.action.value = "ADMIN::RISKGUARDIAN::GoEditCondition";
+  b.form.submit();
+  return true;
+}
+
+function statusChange(b)
+{
+	b.form.action.value = "ADMIN::RISKGUARDIAN::GoChangeStatus";
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<form method="get" action="##TP_CGI_URL##">
+<table cellspacing="0" cellpadding="2" border="0">
+<input type="hidden" name="action" value="">
+<input type="hidden" name="status" value="##TP_status##">
+##TP_IF {[tpGetVar no_conditions] == "false"}##
+<tr>
+	<th colspan="2" class="title">
+	Risk Guardian Status
+	</th>
+</tr>
+<tr>
+	<td>##TP_status##</td>
+	<td><input type="button" value="Make ##TP_opp_status##" onClick="return statusChange(this);"></td>
+</tr>
+##TP_ENDIF##
+</table>
+<br>
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+	<th colspan="2" class="title">
+	Risk Guardian Conditions
+	</th>
+</tr>
+<tr>
+	<td>
+	  <select name="type">
+	    <option value="amount">Minimum Amount</option>
+	    ##TP_IF {[OT_CfgGet ENABLE_RISKGUARDIAN_CURRENCY 0]}##<option value="currency">Currency</option>##TP_ENDIF##
+	    ##TP_IF {[OT_CfgGet ENABLE_RISKGUARDIAN_COUNTRY 0]}##<option value="country">Country</option>##TP_ENDIF##
+	    ##TP_IF {[OT_CfgGet ENABLE_RISKGUARDIAN_IP_ADDRESS 0]}##<option value="ip_address">IP Address</option>##TP_ENDIF##
+	    ##TP_IF {[OT_CfgGet ENABLE_RISKGUARDIAN_CARD_BIN 0]}##<option value="card_bin">Card Bin</option>##TP_ENDIF##
+	    ##TP_IF {[OT_CfgGet ENABLE_RISKGUARDIAN_REG_DATE 0]}##<option value="reg_date">Registration Date</option>##TP_ENDIF##
+	    ##TP_IF {[OT_CfgGet ENABLE_RISKGUARDIAN_1ST_DEP_DATE 0]}##<option value="1st_dep_date">First Successful Deposit Date</option>##TP_ENDIF##
+	  </select>
+	</td>
+	<td><input type="button" value="Add/Edit Condition" onClick="return edit(this);"></td>
+</tr>
+</table>
+</form>
+</body>
+</html>
+

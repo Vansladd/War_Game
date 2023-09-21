@@ -1,0 +1,46 @@
+<html>
+<!-- $Id: qbets.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Streaming Qualify Groups</title>
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=2 >
+
+	<tr>
+		<th class=title colspan=2>
+			Streaming Qualify Groups
+		</th>
+	</tr>
+
+	<tr>
+		<th class=colhead>Name</th>
+		<th class=colhead>Status</th>
+	</tr>
+
+	##TP_LOOP qbet_idx {[tpGetVar num_qbets 0]}##
+	<tr ##TP_IF {[tpBindGet qbet_status] == "S"}## class="suspended" ##TP_ELSE## class="active"##TP_ENDIF##>
+		<td align="center"><a href="##TP_CGI_URL##?action=ADMIN::PERFORM::GoVSQualifyBet&qlfy_bet_id=##TP_qbet_qlfy_bet_id##">##TP_qbet_name##</a></td>
+		<td align="center">##TP_qbet_status##</td>
+	</tr>
+	##TP_ENDLOOP##
+
+	<tr>
+	<th class=buttons colspan=2>
+		<form action="##TP_CGI_URL##" method=get>
+  		<input type=button class="btn_def" value="Add group" onClick="javascript:this.form.submit()">
+		<input type=hidden name=action value=ADMIN::PERFORM::GoVSQualifyBet>
+		</form>
+	</th>
+	</tr>
+
+</table>
+
+
+</body>
+
+</html>

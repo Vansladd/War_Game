@@ -1,0 +1,88 @@
+<html>
+<!-- $Id: offer_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Freebet Offer List</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function write_tr(status)
+{
+	if (status == 'A') {
+		document.write('<tr class=active>');
+	} else if (status == 'S') {
+		document.write('<tr class=suspended>');
+	} else {
+		document.write('<tr class=unknown>');
+	}
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+
+
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<table border=0 cellspacing=0 cellpadding=2>
+<form ACTION="##TP_CGI_URL##" method=get>
+	<tr>
+		<th class=title colspan=10>Offers</th>
+	</tr>
+
+	<tr>
+		<th nowrap class=colhead>Name</th>
+		<th nowrap class=colhead>Start Date</th>
+		<th nowrap class=colhead>End Date</th>
+		<th nowrap class=colhead>Qualification</th>
+		<th nowrap class=colhead>On Settle</th>
+		<th nowrap class=colhead>Channel</th>
+		<th nowrap class=colhead>Language</th>
+		<th nowrap class=colhead>Country</th>
+		<th nowrap class=colhead>Max Claims</th>
+		<th nowrap class=colhead>Setup problems</th>
+	</tr>
+	
+	##TP_IF {[tpGetVar NumOffers]}##
+	##TP_LOOP type_idx {[tpGetVar NumOffers]}##
+	<script>write_tr('##TP_Status##');</script>
+		<td><a href="##TP_CGI_URL##?action=ADMIN::FREEBETS::GoOffer&OfferID=##TP_OfferID##">##TP_Name##</a></td>
+		<td>##TP_StartDate##&nbsp;</td>
+		<td>##TP_EndDate##&nbsp;</td>
+		<td><script>write_which('##TP_QualNeeded##','Y','Yes','N','No');</script></td>
+		<td>##TP_OnSettle##&nbsp;</td>
+		<td>##TP_Chan##&nbsp;</td>
+		<td>##TP_Lang##&nbsp;</td>
+		<td>##TP_Cntry##&nbsp;</td>
+		<td>##TP_MaxClaims##&nbsp;</td>
+		<td>##TP_Info##&nbsp;</td>
+	</tr>
+	##TP_ENDLOOP##
+	##TP_ELSE##
+	<tr>
+		<td colspan=10 align=center><i>There are no offers defined</i></td>
+	</tr>
+	##TP_ENDIF##
+	
+	<tr>
+		<th class=buttons colspan=10>
+			##TP_IF {[tpGetVar PERM_ModifyFreeBets]}##
+			<input type=submit class="btn_def" value="Add New Offer">
+			##TP_ELSE##
+			&nbsp;
+			##TP_ENDIF##
+		</th>
+	</tr>
+<input type=hidden name=action value=ADMIN::FREEBETS::GoAddOffer>
+</form>
+</table>
+</body>
+</html>

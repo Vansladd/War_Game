@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+		  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- $Id: bet_list_failed_bir.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##" />
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet" />
+	<title>OpenBet Administration</title>
+  </head>
+  <body>
+	##TP_PLAY error_rpt.html##
+	<table cellspacing="0" cellpadding="4" border="0">
+	  <tr>
+		<th class="title" colspan="18">
+		  ##TP_XL {Admin.Bet_List.BET_QUERY_RESULT}##
+		</th>
+	  </tr>
+	  <tr>
+		<th nowrap="nowrap" class="colhead">BIR Bet Id</th>
+		<th nowrap="nowrap" class="colhead">##TP_XL {Admin.Bet_List.ACCT_NO}##</th>
+		<th nowrap="nowrap" class="colhead">##TP_XL {Admin.Bet_List.PLACED_AT}##</th>
+		<th nowrap="nowrap" class="colhead">##TP_XL {Admin.Bet_List.BET}##</th>
+		<th nowrap="nowrap" class="colhead">##TP_XL {Admin.Bet_List.STAKE_PER_LINE}##</th>
+		<th nowrap="nowrap" class="colhead">##TP_XL {Admin.Bet_List.REASON_FOR_FAILURE}##</th>
+		<th nowrap="nowrap" class="colhead">##TP_XL {Admin.Bet_List.LEG}##</th>
+		<th nowrap="nowrap" class="colhead">##TP_XL {Admin.Bet_List.PART}##</th>
+		<th nowrap="nowrap" class="colhead">##TP_XL {Admin.Bet_List.EVENT}##</th>
+		<th nowrap="nowrap" class="colhead">##TP_XL {Admin.Bet_List.SELECTION}##</th>
+	  </tr>
+	  
+	  ##TP_IF {[tpGetVar NumBets 0]>0}##
+	  ##TP_LOOP bir_bet_idx {[tpGetVar NumBets]}##
+	  <tr>
+		<td nowrap="nowrap">##TP_BIRBetId##</td>
+		<td nowrap="nowrap"><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&amp;CustId=##TP_CustId##">##TP_Username##</a></td>
+		<td nowrap="nowrap">##TP_CreationDate##</td>
+		<td nowrap="nowrap">##TP_BetType##</td>
+		<td nowrap="nowrap">##TP_StakePerLine##</td>
+		<td nowrap="nowrap">##TP_FailureDescription##</td>
+		<td nowrap="nowrap">##TP_LegNo##</td>
+		<td nowrap="nowrap">##TP_PartNo##</td>
+		<td nowrap="nowrap"><a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&amp;EvId=##TP_EvId##">##TP_EvDesc##</a></td>
+		<td nowrap="nowrap"><a href="##TP_CGI_URL##?action=ADMIN::SELN::GoOc&amp;OcId=##TP_EvOcId##">##TP_EvOcDesc##</a></td>
+	  </tr>
+	  ##TP_ENDLOOP##
+	  ##TP_ELSE##
+	  <tr>
+		<td colspan="18" align="center">
+		  ##TP_XL {Admin.Bet_List.NO_BETS_FOUND}##
+		</td>
+	  </tr>
+	  ##TP_ENDIF##
+	</table>
+  </body>
+</html>

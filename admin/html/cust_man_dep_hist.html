@@ -1,0 +1,64 @@
+<html>
+<!-- $Id: cust_man_dep_hist.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Customer Manual Deposits</title>
+</head>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=2>
+<tr>
+	<th colspan=5 class=title>
+	Manual deposits
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Date</th>
+	<th nowrap class=colhead>Amount</th>
+	<th nowrap class=colhead>Method</th>
+	<th nowrap class=colhead>Code</th>
+	<th nowrap class=colhead>Extra detail</th>
+</tr>
+##TP_LOOP md_idx {[tpGetVar NumManDeps]}##
+<tr>
+	<td>##TP_Date##</td>
+	<td align=right>##TP_Amount##</td>
+	<td>##TP_Method##&nbsp;</td>
+	<td>##TP_Code##&nbsp;</td>
+	<td>##TP_ExtraInfo##&nbsp;</td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[tpGetVar NumManDeps 0]==0}##
+<tr>
+	<td colspan=5 align=left>
+	<font color=white size=+1>
+	<b><i>No manual deposits for this customer</i></b>
+	</font>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th class=buttons colspan=5>
+	<form action="##TP_CGI_URL##" method=get>
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'GoCust')">
+	</th>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::CUST::GoCust>
+	<input type=hidden name=CustId value="##TP_CustId##">
+	<input type=hidden name=AcctId value="##TP_AcctId##">
+</form>
+</tr>
+</table>
+</body>
+</html>

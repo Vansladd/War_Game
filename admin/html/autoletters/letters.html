@@ -1,0 +1,173 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+
+function fs(b,t,id) {
+	
+	b.form.SubmitName.value=t;
+	b.form.letter_id.value=id;
+	b.form.submit();
+	
+	if (t=="SendLetter") {
+		document.getElementById("last_sentLabel_"+id).innerHTML = "Sent";
+		document.getElementById("last_sentCB_"+id).innerHTML = "<input type=checkbox name=sent_letters value=" +id+ " checked>";
+		document.getElementById("last_sentButton_"+id).innerHTML = "";
+	}
+	
+	return true;
+}
+
+function getObj(obj) {
+	var objRef;
+	
+	if(document.all) {
+	objRef = eval("document.all." + obj);
+	}
+	if(document.getElementById) {
+	objRef = document.getElementById(obj);
+	}
+	
+	return objRef;
+}
+
+function write_checkbox(id, name, checked){
+	if (checked=='Y') {
+		checked = ' checked';
+	} else {
+		checked = '';
+	}
+	
+	document.writeln('<input' +checked+ ' TYPE=checkbox VALUE=' +id+ ' NAME=' +name+ '>');
+}
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+<form action="##TP_CGI_URL##" method="POST" name="outerForm" id="outerForm">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=letter_id value="">
+<input type=hidden name=action value=ADMIN::AUTO_LETTERS::DoLetter>
+
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th class=title colspan=6>
+	Letters
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Name</th>
+	<th nowrap class=colhead>Created</th>
+	<th nowrap class=colhead>Last Sent</th>
+	<th nowrap class=colhead>Customers</th>
+	<th nowrap class=colhead>Sent</th>
+	<th nowrap class=colhead>&nbsp;</th>
+</tr>
+##TP_IF {[tpGetVar NumLetters 0]==0}##
+<tr>
+	<td  colspan=6>
+	No Letters
+	</td>
+</tr>
+##TP_ELSE##
+##TP_LOOP l_idx {[tpGetVar NumLetters]}##
+<tr>
+	<td>
+		##TP_letter_template_name##
+	</td>
+	<td>
+		##TP_letter_cr_date##
+	</td>
+	<td>
+		<span id="last_sentLabel_##TP_letter_letter_id##">##TP_letter_last_sent##</span>
+	</td>
+	<td>
+		##TP_IF {$LETTERS([tpGetVar l_idx],letter_cust_count)>0}##
+			<a href="##TP_CGI_URL##?action=ADMIN::CUST::DoCustQuery&letter_id=##TP_letter_letter_id##">##TP_letter_cust_count##</a>
+		##TP_ELSE##
+			##TP_letter_cust_count##
+		##TP_ENDIF##
+	</td>
+	<td>
+	<span id="last_sentCB_##TP_letter_letter_id##">
+		<script>write_checkbox("##TP_letter_letter_id##", "sent_letters", "##TP_letter_sent##")</script>
+	</span>
+		<input type=hidden name=page_letters value="##TP_letter_letter_id##">
+	</td>
+	<td>
+		##TP_IF {$LETTERS([tpGetVar l_idx],letter_sent)=="N" && $LETTERS([tpGetVar l_idx],letter_cust_count)>0}##
+			<span id="last_sentButton_##TP_letter_letter_id##">
+				<input type=button class="btn_def" value="Send Letter" onClick="return fs(this,'SendLetter','##TP_letter_letter_id##')">
+			</span>
+		##TP_ENDIF##
+	</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar NumTemplates 0]>0}##
+<tr>
+	<td>
+		<select name="template_id">
+			<script>
+				write_select(''
+				##TP_LOOP tmpl_idx {[tpGetVar NumTemplates]}##
+					,'##TP_template_template_id##', '##TP_template_template_name##'
+				##TP_ENDLOOP##
+				)
+			</script>
+		</select>
+	</td>
+	<td colspan=3>
+		<input type=button class="btn_def" value="Add Letter" onClick="return fs(this,'AddLetter','')">
+		<input type=button class="btn_def" value="Update Status" onClick="return fs(this,'UpdStatus','')">
+	</td>
+</tr>
+##TP_ELSE##
+<tr>
+	<td colspan=6>
+		No templates available for letters
+	</td>
+</tr>
+##TP_ENDIF##
+</table>
+<br/>
+<br/>
+<table>
+<tr>
+	<th class=title colspan=6>
+		Filter
+	</th>
+</tr>
+<tr>
+	<td>
+		Start
+	</td>
+	<td>
+		End
+	</td>
+	<td>
+		&nbsp;
+	</td>
+</tr>
+<tr>
+	<td>
+		<input type=text name=start_date value="##TP_start_date##">
+	</td>
+	<td>
+		<input type=text name=end_date value="##TP_end_date##">
+	</td>
+	<td>
+		<input type=button class="btn_def" value="Filter Letters" onClick="return fs(this,'FilterLtrs','')">
+	</td>
+</tr>
+</table>
+
+</form>
+</body>
+</html>

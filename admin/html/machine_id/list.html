@@ -1,0 +1,172 @@
+<html>
+<head>
+	<!-- $Id: list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $-->
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<title>Blocked Machine IDs </title>
+	<script>
+		function loaded() {
+			var items = document.getElementsByTagName("input");
+			var item;
+
+			for(i=0; i<items.length; ++i) {
+				items[i].disabled = false;
+			}
+		}
+
+		function confirm_delete(machine_code) {
+			return confirm("Are you sure you want to delete this machine, machine code "+machine_code+"?");
+		}
+
+		function fs(element)
+		{
+			element.disabled = true;
+			element.value = "Busy...";
+			return true;
+		}
+
+		function showPopup(_name) {
+			document.getElementById(_name).style.display='table-row';
+		}
+
+		function cancelPopup(_name) {
+			document.getElementById(_name).style.display='none';
+		}
+
+		function $(element) {
+			return document.getElementById(element);
+		}
+
+		function isArray(obj) {
+		   if (obj.constructor.toString().indexOf("Array") == -1)
+			  return false;
+		   else
+			  return true;
+		}
+
+		function goURL(args) {
+			if(isArray(args)) {
+				document.location.href=args.join('&') 
+			} else {
+				document.location.href=args
+			}
+		}
+
+
+	</script>
+</head>
+<body onload="loaded()">
+	##TP_PLAY error_rpt.html##
+	##TP_PLAY msg_rpt.html##
+
+	##TP_PLAY machine_id/search.html##
+
+	<form name="machine_list" action="##TP_CGI_URL##" method="get">
+	<input type="hidden" name="action" value="ADMIN::MACHINE_ID::AddBlock">
+
+	<table border="0" cellspacing="0" cellpadding="3">
+	<td><input name="add_machine" type="submit" class="btn_def" value="Add New Machine" onClick="return fs(this)"></td>
+	<td colspan="6" align="right">
+		<b>Page:</b>
+		&nbsp;&nbsp;
+		<!-- previous -->
+		##TP_IF {[tpBindGet more_prev] == 1} ##
+			<a href="##TP_CGI_URL##?action=ADMIN::MACHINE_ID::Home&##TP_search_query##&##TP_search_settings##&##TP_search_prev_page##">previous</a>
+		##TP_ELSE##
+			previous
+		##TP_ENDIF##
+		&nbsp;&nbsp;
+		<!-- next -->
+		##TP_IF {[tpBindGet more_next]} ##
+			<a href="##TP_CGI_URL##?action=ADMIN::MACHINE_ID::Home&##TP_search_query##&##TP_search_settings##&##TP_search_next_page##">next</a>
+		##TP_ELSE##
+			next
+		##TP_ENDIF##
+	</td>
+
+	<tr>
+		<th colspan="7" class="title">
+			Machine List
+		</th>
+	</tr>
+	<tr>
+		<td>Creation date</td>
+		<td>Machine ID</td>
+		<td>Logins</td>
+		<td>Accounts</td>
+		<td>Status</td>
+		<td>Action</td>
+	</tr>
+
+	##TP_IF {[tpGetVar NumRows] > 0}##
+		##TP_LOOP results_idx {[tpGetVar NumRows]}##
+
+		##TP_COMMENT Colour the row differently depending on status##
+		##TP_IF {[tpBindGet status] == "A"}##
+		<tr style="background-color: #88ff88">
+		##TP_ELSEIF {[tpBindGet status] == "S"}##
+		<tr style="background-color: #ff8888">
+		##TP_ELSEIF {[tpBindGet status] == "X"}##
+		<tr style="background-color: #8b8378">
+		##TP_ELSE##
+		<tr>
+		##TP_ENDIF##
+
+			<td>##TP_cr_date_str##</td>
+			<td><a title="View Machine Details, machine_id=##TP_machine_id##" href="##TP_CGI_URL##?action=ADMIN::MACHINE_ID::ViewMachine&machine_id=##TP_machine_id##">##TP_machine_code##</a></td>
+			<td><a title="View Machine Login History" href="##TP_CGI_URL##?action=ADMIN::MACHINE_ID::Home&search_for=machine_login_history&##TP_search_settings##&search_machine_code_exact=on&search_machine_code=##TP_machine_code##">##TP_logins##</a></td>
+			<td><a title="View Machine Account Summary" href="##TP_CGI_URL##?action=ADMIN::MACHINE_ID::Home&search_for=machine_account_summary&##TP_search_settings##&search_machine_code_exact=on&search_machine_code=##TP_machine_code##">##TP_accounts##</a></td>
+			<td>##TP_status_str##</td>
+
+			<td>
+				<!-- Actions -->
+				<!-- Deleting machines is disabled -->
+				<!-- <a href="##TP_CGI_URL##?action=ADMIN::MACHINE_ID::UpdStatus&machine_status=X&machine_id=##TP_machine_id##&##TP_search_query##&##TP_search_page##&##TP_search_settings##" onclick="return confirm_delete('##TP_machine_code##')">Delete</a> -->
+				<a href="##TP_CGI_URL##?action=ADMIN::MACHINE_ID::UpdateMachine&machine_id=##TP_machine_id##">Update</a>
+			##TP_IF {[tpBindGet status] == "S"}##
+				<a href="##TP_CGI_URL##?action=ADMIN::MACHINE_ID::UpdStatus&machine_status=A&machine_id=##TP_machine_id##&##TP_search_query##&##TP_search_page##&##TP_search_settings##">Unblock</a>
+			##TP_ELSE##
+				<a href="javascript:showPopup('block_pop_##TP_machine_id##');">Block</a>
+			##TP_ENDIF##
+			</td>
+		</tr>
+		<tr id="block_pop_##TP_machine_id##" style="display: none;">
+			<td colspan="7">
+				Please add note:
+				<input type="text" id="machine_desc_##TP_machine_id##" value="" size=60>
+				<a href="javascript:goURL(['##TP_CGI_URL##?action=ADMIN::MACHINE_ID::UpdStatus&machine_status=S&machine_id=##TP_machine_id##&##TP_search_query##&##TP_search_page##&##TP_search_settings##', 'machine_desc='+$('machine_desc_##TP_machine_id##').value])">Ok</a>
+				<a href="javascript:cancelPopup('block_pop_##TP_machine_id##');">[x]</a></td>
+		</tr>
+		##TP_ENDLOOP##
+	##TP_ELSE##
+		<tr>
+			<td>No rows</td>
+		</tr>
+	##TP_ENDIF##
+	<tr>
+
+	<tr class="buttons" >
+		<td><input name="add_machine" type="submit" class="btn_def" value="Add New Machine" onClick="return fs(this)"></td>
+		<td colspan="6" align="right">
+			<b>Page:</b>
+			&nbsp;&nbsp;
+			<!-- previous -->
+			##TP_IF {[tpBindGet more_prev] == 1} ##
+				<a href="##TP_CGI_URL##?action=ADMIN::MACHINE_ID::Home&##TP_search_query##&##TP_search_settings##&##TP_search_prev_page##">previous</a>
+			##TP_ELSE##
+				previous
+			##TP_ENDIF##
+			&nbsp;&nbsp;
+			<!-- next -->
+			##TP_IF {[tpBindGet more_next]} ##
+				<a href="##TP_CGI_URL##?action=ADMIN::MACHINE_ID::Home&##TP_search_query##&##TP_search_settings##&##TP_search_next_page##">next</a>
+			##TP_ELSE##
+				next
+			##TP_ENDIF##
+		</td>
+	</tr>
+
+	</table>
+	</form>
+</body>
+</html>

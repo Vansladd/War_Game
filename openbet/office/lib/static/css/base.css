@@ -1,0 +1,684 @@
+/*
+ * $Id: base.css,v 1.1 2011/10/06 13:12:52 xbourgui Exp $
+ * Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.
+ *
+ * OpenBet Office Base css
+ */
+
+/* Top Level */
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: black;
+	text-align: left;
+	margin: 0px;
+	background-color: transparent;
+}
+form {
+	padding: 0;
+	margin: 0;
+}
+table, tbody {
+	margin: 5px;
+	border: 1px solid #cecece;
+	background-color: transparent;
+}
+table table {
+	border: none;
+	margin: 0;
+}
+td {
+	padding: 3px 8px 3px 8px;
+	font-size: 10px;
+}
+td.table {
+	padding-left: 0px;
+}
+a, a:visited, a:link {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: #24467a;
+	text-decoration: none;
+}
+a:hover {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	text-decoration: none;
+	color: #6595dd;
+}
+a img {
+	border-style: none;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+}
+checkbox {
+	font-size: 10px;
+}
+select {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	background-color: white;
+	font-size: 10px;
+}
+h1, .title {
+	padding: 5px;
+	background: #335;
+	color: #fff;
+	font-size: 16px;
+	font-weight: bolder;
+	text-align: left;
+}
+h2, .subtitle {
+	padding: 3px;
+	background: #335;
+	color: #fff;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: left;
+}
+h3  {
+	font-size: 10px;
+	text-align: left;
+}
+
+h3 a, h3 a:visited, h3 a:link {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: white;
+	text-decoration: none;
+}
+
+.displayNone {
+	display:none;
+}
+
+/* AJAX Indicator */
+.http_indicator {
+	background-image: none;
+	background-position: right;
+	background-repeat: no-repeat;
+}
+
+
+
+/*
+ * Error Div.
+ * Used to display appserv req_error
+ */
+div#error {
+	margin: 6px;
+}
+div#error h1 {
+	color: red;
+	font-size: 12px;
+	padding-bottom: 4px;
+}
+div#error pre {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	padding-bottom: 4px;
+}
+div#error table {
+	border: 1px solid #ddd;
+}
+div#error td {
+	border: 1px solid #ddd;
+}
+
+
+
+/* Div Popops */
+div.modalPopup,
+#modalPopupContainer {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+}
+#modalPopupContainer {
+	background-color: black;
+	z-index: 99;
+	opacity: 0;
+}
+#modalPopupContainer.ie {
+	filter:alpha(opacity=0);
+	-moz-opacity:0;
+}
+div.popup {
+	position: absolute;
+	z-index: 100;
+	width: 275px;
+	border: 1px solid #906483;
+	background-color:#FFFFFF;
+}
+div.popupTitle, div.popupTitleDisabled {
+	font-size: 12px;
+	text-align: left;
+	font-weight: bold;
+	vertical-align: middle;
+	color: white;
+	padding: 2px 2px 2px 4px;
+	background:url(../images/div_popup2/popup-title-bg.png) 0 0 repeat-x;
+	cursor: move;
+	margin:2px 2px 0px 2px;
+	padding: 3px 0px 0px 0px;
+}
+div.popupTitle span, div.popupTitleDisabled {
+	padding: 3px 0px 0px 7px;
+}
+.popup form {
+	margin: 0px 2px 2px 2px;
+}
+div.popupTitleDisabled {
+	color: #ccc;
+}
+table.popup {
+	background-color: #ccc;
+	border: none;
+	width: 275px;
+	margin: 0px;
+}
+table.innerPopup {
+	background-color: #ccc;
+	border: none;
+	margin: 0px;
+}
+td.popupSubtitle {
+	border: none !important;
+}
+td.popupError {
+	padding-left: 4px;
+	padding: 6px;
+	text-align: left;
+	color: red;
+}
+td.popupDesc {
+	font-weight: bold;
+	border-right: none;
+	padding: 6px 8px 6px 6px;
+	text-align: right;
+}
+td.innerPopupDesc {
+	font-weight: bold;
+	border: none;
+	padding: 6px 8px 6px 6px;
+	text-align: right;
+}
+td.popupValue {
+	border-left: none;
+	padding: 6px 6px 6px 8px;
+	text-align: left;
+}
+td.innerPopupValue {
+	border: none;
+	padding: 6px 6px 6px 8px;
+	text-align: left;
+}
+td.popupBlurb {
+	padding-left: 4px;
+	padding: 6px;
+	text-align: left;
+}
+td.popupButton {
+	border-left: none;
+	padding: 6px;
+	text-align: left;
+}
+td.popupBody {
+	background-color: #ccc;
+	border-left: none;
+	padding: 6px;
+	text-align: left;
+}
+
+/* Div Popup Tab List */
+div.popupTabList {
+	background-color: #ccc;
+	height: 20px;
+}
+div.popupTabList ul {
+	padding: 2px 0 0 1px;
+	margin: 0;
+	background: url(tab_bottom.gif) repeat-x bottom;
+}
+div.popupTabList li {
+	margin: 0;
+	padding: 0;
+	display: inline;
+	list-style-type: none;
+}
+div.popupTabList span {
+	float: left;
+	background: #f3f3f3;
+	font-size: 11px;
+	line-height: 14px;
+	font-weight: bold;
+	padding: 2px 10px 0 10px;
+	margin-right: 1px;
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	color: #666;
+	cursor: pointer;
+}
+div.popupTabList span:hover {
+	color: #6595dd;
+}
+div.popupTabList span.selected {
+	background-color: #ccc;
+	padding-bottom: 1px;
+	color: black;
+	cursor: default;
+}
+div.popupTabList span.selected:hover {
+	color: black;
+}
+
+
+
+/* general logo */
+div.logo {
+	padding: 5px;
+	border: 1px solid #335;
+	color: #335;
+	text-align: center;
+	font-weight: bold;
+
+}
+
+
+
+/* put a small resize handle in the bottom right corner */
+.resize {
+	background: url("../images/resize.gif") no-repeat scroll left top;
+	width: 12px;
+	height: 12px;
+}
+
+
+
+/* common status styles */
+.active, .accepted, .complete, .authorised, .running {
+	background-color: #9f9;
+}
+.voided {
+	background-color: #aaa;
+}
+.suspended, .lapsed, .declined, .inactive {
+	background-color: #fee;
+}
+.succeeded, .infoyes {
+	background-color: #6c6;
+	color: white;
+}
+.failed, .infono, .error {
+	background-color: #c66;
+	color: white;
+}
+.pending, .lapsed {
+	background-color: #eef;
+}
+.rejected, .deleted, .ignored {
+	background-color: #aaa;
+	text-decoration: line-through;
+}
+.settled {
+	background-color: #fc3;
+}
+.confirm {
+	background-color: #9F9;
+}
+.confirmed , .current {
+	background-color: #9cc;
+}
+.hidden, .new {
+	background-color: #99c;
+}
+.resulted {
+	background-color: #c9c;
+}
+.unknown {
+	background-color: #99CCDD;
+}
+.waiting {
+	background-color: #FFFACD;
+}
+.win {
+	color: #6c6;
+}
+.lose {
+	color: #c66;
+}
+.void {
+	color: gray;
+}
+.index-field {
+	font-weight: bold;
+}
+.combiBanker {
+	background-color: #FFDDDD;
+}
+.combiEven {
+	background-color: #DDFFFF;
+}
+.combiOdd {
+	background-color: #FFFFDD;
+}
+
+
+
+/* specific element status styles */
+a.error, a:visited.error {
+	color: red;
+	background-color: transparent;
+}
+a:hover.error {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #c66;
+	background-color: transparent;
+}
+h3.infoyes, h3.succeeded {
+	color: green;
+	font-size: 12px;
+	font-weight: bold;
+	background-color: transparent;
+}
+h3.infoyes a, h3.infoyes a:visited, h3.infoyes a:link {
+	color: green;
+	font-size: 12px;
+	font-weight: bold;
+	background-color: transparent;
+	text-decoration: none;
+}
+h3.succeeded a, h3.succeeded a:visited, h3.succeeded a:link {
+	color: green;
+	font-size: 12px;
+	font-weight: bold;
+	background-color: transparent;
+	text-decoration: none;
+}
+h3.infoyes a:hover {
+	color: #CD6562;
+	font-size: 12px;
+	font-weight: bold;
+	background-color: transparent;
+	text-decoration: none;
+}
+h3.succeeded a:hover {
+	color: #CD6562;
+	font-size: 12px;
+	font-weight: bold;
+	background-color: transparent;
+	text-decoration: none;
+}
+h3.infono, h3.failed {
+	color: red;
+	font-size: 12px;
+	font-weight: bold;
+	background-color: transparent;
+}
+span.nrows {
+	color: #c66;
+	font-weight: bold;
+}
+
+
+/* copyright notice */
+#copyright, .copyright {
+	color: #444444;
+	text-align: center;
+	font-size: 10px;
+}
+
+
+
+/* difference between two audit table cells */
+.auditDiff, .adiff {
+	font-weight: bold;
+	background: #906483;
+}
+
+
+/* common forms */
+.buttons {
+	border-top: 1px solid #ccc;
+	background: #fff;
+	text-align: left;
+}
+.caption, .captionindex, .subcaption, .in_label {
+	font-weight: bold;
+	background: #eee;
+	text-align: right;
+}
+.subcaption {
+	background: transparent;
+}
+.ra {
+	text-align: right;
+}
+.rl {
+	text-align: left;
+}
+input.btn_def {
+	font-weight: normal;
+	background-color: #ddd;
+}
+.button.black .content, .button.cherry .content, .button.blue .content, .button.red .content, .button.green .content {
+	height:24px;
+	line-height:22px;
+	font-size:11px;
+	background:url(../images/black-button-mid.png) 0 2px repeat-x;
+	padding:0 5px;
+	float:left;
+	color:#fff;
+}
+.button.black .left, .button.cherry .left, .button.blue .left, .button.red .left, .button.cherry.disable .left, .button.green .left {
+	width:5px;
+	height:24px;
+	background:url(../images/generic-button-sprites.png) -22px -23px no-repeat;
+	float:left;
+	margin-top:2px;
+}
+.button.black .right, .button.cherry .right, .button.blue .right, .button.red .right, .button.cherry.disable .right, .button.green .right {
+	width:5px;
+	height:24px;
+	background:url(../images/generic-button-sprites.png) -28px -23px no-repeat;
+	float:left;
+	margin-top:2px;
+}
+.button.black .divider, .button.cherry .divider, .button.blue .divider {
+	width:2px;
+	height:24px;
+	background:url(../images/generic-button-sprites.png) -158px -23px no-repeat;
+	float:left;
+	margin-top:2px;
+}
+
+/* disables styles for cherry button */
+.disabled .button.cherry .content,
+.button.cherry.disable .content {
+	background:url(../images/button-cherry-disabled-middle.png) 0 2px repeat-x;
+}
+.disabled .button.cherry .left,
+.button.cherry.disable .left {
+	background:url(../images/generic-button-sprites.png) -58px -23px no-repeat;
+}
+.disabled .button.cherry .right,
+.button.cherry.disable .right {
+	background:url(../images/generic-button-sprites.png) -64px -23px no-repeat;
+}
+.disabled .button.red .content,
+.button.red.disable .content {
+	background:url(../images/red-button-middle-disabled.png) 0 2px repeat-x;
+}
+.disabled .button.red .left,
+.button.red.disable .left {
+	background:url(../images/generic-button-sprites.png) -82px -23px no-repeat;
+}
+.disabled .button.red .right,
+.button.red.disable .right {
+	background:url(../images/generic-button-sprites.png) -88px -23px no-repeat;
+}
+.disabled .button.green .content,
+.button.green.disable .content {
+	background:url(../images/green-button-middle-disabled.png) 0 2px repeat-x;
+}
+.disabled .button.green .left,
+.button.green.disable .left {
+	background:url(../images/generic-button-sprites.png) -106px -23px no-repeat;
+}
+.disabled .button.green .right,
+.button.green.disable .right {
+	background:url(../images/generic-button-sprites.png) -112px -23px no-repeat;
+}
+.button.blue .content {
+	background:url(../images/button-blue-middle.png) 0 2px repeat-x;
+}
+.button.blue .left {
+	background:url(../images/generic-button-sprites.png) -34px -23px no-repeat;
+}
+.button.blue .right {
+	background:url(../images/generic-button-sprites.png) -40px -23px no-repeat;
+}
+/*
+.button.blue .divider {
+	background:url(../images/button-blue-divider.png) 0 2px no-repeat;
+}
+*/
+.button.red .content {
+	background:url(../images/red-button-content.png) 0 2px repeat-x;
+}
+.button.red .left {
+	background:url(../images/generic-button-sprites.png) -70px -23px no-repeat;
+}
+.button.red .right {
+	background:url(../images/generic-button-sprites.png) -76px -23px no-repeat;
+}
+.button.green .right {
+	background:url(../images/generic-button-sprites.png) -100px -23px no-repeat;
+}
+.button.green .content {
+	background:url(../images/button-green-middle.png) 0 2px repeat-x;
+}
+.button.green .left {
+	background:url(../images/generic-button-sprites.png) -94px -23px no-repeat;
+}
+.button.cherry .content {
+	background:url(../images/button-cherry-middle.png) 0 2px repeat-x;
+}
+.button.cherry .left {
+	background:url(../images/generic-button-sprites.png) -46px -23px no-repeat;
+}
+.button.cherry .right {
+	background:url(../images/generic-button-sprites.png) -52px -23px no-repeat;
+}
+.button.fake {
+	z-index: 0;
+}
+#loginDiv input[type=submit] {
+	background:url(../images/login-button.png) 0 0 no-repeat;
+	height:22px;
+	width:49px;
+	border:none;
+	color: #fff;
+	float:right;
+	border:none;
+	cursor:pointer;
+}
+#loginDiv {
+	font-size: 10px;
+}
+#loginDiv table {
+	background: none repeat scroll 0 0 #FFFFFF;
+}
+#loginDiv .popupTitle {
+	font-size: 11px;
+}
+
+/* sortable table styles */
+th, .colhead, .heading, .colheadSortText, .colheadSortNumber, .colheadSortDate {
+	font-weight: bold;
+	text-align: center;
+	color: #000;
+	background-color: #ccc;
+	padding: 2px 8px 2px 8px;
+	font-size: 12px;
+	border: none;
+}
+.colhead, .heading, .colheadSortText, .colheadSortNumber, .colheadSortDate {
+	font-size: 10px;
+	border: none;
+	padding: 1px 6px 1px 8px;
+}
+
+
+
+/*  FOG Styles */
+th.rightbuttons {
+	text-align: right;
+	background-color: #335;
+}
+input.btn_help {
+	border: none;
+	color: #000;
+	background-color: #fff;
+	font-size: 12px;
+	font-family:  Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+}
+
+/* Style for release and tag info */
+.rel_info {
+	font-weight: bold;
+	color: #737573;
+	margin: 15px;
+	font-size: 16px;
+	padding: 15px;
+	position:absolute;
+	right: 30px;
+	bottom: 30px
+}
+
+
+
+/* Style for bordered table and columns */
+table.bordered_table {
+	margin: 5px;
+	border: 1px solid #cecece;
+	background-color: #fff;
+}
+
+td.bordered_title {
+	border-right: inset 1px black;
+	border-bottom: solid 1px black;
+	font-weight: bold;
+	background-color: #E8E8E8;
+}
+
+td.bordered_title_selected {
+	border-top: solid 1px black;
+	border-left: solid 1px black;
+	border-right: solid 1px black;
+	font-weight: bold;
+}
+
+td.bordered_title_hover {
+	border-right: inset 1px black;
+	border-bottom: solid 1px black;
+	background-color: #E8E8E8;
+	font-weight: bold;
+	color: black;
+}
+
+td.bordered_col {
+	border-right: solid 1px black;
+	border-left: solid 1px black;
+	border-bottom: solid 1px black;
+	padding-left: 25px;
+}

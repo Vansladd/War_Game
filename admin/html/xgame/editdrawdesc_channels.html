@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<title>external game</title>
+	</head>
+  
+	
+	<script>
+		function doDDChannels(action) {
+			if (action=="Back") {
+				document.drawDescChannelForm.mode.value = "";
+				
+			}
+			document.drawDescChannelForm.submit();
+		}
+	</script>
+	<body bgcolor=white>
+		##TP_IF {[OT_CfgGet XG_HAVE_CHANNELS "0"] == "1"}##
+			<table cellspacing=0 cellpadding=2 border=0 bgcolor="#cccccc" >
+				<form action="##TP_CGI_URL##" name="drawDescChannelForm">
+					<input type=hidden name="action" value="DoXGameFind">
+					<input type=hidden name="GameName" value="Edit Draw Desc">
+					<input name="mode" type="hidden" value="edit_channels"/>
+					<input name="id" type="hidden" value="##TP_desc_id##"/>
+					<input name="channel_mode" type="hidden" value="edit"/>
+					<input name="sort" type="hidden" value="##TP_sort##"/>
+					<tr bgcolor="#10137c">
+						<th colspan=8 align=left><font color=white size=+1>Edit Channels for draw '##TP_desc##' of '##TP_sort##'  </th>
+					</tr>
+					<tr>
+						<td>##TP_PLAY chan_sel.html##</td>
+					</tr>
+					<tr bgcolor="#10137c">
+						<td class=buttons>
+							<input type=submit class="btn_def" value="Submit" onClick="return doDDChannels('Submit')" >
+							<input type=submit class="btn_def" value="Back" onClick="return doDDChannels('Back')">
+						</td>
+					</tr>
+				</form>
+			</table>
+		##TP_ENDIF##
+	</body>
+</html>

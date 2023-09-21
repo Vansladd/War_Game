@@ -1,0 +1,104 @@
+<!-- $Id: coupon_cleanup_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+
+<html>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+
+<script language="Javascript">
+
+	function fs(b,t) {
+
+		b.disabled = true;
+		b.value = "Busy...";
+		if (t=="Back") {
+			b.form.action.value="ADMIN::CLEANUP::GoUnstlEvSel";
+		}
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+
+	function set_radios (radio_root,num_radios,radio_value)  {
+		for( i=0 ; i<=num_radios; i++) {
+			var current_radio = document.getElementsByName(radio_root+i);
+			for(var a = 0; a < current_radio.length; a++) {
+				current_radio[a].checked = false;
+				if(current_radio[a].value == radio_value.toString() && current_radio[a].disabled == false) {
+					current_radio[a].checked = true;
+				}
+			}
+		}
+	}
+
+</script>
+
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<form method="post" name="couponcleanupform" action="##TP_CGI_URL##">
+
+<input type="hidden" name="action"      value="ADMIN::CLEANUP::DoCouponCleanup">
+<input type="hidden" name="SubmitName"  value="">
+<input type="hidden" name="NumCoups" value="##TP_TCL {tpBufWrite [tpGetVar coup_rows]}##">
+<input type="hidden" name="BackType"  value="0">
+<input type="hidden" name="CoupArgs"  value="##TP_COUPON_INFO##">
+
+
+<table cellspacing="0" cellpadding="2" border="0">
+
+<tr><th class="title" colspan="7">Coupon Cleanup Selection</th></tr>
+
+<tr>
+	<th class="colhead">Creation Date</th>
+	<th class="colhead">Description</th>
+	<th class="colhead">Displayed</th>
+	<th class="colhead">Undisplay</th>
+	<th class="colhead">Delete</th>
+	<th class="colhead">No Action</th>
+</tr>
+
+##TP_IF {[tpGetVar coup_rows 0]>0}##
+
+##TP_LOOP coup_idx {[tpGetVar coup_rows]}##
+<tr>
+	<td>##TP_CrDate##</td>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::COUPON::GoCoupon&ClassId=##TP_CoupClass##&Category=##TP_CoupCat##&CouponId=##TP_CoupId##">##TP_Desc##</a></td>
+	<td>##TP_Displayed##</td>
+	<td><input type="radio" name="act_##TP_TCL {tpBufWrite [tpGetVar coup_idx]}##" value="U">Undisplay</td>
+	<td><input type="radio" name="act_##TP_TCL {tpBufWrite [tpGetVar coup_idx]}##" value="D"  ##TP_IF {[tpBindGet HasBBBet] != "" && [tpBindGet HasBBBet]>0}## DISABLED ##TP_ENDIF##>Delete</td>
+	<td><input type="radio" name="act_##TP_TCL {tpBufWrite [tpGetVar coup_idx]}##" value="-" checked>No Action</td>
+	<input type="hidden" name="coup_id_##TP_TCL {tpBufWrite [tpGetVar coup_idx]}##" value="##TP_CoupId##">
+	<input type="hidden" name="coup_desc_##TP_TCL {tpBufWrite [tpGetVar coup_idx]}##" value="##TP_Desc##">
+	<input type="hidden" name="has_bbbets_##TP_TCL {tpBufWrite [tpGetVar coup_idx]}##" value="##TP_HasBBBet##">
+	<input type="hidden" name="is_bb_##TP_TCL {tpBufWrite [tpGetVar coup_idx]}##" value="##TP_IsBB##">
+
+</tr>
+
+##TP_ENDLOOP##
+
+##TP_ELSE##
+<tr>
+	<td colspan="6">No coupons matched the search criteria.</td>
+</tr>
+##TP_ENDIF##
+<tr><th colspan="7">Note: Blockbuster coupons with bets cannot be deleted.</th></tr>
+<tr>
+	<th class="buttons" colspan="2"><input type="button" onClick="return fs(this,'SaveChanges')" value="Save Changes">
+	<input type="button" onClick="return fs(this,'Back')" value="Back"></th>
+	<th class="buttons" colspan="2">&nbsp;</th>
+	<th class="buttons" colspan="2">Select: <a href="javascript:set_radios('act_',##TP_TCL {tpBufWrite [expr [tpGetVar coup_rows]-1]}##,'U',3);">ALL Undisplay</a> <a href="javascript:set_radios('act_',##TP_TCL {tpBufWrite [expr [tpGetVar coup_rows]-1]}##,'D',3);">ALL Delete</a> <a href="javascript:set_radios('act_',##TP_TCL {tpBufWrite [expr [tpGetVar coup_rows]-1]}##,'-',3);">ALL No Action</a></th>
+</tr>
+</table>
+</form>
+
+</body>
+
+</html>

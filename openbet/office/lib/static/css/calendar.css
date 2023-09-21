@@ -1,0 +1,70 @@
+/*
+ * $Id: calendar.css,v 1.1 2011/10/06 13:12:52 xbourgui Exp $
+ * Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.
+ *
+ * OpenBet Office Calendar css
+ */
+
+#calendar {
+	position: absolute;
+	display: none;
+	width: 150px;
+	height: 150px;
+	background-color: transparent;
+	padding: 0px;
+	margin: 0px;
+	border-style: none;
+	z-index: 101;
+}
+#calendar table  {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #ccc;
+	text-align: center;
+}
+#calendar td {
+	padding: 1px;
+	background: #fff;
+	text-align: right;
+}
+#calendar td.yearMonth {
+	text-align: center;
+}
+#calendar td.dayName {
+	background: #666;
+	color: #fff;
+}
+#calendar a.date {
+	display: block;
+}
+#calendar a.weekend {
+	color: #aaa;
+}
+#calendar a.today {
+	background: #fee;
+	border: 1px solid #fcc;
+}
+#calendar a.selectedDate {
+	background: #eef;
+	border: 1px solid #000;
+	color:  red;
+}
+iframe.iframehack {
+	position: absolute;
+	width: 170px;
+	height: 160px;
+	display: none;
+	background-color: red;
+	padding: 0px;
+	margin: 0px;
+	border-style: none;
+	z-index: 100;
+}
+
+#calendar td.CalClicker {
+	text-align: center;
+}
+
+#calendar a.CalClicker {
+	font-weight: bold;
+}

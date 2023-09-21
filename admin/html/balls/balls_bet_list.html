@@ -1,0 +1,85 @@
+<html>
+<!-- $Id: balls_bet_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+</head>
+<body>
+
+<!-- If there is an error show the report -->
+##TP_PLAY error_rpt.html##
+
+<!-- If the user has the permission show the balls bets search results page -->
+
+##TP_IF {[tpGetVar HasPerm 0] == 1}##
+
+<table cellspacing=0 cellpadding=2 border=0>
+
+<tr>
+	<th class=title colspan=18>Balls Bet Query Result</th>
+</tr>
+
+<!-- Column headings -->
+<tr>
+	<th nowrap class=colhead>Sub Id</th>
+	<th nowrap class=colhead>Customer</th>
+    <th nowrap class=colhead>Account No</th>
+	<th nowrap class=colhead>Placed at</th>
+	<th nowrap class=colhead>Game</th>
+	<th nowrap class=colhead>Draws</th>
+	<th nowrap class=colhead>Currency</th>
+	<th nowrap class=colhead>Stake</th>
+	<th nowrap class=colhead>Winnings</th>
+	<th nowrap class=colhead>Odds</th>
+	<th nowrap class=colhead>Seln</th>
+	<th nowrap class=colhead>Completed</th>
+</tr>
+
+<!-- Display the iBalls subscriptions (bets) -->
+##TP_IF {[tpGetVar NumBets 0] == 0}##
+
+	<tr>
+		<!-- colspan should reflect number of columns -->
+		<td colspan=12 align=center>
+		No bets found.
+		</td>
+	</tr>
+
+##TP_ELSE##
+
+	##TP_LOOP bet_idx {[tpGetVar NumBets]}##
+
+		<!-- Colour active subscriptions (spring) green -->
+		##TP_IF {$BET([tpGetVar bet_idx],completed) == "N"}##
+			<tr bgcolor=#00FF7F>
+		##TP_ELSE##
+			<tr>
+		##TP_ENDIF##
+
+			<!-- Links to subscriptions description and customer description pages -->
+			<td nowrap align=center><a href="##TP_CGI_URL##?action=ADMIN::BALLS::GoBallsSubDesc&SubId=##TP_SubId##">##TP_SubId##</a></td>
+			<td nowrap align=center><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_Username##</a></td>
+			<td nowrap>##TP_AcctNo##</td>
+			<td nowrap>##TP_BetTime##</td>
+			<td nowrap>##TP_Game##</td>
+			<td nowrap>##TP_Draws##</td>
+			<td nowrap align=right>##TP_Ccy##</td>
+			<td nowrap align=right>##TP_Stake##</td>
+			<td nowrap align=right>##TP_Winnings##</td>
+			<td nowrap>##TP_Odds##</td>
+			<td nowrap>##TP_Seln##</td>
+			<td nowrap align=center>##TP_Completed##</td>
+
+		</tr>
+
+	##TP_ENDLOOP##
+
+##TP_ENDIF##
+
+</table>
+
+##TP_ENDIF##
+
+</body>
+</html>

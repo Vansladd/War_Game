@@ -1,0 +1,92 @@
+<html>
+<!-- $Id: mkt_template_link_add.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add Template Links</title>
+<script>
+
+function check_valid (b)
+{
+	numBoxes = b.form.link_method.length ;
+	chosenLinkMethod = "";
+	for (i = 0; i < numBoxes; i++) {
+		if (b.form.link_method[i].checked) {
+			chosenLinkMethod = b.form.link_method[i].value;
+		}
+	}
+
+	if ( chosenLinkMethod == "" ) {
+		alert ("Please choose a method of linking market groups.") ;
+	} else {
+		action = "ADMIN::MKT_TEMPLATE::GoAddLinkMktTemplate&mkt_tmpl_id=##TP_mkt_tmpl_id##&sport_id=##TP_sport_id##&linkMethod=" + chosenLinkMethod;
+		url = "##TP_CGI_URL##?action=" + action
+		document.location.href = url
+	}
+
+}
+
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function back()
+{
+	action = "ADMIN::MKT_TEMPLATE::GoMktTemplateLink&mkt_tmpl_id=##TP_mkt_tmpl_id##&sport_id=##TP_sport_id##";
+	url = "##TP_CGI_URL##?action=" + action
+	document.location.href = url
+}
+</script>
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<form method="post" action="##TP_CGI_URL##" name="mktLinkFm">
+	<input type="hidden" name="action" value="ADMIN::MKT_TEMPLATE::GoAddLinkMktTemplate" />
+	<input type="hidden" name="SubmitName" value="" />
+
+	##TP_PLAY mkt_template_header.html##
+
+<table>
+
+	<tr>
+		<td colspan=2><b> Market Groups: </b></td>
+	</tr>
+	<tr>
+		<td colspan=2>Please select the way you wish to link market groups to this template:</td>
+	</tr>
+	<tr>
+		<td colspan=2>
+			<input type="radio" name="link_method" value="EachType" id="individual_events_radio" style="vertical-align: middle" checked />
+			<label for="individual_events_radio" style="vertical-align: middle">From individual event types (i.e. "English Premiership or "ATP Tokyo")</label>
+		</td>
+	</tr>
+	<tr>
+		<td colspan=2>
+			<input type="radio" name="link_method" value="FullList" id="full_list_radio" style="vertical-align: middle" />
+			<label for="full_list_radio" style="vertical-align: middle">From a single list of all market groups for this sport</label>
+		</td>
+	</tr>
+
+	<tr>
+		<th class="buttons">
+			<input type="button" value="Ok" onClick="check_valid(this)" />
+		</th>
+		<th class="buttons">
+			<input type="button" value="Cancel" onClick="return back()" />
+		</th>
+	</tr>
+
+
+</table>
+</form>
+
+</body>
+</html>

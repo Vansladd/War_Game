@@ -1,0 +1,72 @@
+
+##TP_TCL {make_channel_binds "" -}##
+<table border=0 cellspacing=0 cellpadding=2>
+	<form action="##TP_CGI_URL##" method=get>
+	<tr>
+		<th colspan=2 class=title>Session Query</th>
+	</tr>
+	<tr>
+		<td class=caption>Status</td>
+		<td>
+			<select name="FILT_Status">
+				<script>
+					write_select(
+						'A',
+						'',  'N/A',
+						'A', 'Active',
+						'S', 'Suspended',
+						'L', 'Logged Out',
+						'T', 'Timed Out',
+						'O', 'Overwritten',
+						'P', 'Session Time Limit Exceeded',
+						'C', 'Cummulative Session Time Limit Exceeded'
+					);
+				</script>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Source</td>
+		<td>
+			<select name="FILT_Source">
+				<option value="" selected>Any</option>
+				##TP_LOOP chan_idx {[tpGetVar NumChannels]}##
+				<option value="##TP_ChanCode##">##TP_ChanName##</option>
+				##TP_ENDLOOP##
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Start time</td>
+		<td nowrap>
+			<select name=FILT_StartOp>
+				<option value=''>N/A</option>
+				<option value='>='>at or after</option>
+				<option value='<'>before</option>
+			</select>
+			<input name=FILT_StartTime type=text size=19 maxlength=19>
+			(YYYY-MM-DD HH:MM:SS)
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>End time</td>
+		<td nowrap>
+			<select name=FILT_EndOp>
+				<option value=''>N/A</option>
+				<option value='>='>at or after</option>
+				<option value='<'>before</option>
+			</select>
+			<input name=FILT_EndTime type=text size=19 maxlength=19>
+			(YYYY-MM-DD HH:MM:SS)
+		</td>
+	</tr>
+	<tr>
+		<th class=buttons colspan=2>
+			<input type=button class="btn_def" value="Find Sessions" onClick="this.form.submit()">
+		</th>
+	</tr>
+	<input type=hidden name=action value="ADMIN::SESSION::DoSessQry">
+	<input type=hidden name=FILT_CustId value="##TP_CustId##">
+	</form>
+</table>
+<br>

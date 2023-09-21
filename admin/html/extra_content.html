@@ -1,0 +1,229 @@
+<html>
+<!-- $Id: extra_content.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+##TP_PLAY JS_WriteSelect.html##
+##TP_IF {[OT_CfgGet CALENDAR 0]}##
+##TP_PLAY utils/display_calendar.js##
+##TP_ENDIF##
+<script>
+function go_dd_popup() {
+	popup = window.open("##TP_CGI_URL##?action=ADMIN::BESTBETS::go_bbet_dd&type=EC",
+		"popup",
+		"toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,height=400,width=400");
+	popup.focus();
+}
+
+function clear_bet_link() {
+	f = document.fm_news;
+	f.id_level.value = '';
+	f.id_key.value = '';
+	f.id_name.value = '';
+}
+
+
+function set_vals(level, id, name) {
+	f = document.fm_news;
+	if (!f) {
+		alert("unable to find form");
+		return;
+	}
+	f.id_level.value = level;
+	f.id_key.value   = id;
+	f.id_name.value  = name;
+}
+function fs(b,t)
+{
+	if (t=="Delete") {
+		if (confirm("Are you sure you wish to DELETE this entry?") == 0) {return;}
+	}
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+function doAudit(audit, b) {
+	b.form.AuditInfo.value = audit;
+	return fs(b, "GoAudit");
+}
+
+function ViewDispPopup(b,id,name)
+{
+	if (id == "") {id = 0;}
+	main_form = b.form;
+
+	window.open("##TP_CGI_URL##?action=ADMIN::VIEWS::GoViewDisporders&id="+id+"&sort=NEWS&name="+name,
+		"Views",
+		"toolbar=no,location=no,directories=no,menubar=no,scrollbars=yes,resizable=yes,width=450,height=300");
+}
+function blurb_popup (id, sort) {
+
+	if (id == "") {
+		alert("No Id specified, does the "+sort+" exist.\n"+
+			"You must create it before you can add a blurb");
+		return;
+	}
+
+	window.open("##TP_CGI_URL##?action=ADMIN::BLURB::do_blurb&ref_id="
+	+id+"&sort="+sort,
+	"Blurb",
+	"toolbar=no,location=no,directories=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=200");
+}
+
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<form action="##TP_CGI_URL##" name="fm_news" method="POST">
+<input type=hidden name="action" value="ADMIN::EXTRACONT::go_upd_extra_content">
+<input type=hidden name="news_id" value="##TP_news_id##">
+<input type=hidden name="id_key" value="##TP_id_key##">
+<input type="hidden" name="View" value="##TP_List_View##">
+<input type="hidden" name="Type" value="##TP_List_Type##">
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+	<th colspan=4 class=title>Extra Content Details</th>
+</tr>
+<tr>
+	<td class=caption>Title</td>
+	<td colspan=3><input type=text name=link_title size=32 maxlength=32 value="##TP_link_title##"></td>
+</tr>
+<tr>
+	<td class="caption">Displayed</td>
+	<td>
+		<select name="displayed">
+		<script>write_select('##TP_displayed##','Y','Yes','N','No');</script>
+		</select>
+	</td>
+</tr>
+<tr>
+	<td class="caption">Disporder</td>
+	<td><input type=text name=disporder size=6 maxlength=6 value="##TP_disporder##"></td>
+</tr>
+
+<tr>
+	<td class="caption">URL</td>
+	<td><input type=text name=info_url size=32 maxlength=128 value="##TP_info_url##"></td>
+</tr>
+
+<tr>
+	<td class="caption">Level</td>
+	<td><input type=text name=id_level size=10 onFocus='document.fm_news.disporder.focus()' value="##TP_id_level##">
+		##TP_IF {[op_allowed UpdHomepage]}##
+		<a class="caption" href="javascript:go_dd_popup()">change</a>
+		##TP_ELSE##
+		&nbsp;
+		##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td><input type=text name=id_name  size=32 onFocus='document.fm_news.disporder.focus()' value="##TP_id_name##">
+		##TP_IF {[op_allowed UpdHomepage]}##
+		<a class="caption" href="javascript:clear_bet_link()">clear bet link</a>
+		##TP_ELSE##
+		&nbsp;
+		##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class="caption">From</td>
+	<td><input type="text" size=10 name=fromDate value="##TP_fromDate##" id=date_lo>
+	##TP_IF {[OT_CfgGet CALENDAR 0]}##
+		##TP_TCL {ADMIN::CALENDAR::get_calendar date_lo 0 lo}##
+	##TP_ENDIF##
+	<input type="text" size=8  name=fromTime value="##TP_fromTime##">
+	</td>
+</tr>
+<tr>
+	<td class="caption">To</td>
+	<td><input type="text" size=10 name=toDate value="##TP_toDate##" id=date_hi>
+	##TP_IF {[OT_CfgGet CALENDAR 0]}##
+		##TP_TCL {ADMIN::CALENDAR::get_calendar date_hi 0  hi}##
+	##TP_ENDIF##
+	<input type="text" size=8  name=toTime value="##TP_toTime##">
+	</td>
+	<td colspan="2">&nbsp;</td>
+</tr>
+
+<!-- dividing line -->
+<tr><th colspan="4" height="7" class="caption"></th></tr>
+<tr class=subtitle>	<th colspan=4 align=left>Availability</th></tr>
+<tr><th colspan="4" height="7" class="caption"></th></tr>
+##TP_IF {[OT_CfgGetTrue FUNC_VIEW_FLAGS]}##
+	<tr>
+		<td class="caption">Views</td>
+		<td colspan="3">
+		##TP_PLAY view_sel.html##
+		</td>
+	</tr>
+##TP_ENDIF##
+
+<tr class=subtitle><th colspan=4 align=left>Window Properties</th></tr>
+<tr>
+	<td class="caption">New Window?</td>
+	<td>
+		<select name="link_new_window">
+		<script>write_select('##TP_link_new_window##','N','No','Y','Yes');</script>
+		</select>
+	</td>
+</tr>
+<tr>
+	<td class="caption">Resizable</td>
+	<td>
+		<input type="checkbox" name="win_resizable" ##TP_win_resizable##>
+	</td>
+</tr>
+<tr>
+	<td class="caption">Scrollbars</td>
+	<td>
+		<input type="checkbox" name="win_scrollbar" ##TP_win_scrollbar##>
+	</td>
+</tr>
+<tr>
+	<td class="caption">Menubar</td>
+	<td>
+		<input type="checkbox" name="win_menubar" ##TP_win_menubar##>
+	</td>
+</tr>
+##TP_IF {[tpGetVar FuncDimensions 0]}##
+	<tr>
+	<td class="caption">Window Size (W x H)</td>
+	<td align="left">
+		<input type=text name="link_win_width" size=4 maxlength=6 value="##TP_link_win_width##">&nbsp;X&nbsp;<input type=text name="link_win_height" size=4 maxlength=6 value="##TP_link_win_height##">
+	</td>
+	</tr>
+##TP_ENDIF##
+
+
+##TP_IF {[op_allowed UpdHomepage]}##
+<tr>
+	<th colspan="4" class=buttons>
+##TP_IF {[tpGetVar Insert 0]}##
+	<input type=button value="Insert" onClick="return fs(this,'Insert')">
+##TP_ELSE##
+	<input type=button value="Update" onClick="return fs(this,'Update')">
+	&nbsp;
+	<input type=button value="Delete" onClick="return fs(this,'Delete')">
+	&nbsp;
+	##TP_IF {[OT_CfgGetTrue FUNC_VIEWS]}##
+	<input type=button value="View Disporder" onclick="ViewDispPopup(this,'##TP_news_id##','##TP_link_title##')">
+	##TP_ENDIF##
+##TP_ENDIF##
+
+	##TP_IF {[op_allowed ViewAudit] && ![tpGetVar Insert 0]}##
+	<input type=button value="View Audit History" onClick="return doAudit('NewsHigh', this)">
+	<input type=hidden name=AuditInfo value="">
+	##TP_ENDIF##
+
+	</th>
+</tr>
+##TP_ENDIF##
+<input type=hidden name=SubmitName value="">
+</table>
+</form>
+</body>
+</html>

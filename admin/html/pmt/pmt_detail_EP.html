@@ -1,0 +1,101 @@
+##TP_TCL {ADMIN::PMT::bind_detail_EP [tpGetVar cpm_id]}##
+
+##TP_IF {[tpGetVar PM_status] != {X}}##
+	<tr>
+    	<td class=caption>Earthport VAN:</td>
+		<td colspan="2">##TP_PM_earthport_van##&nbsp;</td>
+		<input type=hidden name="van_id" value="##TP_PM_earthport_van##">
+	</tr>
+	<tr>
+    	<td class=caption>Account Description:</td>
+		<td colspan="2"><input type=text name="desc" value="##TP_PM_description##">&nbsp;</td>
+	</tr>
+
+	<tr>
+    	<td class=caption>Bank Account Country:</td>
+		<td colspan="2"><input type=text name="bank_country" value="##TP_PM_country##">&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Account Currency:</td>
+		<td colspan="2"><input type=text name="ep_ccy" value="##TP_PM_ac_ccy##">&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Name:</td>
+		<td colspan="2"><input type=text name="bank_name" value="##TP_PM_bank_name##">&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Code:</td>
+		<td colspan="2"><input type=text name="bank_code" value="##TP_PM_bank_code##">&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Account Name:</td>
+		<td colspan="2"><input type=text name="ac_name" value="##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != 'Y')}## ##TP_PM_ac_name## ##TP_ELSE## * ##TP_ENDIF##">&nbsp;</td>
+		</tr>
+	<tr>
+    	<td class=caption>Bank Account Number:</td>
+		<td colspan="2"><input type=text name="ac_num" value="##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != 'Y')}## ##TP_PM_ac_num## ##TP_ELSE## * ##TP_ENDIF##">&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Sort Code:</td>
+		<td colspan="2"><input type=text name="bank_sort" value="##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != 'Y')}## ##TP_PM_bank_sort## ##TP_ELSE## * ##TP_ENDIF##">&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Holding Branch:</td>
+		<td colspan="2"><input type=text name="holding" value="##TP_PM_holding##">&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Branch Code:</td>
+		<td colspan="2"><input type=text name="branch_code" value="##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != 'Y')}## ##TP_PM_branch_code## ##TP_ELSE## * ##TP_ENDIF##">&nbsp;</td>
+	</tr>
+	<tr>
+		<th colspan=2 class=buttons>
+	 		<input type="button" class="btn_def" value="Update Details" onClick="return fs(this,'UpdEP')">
+		</th>
+	</tr>
+##TP_ELSE##
+	<tr>
+    	<td class=caption>Earthport VAN:</td>
+		<td colspan="2">##TP_PM_earthport_van##&nbsp;</td>
+		<input type="hidden" name="van_id" value="##TP_PM_earthport_van##">
+	</tr>
+	<tr>
+    	<td class=caption>Account Description:</td>
+		<td colspan="2">##TP_PM_description##&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Account Country:</td>
+		<td colspan="2">##TP_PM_country##&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Account Currency:</td>
+		<td colspan="2">##TP_PM_ac_ccy##&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Name:</td>
+		<td colspan="2">##TP_PM_bank_name##&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Code:</td>
+		<td colspan="2">##TP_PM_bank_code##&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Account Name:</td>
+		<td colspan="2">##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != 'Y')}## ##TP_PM_ac_name## ##TP_ELSE## * ##TP_ENDIF##&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Account Number:</td>
+		<td colspan="2">##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != 'Y')}## ##TP_PM_ac_num## ##TP_ELSE## * ##TP_ENDIF##&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Sort Code:</td>
+		<td colspan="2">##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != 'Y')}## ##TP_PM_bank_sort## ##TP_ELSE## * ##TP_ENDIF##&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Holding Branch:</td>
+		<td colspan="2">##TP_PM_holding##&nbsp;</td>
+	</tr>
+	<tr>
+    	<td class=caption>Bank Branch Code:</td>
+    	<td colspan="2">##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet PM_elite] != 'Y')}## ##TP_PM_branch_code## ##TP_ELSE## * ##TP_ENDIF##&nbsp;</td>
+	</tr>
+##TP_ENDIF##

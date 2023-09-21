@@ -1,0 +1,49 @@
+<html>
+<!-- $Id: stmt_reruns.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+
+<script language=javascript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<form action="##TP_CGI_URL##" method=post>
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th class=title colspan=7>Rerun Statements</th>
+	</tr>
+
+	<tr>
+		<th nowrap class=colhead>Account Number</th>
+		<th nowrap class=colhead>File Name</th>
+	</tr>
+	##TP_LOOP rridx {[tpGetVar NumAccounts]}##
+	<tr>
+	<td>##TP_hacc_num##</td>
+	<td>##TP_hfile_name##</td>
+	</tr>
+ 	##TP_ENDLOOP##
+
+	<tr>
+		<th colspan=7 class=buttons>
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+			<input type=hidden name=SubmitName value="">
+			<input type=hidden name=action value="ADMIN::STMTRUN::DoUploadReRunFile">
+		</th>
+	</tr>
+</table>
+<br>
+</table>
+</body>

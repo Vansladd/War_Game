@@ -1,0 +1,156 @@
+<html>
+<!-- $Id: mkt_template_link_mktgrp.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Link Market Group to Template</title>
+<script language="JavaScript">
+
+function check_valid (b)
+{
+	numSelBoxes = b.form.selBoxes.length ;
+	grpLinksList = "" ;
+
+	if (!numSelBoxes ) {
+		// We only have 1 entry, the selBoxes.length check picks up nothing
+		// so access the one field manually
+		if ( b.form.selBoxes.checked ) {
+			grpLinksList = grpLinksList + b.form.selBoxes.value ;
+		}
+	} else {
+		// deal with multiple check boxes
+		for (i = 0; i < numSelBoxes; i++) {
+			if ( b.form.selBoxes[i].checked ) {
+				grpLinksList = grpLinksList + b.form.selBoxes[i].value + "," ;
+			}
+		}
+	}
+
+	if ( grpLinksList == "" ) {
+		alert ("There are no market groups selected to link to.") ;
+	} else {
+		action = "ADMIN::MKT_TEMPLATE::GoAddLinkMktTemplate&linkMethod=EachType&mkt_tmpl_id=##TP_mkt_tmpl_id##&sport_id=##TP_sport_id##&selMktGroupLinksList=" + grpLinksList ;
+
+		url = "##TP_CGI_URL##?action=" + action
+		document.location.href = url
+	}
+
+}
+
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function back()
+{
+	action = "ADMIN::MKT_TEMPLATE::GoMktTemplateLink&mkt_tmpl_id=##TP_mkt_tmpl_id##&sport_id=##TP_sport_id##";
+
+	url = "##TP_CGI_URL##?action=" + action
+	document.location.href = url
+}
+</script>
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<form method="post" action="##TP_CGI_URL##" name="mktTemplateFm">
+	<input type="hidden" name="action" value="ADMIN::MKT_TEMPLATE::AddMktGroupLink" />
+	<input type="hidden" name="SubmitName" value="" />
+	<input type="hidden" name="sport_id" value="##TP_sport_id##" />
+	<input type="hidden" name="mkt_tmpl_id" value="##TP_mkt_tmpl_id##">
+
+##TP_PLAY mkt_template_header.html##
+
+<table>
+
+	<tr>
+		<td><b> Market Groups: </b></td>
+
+		##TP_IF {[tpGetVar PathLevel] == "class" || [tpGetVar root 0] } ##
+			<td>
+				##TP_selSportName##
+			</td>
+		##TP_ELSEIF {[tpGetVar PathLevel] == "type" } ##
+			<td>
+				<A href="##TP_CGI_URL##?action=ADMIN::MKT_TEMPLATE::GoAddLinkMktTemplate&linkMethod=EachType&mkt_tmpl_id=##TP_mkt_tmpl_id##&sport_id=##TP_sport_id##&PathLevel=category&clickedObjId=##TP_categoryId##"> ##TP_selSportName##</A>
+
+				> ##TP_clickedObjName##
+			</td>
+		##TP_ELSEIF {[tpGetVar PathLevel] == "group" } ##
+			<td>
+				##TP_IF {[tpGetVar ShowParentName] != ""} ##
+					<A href="##TP_CGI_URL##?action=ADMIN::MKT_TEMPLATE::GoAddLinkMktTemplate&linkMethod=EachType&mkt_tmpl_id=##TP_mkt_tmpl_id##&sport_id=##TP_sport_id##&PathLevel=category&clickedObjId=##TP_categoryId##"> ##TP_selSportName##</A>
+					> <A href="##TP_CGI_URL##?action=ADMIN::MKT_TEMPLATE::GoAddLinkMktTemplate&linkMethod=EachType&mkt_tmpl_id=##TP_mkt_tmpl_id##&sport_id=##TP_sport_id##&PathLevel=class&clickedObjName=##TP_parentName##&clickedObjId=##TP_parentId##"> ##TP_parentName##</A>
+				##TP_ELSE ##
+					<A href="##TP_CGI_URL##?action=ADMIN::MKT_TEMPLATE::GoAddLinkMktTemplate&linkMethod=EachType&mkt_tmpl_id=##TP_mkt_tmpl_id##&sport_id=##TP_sport_id##&PathLevel=class"> ##TP_selSportName##</A>
+				##TP_ENDIF##
+
+				> ##TP_clickedObjName##
+
+			</td>
+
+		##TP_ENDIF##
+
+	</tr>
+
+	<tr>
+		<td> &nbsp;&nbsp;</td>
+		<td colspan="4">
+		</td>
+	</tr>
+
+	<tr>
+
+	##TP_IF {[tpGetVar PathLevel] == "group" } ##
+		##TP_LOOP col_mkt_grp_link_idx {[tpGetVar NumEntries]}##
+
+			<td >
+				<input ##TP_isDisabled## name="selBoxes" type="checkbox" value = "##TP_objId##"> ##TP_objName##
+			</td>
+
+			##TP_TCL {expr {[tpGetVar col_mkt_grp_link_idx] % 2 == 0 ? "" : "</tr>"}}##
+		##TP_ENDLOOP##
+	##TP_ELSE##
+		##TP_LOOP col_mkt_grp_link_idx {[tpGetVar NumEntries]}##
+
+			<td> <A href="##TP_CGI_URL##?action=ADMIN::MKT_TEMPLATE::GoAddLinkMktTemplate&linkMethod=EachType&mkt_tmpl_id=##TP_mkt_tmpl_id##&sport_id=##TP_sport_id##&PathLevel=##TP_TCL {tpBufWrite [tpGetVar PathLevel]} ##&categoryId=##TP_categoryId##&parentName=##TP_parentName##&parentId=##TP_parentId##&clickedObjName=##TP_objName##&clickedObjId=##TP_objId##">##TP_objName##</A> </td>
+
+			##TP_TCL {expr {[tpGetVar col_mkt_grp_link_idx] % 2 == 0 ? "" : "</tr>"}}##
+
+		##TP_ENDLOOP##
+	##TP_ENDIF##
+
+	<tr>
+		<td> &nbsp;&nbsp;</td>
+		<td colspan="4">
+		</td>
+	</tr>
+
+	<tr >
+		##TP_IF {[tpGetVar PathLevel] == "group" } ##
+			<th class="buttons" colspan=1>
+				<input type="button" value="Ok" onClick="return fs(this,'AddMktGroupLink')" />
+			</th>
+		##TP_ELSE##
+			<th class="buttons" colspan=1>
+				<input disabled="true" type="button" value="Ok" />
+			</th>
+		##TP_ENDIF##
+		<th class="buttons" colspan=3>
+
+			<input type="button" value="Cancel" onClick="return back()" />
+		</th>
+	</tr>
+
+</table>
+</form>
+
+</body>
+</html>

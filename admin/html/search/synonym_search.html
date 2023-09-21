@@ -1,0 +1,92 @@
+<html>
+<!-- $Id: synonym_search.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+function clear_form(f)
+{
+	f.crit_keyword.value = "";
+	f.crit_synonym.value = "";
+	f.crit_lang.value    = "";
+	return false;
+}
+</script>
+##TP_PLAY JS_WriteSelect.html##
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<form method="get" action="##TP_CGI_URL##">
+	<input type="hidden" name="action" value="ADMIN::SEARCH::DoSynonymSearch" />
+	<input type="hidden" name="SubmitName" value="" />
+
+<table cellspacing="0" cellpadding="2" border="0">
+
+	<tr>
+		<th colspan="4" class="title">
+		Keyword synonyms
+		</th>
+	</tr>
+	<tr>
+		<td class="captionindex">Keyword</td>
+		<td colspan="3">
+		<input type="text" name="crit_keyword" value="##TP_crit_keyword##" maxlength="80" />
+		</td>
+	</tr>
+	<tr>
+		<td class="caption">Synonym</td>
+		<td colspan="3">
+		<input type="text" name="crit_synonym" value="##TP_crit_synonym##" maxlength="160" />
+		</td>
+	</tr>
+	<tr>
+		<td class="caption">Language</td>
+		<td colspan="3">
+			<select name="crit_lang">
+				<script>
+					write_select('##TP_crit_lang##'
+					           , ''  , 'All'
+					           , '--', 'Default'
+					           ##TP_LOOP lang_idx {[tpGetVar NumLangs]}##
+					           , '##TP_LangCode##', '##TP_LangName##'
+					           ##TP_ENDLOOP##
+					)
+				</script>
+			</select>
+		</td>
+	</tr>
+
+	<tr>
+		<th class="buttons">
+			<input type="button" value="Quick Add" onClick="return fs(this,'QuickAdd')" />
+		</th>
+		<th class="buttons">
+			<input type="button" value="Add" onClick="return fs(this,'AddSynonym')" />
+		</th>
+		<th class="buttons">
+			<input type="button" value="Clear" onClick="clear_form(this.form)" />
+		</th>
+		<th class="buttons">
+			<div align="right">
+			<input type="button" value="Find" onClick="return fs(this,'FindSynonym')" />
+			</div>
+		</th>
+	</tr>
+
+</table>
+</form>
+
+</body>
+</html>

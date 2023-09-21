@@ -1,0 +1,126 @@
+<html>
+<!-- $Id: bf_orders.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Betfair Orders</title>
+
+<script language=javascript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function go_bf_order_upd_popup(bf_order_id) {
+	var popup = window.open("##TP_CGI_URL##?action=ADMIN::BETFAIR_ORDER::GoBFOrderUpd&BFOrderId="+bf_order_id,
+							"popup",
+							"toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,height=600,width=600");
+	popup.focus();
+}
+
+var bf_orders = new Array ();
+##TP_LOOP order_idx {[tpGetVar BFNumOrders]}##
+	bf_orders[##TP_TCL {tpBufWrite [tpGetVar order_idx]}##]=new Array(2)
+	bf_orders[##TP_TCL {tpBufWrite [tpGetVar order_idx]}##][0] = "##TP_BFOrderId##";
+	bf_orders[##TP_TCL {tpBufWrite [tpGetVar order_idx]}##][1] = "##TP_BFStatus##";
+##TP_ENDLOOP##
+
+function upd_order_list(status) {
+
+	var chkbox = document.getElementById("order_type_" + status);
+	if (chkbox.checked) {
+		for (i=0;i<bf_orders.length;i++) {
+			var order = document.getElementById("order_" + bf_orders[i][0]);
+			if (bf_orders[i][1] == status) {
+				order.style.display="";
+			}
+		}
+	} else {
+		for (i=0;i<bf_orders.length;i++) {
+			var order = document.getElementById("order_" + bf_orders[i][0]);
+			if (bf_orders[i][1] == status) {
+				order.style.display="none";
+			}
+		}
+	}
+}
+
+</script>
+</head>
+
+<body>
+##TP_PLAY error_rpt.html##
+<form action="##TP_CGI_URL##" method="POST">
+<input type=hidden name=SubmitName>
+<input type=hidden name=OcId value="##TP_OcId##">
+
+<table cellspacing=0 cellpadding=3 border=0>
+<tr>
+	<th colspan=12 class=title>
+		Betfair Orders - ##TP_OcDesc##
+	</th>
+</tr>
+<tr>
+	<td colspan=1 nowrap><input type=checkbox id="order_type_M" checked onclick="upd_order_list('M');">Matched (M)</td>
+	<td colspan=1 nowrap><input type=checkbox id="order_type_U" checked onclick="upd_order_list('U');">Unmatched (U)</td>
+	<td colspan=1 nowrap><input type=checkbox id="order_type_C" checked onclick="upd_order_list('C');">Cancelled (C)</td>
+	<td colspan=1 nowrap><input type=checkbox id="order_type_L" checked onclick="upd_order_list('L');">Lapsed (L)</td>
+</tr>
+<tr>
+	<td colspan=1 nowrap><input type=checkbox id="order_type_X" checked onclick="upd_order_list('X');">Unsuccessful (X)</td>
+	<td colspan=1 nowrap><input type=checkbox id="order_type_B" checked onclick="upd_order_list('B');">Being Placed (B)</td>
+	<td colspan=1 nowrap><input type=checkbox id="order_type_N" checked onclick="upd_order_list('N');">Sent to Betfair (N)</td>
+	<td colspan=1 nowrap><input type=checkbox id="order_type_P" checked onclick="upd_order_list('P');">Partially Matched (P)</td>
+	<td colspan=1 nowrap><input type=checkbox id="order_type_V" checked onclick="upd_order_list('V');">Voided (V)</td>
+</tr>
+</table>
+<table cellspacing=0 cellpadding=3 border=0>
+<tr>
+	<th class=colhead>Betfair<br>Order Id</th>
+	<th class=colhead>Betfair<br>Bet Id</th>
+	<th class=colhead>Date<br>Bet Id</th>
+	<th class=colhead>Type<br>Back/Lay</th>
+	<th class=colhead>Bet<br>Status</th>
+	<th class=colhead>Settled</th>
+	<th class=colhead>Price</th>
+	<th class=colhead>Average<br>Price Matched</th>
+	<th class=colhead>Size</th>
+	<th class=colhead>Size<br>Matched</th>
+	<th class=colhead>Returns</th>
+	<th class=colhead>Betfair<br>Account</th>
+</tr>
+<tr>
+##TP_IF {[tpGetVar BFNumOrders]=="0"}##
+	<td colspan=12>No orders found</td>
+##TP_ELSE##
+	##TP_LOOP order_idx {[tpGetVar BFNumOrders]}##
+		<tr id="order_##TP_BFOrderId##">
+			<td><a href='javascript:go_bf_order_upd_popup("##TP_BFOrderId##")'>##TP_BFOrderId##</a></td>
+			<td>##TP_BFBetId##</td>
+			<td>##TP_BFCrDate##</td>
+			<td>##TP_BFType##</td>
+			<td>##TP_BFStatus##</td>
+			<td>##TP_BFSettled##</td>
+			<td>##TP_BFPrice##</td>
+			<td>##TP_BFAvgPrice##</td>
+			<td>##TP_BFSize##</td>
+			<td>##TP_BFSizeMat##</td>
+			<td>##TP_BFProfit##</td>
+			<td>##TP_BFAcctName##</td>
+		</tr>
+	##TP_ENDLOOP##
+##TP_ENDIF##
+</tr>
+<tr>
+	<th class=buttons colspan=12>
+		<input type=button value=Close  onClick="window.close()">
+	</th>
+</tr>
+</form>
+</table>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<html>
+<!-- $Id: pmt_detail.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Payment Detail</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<form action="##TP_CGI_URL##" method=get>
+<tr>
+	<th colspan=2 class=title>
+	Payment Detail ###TP_RefNoFmt##
+	</th>
+</tr>
+<tr>
+	<td class=caption>Username/AcctNo</td>
+	<td>
+	<b>##TP_Username## / ##TP_AcctNo##</b>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Card number</td>
+	<td>
+	##TP_PmtCardNo##&nbsp;
+	</td>
+</tr>
+<tr>
+	<td class=caption>Card expiry</td>
+	<td>
+	##TP_PmtCardExpiry##&nbsp;
+	</td>
+</tr>
+<tr>
+	<td class=caption>Card start</td>
+	<td>
+	##TP_PmtCardStart##&nbsp;
+	</td>
+</tr>
+<tr>
+	<td class=caption>Card issue</td>
+	<td>
+	##TP_PmtCardIssue##&nbsp;
+	</td>
+</tr>
+<tr>
+	<td class=caption>Time</td>
+	<td>
+	##TP_PmtCrDate##&nbsp;
+	</td>
+</tr>
+<tr>
+	<td class=caption>Sort</td>
+	<td>
+	<script>
+	write_which("##TP_PmtSort##","D","Deposit","W","Withdrawal")
+	</script>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Amount</td>
+	<td>
+	##TP_PmtCCYCode## ##TP_PmtAmount##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Status</td>
+	<td>
+	##TP_IF {[tpGetVar PmtUpdateable 0]}##
+	<select name=PmtStatus>
+	<script>
+	write_select('##TP_PmtStatus##','G','Good','B','Bad','U','Unknown')
+	</script>
+	</select>
+	##TP_ELSE##
+	<script>
+	write_which('##TP_PmtStatus##','G','Good','B','Bad','U','Unknown')
+	<input type=hidden name=PmtStatus value="##TP_PmtStatus##">
+	</script>
+	##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Settled</td>
+	<td>
+	##TP_PmtSettled##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Auth Code</td>
+	<td>
+	##TP_IF {[tpGetVar PmtUpdateable 0]}##
+	<input type="text" name="PmtAuthCode" value="##TP_PmtAuthCode##" size=12>
+	##TP_ELSE##
+	##TP_PmtAuthCode##&nbsp;
+	<input hidden="text" name="PmtAuthCode" value="##TP_PmtAuthCode##">
+	##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Pmt Gwy Ref</td>
+	<td>
+	##TP_IF {[tpGetVar PmtUpdateable 0]}##
+	<input type="text" name="PmtGwyUID" value="##TP_PmtGwyUID##" size=40>
+	##TP_ELSE##
+	##TP_PmtGwyUID##&nbsp;
+	<input type="hidden" name="PmtGwyUID" value="##TP_PmtGwyUID##">
+	##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Pmt Gwy Status</td>
+	<td>
+	##TP_IF {[tpGetVar PmtUpdateable 0]}##
+	<input type="text" name="PmtGwyStatus" value="##TP_PmtGwyStatus##" size=40>
+	##TP_ELSE##
+	##TP_PmtGwyStatus##&nbsp;
+	##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class=caption>>Pmt Gwy Message</td>
+	<td>
+	##TP_IF {[tpGetVar PmtUpdateable 0]}##
+	<input type="text" name="PmtGwyMsg" value="##TP_PmtGwyMsg##" size=60>
+	##TP_ELSE##
+	##TP_PmtGwyMsg##&nbsp;
+	<input type="hidden" name="PmtGwyMsg" value="##TP_PmtGwyMsg##">
+	##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Comment</td>
+	<td>
+	<input type="text" name="PmtExtraInfo" value="##TP_PmtExtraInfo##" size=60>
+	</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr>
+		<th width=75% class=buttons>
+		<input type=hidden name="RefNo"  value="##TP_RefNo##">
+		<input type=button class="btn_def" value="Update Record" onClick="return fs(this,'PmtUpd')">
+		</th>
+		##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+			<th class=goaudit width=25%>
+			<input type=button class="btn_def" value="View Audit History" onClick="return fs(this,'GoAudit')">
+			<input type=hidden name=AuditInfo value="Pmt">
+			</th>
+		##TP_ENDIF##
+	</tr>
+	</table>
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::PMT::DoPmt>
+<input type=hidden name=RefNo value=##TP_RefNo##>
+</form>
+</table>
+</body>
+</html>

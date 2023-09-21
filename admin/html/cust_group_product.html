@@ -1,0 +1,80 @@
+<html>
+<!-- $Id: cust_group_product.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Customer Group Product</title>
+##TP_PLAY JS_WriteSelect.html##
+<script type="text/javascript">
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+
+</head>
+<body>
+
+<form name="cust_group_product" method="post" action="##TP_CGI_URL##">
+##TP_PLAY error_rpt.html##
+<table border="0" cellspacing="0" cellpadding="2">
+<tr>
+	<th class="title" colspan="2">Customer Group Product</th>
+</tr>
+<tr>
+	<td>Group Name</td>
+	##TP_IF {[tpGetVar gp_type "Add"] == "Add"}##
+		<td><input type="text" maxlength="6" size="10" name="group_name" value="##TP_gp_group_name##" /></td>
+	##TP_ELSE##
+		<td>##TP_gp_group_name##</td>
+		<input type="hidden" name="group_name" value="##TP_gp_group_name##" />
+	##TP_ENDIF##
+</tr>
+<tr>
+	<td>Group Desc</td>
+	<td><input type="text" maxlength="80" size="60" name="group_desc" value="##TP_gp_group_desc##" /></td>
+</tr>
+<tr>
+	<td>Group Type</td>
+	<td>##TP_gp_group_type##</td>
+	<input type="hidden" name="group_type" value="##TP_gp_group_type##" />
+</tr>
+
+##TP_IF {[OT_CfgGet ALLOW_MULTI_VALUE_CUST_GROUPS 0] == 1}##
+<tr>
+	<td>Multi Value</td>
+	<td>
+		<select name="multi_value">
+			<script type="text/javascript">
+			write_select('##TP_gp_multi_value##','Y','Y','N','N');
+			</script>
+		</select>
+	</td>
+</tr>
+##TP_ELSE##
+	<input type="hidden" name="multi_value" value="N" \>
+##TP_ENDIF##
+
+<tr><td>
+	##TP_IF {[tpGetVar gp_type "Add"] == "Add"}##
+		<input type="button" class="btn_def" value="Add" onclick="fs(this, 'Add')">&nbsp;
+	##TP_ELSE##
+		<input type="button" class="btn_def" value="Update" onclick="fs(this, 'Update')">&nbsp;
+	##TP_ENDIF##
+		<input type="button" class="btn_def" value="Back" onclick="fs(this, 'Back')">&nbsp;
+	##TP_IF {[tpGetVar gp_type "Add"] == "Update"}##
+		<input type="button" class="btn_def" value="Delete" onclick="fs(this, 'Delete')">&nbsp;
+	##TP_ENDIF##
+</td></tr>
+</table>
+
+<input type="hidden" name="action" value="ADMIN::CUST_GROUP::DoCustGroupProduct" />
+<input type="hidden" name="SubmitName" value="" />
+</form>
+
+</body>
+</html>

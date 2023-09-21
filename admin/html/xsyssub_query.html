@@ -1,0 +1,163 @@
+<html>
+<!-- $Id: xsyssub_query.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<script>
+
+			function fs(b,t) {
+
+				b.disabled = true;
+				b.value = "Busy...";
+				b.form.SubmitName.value=t;
+				b.form.submit();
+				return true;
+			}
+
+			function csv(b,t) {
+
+				b.disabled = true;
+				var btn_name = b.value;
+
+				b.form.SubmitName.value=t;
+				b.form.submit();
+
+				b.disabled = false;
+				b.value = btn_name;
+
+				return true;
+
+			}
+
+			// updates date from and to boxes with the range value selected
+			function update_date_range() {
+
+				var date_range_elem = document.search_form.date_range;
+				var date_range_val = date_range_elem.options[date_range_elem.selectedIndex].value;
+
+				if (date_range_val != '') {
+					// value will be "from|to"
+					var date_range_array = date_range_val.split("|");
+
+					document.search_form.date_from.value = date_range_array[0];
+					document.search_form.date_to.value = date_range_array[1];
+				}
+			}
+
+		</script>
+	</head>
+	<body>
+		##TP_PLAY error_rpt.html##
+		##TP_IF {[op_allowed ViewCustInfo]}##
+		<form method="get" action="##TP_CGI_URL##" name="search_form">
+			<table cellspacing="0" cellpadding="2" border="0">
+				<tr>
+					<th colspan="2" class="title">
+						External System Subscription Search ##TP_IF {[tpGetVar system_exists 0]}##- ##TP_SystemName####TP_ENDIF##
+					</th>
+				</tr>
+				<tr class="subtitle">
+					<th colspan="2" align="left">Customer information</th>
+				</tr>
+				##TP_IF {[tpBindGet CustId] == ""}##
+				<tr>
+					<td class="caption">Username</td>
+					<td><input type="text" name="username" size="32">&nbsp;<input type="checkbox" name="case_insens" value="Y" checked/> Case-insensitive</td>
+				</tr>
+				<tr>
+					<td class="caption">Name</td>
+					<td><input type="text" name="first_name" size="15">&nbsp;<input type="text" name="last_name" size="15"></td>
+				</tr>
+				<tr>
+					<td class="caption">Email like</td>
+					<td><input type="text" name="email" size="32"></td>
+				</tr>
+				<tr>
+					<td class="caption">Account No.</td>
+					<td><input type="text" name="acct_no" size="32"></td>
+				</tr>
+				##TP_ELSE##
+				<tr>
+					<td class="caption">Username</td>
+					<td>##TP_Username##</td>
+				</tr>
+				<tr>
+					<td class="caption">Account No.</td>
+					<td>##TP_AcctNo##</td>
+				</tr>
+				<input type="hidden" name="cust_id" value="##TP_CustId##">
+				##TP_ENDIF##
+				<tr class="subtitle">
+					<th colspan="2" align="left">Subscription information</th>
+				</tr>
+				<tr>
+					<td class="caption">Date Range</td>
+					<td>
+						<input type="text" name="date_from" size="20" />&nbsp;to&nbsp;
+						<input type="text" name="date_to" size="20" />&nbsp;(yyyy-mm-dd hh:mm:ss)
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">or</td>
+					<td>
+						<select name="date_range" onchange="javascript:update_date_range();">
+							<option value="">n/a</option>
+							##TP_LOOP date_idx {[tpGetVar num_date_ranges 0]}##
+							<option value="##TP_DateRangeValue##" ##TP_DateRangeSelected##>##TP_DateRangeDesc##</option>
+							##TP_ENDLOOP##
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">System</td>
+					<td>
+						##TP_IF {[tpGetVar system_exists 0]}##
+						##TP_SystemName##
+						<input type="hidden" name="system_id" value="##TP_SystemId##" />
+						<input type="hidden" name="system_name" value="##TP_SystemName##" />
+						##TP_ELSE##
+						<select name="system_id">
+							<option value="" selected>All</option>
+							##TP_LOOP sys_idx {[tpGetVar num_systems 0]}##
+							<option value="##TP_SystemId##">##TP_SystemName##</option>
+							##TP_ENDLOOP##
+						</select>&nbsp;
+						##TP_ENDIF##
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">External Subscription<br />Reference</td>
+					<td>
+						<input name="ext_sub_id" type="text" size="20"/>
+					</td>
+				<tr>
+					<td class="caption">Status</td>
+					<td>
+						<select name="status">
+							<option value="" selected>All</option>
+							<option value="A">Active</option>
+							<option value="S">Closed</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">Subscriptions per page</td>
+					<td>
+						<input type="text" name="items_per_page" value="25" size="4" />&nbsp;<em>(search only)</em>
+					</td>
+				</tr>
+				<tr>
+					<th class="buttons" colspan="2">
+						<input type="button" value="Search" onclick="javascript:return fs(this,'DoSearch');" />
+						<input type="button" value="Get All as CSV" onclick="javascript:return csv(this,'DoAllCSV');" />
+					</th>
+				</tr>
+				<input type="hidden" name="action" value="ADMIN::XSYSSUB::DoSubQuery" />
+				<input type="hidden" name="SubmitName" value="" />
+			</table>
+		</form>
+		##TP_ELSE##
+		<font color="orange"><b>You do not have permission to view customer details.</b></font>
+		##TP_ENDIF##
+	</body>
+</html>

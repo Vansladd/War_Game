@@ -1,0 +1,189 @@
+<html>
+<!-- $Id: pmt_intercept_countries.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<meta http-equiv="Expires" content="0">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Payment Intercept Countries</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function checkFs(b,q,a,s)
+{
+		if(confirm(q))
+		{
+			return afs(b,a,s);
+		}
+		else 
+		{
+		  return false;
+		}
+}
+
+function afs(b,a,s)
+{
+		b.form.action.value = a;
+		return fs(b,s);
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+
+<!-- Error handler -->
+##TP_PLAY error_rpt.html##
+
+<!-- Intercept Countries -->
+
+##TP_IF {[tpGetVar operation] == "Add"}##
+
+	<!-- Add New Country -->
+	
+	<form action="##TP_CGI_URL##" method=get>
+		
+		<input type=hidden name=SubmitName>
+		<input type=hidden name=action value="ADMIN::PMTINTCPT::DoPmtInterceptCountry">
+		
+		<table cellspacing=0 cellpadding=2 border=0>
+			<tr>
+				<th class=title colspan=2>
+				<font color=white size=+1>New Payment Intercept Country</font>
+				</th>
+			</tr>
+
+			<tr>
+				<td>Country Name String</td>
+				<td><input type=text name=country_name></td>
+			</tr>
+
+			<tr>
+				<td>Status</td>
+				<td>
+					<select name=status>
+						<option value="Y">Y</option>
+						<option value="N">N</option>
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<th colspan=2 class=buttons>
+				<input type=button class="btn_def" value="Add Country" onClick="return fs(this,'Add')">
+				<input type=button class="btn_def" value="Back" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtIntercept','')">
+				</th>
+			</tr>
+		</table>
+	</form>
+	
+##TP_ELSEIF {[tpGetVar operation] == "Upd"}##
+
+	<!-- Update Country -->
+	
+		<!-- Add New Country -->
+		
+		<form action="##TP_CGI_URL##" method=get>
+			
+			<input type=hidden name=SubmitName>
+			<input type=hidden name=country_id value=##TP_country_id##>
+			<input type=hidden name=action value="ADMIN::PMTINTCPT::DoPmtInterceptCountry">
+			
+			<table cellspacing=0 cellpadding=2 border=0>
+				<tr>
+					<th class=title colspan=2>
+					<font color=white size=+1>Update Payment Intercept Country</font>
+					</th>
+				</tr>
+	
+				<tr>
+					<td>Country Name String</td>
+					<td><input type=text name=country_name value="##TP_country_name##"></td>
+				</tr>
+	
+				<tr>
+					<td>Status</td>
+					<td>
+						<select name=status>
+							<script>write_select('##TP_status##','Y','Y','N','N');</script>
+						</select>
+					</td>
+				</tr>
+	
+				<tr>
+					<th colspan=2 class=buttons>
+					<input type=button class="btn_def" value="Update Country" onClick="return fs(this,'Upd')">
+					<input type=button class="btn_def" value="Back" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtInterceptCountry', 'All')">
+					</th>
+				</tr>
+			</table>
+		</form>
+
+	
+##TP_ELSE##
+
+	<!-- List Countries -->
+
+<form action="##TP_CGI_URL##" method=get>
+	
+	<input type=hidden name=SubmitName>
+	<input type=hidden name=action value="ADMIN::PMTINTCPT::GoPmtInterceptCountry">
+	
+	<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th class=title colspan=7>
+		<font color=white size=+1>Payment Intercept Countries</font>
+		</th>
+	</tr>
+	<tr>
+		<th class=colhead>Country String</th>
+		<th class=colhead>Status</th>
+	</tr>
+
+	##TP_IF {$COUNTRY(nrows) > 0}##
+		##TP_LOOP country_idx {$COUNTRY(nrows)}##
+			<tr>
+			##TP_IF {[op_allowed ManagePmtIntercepts]}##
+				<td>
+						<input type=radio name=country_id value="##TP_country_id##" ##TP_IF {[tpGetVar country_idx] == 0}##CHECKED##TP_ENDIF##>
+						<a href="##TP_CGI_URL##?action=ADMIN::PMTINTCPT::GoPmtInterceptCountry&SubmitName=Upd&country_id=##TP_country_id##">##TP_country_name##</a>
+				</td>
+			##TP_ELSE##
+				<td><b>##TP_country_name##</b></td>
+			##TP_ENDIF##
+				<td>##TP_status##</td>
+			</tr>
+		##TP_ENDLOOP##
+	##TP_ELSE##
+		<tr>
+			<td colspan=7>
+			##TP_IF {[tpGetVar operation] == "All"}##
+				<b><i>There are no payment intercept countries defined</i></b>				
+			##TP_ELSE##
+				<b><i>No matches were found</i></b>
+			##TP_ENDIF##
+			</td>
+		</tr>
+	##TP_ENDIF##
+		<tr>
+			<th colspan=7 class=buttons>
+	##TP_IF {[op_allowed ManagePmtIntercepts]}##
+			<input type=button class="btn_def" value="Add Country" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtInterceptCountry','Add')">
+			<input type=button class="btn_def" value="View / Modify Country" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtInterceptCountry','Upd')">
+			<input type=button class="btn_def" value="Delete Country" onClick="return checkFs(this,'Delete Country?','ADMIN::PMTINTCPT::DoPmtInterceptCountry','Del')">
+	##TP_ENDIF##
+			<input type=button class="btn_def" value="Back" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtIntercept','')">
+			</th>
+			</form>
+		</tr>
+	</table>
+</form>
+
+##TP_ENDIF##
+
+
+

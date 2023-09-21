@@ -1,0 +1,150 @@
+<html>
+<!-- $Id: user_group.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Group Permissions</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY msg_rpt.html##
+##TP_PLAY error_rpt.html##
+<form method=post action="##TP_CGI_URL##" >
+##TP_IF {![tpGetVar opAdd 0]}##
+<table border=0 cellspacing=0 cellpadding=1 ##TP_IF {[OT_CfgGet PERM_COLS 3] < 3}##width="600"##TP_ENDIF##>
+<tr>
+  <th class=title colspan=##TP_TCL {tpBufWrite [OT_CfgGet PERM_COLS 3]}##>
+  ##TP_GroupName## group permissions
+  </th>
+</tr>
+  ##TP_IF {[tpGetVar NumPermGrps 0]>0}##
+    ##TP_LOOP grp_idx {[tpGetVar NumPermGrps]}##
+      <tr class=subtitle>
+        <th colspan=##TP_TCL {tpBufWrite [OT_CfgGet PERM_COLS 3]}## align=left  class=subtitle>
+        ##TP_AdminOpGrp##
+        </td>
+      </tr>
+      ##TP_TCL -quiet {tpSetVar NumPerms $AG([tpGetVar grp_idx],n_perms)}##
+
+      ##TP_LOOP perm_idx {[expr {[OT_CfgGet PERM_COLS 3]*(([tpGetVar NumPerms]+[OT_CfgGet PERM_COLS 3]-1)/[OT_CfgGet PERM_COLS 3])}]}##
+        ##TP_IF {[tpGetVar perm_idx]%[OT_CfgGet PERM_COLS 3] == 0}##
+          <tr>
+        ##TP_ENDIF##
+        ##TP_IF {[tpGetVar perm_idx] < [tpGetVar NumPerms]}##
+          <td>
+		  	<input type="checkbox" name="AP_##TP_AdminOp##" ##TP_OpSelected##
+	          ##TP_IF {![tpGetVar CanAssignRights 0]}##
+            	disabled="disabled"
+    	      ##TP_ENDIF##
+			>&nbsp;
+          ##TP_AdminOpDesc## &nbsp;
+          </td>
+        ##TP_ELSE##
+          <td>&nbsp;</td>
+        ##TP_ENDIF##
+        ##TP_IF {([tpGetVar perm_idx]+1)%[OT_CfgGet PERM_COLS 3] == 0}##
+          </tr>
+        ##TP_ENDIF##
+      ##TP_ENDLOOP##
+
+    ##TP_ENDLOOP##
+  ##TP_ELSE##
+    <tr>
+      <td colspan=##TP_TCL {tpBufWrite [OT_CfgGet PERM_COLS 3]}##>
+      <b>No permissions assigned currently</b>
+      </td>
+    </tr>
+  ##TP_ENDIF##
+    <tr>
+      <th colspan=##TP_TCL {tpBufWrite [OT_CfgGet PERM_COLS 3]}## class=buttons>
+	  ##TP_IF {[tpGetVar CanAssignRights 0]}##
+      <input type=button class="btn_def" value="Update Permissions" onClick="return fs(this,'UpdPerms')">
+
+		<input type="button" class="btn_def" value="Audit" onClick="return fs(this,'AuditGroups');" />
+  	  ##TP_ENDIF##
+      <input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+      </th>
+    </tr>
+</table>
+<input type=hidden name=GroupId value="##TP_GroupId##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::USERS::DoGroup>
+</form>
+##TP_ENDIF##
+<br>
+
+
+
+
+
+##TP_IF {[tpGetVar CanAssignRights 0]}##
+
+<form method=get action="##TP_CGI_URL##">
+<table border=0 cellspacing=0 cellpadding=2>
+##TP_IF {[tpGetVar opAdd 0]}##
+  <tr>
+    <th class=title colspan=2>
+    New group
+    </th>
+  </tr>
+  <tr>
+    <td class=caption>Name</td>
+    <td>
+      <input type=text name=GroupName size=30 value="##TP_GroupName##" />
+    </td>
+  </tr>
+##TP_ELSE##
+  <tr>
+    <th class=title colspan=2>##TP_GroupName## update</th>
+  </tr>
+  <tr>
+    <td class=caption>Name</td>
+    <td>
+      <input type=text name=GroupName size=30 value="##TP_GroupName##" />
+    </td>
+  </tr>
+  <input type=hidden name=GroupName value="##TP_GroupName##" />
+##TP_ENDIF##
+<tr>
+	<td class="caption">Group Owner</td>
+	<td>
+		<select name="group_owner">
+			<option value="" selected>--None--</option>
+			##TP_LOOP owner_idx {[tpGetVar NumOwners]}##
+				<option value="##TP_OwnerID##" ##TP_IF {[tpBindGet OwnerID] == [tpBindGet GroupOwner]}##selected##TP_ENDIF##>##TP_OwnerName##</option>
+			##TP_ENDLOOP##
+		</select>
+		<input type="hidden" name="cur_owner" value="##TP_GroupOwner##">
+	</td>
+</tr>
+<tr>
+  <th colspan=2 class=buttons>
+  ##TP_IF {[tpGetVar opAdd 0]}##
+  <input type=button class="btn_def" value="Add Group" onClick="return fs(this,'GroupAdd')">
+  ##TP_ELSE##
+  <input type=button class="btn_def" value="Update Group" onClick="return fs(this,'GroupMod')">
+  <input type=button class="btn_def" value="Delete Group" onClick="return fs(this,'GroupDel')">
+  ##TP_ENDIF##
+  <input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+  </td>
+</tr>
+</table>
+<input type=hidden name=GroupId value="##TP_GroupId##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::USERS::DoGroup>
+</form>
+
+##TP_ENDIF##
+
+</body>
+</html>

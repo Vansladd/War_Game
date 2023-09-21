@@ -1,0 +1,430 @@
+<html>
+<!-- $Id: cust_stmt.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+##TP_PLAY header_cal.html##
+
+<script language=javascript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function displayCalendars() {
+	new Calendar(document.forms.Cust_Stmt.effectiveTo,null,false,"lo");
+	new Calendar(document.forms.ad_hoc_stmt_form.oo_due_from,null,false,"lo");
+	new Calendar(document.forms.ad_hoc_stmt_form.oo_due_to,null,false,"lo");
+}
+
+function start()
+{
+
+	##TP_IF {[OT_CfgGet STMTS_EFFECTIVE_TO 0]}##
+	if (!document.forms.Cust_Stmt.pull_status) return;
+	var tmp = document.forms.Cust_Stmt.pull_status.options[document.forms.Cust_Stmt.pull_status.selectedIndex].value;
+	var label = document.getElementById('effectiveToLabel');
+	var input = document.getElementById('effectiveToInput');
+
+	if (tmp != "T")
+	{
+		label.style.display = "none";
+		input.style.display = "none";
+	}
+	else
+	{
+		label.style.display = "block";
+		input.style.display = "block";
+	}
+	##TP_ENDIF##
+}
+
+
+function date_type_changed(f)
+{
+	if (!f.date_type) return;
+
+	var is_not_custom = (f.date_type.value != 'C');
+
+	document.getElementById('oo_due_from').disabled = is_not_custom;
+	document.getElementById('oo_due_to').disabled = is_not_custom;
+
+	// blank values to avoid confusion
+	if (is_not_custom) {
+		f.oo_due_from.value = '';
+		f.oo_due_to.value   = '';
+	}
+}
+
+
+</script>
+</head>
+<body onload="javascript:start();displayCalendars();">
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<form name="Cust_Stmt" action="##TP_CGI_URL##" method=post>
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th class=title colspan=10>Previous Statements</th>
+	</tr>
+
+	<!-- previous statement information -->
+	##TP_IF {[tpGetVar STMT_prev_n] == 0}##
+	<tr>
+		<td colspan=10>No previous statements for this account</td>
+	</tr>
+	##TP_ELSE##
+	<tr>
+	<tr>
+		<th nowrap class=colhead>Statement Number</th>
+		<th nowrap class=colhead>From Date</th>
+		<th nowrap class=colhead>To Date</th>
+		<th nowrap class=colhead>Sort</th>
+		<th nowrap class=colhead>Txn Type</th>
+		<th nowrap class=colhead>Pull Status</th>
+		<th nowrap class=colhead>&nbsp;</th>
+		<th nowrap class=colhead>&nbsp;</th>
+		<th nowrap class=colhead>&nbsp;</th>
+	</tr>
+	<input type=hidden name=n_prev_stmts value=##TP_TCL {tpBufWrite [tpGetVar STMT_prev_n]}##>
+	##TP_LOOP st_idx {[tpGetVar STMT_prev_n]}##
+	<input type=hidden name=stmt_id_##TP_TCL {tpBufWrite [tpGetVar st_idx]}## value=##TP_STMT_prev_stmt_id##>
+	<tr>
+		<td align=center><a href="##TP_CGI_URL##?action=ADMIN::CUST::DoStmtDetail&stmt_id=##TP_STMT_prev_stmt_id##&CustId=##TP_CustId##">##TP_STMT_prev_stmt_num##</a></td>
+		<td>##TP_STMT_prev_date_from##</td>
+		<td>##TP_STMT_prev_date_to##</td>
+		<td>##TP_STMT_prev_sort##</td>
+		<td>##TP_STMT_product_filter##</td>
+		<td>
+			<select name=prev_pull_stmt_##TP_STMT_prev_stmt_id##>
+				<script>
+					write_select("##TP_STMT_prev_pull_status##", "P", "Permanent", "T", "Temporary", "N", "No")
+				</script>
+			</select>
+		</td>
+		<td><a href="##TP_CGI_URL##?action=ADMIN::CUST::DoStmt&stmt_id=##TP_STMT_prev_stmt_id##&CustId=##TP_CustId##&SubmitName=ExportPDF">[export PDF]</a></td>
+		<td><a href="##TP_CGI_URL##?action=ADMIN::AUDIT::GoAudit&AuditInfo=StmtRecord&stmt_id=##TP_STMT_prev_stmt_id##&CustId=##TP_CustId##">[Audit]</a></td>
+		<td><a href="##TP_CGI_URL##?action=ADMIN::CUST::DoStmt&stmt_id=##TP_STMT_prev_stmt_id##&CustId=##TP_CustId##&SubmitName=DeleteStmtRecord">[delete]</a></td>
+	</tr>
+	##TP_ENDLOOP##
+	##TP_ENDIF##
+	<tr>
+		<th colspan=10 class=buttons>
+			<input type=button class="btn_def" value="Update" onClick="return fs(this,'UpdatePrevStmt')">
+		</th>
+	</tr>
+</table>
+<br>
+
+<!-- statement settings -->
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th class=title colspan=2>Statement Settings</th>
+	</tr>
+	##TP_IF {[tpGetVar STMT_available 0]}##
+	<tr class=subtitle>
+		<th colspan=2 align=left>Next Statement Dates (based on current settings)</th>
+	</tr>
+	<tr>
+		<td class=caption>From</td>
+		<td>
+			##TP_STMT_due_from##
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>To</td>
+		<td>
+			##TP_STMT_due_to##
+		</td>
+	</tr>
+	##TP_IF {[OT_CfgGet STMT_CONTROL 0]}##
+	<tr>
+		<td class=caption></td>
+		<td>
+			<p>
+				<b>Statement dates are configured to be set from the
+				<a href="##TP_CGI_URL##?action=ADMIN::STMT_CONTROL::go_stmt_controls">control</a>.
+				This means that the frequency and date may be automatically
+				changed	when the statements are produced.</b>
+			</p>
+		</td>
+	</tr>
+	##TP_ENDIF##
+	##TP_ENDIF##
+
+	<tr class=subtitle>
+		<th colspan=2 align=left>Settings</th>
+	</tr>
+	##TP_IF {[tpGetVar STMT_available 0]}##
+	<tr>
+		<td class=caption>Status</td>
+		<td>
+			<select name=status>
+			<script>
+				write_select("##TP_STMT_status##", "A", "Active", "S", "Suspended")
+			</script>
+			</select>
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	<tr>
+		<td class=caption>Generate every</td>
+		<td>
+			<input type=text name=freq_amt size=6 value="##TP_STMT_freq_amt##">
+			<select name=freq_unit>
+				<script>
+				write_select("##TP_STMT_freq_unit##", "W", "week(s)", "M", "Month(s)")
+				</script>
+			</select>
+		</td>
+	</tr>
+	##TP_IF {[OT_CfgGet STATEMENT_DELIVERY_CHOOSE 1]}##
+	<tr>
+		<td class=caption>Delivery method</td>
+		<td>
+			<select name=dlv_method>
+				<script>
+				write_select("##TP_STMT_dlv_method##", "P", "Post", "E", "Email")
+				</script>
+			</select>
+		</td>
+	</tr>
+	##TP_ENDIF##
+	##TP_IF {[OT_CfgGet STATEMENT_BRIEF_CHOOSE 1]}##
+	<tr>
+		<td class=caption>Brief statement</td>
+		<td>
+			<select name=brief>
+				<script>
+					write_select("##TP_STMT_brief##", "N", "No", "Y", "Yes")
+				</script>
+			</select>
+		</td>
+	</tr>
+	##TP_ENDIF##
+	##TP_IF {[tpGetVar STMT_available 0]}##
+	<tr>
+		<td class=caption>Pull Status</td>
+		<td>
+			<select name=pull_status onChange="start();">
+				<script>
+					write_select("##TP_STMT_pull_status##", "N", "No", "P", "Permanent", "T", "Temporary");
+				</script>
+			</select>
+		</td>
+	</tr>
+	##TP_IF {[OT_CfgGet STMTS_EFFECTIVE_TO 0]}##
+	<tr>
+		<td class=caption><span id="effectiveToLabel">Effective To</span></td>
+		<td>
+			<span id="effectiveToInput">
+				<input type="text" name="effectiveTo" value="##TP_STMT_pull_to##" size="13">
+			</span>
+		</td>
+	</tr>
+
+	<tr>
+		<td class=caption>Pull Reason</td>
+		<td>
+			<select name=pull_reason>
+				<script>
+					write_select("##TP_STMT_pull_reason##", "","", "A", "On Holiday", "B", "Works Away", "C", "Good Client", "D", "Golden Spurs Client", "E", "Top Client", "F", "Misc");
+				</script>
+			</select>
+		</td>
+	</tr>
+	##TP_ELSE##
+	<tr>
+		<td class=caption>Pull Reason</td>
+		<td>
+			<textarea cols=60 rows=3 wrap=virtual name=pull_reason>##TP_STMT_pull_reason##</textarea>
+		</td>
+	</tr>
+	##TP_ENDIF##
+
+	<tr>
+		<td class=caption>Customer Message</td>
+		<td>
+			<textarea cols=60 rows=3 wrap=virtual name=cust_msg>##TP_STMT_cust_msg##</textarea>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Remove Message</td>
+		<td>
+			<select name=remove_msg>
+				<script>
+				write_select("##TP_STMT_remove_msg##", "A", "on next statement", "N", "never")
+				</script>
+			</select>
+		</td>
+	</tr>
+	##TP_ENDIF##
+	##TP_IF {[OT_CfgGet STMT_CONTROL 0]}##
+		<input type=hidden size=19 name=due_from value="##TP_STMT_due_from##">
+		<input type=hidden size=19 name=due_to value="##TP_STMT_due_to##"><input type=hidden name=enforce_period value="Y">
+	</tr>
+	##TP_ELSE##
+	<tr>
+		<td class=caption>From</td>
+		<td><input type=text size=19 name=due_from value="##TP_STMT_due_from##"></td>
+	</tr>
+	<tr>
+		<td class=caption>to</td>
+		<td><input type=text size=19 name=due_to value="##TP_STMT_due_to##"><input type=checkbox name=enforce_period value="Y" checked>enforce full period&nbsp;&nbsp;</td>
+	</tr>
+	##TP_ENDIF##
+	##TP_IF {[tpGetVar STMT_available 0]}##
+	<tr>
+		<th colspan=2 class=buttons>
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+			<input type=button class="btn_def" value="Update Pulled Statements" onClick="return fs(this,'UpdPulled')">
+			<input type=button class="btn_def" value="Update Statement Frequency" onClick="return fs(this,'UpdFreq')">
+			<input type=button class="btn_def" value="Remove Statement" onClick="return fs(this,'DelStmt')">
+		</th>
+	</tr>
+	##TP_ELSE##
+	<tr>
+		<th colspan=2 class=buttons>
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+			<input type=button class="btn_def" value="Add Statement" onClick="return fs(this,'AddStmt')">
+		</th>
+	</tr>
+	##TP_ENDIF##
+<input type=hidden name=acct_id value="##TP_STMT_acct_id##">
+<input type=hidden name=acct_type value="##TP_STMT_acct_type##">
+<input type=hidden name=CustId value="##TP_CustId##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CUST::DoStmt">
+</table>
+</form>
+<br>
+
+<!-- statement settings -->
+<table border=0 cellspacing=0 cellpadding=2>
+<form action="##TP_CGI_URL##" method=post name="ad_hoc_stmt_form">
+	<tr>
+		<th class=title colspan=2>Ad hoc Statement</th>
+	</tr>
+	##TP_IF {[OT_CfgGet STATEMENT_DELIVERY_CHOOSE 1]}##
+	<tr>
+		<td class=caption>Delivery method</td>
+		<td>
+			<select name=oo_dlv_method>
+				<script>
+				write_select("##TP_STMT_dlv_method##", "E", "Email", "P", "Post")
+				</script>
+			</select>
+		</td>
+	</tr>
+	##TP_ENDIF##
+	##TP_IF {[OT_CfgGet STATEMENT_BRIEF_CHOOSE 1]}##
+	<tr>
+		<td class=caption>Brief statement</td>
+		<td>
+			<select name=oo_brief>
+				<script>
+					write_select("##TP_STMT_brief##", "N", "No", "Y", "Yes")
+				</script>
+			</select>
+		</td>
+	</tr>
+	##TP_ENDIF##
+	<tr>
+		<td class=caption>Choose</td>
+		<td>
+			<select name="date_type" onChange="date_type_changed(this.form);">
+				<script>
+					write_select("T","T", "Today", "Y", "Yesterday", "7", "Last 7 days", "C", "Selected range:");
+				</script>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>From</td>
+		<td>
+			<input type=text size=10 id=oo_due_from name=oo_due_from disabled="true">
+			<i>YYYY-MM-DD (HH:mm:ss)</i>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>To</td>
+		<td>
+			<input type=text size=10 id=oo_due_to name=oo_due_to disabled="true">
+			<i>YYYY-MM-DD (HH:mm:ss)</i>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Transation type</td>
+		<td>
+			<select name="product_filter">
+				<script>
+					write_select('' ,
+						##TP_LOOP prod_idx {[tpGetVar  num_product_filters 0]}##
+							'##TP_prod_code##', '##TP_prod_desc##'
+							##TP_IF {[tpGetVar prod_idx 0] < [tpGetVar num_product_filters 0] -1}## , ##TP_ENDIF##
+						##TP_ENDLOOP##
+					);
+
+				</script>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Customer Message</td>
+		<td>
+			<textarea cols=60 rows=3 wrap=virtual name=oo_cust_msg>##TP_STMT_cust_msg##</textarea>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Payment Amount</td>
+		<td>
+			<input type=text size=10 name=oo_pmt_amount>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Payment Method</td>
+		<td>
+			<input type=text size=20 name=oo_pmt_method>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Payment Description</td>
+		<td>
+			<textarea cols=60 rows=3 wrap=virtual name=oo_pmt_desc></textarea>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Pull Status</td>
+		<td>
+			<select name=oo_pull_status>
+				<script>
+					write_select("##TP_STMT_pull_status##", "N", "No", "P", "Permanent", "T", "Temporary");
+				</script>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Pull Reason</td>
+		<td>
+			<textarea cols=60 rows=3 wrap=virtual name=oo_pull_reason></textarea>
+		</td>
+	</tr>
+	<tr>
+		<th colspan=2 class=buttons>
+			<input type=button class="btn_def" value="Create Statement" onClick="return fs(this,'GenStmt')">
+		</th>
+	</tr>
+<input type=hidden name=acct_id value="##TP_STMT_acct_id##">
+<input type=hidden name=CustId value="##TP_CustId##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CUST::DoStmt">
+</form>
+</table>
+</body>

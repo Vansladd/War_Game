@@ -1,0 +1,52 @@
+##TP_COMMENT $Id: prp_switch_profile.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $##
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<title>Switch Payment Gateway Profile</title>
+
+	##TP_PLAY JS_WriteSelect.html##
+</head>
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<table cellspacing="0" cellpadding="2" border="0">
+<form name="SwitchPRProfileFrm" action="##TP_CGI_URL##" method="get">
+<input type="hidden" name="action" value="ADMIN::PMT::DoActivatePRProfile">
+
+<tr>
+	<th colspan="2" class="title">
+		Activate Payment Gateway Profiles
+	</th>
+</tr>
+
+<tr>
+	<td>
+		Active profile:
+	</td>
+	<td>
+		<select name="active_profile">
+			<script type="text/javascript">
+				write_select("##TP_ActivePRProfileId##"
+			##TP_LOOP prp_idx {[tpGetVar N_PRProfiles]}##
+				,"##TP_PRProfile_Id##","##TP_PRProfile_Name##"
+			##TP_ENDLOOP##
+				);
+			</script>
+		</select>
+	</td>
+</tr>
+
+<tr>
+	<th colspan="2" class="buttons">
+		<input type="submit" value="Activate Profile">
+	</th>
+</tr>
+
+</form>
+</table>
+
+<p><b>Note:</b> Any changes made to a payment gateway profile since it was activated will not be copied across to the live payment rules. If changes have been made, the payment gateway profile must be reactivated to pick up the changes</p>
+</body>
+</html>

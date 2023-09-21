@@ -1,0 +1,249 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<script language="javascript">
+
+		var groups_enc = new Array('ALL',##TP_LOOP group_idx {[tpGetVar num_groups]}##'##TP_group_enc##',##TP_ENDLOOP##'');
+
+	function do_init() {
+	}
+
+	function go_group(group_name, scroll_to_code_id) {
+
+		if (group_name != null) {
+			var group_idx = -1;
+			var group_select = document.forms.msg_sel.group;
+			for (var i = 0; i < group_select.options.length; i++) {
+				if (group_select.options[i].text == group_name) {
+					group_idx = i;
+					break;
+				}
+			}
+		} else {
+			var group_idx = document.forms.msg_sel.group.selectedIndex;
+		}
+
+
+		if (group_idx == -1 ) {
+			return;
+		}
+		var url = "##TP_CGI_URL##?action=ADMIN::MSG::go_codes&group=" + groups_enc[group_idx];
+
+		if (scroll_to_code_id != null) {
+			url = url + "&scroll_to_code_id=" + scroll_to_code_id;
+		}
+
+		if (!set_iframe_location('iframe_codes',url)) {
+			alert("ERROR: Your browser does not support iframes. Please upgrade to IE5+ or NS6+.");
+		}
+
+		document.forms.msg_sel.add_group.selectedIndex = group_idx;
+		add_group_changed();
+	}
+
+	function go_val(code_id, lang) {
+		var url = "##TP_CGI_URL##?action=ADMIN::MSG::go_val&code_id=" + code_id + "&lang=" + lang;
+		if (!set_iframe_location('iframe_val',url)) {
+			alert("ERROR: Your browser does not support iframes. Please upgrade to IE5+ or NS6+.");
+		}
+	}
+
+	function go_add_code() {
+
+		var f = document.forms.msg_sel;
+		var child_f = iframe_codes.document.forms.msg_codes;
+		child_f.action.value = "ADMIN::MSG::add_code";
+		child_f.code.value = f.new_code.value;
+
+		var sel = document.forms.msg_sel.add_group;
+		if (sel.selectedIndex == 0) {
+			child_f.group.value = f.new_group.value;
+		} else {
+			child_f.group.value = sel.options[sel.selectedIndex].text;
+		}
+
+		child_f.submit();
+	}
+
+	function move_codes() {
+
+		var group_idx = document.forms.msg_sel.to_group.options.selectedIndex;
+		if (group_idx == -1 ) {
+			return;
+		}
+		iframe_codes.go_move(groups_enc[group_idx + 1]);
+	}
+
+	function add_group_changed() {
+
+		var sel = document.forms.msg_sel.add_group;
+
+		if (sel.selectedIndex == 0) {
+			document.forms.msg_sel.new_group.style.visibility = "visible";
+		} else {
+			document.forms.msg_sel.new_group.style.visibility = "hidden";
+		}
+	}
+
+	function set_iframe_location(iframe_id, url) {
+
+		var IFrameDoc;
+		var IFrameObj;
+
+		IFrameObj = document.getElementById(iframe_id);
+
+		if (IFrameObj == null) {
+			return false;
+		}
+
+		if (IFrameObj.contentDocument) {
+			IFrameDoc = IFrameObj.contentDocument;
+		} else if (IFrameObj.contentWindow) {
+			IFrameDoc = IFrameObj.contentWindow.document;
+		} else if (IFrameObj.document) {
+			IFrameDoc = IFrameObj.document;
+		} else {
+			return false;
+		}
+
+		IFrameDoc.location.replace(url);
+		return true;
+  }
+
+  function do_search() {
+
+		var f = document.forms.msg_sel;
+		var child_f = iframe_search.document.forms.msg_search;
+
+		child_f.search_category.value = f.search_category.options[f.search_category.selectedIndex].value;
+		child_f.search_type.value = f.search_type.options[f.search_type.selectedIndex].text;
+		child_f.search_text.value = f.search_text.value;
+	    child_f.search_case_sensitive.value = f.search_case_sensitive.checked ?  f.search_case_sensitive.value : ""
+		child_f.submit();
+  }
+
+		</script>
+	</head>
+	<body onload="do_init()">
+		<form name="msg_sel" method="get" action="##TP_CGI_URL##">
+		<input type="hidden" name="action" value="">
+			<table border=0 cellspacing=0 cellpadding=5 bgcolor=#cccccc align="top" width="760px">
+				<tr align="left" bgcolor=#10137c>
+					<td colspan="2" class=title><font color="white">Messages</font></td>
+				</tr>
+				<tr align="left">
+					<td width=20px><b>Groups</b></td>
+					<td><b>Codes</b></td>
+				</tr>
+				<tr valign="top">
+					<td rowspan="5" width=20px height="100%">
+						<select name="group" id="group" size="30" style="height:100%;"  onchange="go_group()">
+							<option>All
+							##TP_LOOP group_idx {[tpGetVar num_groups]}##
+							<option>##TP_group##
+							##TP_ENDLOOP##
+						</select>
+					</td>
+					<td>
+						<iframe width="520px" height="220" scrolling="yes" name="iframe_codes" id="iframe_codes" frameborder=1 src="##TP_CGI_URL##?action=ADMIN::MSG::go_codes" FrameBorder="0" vspace="0" hspace="0" MarginHeight=0 MarginWidth=0>
+							ERROR: Your browser does not support iframes. Please upgrade to IE5+ or NS6+.
+						</iframe>
+						<div align=right>
+						<input type="button" class="btn_def" name="del_codes_btn" value="Delete" onclick="iframe_codes.go_delete()">
+						<input type="button" class="btn_def" name="move_codes_btn" value="Move to" onclick="move_codes()">
+						<select name="to_group" id="to_group">
+							##TP_LOOP group_idx {[tpGetVar num_groups]}##
+							<option>##TP_group##
+							##TP_ENDLOOP##
+						</select>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><b>Translation</b></td>
+				</tr>
+				<tr>
+					<td>
+						<iframe width="100%" height="200" scrolling="yes" name="iframe_val" id="iframe_val" frameborder=1 src="" FrameBorder="0" vspace="0" hspace="0" MarginHeight=0 MarginWidth=0>
+							ERROR: Your browser does not support iframes. Please upgrade to IE5+ or NS6+.
+						</iframe>
+					</td>
+				</tr>
+				<tr>
+					<td><b> Add Translation Code </b> </td>
+				</tr>
+				<tr>
+					<td>
+						<table width=100%>
+						<tr>
+							<td>Code</td>
+							<td><input type="text" size="40" name="new_code" value="##TP_new_code##"></td>
+						</tr>
+						<tr>
+							<td></td>
+						</tr>
+
+						<tr>
+							<td>Into Group</td>
+							<td><select name="add_group" onchange="add_group_changed()">
+								<option>New Group ...</option>
+								##TP_LOOP group_idx {[tpGetVar num_groups]}##
+								<option ##TP_IF {[tpBindGet dep_dec_group] == [tpBindGet group]}##selected##TP_ENDIF##>##TP_group##</option>
+								##TP_ENDLOOP##
+							</select>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><input type="text" size="20" name="new_group" style="visibility: visible"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td align="right"><input type="button" class="btn_def" name="add_code_btn" value="Add Code" onclick="go_add_code()"></td>
+						</tr>
+						</table>
+					</td>
+				</tr>
+								<tr bgcolor=#10137c>
+					<td colspan="2">&nbsp;</td>
+				<tr>
+			</table>
+
+			<br>
+			<table border=0 cellspacing=0 cellpadding=5 bgcolor=#cccccc align="top" width="760px">
+				<tr align="left" bgcolor=#10137c>
+					<td colspan="2" class=title><font color="white">Message Search</font></td>
+				</tr>
+				<tr>
+					<td>
+						Find
+						<select name="search_category">
+							<option value="en">English Translations
+							<option value="Codes">Codes
+						</select>
+						<select name="search_type">
+							<option selected>Containing
+							<option>Starting with
+						</select>
+						&nbsp;
+						<input type="text" size="40" name="search_text">
+						<input type="button" class="btn_def" name="search_btn" value="Search" onclick="do_search()">
+					</td>
+				<tr>
+				  <td><input type="checkbox" name="search_case_sensitive" value="on">Case sensitive search on translations</input></td>
+				</tr>
+				<tr>
+					<td><i>This is a search of the first 255 characters only</i></td>
+        		</tr>
+				<tr>
+					<td align="top">Results:<br>
+						<iframe width="600" height="200" scrolling="yes" name="iframe_search" id="iframe_search" frameborder=1 src="##TP_CGI_URL##?action=ADMIN::MSG::do_search" FrameBorder="0" vspace="0" hspace="0" MarginHeight=0 MarginWidth=0>
+							ERROR: Your browser does not support iframes. Please upgrade to IE5+ or NS6+.
+						</iframe>
+					</td>
+				</tr>
+			</table>
+			<br>
+		</form>
+	</body>
+</html>

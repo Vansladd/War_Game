@@ -1,0 +1,68 @@
+<html>
+<!-- $Id: balls_sub.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Database Viewer</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<br>
+<br>
+<center>
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th colspan=2 class=title>
+	Balls Subscription Details
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Field</th>
+	<th class=colhead>Value</th>
+</tr>
+<tr>
+	<td>Creation date</td><td>##TP_SubDate##</td>
+</tr>
+<tr>
+	<td>Description</td><td>##TP_SubDesc##</td>
+</tr>
+<tr>
+	<td>Selection</td><td>##TP_SubSeln##</td>
+</tr>
+<tr>
+    <td>Number of draws</td><td>##TP_SubDraws##</td>
+</tr>
+<tr>
+	<td>Remaining draws</td><td>##TP_SubDrawsLeft##</td>
+</tr>
+<tr>
+	<td>Winning bets</td><td>##TP_SubWinCount##</td>
+</tr>
+<tr>
+	<td>Stake</td><td>##TP_SubStake##</td>
+</tr>
+<tr>
+	<td>Returns</td><td>##TP_SubReturns##</td>
+</tr>
+<tr>
+	<td>Subscription completed</td><td>##TP_SubCompleted##</td>
+</tr>
+<tr>
+	<td>Currency</td><td>##TP_SubCCYCode##</td>
+</tr>
+</table>
+</center>
+</body>
+</html>

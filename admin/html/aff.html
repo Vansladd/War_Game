@@ -1,0 +1,155 @@
+<html>
+<!-- $Id: aff.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Affiliate</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	Affiliate ##TP_AffId## Details
+	</th>
+</tr>
+<form action="##TP_CGI_URL##" method="get" onSubmit="return validate(this);" name=aff_form>
+<tr>
+	<td class=caption>Name</td>
+	<td>
+	<input type=text name="AffName" value="##TP_AffName##" size=40>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Group</td>
+	<td>
+	  <select name="AffGrpId">
+	    <option value=0 ##TP_IF {[tpGetVar AffGrpId] == ""}## selected ##TP_ENDIF##>No group</option>
+	    ##TP_LOOP aff_grp_idx $DATA(numGrps)##
+	    <option value=##TP_grpAffGrpId## ##TP_IF {[tpGetVar AffGrpId] == $DATA([tpGetVar aff_grp_idx],g_aff_grp_id)}## selected ##TP_ENDIF##>
+	      ##TP_grpAffGrpName##
+	    </option>
+	    ##TP_ENDLOOP##
+	  </select>
+	</td>
+</tr>
+
+##TP_IF {[tpGetVar useFreeBets] == 1} ##
+<tr>
+	<td class=caption><b>Free bet</b></td>
+	<td>
+	<input type=text name="AffFreeBet" value="##TP_AffFreeBet##" size=12>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<td class=caption>Status</td>
+	<td>
+	<select name="AffStatus">
+	<script>
+	write_select('##TP_AffStatus##','A','Active','S','Suspended')
+	</script>
+	</select>
+	</td>
+</tr>
+##TP_IF {[OT_CfgGet OPENBET_CUST] == "BlueSQ"} ##
+<tr>
+	<td class=caption>Image</td>
+	<td><input type=text name=AffImage size=32 maxlength=32 value="##TP_AffImage##"></td>
+</tr>
+<tr>
+	<td class=caption>Link to URL</td>
+	<td><input type=text name=AffURL size=64 maxlength=64 value="##TP_AffURL##"></td>
+</tr>
+##TP_ENDIF##
+
+<tr>
+	<td class=caption>Channels</td>
+	<td>
+		##TP_PLAY chan_sel.html##
+	</td>
+</tr>
+
+##TP_IF {[tpGetVar opAdd 0]}##
+<tr>
+	<td rowspan=2 class=caption>ID</td>
+	<td><input type=radio name="specify_id" value="N" ##TP_use_next_id##>&nbsp;Use next available ID</td>
+</tr>
+<tr>
+	<td><input type=radio name="specify_id" value="Y" ##TP_specify_id##>&nbsp;Specify ID: <input type=text name=new_id value="##TP_new_id##" size=5 onclick="document.aff_form.specify_id[1].checked=true"></td>
+<tr>
+##TP_ENDIF##
+
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed ManageAff]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=button class="btn_def" value="Add Affiliate" onClick="return fs(this,'AffAdd')">
+		##TP_ELSE##
+			<input type=hidden name="AffId" value="##TP_AffId##">
+			<input type=button class="btn_def" value="Modify Affiliate" onClick="return fs(this,'AffMod')">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="View Audit History" onClick="return fs(this,'GoAudit')">
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=AuditInfo value="Aff">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::AFF::DoAff">
+</form>
+</table>
+<br>
+<br>
+##TP_IF {([OT_CfgGet OPENBET_CUST] == "BlueSQ") && (![tpGetVar opAdd 0])} ##
+<tr>
+<td>
+<table cellspacing=0 cellpadding=1 border=0 bgcolor="#cccccc">
+        <form name="fm_code_search" action="##TP_CGI_URL##" method="post">
+        <input type="hidden" name="action" value="ADMIN::MSG::go_msg_code">
+        <input type="hidden" name="SubmitName" value="GoExactSearchCode">
+        <input type="hidden" name="code" value="AFF_BLURB_##TP_AffId##">
+        <input type="hidden" name="group" value="Affiliates">
+		<th class=title>Edit Blurb for Affiliate ##TP_AffId##</th>
+                <tr>
+                        <td><input bgcolor="#103137c" type=submit class="btn_def" value="Edit Blurb"></td>
+                </tr>
+        </form>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<table cellspacing=0 cellpadding=1 border=0 bgcolor="#cccccc">
+        <form name="fm_code_search" action="##TP_CGI_URL##" method="post">
+        <input type="hidden" name="action" value="ADMIN::MSG::go_msg_code">
+        <input type="hidden" name="SubmitName" value="GoExactSearchCode">
+        <input type="hidden" name="code" value="AFF_HEADER_##TP_AffId##">
+        <input type="hidden" name="group" value="Affiliates">
+		<th class=title>Edit Header for Affiliate ##TP_AffId##</th>
+                <tr>
+                        <td><input bgcolor="#103137c" type=submit class="btn_def" value="Edit Header"></td>
+                </tr>
+        </form>
+</table>
+</td>
+</tr>
+##TP_ENDIF##
+
+</body>
+</html>

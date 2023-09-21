@@ -1,0 +1,96 @@
+##TP_COMMENT isource -- introductory sources##
+##TP_COMMENT $Id: isource.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $##
+
+
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+    <link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=styleshee
+t">
+      <title>Introductory Source management</title>
+      ##TP_PLAY JS_WriteSelect.html##
+
+			<script language=javascript>
+function fs(b,t)
+{
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	b.disabled = true;
+	b.value = "Busy...";
+	return true;
+}
+      </script>
+	</head>
+
+	<body>
+		##TP_PLAY error_rpt.html##
+    <table border=0 cellspacing=0 cellpadding=3>
+    <form name="itypeform" action="##TP_CGI_URL##?action=ADMIN::HEARABOUT::GoISource" method="get">
+      <input type=hidden name="SubmitName" value="">
+      <input type=hidden name=action value="ADMIN::HEARABOUT::GoISource">
+      <tr>
+      	<th colspan=4 class=title width="300">
+       	 View Introductory Source Types
+      	</th>
+      </tr>
+			<tr>
+				<td colspan=4>&nbsp;</td>
+			</tr>
+			##TP_IF {[tpGetVar Errors] > 0 }##
+			<tr>
+				<td colspan=4 class="adiff" align="center">##TP_iErr##</td>
+			</tr>
+			##TP_ENDIF##
+			<tr>
+				<td width=50>&nbsp;</td>
+				<td width=200 align=center class="caption">Type:</td>
+				<td width=100 align=left>
+					<select name="itype" onchange="return fs(this,'Show Sources');">
+						##TP_LOOP idx 0 {[tpGetVar numTypes]}##
+						<option value="##TP_iType##" ##TP_IF {[tpGetVar cType] == [tpGetVar idx]}##selected##TP_ENDIF##>##TP_iType##</option>
+						##TP_ENDLOOP##
+					</select>
+				</td>
+				<td width=150>&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="2" align=center class="buttons">
+					<input type=button class="btn_def" value="View Type" onClick="return fs(this, 'View iType')">
+				</td>
+				<td colspan="2" align=center class="buttons">
+					<input type=button class="btn_def" value="Add New Type" onClick="return fs(this, 'Add iType')">
+				</td>
+			</tr>
+
+		##TP_IF {[tpGetVar SOURCES] == 1}##
+			<tr>
+			  <td colspan=4>&nbsp;</td>
+			</tr>
+			<tr>
+				<td width=50>&nbsp;</td>
+				<td width=200 align=center class="caption">##TP_Chosen## sources:</td>
+				<td width=200 align=left>
+					<select name="isource">
+						##TP_LOOP idx {[tpGetVar numSources]}##
+						<option value="##TP_iSource##">##TP_iSource##</option>
+						##TP_ENDLOOP##
+					</select>
+				</td>
+				<td width=50>&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="2" align=center class="buttons">
+					<input type=button class="btn_def" value="View Source" onClick="return fs(this, 'View iSource')">
+				</td>
+				<td colspan="2" align=center class="buttons">
+					<input type=button class="btn_def" value="Add New Source" onClick="return fs(this, 'Add iSource')">
+				</td>
+			</tr>
+		</form>
+		</table>
+		##TP_ENDIF##
+
+	</body>
+
+</html>

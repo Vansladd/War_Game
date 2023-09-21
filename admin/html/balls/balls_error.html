@@ -1,0 +1,83 @@
+<html>
+<!-- $Id: balls_error.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+
+<!-- Submission script -->
+
+<script>
+
+// Confirm that the new error message is ok
+function save(b)
+{
+
+  var prompt = 'Are you sure you want to save the new error message?'
+
+  if (confirm(prompt)) {
+    b.form.action.value='ADMIN::BALLS::UpdBallsErrorMsg'
+	b.form.submit();
+	return true;
+  }
+
+}
+
+// Return to the setup page
+function goBack(b)
+{
+	b.form.action.value='ADMIN::BALLS::GoBallsSetup'
+	b.form.submit();
+	return true;
+}
+
+</script>
+</head>
+<body>
+
+<!-- If there is an error show the report -->
+##TP_PLAY error_rpt.html##
+
+<!-- If the user has the permission show the balls subscription -->
+
+##TP_IF {[tpGetVar HasPerm 0] == 1}##
+
+<h3>Balls Error - ##TP_ErrorName##</h3>
+
+<!-- Display error details -->
+
+<form method=get action=##TP_CGI_URL##>
+
+<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th class=title colspan=2>Modify Error Message</th>
+	</tr>
+	<tr>
+		<td class=caption>Code</td>
+		<td>##TP_ErrorCode##</td>
+	</tr>
+	<tr>
+		<td class=caption>Name</td>
+		<td>##TP_ErrorName##</td>
+	</tr>
+	<tr>
+		<td class=caption>Message</td>
+		<td><input type="test" size="120" name="ErrorMessage" value="##TP_ErrorMessage##"></td>
+	</tr>
+	<tr><td colspan=2><br/></td></tr>
+	<tr>
+		<th class=title colspan=2>
+			<input type=button class="btn_def" value="Save" onClick="return save(this)">
+			<input type=button class="btn_def" value="Cancel" onClick="return goBack(this)">
+		</th>
+	</tr>
+</table>
+
+<input type=hidden name=ErrorCode value="##TP_ErrorCode##">
+<input type=hidden name=action value="">
+
+</form>
+
+</body>
+##TP_ENDIF##
+</html>

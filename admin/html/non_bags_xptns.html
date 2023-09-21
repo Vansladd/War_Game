@@ -1,0 +1,156 @@
+<html>
+<!-- $Id: non_bags_xptns.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=javascript>
+	function fs(b,t)
+	{
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+	</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<form action="##TP_CGI_URL##" method=post>
+<input type=hidden name=action value="ADMIN::NONBAGSX::DoNonBAGSXUpd">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=num_rows value="##TP_nbx_rows##">
+
+<table border=0 cellspacing=0 cellpadding=3 bgcolor=#10137c>
+	<tr>
+		<th class=title colspan=5>
+		Non-BAGS Exceptions Administration
+		</th>
+	</tr>
+	<tr>
+		<th class=colhead>Track</th>
+		<th class=colhead>Exception?</th>
+		<th class=colhead>Is Off</th>
+		<th class=colhead>LP Avail</th>
+		<th class=colhead>TC Avail</th>
+	</tr>
+	##TP_IF {[tpGetVar nbx_rows 0]>0}##
+	##TP_LOOP track_idx 1 {[expr [tpGetVar nbx_rows] + 1]}##
+	<tr class="TP_class">
+
+		<td>##TP_track_name##<input type=hidden name="ev_type_id_##TP_TCL {tpBufWrite [tpGetVar track_idx]}##" value="##TP_ev_type_id##"></td>
+		<td>
+			<select name="exception_##TP_TCL {tpBufWrite [tpGetVar track_idx]}##">
+			<script>
+			write_select('##TP_exception##','Y','Y','N','N')
+			</script>
+			</select>
+		</td>
+		<td>
+			<select name="is_off_##TP_TCL {tpBufWrite [tpGetVar track_idx]}##">
+				<script>
+				write_select('##TP_is_off##','-','N/A','Y','Y','N','N')
+				</script>
+			</select>
+		</td>
+		<td>
+			<select name="lp_avail_##TP_TCL {tpBufWrite [tpGetVar track_idx]}##">
+				<script>
+				write_select('##TP_lp_avail##','Y','Y','N','N')
+				</script>
+			</select>
+		</td>
+		<td>
+			<select name="tc_avail_##TP_TCL {tpBufWrite [tpGetVar track_idx]}##">
+				<script>
+				write_select('##TP_tc_avail##','Y','Y','N','N')
+				</script>
+			</select>
+		</td>
+	</tr>
+	##TP_ENDLOOP##
+	<tr>
+		<th class=buttons colspan=5>
+			<input type=button value="Update Settings" onClick="return fs(this,'DoNonBAGSXUpd')">
+		</th>
+	</tr>
+	##TP_ELSE##
+	<tr>
+		<td colspan=5>
+			<i>No exceptions defined</i>
+		</td>
+	</tr>
+	##TP_ENDIF##
+</table>
+</form>
+
+<form action="##TP_CGI_URL##" method=get>
+<input type=hidden name=action value="ADMIN::NONBAGSX::DoAddNonBAGSX">
+<input type=hidden name=SubmitName value="">
+<table border=0 cellspacing=0 cellpadding=3 bgcolor=#10137c>
+<tr>
+	<th class=title colspan=5>
+	Add Non-BAGS Exceptions
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Track</th>
+	<th class=colhead>Exception?</th>
+	<th class=colhead>Is Off</th>
+	<th class=colhead>LP Avail</th>
+	<th class=colhead>TC Avail</th>
+</tr>
+##TP_IF {[tpGetVar nb_rows 0] > 0}##
+<tr class="TP_class">
+	<td>
+		<select name=ev_type_id>
+		##TP_LOOP nb_track_idx 1 {[expr [tpGetVar nb_rows] + 1]}##
+		<option value="##TP_nb_ev_type_id##">
+		##TP_nb_track_name##
+		</option>
+		##TP_ENDLOOP##
+		</select>
+	</td>
+	<td>
+		<select name=exception>
+		<script>
+		write_select('Y','Y','Y','N','N')
+		</script>
+		</select>
+	</td>
+	<td>
+		<select name=is_off>
+			<script>
+			write_select('N/A','-','N/A','Y','Y','N','N')
+			</script>
+		</select>
+	</td>
+	<td>
+		<select name=lp_avail>
+			<script>
+			write_select('Y','Y','Y','N','N')
+			</script>
+		</select>
+	</td>
+	<td>
+		<select name=tc_avail>
+			<script>
+			write_select('Y','Y','Y','N','N')
+			</script>
+		</select>
+	</td>
+</tr>
+<tr>
+	<th class=buttons colspan=5>
+		<input type=button value="Add New Exception" onClick="return fs(this,'DoAddNonBAGSX')">
+	</th>
+</tr>
+##TP_ELSE##
+	<tr>
+		<td colspan=5>
+			<i>No tracks found</i>
+		</td>
+	</tr>
+##TP_ENDIF##
+</table>
+</form>

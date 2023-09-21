@@ -1,0 +1,67 @@
+<head>
+<!-- $Id: quick_seln_upd.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Quick Event Select</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<html>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=2>
+<form method=post action="##TP_CGI_URL##">
+<tr>
+	<th colspan=4 class=title>
+	##TP_EvDesc## @ ##TP_EvStartTime##
+	</th>
+</tr>
+##TP_LOOP mkt_idx {[tpGetVar mkt_count]}##
+<tr class=subtitle>
+	<th colspan=4 align=left>##TP_MktName##</th>
+</tr>
+##TP_LOOP seln_idx {$SELN([tpGetVar mkt_idx],count)}##
+<tr>
+	<td>&nbsp;##TP_OcShortcut##&nbsp;</td>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::SELN::GoOc&OcId=##TP_OcId##">##TP_OcDesc##</a></td>
+	##TP_IF {$SELN([tpGetVar mkt_idx],settled)!="N" || $SELN([tpGetVar mkt_idx],result_conf!="N"}##
+	<td>&nbsp;##TP_OcStatus##</td>
+	<td>&nbsp;##TP_OcPrice##</td>
+	##TP_ELSE##
+	<input type="hidden" name="OcId" value="##TP_OcId##">
+	<input type="hidden" name="iOcStatus_##TP_OcId##" value="##TP_OcStatus##">
+	<input type="hidden" name="iOcPrice_##TP_OcId##"  value="##TP_OcPrice##">
+	<td>
+	<select name="OcStatus_##TP_OcId##">
+	<script>write_select("##TP_OcStatus##",'A','Active','S','Suspended');</script>
+	</select>
+	</td>
+	<td>
+	<input type=text size=8 name="OcPrice_##TP_OcId##" value="##TP_OcPrice##">
+	</td>
+	##TP_ENDIF##
+</tr>
+##TP_ENDLOOP##
+##TP_ENDLOOP##
+<tr>
+    <th class=buttons colspan=4>
+	<input type=button class="btn_def" value="Update Selections" onClick="return fs(this,'SelnUpd')">
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+   </th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::QUICKMOD::DoModSeln>
+</form>
+</table>
+</body>
+</html>

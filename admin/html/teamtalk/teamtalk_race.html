@@ -1,0 +1,102 @@
+<html>
+<!-- $Id: teamtalk_race.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Team Talk Race</title>
+
+<script>
+
+function validate(f)
+{
+	return true;
+}
+
+function fs(b,t)
+{
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+</script>
+ 
+</head>
+<body>
+##TP_IF {[tpGetVar RaceAdded 0]}##
+	<h3><font color=green>New Race Added</font></h3>
+##TP_ENDIF##
+##TP_IF {[tpGetVar RaceUpdated 0]}##
+	<h3><font color=green>Race Updated</font></h3>
+##TP_ENDIF##
+##TP_PLAY error_rpt.html##
+
+<form method=get action="##TP_CGI_URL##" name="tt_race_form">
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th class="title" colspan=2>
+			Team Talk Race Edit Page
+		</th>
+	</tr>
+	<tr>
+		<td class=caption>Event Name</td>
+		<td>##TP_EventName##</td>
+	</tr>
+	<tr>
+		<td class=caption>Start Time</td>
+		<td>##TP_StartTime##</td>
+	</tr>
+	<tr>
+		<td class=caption>Course</td>
+		<td>
+		<select name="MeetId">
+		##TP_LOOP M1_Idx {[tpGetVar NumCourses]}##
+			<option value="##TP_M1_MeetId##" ##TP_M1_Selected##>##TP_M1_CourseName##</option>
+		##TP_ENDLOOP M_Idx##
+		</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Overview</td>
+		<td><textarea cols=60 rows=6 wrap=virtual name="Overview">##TP_Overview##</textarea></td>
+	</tr>
+	<tr>
+		<td class=caption>Audio URL</td>
+		<td><input type="text" name=AudioURL value="##TP_AudioURL##" size=50></td>
+	</tr>
+	<tr>
+		<td class=caption>Feed Updateable</td>
+		<td>
+			<select name="Updateable">
+			##TP_IF {[tpGetVar Updateable] == "N"}##
+				<option value="Y">Yes</option>
+				<option value="N" SELECTED>No</option>
+			##TP_ELSE##
+				<option value="Y" SELECTED>Yes</option>
+				<option value="N">No</option>
+			##TP_ENDIF##
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th colspan=2 class=buttons>
+		##TP_IF {[tpGetVar OpAdd 0]}##
+			<input type=button class="btn_def" value="Insert" onClick="return fs(this,'RaceAdd')">
+		##TP_ELSE##
+			<input type=button class="btn_def" value="Update" onClick="return fs(this,'RaceMod')">
+		##TP_ENDIF##
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</th>
+	</tr>
+</table>
+<input type=hidden name=StartTime value="##TP_StartTime##">
+<input type=hidden name=RaceId value="##TP_RaceId##">
+<input type=hidden name=EvId value="##TP_EvId##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::TEAMTALK::DoRace">
+</form>
+
+</table>
+</body>
+</html>
+

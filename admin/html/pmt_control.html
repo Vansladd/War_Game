@@ -1,0 +1,532 @@
+<html>
+<!-- $Id: pmt_control.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Payment Control</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<!-- Global Payment Settings -->
+<form name="upd_global_limit" method="POST" action="##TP_CGI_URL##">
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=3 class=title>Global Settings</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>&nbsp;</th>
+	<th nowrap class=colhead>Deposits</th>
+	<th nowrap class=colhead>Withdraws</th>
+</tr>
+<tr>
+	<th colspan=3 class=colhead>Hard Limits (cannot be overridden)</th>
+</tr>
+<tr>
+	<td class="caption">Allow</td>
+	<td>
+		<select name="AllowDep">
+			<script>write_select('##TP_AllowDep##','Y','Yes','N','No');</script>
+		</select>
+	</td>
+	<td>
+		<select name="AllowWtd">
+			<script>write_select('##TP_AllowWtd##','Y','Yes','N','No');</script>
+		</select>
+	</td>
+</tr>
+<tr>
+	<th nowrap class="caption">Max Transaction</th>
+	<td nowrap><input type="text" size="12" name="MaxDepH" value="##TP_MaxDepH##"></td>
+	<td nowrap><input type="text" size="12" name="MaxWtdH" value="##TP_MaxWtdH##"></td>
+</tr>
+<tr>
+	<th nowrap class="caption">Max Amount per Day</th>
+	<td nowrap><input type="text" size="12" name="MaxDayDepH" value="##TP_MaxDayDepH##"></td>
+	<td nowrap><input type="text" size="12" name="MaxDayWtdH" value="##TP_MaxDayWtdH##"></td>
+</tr>
+##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+<tr>
+	<th nowrap class="caption">Max Amount per Week</th>
+	<td nowrap><input type="text" size="12" name="MaxWeekDepH" value="##TP_MaxWeekDepH##"></td>
+	<td nowrap><input type="text" size="12" name="MaxWeekWtdH" value="##TP_MaxWeekWtdH##"></td>
+</tr>
+<tr>
+	<th nowrap class="caption">Max Number per Week</th>
+	<td nowrap><input type="text" size="12" name="MaxNumWeekDep" value="##TP_MaxNumWeekDep##"></td>
+	<td nowrap><input type="text" size="12" name="MaxNumWeekWtd" value="##TP_MaxNumWeekWtd##"></td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th colspan=3 class=colhead>Soft Limits (Overridden at currency, pay method and account level)</th>
+</tr>
+<tr>
+	<th nowrap class="caption">Max Transaction</th>
+	<td nowrap><input type="text" size="12" name="MaxDepS" value="##TP_MaxDepS##"></td>
+	<td nowrap><input type="text" size="12" name="MaxWtdS" value="##TP_MaxWtdS##"></td>
+</tr>
+
+<tr>
+	<th nowrap class="caption">Max Amount per Day</th>
+	<td nowrap><input type="text" size="12" name="MaxDayDepS" value="##TP_MaxDayDepS##"></td>
+	<td nowrap><input type="text" size="12" name="MaxDayWtdS" value="##TP_MaxDayWtdS##"></td>
+</tr>
+<tr>
+	<th nowrap class="caption">Max Num per Day</th>
+	<td nowrap><input type="text" size="3" name="MaxNumDayDep" value="##TP_MaxNumDayDep##"></td>
+	<td nowrap><input type="text" size="3" name="MaxNumDayWtd" value="##TP_MaxNumDayWtd##"></td>
+</tr>
+<tr>
+	<th nowrap class="caption">Min Transaction</th>
+	<td nowrap><input type="text" size="12" name="MinDep" value="##TP_MinDep##"></td>
+	<td nowrap><input type="text" size="12" name="MinWtd" value="##TP_MinWtd##"></td>
+</tr>
+##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+<tr>
+	<th nowrap class="caption">Max Amount Per Week</th>
+	<td nowrap><input type="text" size="12" name="MaxWeekDepS" value="##TP_MaxWeekDepS##"></td>
+	<td nowrap><input type="text" size="12" name="MaxWeekWtdS" value="##TP_MaxWeekWtdS##"></td>
+</tr>
+##TP_ENDIF##
+
+##TP_IF {[op_allowed [tpGetVar GlobalAdminOp]]}##
+<tr>
+	<td nowrap><input type="button" name="UpdBtn" value="Update" onClick="return fs(this,'UpdGlobal')" ></td>
+</tr>
+##TP_ENDIF##
+
+<input type="hidden" name="action" value="ADMIN::PMT_CONTROL::DoControl">
+<input type="hidden" name="SubmitName" value="">
+</table>
+</form>
+
+<!-- Currency Payment Settings -->
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##21##TP_ELSE##15##TP_ENDIF## class=title>Currency Settings</th>
+</tr>
+##TP_IF {$CCY_DATA(existing_ccys) == {}}##
+<tr>
+	<td colspan=##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##21##TP_ELSE##15##TP_ENDIF##>No currency settings</td>
+</tr>
+##TP_ELSE##
+<tr>
+	<th nowrap class=colhead>Currency</th>
+	<th nowrap class=colhead colspan=##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##10##TP_ELSE##7##TP_ENDIF##>Deposits</th>
+	<th nowrap class=colhead colspan=##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##10##TP_ELSE##7##TP_ENDIF##>Withdraws</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>&nbsp;</th>
+
+	<!-- Deposit Headings -->
+	<th nowrap class=colhead>Allow (h)</th>
+	<th nowrap class=colhead>Max (h)</th>
+	<th nowrap class=colhead>Max</th>
+	<th nowrap class=colhead>Max Daily (h)</th>
+	<th nowrap class=colhead>Max Daily</th>
+	<th nowrap class=colhead>Max / Day</th>
+	<th nowrap class=colhead>Min</th>
+	##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+	<th nowrap class=colhead>Max Weekly (h)</th>
+	<th nowrap class=colhead>Max Weekly</th>
+	<th nowrap class=colhead>Max / Week</th>
+	##TP_ENDIF##
+
+	<!-- Withdraw Headings -->
+	<th nowrap class=colhead>Allow (h)</th>
+	<th nowrap class=colhead>Max (h)</th>
+	<th nowrap class=colhead>Max</th>
+	<th nowrap class=colhead>Max Daily (h)</th>
+	<th nowrap class=colhead>Max Daily</th>
+	<th nowrap class=colhead>Max / Day</th>
+	<th nowrap class=colhead>Min</th>
+	##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+	<th nowrap class=colhead>Max Weekly (h)</th>
+	<th nowrap class=colhead>Max Weekly</th>
+	<th nowrap class=colhead>Max / Week</th>
+	##TP_ENDIF##
+</tr>
+
+##TP_FOREACH ccy_code $CCY_DATA(existing_ccys)##
+<tr>
+##TP_IF {[op_allowed [tpGetVar CcyAdminOp]]}##
+	<td><a href="##TP_CGI_URL##?action=ADMIN::PMT_CONTROL::GoControl&SubmitName=UpdCcy&CcyCode=##TP_CcyCode##">##TP_CcyName##</td>
+##TP_ELSE##
+	<td>##TP_CcyName##</td>
+##TP_ENDIF##
+
+	<!-- Deposit Values -->
+	<td>##TP_CcyAllowDep##</td>
+	<td>##TP_CcyMaxDepH##</td>
+	<td>##TP_CcyMaxDepS##</td>
+	<td>##TP_CcyMaxDayDepH##</td>
+	<td>##TP_CcyMaxDayDepS##</td>
+	<td>##TP_CcyMaxNumDayDep##</td>
+	<td>##TP_CcyMinDep##</td>
+	##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+	<td>##TP_CcyMaxWeekDepH##</td>
+	<td>##TP_CcyMaxWeekDepS##</td>
+	<td>##TP_CcyMaxNumWeekDep##</td>
+	##TP_ENDIF##
+
+
+	<!-- Withdraw Values -->
+	<td>##TP_CcyAllowWtd##</td>
+	<td>##TP_CcyMaxWtdH##</td>
+	<td>##TP_CcyMaxWtdS##</td>
+	<td>##TP_CcyMaxDayWtdH##</td>
+	<td>##TP_CcyMaxDayWtdS##</td>
+	<td>##TP_CcyMaxNumDayWtd##</td>
+	<td>##TP_CcyMinWtd##</td>
+	##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+	<td>##TP_CcyMaxWeekWtdH##</td>
+	<td>##TP_CcyMaxWeekWtdS##</td>
+	<td>##TP_CcyMaxNumWeekWtd##</td>
+	##TP_ENDIF##
+
+</tr>
+##TP_ENDFOREACH##
+##TP_ENDIF##
+</table>
+
+##TP_IF {$CCY_DATA(remaining_ccys) != {} && [op_allowed [tpGetVar CcyAdminOp]]}##
+<form name="add_ccy_limit" method="POST" action="##TP_CGI_URL##">
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<td class="caption">Currency</td>
+	<td nowrap>
+		<select name="CcyCode">
+			##TP_FOREACH ccy_code $CCY_DATA(remaining_ccys)##
+			<option value="##TP_CcyCode##">##TP_CcyName##</option>
+			##TP_ENDFOREACH##
+		</select>
+	</td>
+</tr>
+<tr>
+	<td colspan="2">
+		<input type="button" name="AddBtn" value="Add"onClick="return fs(this,'InsCcy')" >
+	</td>
+</tr>
+</table>
+##TP_ENDIF##
+
+<input type="hidden" name="action" value="ADMIN::PMT_CONTROL::GoControl">
+<input type="hidden" name="SubmitName" value="">
+</form>
+
+<!-- Payment Method Settings -->
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##21##TP_ELSE##15##TP_ENDIF## class=title>Payment Method Settings</th>
+</tr>
+##TP_IF {$MTHD_DATA(existing_mthds) == {}}##
+<tr>
+	<td colspan=##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##21##TP_ELSE##15##TP_ENDIF##>No Payment Method Settings</td>
+</tr>
+##TP_ELSE##
+<tr>
+	<th nowrap class=colhead>Currency</th>
+	<th nowrap class=colhead colspan=##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##10##TP_ELSE##7##TP_ENDIF##>Deposits</th>
+	<th nowrap class=colhead colspan=##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##10##TP_ELSE##7##TP_ENDIF##>Withdraws</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>&nbsp;</th>
+
+	<!-- Deposit Headings -->
+	<th nowrap class=colhead>Allow (h)</th>
+	<th nowrap class=colhead>Max (h)</th>
+	<th nowrap class=colhead>Max</th>
+	<th nowrap class=colhead>Max Daily (h)</th>
+	<th nowrap class=colhead>Max Daily</th>
+	<th nowrap class=colhead>Max / Day</th>
+	<th nowrap class=colhead>Min</th>
+	##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+	<th nowrap class=colhead>Max Weekly (h)</th>
+	<th nowrap class=colhead>Max Weekly</th>
+	<th nowrap class=colhead>Max / Week</th>
+	##TP_ENDIF##
+
+	<!-- Withdraw Headings -->
+	<th nowrap class=colhead>Allow (h)</th>
+	<th nowrap class=colhead>Max (h)</th>
+	<th nowrap class=colhead>Max</th>
+	<th nowrap class=colhead>Max Daily (h)</th>
+	<th nowrap class=colhead>Max Daily</th>
+	<th nowrap class=colhead>Max / Day</th>
+	<th nowrap class=colhead>Min</th>
+	##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+	<th nowrap class=colhead>Max Weekly (h)</th>
+	<th nowrap class=colhead>Max Weekly</th>
+	<th nowrap class=colhead>Max / Week</th>
+	##TP_ENDIF##
+</tr>
+
+##TP_FOREACH pay_mthd $MTHD_DATA(existing_mthds)##
+<tr>
+	<td nowrap class=colhead>##TP_MthdDesc## ##TP_MthdSchemeDesc##</td>
+	<td nowrap class=colhead colspan=##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##21##TP_ELSE##15##TP_ENDIF##>&nbsp;</td>
+</tr>
+##TP_FOREACH ccy_code {$MTHD_DATA([tpGetVar pay_mthd],existing_ccys)}##
+<tr>
+	##TP_IF {[op_allowed [tpGetVar MthdAdminOp]]}##
+	<td><a href="##TP_CGI_URL##?action=ADMIN::PMT_CONTROL::GoControl&SubmitName=UpdMthd&CcyCode=##TP_CcyCode##&PayMthd=##TP_MthdPayMthd##,##TP_MthdScheme##">##TP_CcyName##</a></td>
+	##TP_ELSE##
+	<td>##TP_CcyName##</td>
+	##TP_ENDIF##
+
+	<!-- Deposit Values -->
+	<td>##TP_MthdAllowDep##</td>
+	<td>##TP_MthdMaxDepH##</td>
+	<td>##TP_MthdMaxDepS##</td>
+	<td>##TP_MthdMaxDayDepH##</td>
+	<td>##TP_MthdMaxDayDepS##</td>
+	<td>##TP_MthdMaxNumDayDep##</td>
+	<td>##TP_MthdMinDep##</td>
+	##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+	<td>##TP_MthdMaxWeekDepH##</td>
+	<td>##TP_MthdMaxWeekDepS##</td>
+	<td>##TP_MthdMaxNumWeekDep##</td>
+	##TP_ENDIF##
+
+	<!-- Withdraw Values -->
+	<td>##TP_MthdAllowWtd##</td>
+	<td>##TP_MthdMaxWtdH##</td>
+	<td>##TP_MthdMaxWtdS##</td>
+	<td>##TP_MthdMaxDayWtdH##</td>
+	<td>##TP_MthdMaxDayWtdS##</td>
+	<td>##TP_MthdMaxNumDayWtd##</td>
+	<td>##TP_MthdMinWtd##</td>
+	##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+	<td>##TP_MthdMaxWeekWtdH##</td>
+	<td>##TP_MthdMaxWeekWtdS##</td>
+	<td>##TP_MthdMaxNumWeekWtd##</td>
+	##TP_ENDIF##
+</tr>
+##TP_ENDFOREACH##
+
+##TP_IF {$MTHD_DATA([tpGetVar pay_mthd],remaining_ccys) != {} && [op_allowed [tpGetVar MthdAdminOp]]}##
+<form name="add_mthd_limit_##TP_MthdPayMthd##" method="POST" action="##TP_CGI_URL##">
+<tr>
+	<td colspan=15>
+		<select name="CcyCode">
+			##TP_FOREACH ccy_code {$MTHD_DATA([tpGetVar pay_mthd],remaining_ccys)}##
+			<option value="##TP_CcyCode##">##TP_CcyName##</option>
+			##TP_ENDFOREACH##
+		</select>
+		<input type="button" name="AddBtn" value="Add" onClick="return fs(this,'InsMthd')" >
+		<input type="hidden" name="PayMthd" value="##TP_MthdPayMthd##,##TP_MthdScheme##">
+		<input type="hidden" name="action" value="ADMIN::PMT_CONTROL::GoControl">
+		<input type="hidden" name="SubmitName" value="">
+	</td>
+</tr>
+</form>
+##TP_ENDIF##
+##TP_ENDFOREACH##
+##TP_ENDIF##
+</table>
+
+##TP_IF {$MTHD_DATA(remaining_mthds) != {} && [op_allowed [tpGetVar MthdAdminOp]]}##
+<form name="add_mthd_limit" method="POST" action="##TP_CGI_URL##">
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th class="caption">Payment Method</th>
+	<td nowrap>
+		<select name="PayMthd">
+			##TP_FOREACH pay_mthd $MTHD_DATA(remaining_mthds)##
+			<option value="##TP_MthdPayMthd##,##TP_MthdScheme##">##TP_MthdDesc## ##TP_MthdSchemeDesc##</option>
+			##TP_ENDFOREACH##
+		</select>
+	</td>
+</tr>
+<tr>
+	<th class="caption">Currency</th>
+	<td nowrap>
+		<select name="CcyCode">
+			##TP_FOREACH ccy_code {[concat "---" $CCY_DATA(ccys)]}##
+			<option value="##TP_CcyCode##">##TP_CcyName##</option>
+			##TP_ENDFOREACH##
+		</select>
+	</td>
+</tr>
+<tr>
+	<td colspan=2>
+		<input type="button" name="AddBtn" value="Add" onClick="return fs(this,'InsMthd')" >
+		<input type="hidden" name="action" value="ADMIN::PMT_CONTROL::GoControl">
+		<input type="hidden" name="SubmitName" value="">
+	</td>
+</tr>
+</table>
+</form>
+##TP_ENDIF##
+
+<!-- Payment Method Change Settings -->
+<form name="pmt_mthd_settings" method="POST" action="##TP_CGI_URL##">
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>Method Change Settings</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Description</th>
+	<th nowrap class=colhead>Value</th>
+</tr>
+<tr>
+	<td class="caption">Maximum Sportsbook Balance</td>
+	<td>
+	<input type="text" name="MaxSBBalance" size="8" value="##TP_MaxSBBalance##" />
+	</td>
+</tr>
+<tr>
+	<td class="caption">Maximum Game Account Balance</td>
+	<td>
+	<input type="text" name="MaxExtBalance" size="8" value="##TP_MaxExtBalance##" />
+	</td>
+</tr>
+<tr>
+	<td class="caption">Maximum Total Balance</td>
+	<td>
+	<input type="text" name="MaxTotalBalance" size="8" value="##TP_MaxTotalBalance##" />
+	</td>
+</tr>
+<tr>
+	<td class="caption">Maximum Card Changes</td>
+	<td colspan="2">
+	<input type="text" name="MaxCardChanges" size="2" maxlength="2" value="##TP_MaxCardChanges##" />
+	</td>
+</tr>
+<tr>
+	<td class="caption">in</td>
+	<td>
+	<input type="text" name="CardChangePeriod" size="2" maxlength="2" value="##TP_CardChangePeriod##" />
+	days
+	</td>
+</tr>
+<tr>
+	<td class="caption">Maximum PMB For Removal</td>
+	<td colspan="2">
+	<input type="text" name="MaxPMBRemove" size="2" maxlength="2" value="##TP_MaxPMBRemove##" />
+	</td>
+</tr>
+
+<tr>
+	<td class="caption">Maximum Poker In Play</td>
+	<td>
+	<input type="text" name="MaxPokerInPlay" size="8" value="##TP_MaxPokerInPlay##" />
+	</td>
+</tr>
+<tr>
+	<td class="caption">Maximum Poker Wallet</td>
+	<td colspan="2">
+	<input type="text" name="MaxPokerWallet" size="8" value="##TP_MaxPokerWallet##" />
+	</td>
+</tr>
+<tr>
+	<td class="caption">Maximum Casino Wallet</td>
+	<td colspan="2">
+	<input type="text" name="MaxCasinoWallet" size="8" value="##TP_MaxCasinoWallet##" />
+	</td>
+</tr>
+<tr>
+	<td class="caption">Maximum Poker Bonus (for Credit Card changes)</td>
+	<td colspan="2">
+	<input type="text" name="MaxPokerBonus" size="8" value="##TP_MaxPokerBonus##" />
+	</td>
+</tr>
+<tr>
+	<td class="caption">Maximum Casino Bonus (for Credit Card changes)</td>
+	<td colspan="2">
+	<input type="text" name="MaxCasinoBonus" size="8" value="##TP_MaxCasinoBonus##" />
+	</td>
+</tr>
+
+##TP_IF {[op_allowed [tpGetVar GlobalAdminOp]]}##
+<tr>
+	<td nowrap><input type="button" name="UpdChksBtn" value="Update" onClick="return fs(this,'UpdPmtChk')" ></td>
+</tr>
+##TP_ENDIF##
+<input type="hidden" name="action" value="ADMIN::PMT_CONTROL::DoControl">
+<input type="hidden" name="SubmitName" value="">
+</table>
+</form>
+
+<!-- Early Payment Settings -->
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=4 class=title>Early Withdrawal Settings</th>
+</tr>
+##TP_IF {$EARLY_DATA(existing_mthds) == {}}##
+<tr>
+	<td colspan=4>No Early Withdrawal Settings</td>
+</tr>
+##TP_ELSE##
+<tr>
+	<th nowrap class=colhead>Pay Method</th>
+	<th nowrap class=colhead>First Wtd Period (hours)</th>
+	<th nowrap class=colhead>Max During Period</th>
+	<th nowrap class=colhead>Frequency During Period</th>
+</tr>
+##TP_FOREACH pay_mthd $EARLY_DATA(existing_mthds)##
+<tr>
+	##TP_IF {[op_allowed [tpGetVar EarlyAdminOp]]}##
+	<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::PMT_CONTROL::GoControl&SubmitName=UpdEarly&PayMthd=##TP_MthdPayMthd##,##TP_MthdScheme##">##TP_MthdDesc##</a></td>
+	##TP_ELSE##
+	<td nowrap>##TP_MthdDesc##</td>
+	##TP_ENDIF##
+	<td nowrap>##TP_EarlyPeriod##</td>
+	<td nowrap>##TP_EarlyMaxAmount##</td>
+	<td nowrap>##TP_EarlyTimeBetweenWtds##</td>
+</tr>
+##TP_ENDFOREACH##
+##TP_ENDIF##
+</table>
+
+##TP_IF {$EARLY_DATA(remaining_mthds) != {} && [op_allowed [tpGetVar EarlyAdminOp]]}##
+<form name="add_early_wtd_limit" method="POST" action="##TP_CGI_URL##">
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th nowrap class="caption">Pay Method</th>
+	<td>
+		<select name="PayMthd">
+			##TP_FOREACH pay_mthd $EARLY_DATA(remaining_mthds)##
+			<option value="##TP_MthdPayMthd##,##TP_MthdScheme##">##TP_MthdDesc## ##TP_MthdSchemeDesc##</option>
+			##TP_ENDFOREACH##
+		</select>
+	</td>
+</tr>
+<tr>
+	<th nowrap class="caption">First Wtd Period (hours)</th>
+	<td nowrap><input type="text" size="6" name="Period"></td>
+</tr>
+<tr>
+	<th nowrap class="caption">Max Amount</th>
+	<td nowrap><input type="text" size="6" name="MaxAmount"></td>
+</tr>
+<tr>
+	<th nowrap class="caption">Time Between Withdrawals</th>
+	<td nowrap><input type="text" size="6" name="TimeBetweenWtds"></td>
+</tr>
+<tr>
+	<td nowrap colspan=2><input type="button" name="AddBtn" value="Add" onClick="return fs(this,'InsEarly')" ></td>
+</tr>
+</table>
+<input type="hidden" name="action" value="ADMIN::PMT_CONTROL::DoControl">
+<input type="hidden" name="SubmitName" value="">
+</form>
+##TP_ENDIF##
+
+</body>
+</html>

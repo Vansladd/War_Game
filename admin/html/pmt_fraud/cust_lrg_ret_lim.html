@@ -1,0 +1,68 @@
+<!-- $Id: cust_lrg_ret_lim.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	<table cellspacing="0" cellpadding="2" border="0">
+	<form action="##TP_CGI_URL##">
+	<input type="hidden" name="SubmitName">
+	<input type="hidden" name="action" value="ADMIN::CUST::DoCustReturnLimits">
+	<input type="hidden" name="acctId" value="##TP_AcctId##">
+	<input type="hidden" name="CustId" value="##TP_CustId##">
+	<input type="hidden" name="AuditInfo" value="CustRetLim">
+
+			<tr>
+				<th class="title" colspan="4"> Large Returns </th>
+			</tr>
+			<tr>
+				<th class="colhead">Type</th>
+				<th class="colhead">Sub Type</th>
+				<th class="colhead">Amount</th>
+				
+				##TP_IF {[op_allowed UpdateLimitRetAcct]}##
+				<th class="colhead"></th>
+				##TP_ENDIF##
+			</tr>
+			##TP_IF {[tpGetVar LargeLmtNum] < 1}##
+				<tr>
+					<td colspan=4>No entries - system wide limits are used. ##TP_TCL {tpGetVar NumFraudNotify}##</td>
+				</tr>
+			##TP_ENDIF##
+			##TP_LOOP lridx {[tpGetVar LargeLmtNum]}##
+			<tr>
+				<td>
+					<input type="hidden" name="productArea_##TP_TCL {tpGetVar lridx}##" value="##TP_productArea##">
+					##TP_productArea##
+				</td>
+				<td>
+					<input type="hidden" name="refId_##TP_TCL {tpGetVar lridx}##" value="##TP_refId##">
+					##TP_refName##
+				</td>
+				<td>
+					##TP_IF {[op_allowed UpdateLimitRetAcct]}##
+					<input name="limit_##TP_TCL {tpGetVar lridx}##" type="text" value="##TP_limit##" size="8">
+					##TP_ELSE##
+					##TP_limit##
+					##TP_ENDIF##
+				</td>
+
+				##TP_IF {[op_allowed UpdateLimitRetAcct]}##
+				<td>
+					<a href="##TP_CGI_URL##?action=ADMIN::CUST::DoCustReturnLimits&acctId=##TP_AcctId##&productArea=##TP_productArea##&refId=##TP_refId##&CustId=##TP_CustId##&SubmitName=doDel">Del</a>
+				</td>
+				##TP_ENDIF##
+
+			</tr>
+			##TP_ENDLOOP##
+			##TP_IF {[op_allowed UpdateLimitRetAcct]}##
+			<tr>
+				<th colspan=4 class=buttons>
+					<input type=button class="btn_def" value="Update" onClick="return fs(this,'doUpd')">
+					<input type=button class="btn_def" value="Add" onClick="return fs(this,'goAdd')">
+					<input type=button class="btn_def" value="Audit History" onClick="return fs(this,'GoAudit')">
+				</th>
+			</tr>
+			##TP_ENDIF##
+	</form>
+	</table>
+	<style>
+		.IFADMIN td, td.IFADMIN, .IFADMIN th {
+			background: #ffffbb;
+		}
+	</style>

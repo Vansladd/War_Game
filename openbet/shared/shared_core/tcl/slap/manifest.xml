@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<artifact created="2016-04-15 13:49:46" projectName="OpenBet Core Slap" type="sources" groupId="com.openbet.core.slap" artifactId="openbet-core-slap" version="3.11">
+    <openbet corporatePomVersion="2" teamPomVersion="11.29" pluginVersion="2.17.0"/>
+    <scm module="" server="stash.int.openbet.com:7999" tag="HEAD" type="git" branch="UNKNOWN" repo="https://stash.int.openbet.com/scm/obcore/slap.git"/>
+    <artifactory url="https://artifactory.int.openbet.com/artifactory/openbet-release-local/com/openbet/core/slap/openbet-core-slap/3.11" buildTag="openbet-core-slap-3.11-20160415.134856"/>
+    <files>
+        <file location="db.tcl" sha1sum="d986d7ee40762cf3fb7a83fa7fd29087bd7bc3b3"/>
+        <file location="pkgIndex.tcl" sha1sum="d96ea894988427944e2acff0dca9d6f76bcb1c5b"/>
+        <file location="pom.xml" sha1sum="16697de59698a235cd1ee770391d894e4be8b0e1"/>
+        <file location="stub-appserv.tcl" sha1sum="5c294998a5e9b235d1d8133f6767cd4577dc2c81"/>
+        <file location="stub.tcl" sha1sum="354ce09b4b6fb1845d8ae907b5d8e22fa146312e"/>
+        <file location="unit.tcl" sha1sum="9b1e2ae429c7c5fdef42b0c0386774537f8c91a2"/>
+    </files>
+</artifact>

@@ -1,0 +1,109 @@
+<html>
+<!-- $ID$ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY header_cal.html##
+
+<script>
+function fs(b,t)
+{
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function displayCalendars() {
+	new Calendar(document.forms.debt_management.review_date,null,false,"lo");
+}
+
+function checkDate() {
+	var dateArray = new Array();
+	dateArray = document.forms.debt_management.review_date.value.split('-');
+	if (dateArray.length != 3) {
+		alert ('Error in date field format (should be yyyy-MM-DD)');
+		document.forms.debt_management.review_date.value = '';
+		return;
+	}
+}
+
+function doAudit(audit, b) {
+	b.form.AuditInfo.value = audit;
+	return fs(b, "GoAudit");
+	// return fs(b, "DebtManGoAudit");
+}
+</script>
+
+</head>
+<body onload="displayCalendars()">
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<form name="debt_management" action="##TP_CGI_URL##">
+	<input type="hidden" name="SubmitName" value="">
+	<input type="hidden" name="action" value="ADMIN::DEBT_MANAGEMENT::DoUpdateDetails">
+	<input type="hidden" name="cust_id" value="##TP_cust_id##">
+	<input type="hidden" name="debt_diary_id" value="##TP_debt_diary_id##">
+	<input type="hidden" name="AuditInfo" value="">
+	
+	<table border=0 cellspacing=0 cellpadding=3 bgcolor=#10137c>
+	<tr>
+		<th colspan=2 class=title>
+			Debt management details
+		</th>
+	</tr>
+	<tr>
+		<td class="caption">Number of times removed from chase arrears:</td>
+		<td>##TP_count_ca##</td>
+	</tr>
+	<tr>
+		<td class="caption">Number of times in ledger stop:</td>
+		<td>##TP_count_ledger##</td>
+	</tr>
+	
+	<tr>
+		<td colspan=2 class=buttons>
+			<!-- show audit history for this customer only -->
+			<input type=button class="btn_def" value="View Audit History" onClick="return doAudit('DebtDiary',this)">
+		</td>
+	</tr>
+	</table>
+	
+	<table border=0 cellspacing=0 cellpadding=3 bgcolor=#10137c>
+	<tr>
+		<th colspan=2 class=title>
+			Update review date
+		</th>
+	</tr>
+	<tr>
+		<td class="caption">Review date</td>
+		<td><input type="text" name="review_date" size="8" value="##TP_review_date##"></td>
+	</tr>
+	<tr>
+		<td colspan=2 class=buttons>
+			<input type="button" class="btn_def" value="Update Review Date" onClick="return fs(this,'DoReviewDate')">
+			<input type="button" class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</td>
+	</tr>
+	</table>
+	
+	<table border=0 cellspacing=0 cellpadding=3 bgcolor=#10137c>
+	<tr>
+		<th colspan=2 class=title>
+			Update note
+		</th>
+	</tr>
+	<tr>
+		<td class="caption">Note</td>
+		<td><textarea name="notes" cols="40" rows="4" value="##TP_notes##">##TP_notes##</textarea></td>
+	</tr>
+	<tr>
+		<td colspan=2 class=buttons>
+			<input type="button" class="btn_def" value="Update Note" onClick="return fs(this,'DoAddNote')">
+			<input type="button" class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		</td>
+	</tr>
+	</table>
+</form>
+</body>
+</html>

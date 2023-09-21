@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Price History</title>
+  </head>
+    
+  <body bgcolor=white>
+      <table cellspacing=0 cellpadding=2 border=0 bgcolor=#cccccc>
+
+      <tr bgcolor=#10137c>
+      <th align=left colspan=9><font color=white size=+1>Prices for game type ##TP_SORT##</font></th>
+      </tr>
+
+      ##TP_IF {[tpGetVar nrows]==0}##
+      <tr bgcolor=#999999>
+      <td colspan=5>No prices found matching search critera</td>
+      </tr>
+      ##TP_ELSE##
+      <tr bgcolor=#99999>
+      <th align=left>&nbsp;Valid From</th>
+      <th align=left>&nbsp;Valid_to</th>
+      <th align=left>##TP_IF {[OT_CfgGet XG_EDIT_NUM_PICKS	 "0"] == "1"}##   # picked  ##TP_ELSE## &nbsp;&nbsp; ##TP_ENDIF##</th>
+      <th align=left>##TP_IF {[OT_CfgGet XG_EDIT_NUM_CORRECT "0"] == "1"}##   # correct ##TP_ELSE## &nbsp;&nbsp; ##TP_ENDIF##</th>
+	  <th align=left>##TP_IF {[OT_CfgGet XG_EDIT_NUM_VOID	 "0"] == "1"}##   # void	##TP_ELSE## &nbsp;&nbsp; ##TP_ENDIF##</th>
+	  <th align=left>##TP_IF {[OT_CfgGet XG_EDIT_PRICE		 "0"] == "1"}##   price		##TP_ELSE## &nbsp;&nbsp; ##TP_ENDIF##</th>		
+	  <th align=left>##TP_IF {[OT_CfgGet XG_EDIT_REFUND		 "0"] == "1"}##   refund multiplier ##TP_ELSE## &nbsp;&nbsp; ##TP_ENDIF##</th>
+	  <th>&nbsp;&nbsp;</th>
+	  <th>&nbsp;&nbsp;</th>
+      </tr>
+
+      ##TP_LOOP idx {[tpGetVar nrows]}##
+      <tr>
+      <td>&nbsp;&nbsp;##TP_valid_from##</td>
+      <td>&nbsp;&nbsp;##TP_valid_to##</td>
+
+	  <!-- Num picks -->
+	  ##TP_IF {[OT_CfgGet XG_EDIT_NUM_PICKS "0"] == "1"}##
+		<td>&nbsp;&nbsp;##TP_num_picks##</td>
+	  ##TP_ELSE##
+		<td> &nbsp;&nbsp;</td>
+	  ##TP_ENDIF##
+
+
+	  <!-- Num correct -->
+	  ##TP_IF {[OT_CfgGet XG_EDIT_NUM_CORRECT "0"] == "1"}##
+		<td>&nbsp;&nbsp;##TP_num_correct##</td>
+	  ##TP_ELSE##
+		<td> &nbsp;&nbsp;</td>
+	  ##TP_ENDIF##
+
+	  <!-- Num void -->
+	  ##TP_IF {[OT_CfgGet XG_EDIT_NUM_VOID "0"] == "1"}##
+		<td>&nbsp;&nbsp;##TP_num_void##</td>
+	  ##TP_ELSE##
+		<td> &nbsp;&nbsp;</td>
+	  ##TP_ENDIF##
+
+
+	  <!-- Price -->
+	  ##TP_IF {[OT_CfgGet XG_EDIT_PRICE "0"] == "1"}##
+		<td>&nbsp;&nbsp;##TP_price_num## / ##TP_price_den##</td>
+	  ##TP_ELSE##
+		<td> &nbsp;&nbsp;</td>
+	  ##TP_ENDIF##
+
+
+	  <!-- Refunds -->
+	  ##TP_IF {[OT_CfgGet XG_EDIT_REFUND "0"] == "1"}##
+		<td>&nbsp;&nbsp;##TP_refund##</td>
+	  ##TP_ELSE##
+		<td> &nbsp;&nbsp;</td>
+	  ##TP_ENDIF##
+
+      <tr>
+      ##TP_ENDLOOP##
+      ##TP_ENDIF##
+
+      </table>
+  </body>
+</html>
+

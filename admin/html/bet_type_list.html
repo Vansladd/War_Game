@@ -1,0 +1,59 @@
+<html>
+<!-- $Id: bet_type_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Bet Types</title>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_IF {[tpGetVar FuncChannels 0]}##
+	##TP_TCL {tpBindString NumCols 11}##
+##TP_ELSE##
+	##TP_TCL {tpBindString NumCols 10}##
+##TP_ENDIF##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=##TP_NumCols## class=title>
+	Bet types
+	</th>
+</tr>
+<tr>
+	<th class="colhead">Name</th>
+	<th class="colhead">Symbol</th>
+	<th class="colhead">Selns</th>
+	<th class="colhead">Bets</th>
+	<th class="colhead">Bets/Seln</th>
+	<th class="colhead">Min/Line</th>
+	<th class="colhead">Max/Line</th>
+	<th class="colhead">Status</th>
+	<th class="colhead">Bet Type<br>Factor</th>
+	##TP_IF {[tpGetVar FuncChannels 0]}##
+		<th class="colhead">Channels</th>
+	##TP_ENDIF##
+    <th class=colhead>Order</td>
+</tr>
+##TP_LOOP bet_type_idx {[tpGetVar NumBetTypes]}##
+<tr>
+	##TP_IF {[op_allowed ManageBetLimits]}##
+		<td><A HREF="##TP_CGI_URL##?action=ADMIN::BET_TYPE::GoBetType&BetType=##TP_BetType##">##TP_BetName##</A></td>
+	##TP_ELSE##
+		<td>##TP_BetName##</td>
+	##TP_ENDIF##
+	<td>##TP_BetType##</td>
+	<td>##TP_NumSelns##</td>
+	<td class=ra>##TP_NumBets##</td>
+	<td class=ra>##TP_NumBetsPerSeln##</td>
+	<td class=ra>##TP_MinPerLine##</td>
+	<td class=ra>##TP_MaxPerLine##</td>
+	<td>##TP_Status##</td>
+	<td>##TP_BetTypeFactor##</td>
+	##TP_IF {[tpGetVar FuncChannels 0]}##
+		<td>##TP_Channels##&nbsp;</td>
+	##TP_ENDIF##
+    <td class=ra>##TP_Disporder##</td>
+</tr>
+##TP_ENDLOOP##
+</table>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<html>
+	<!-- $Id: pool_type.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+	<head>
+	  <meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		  <title>OpenBet Database Viewer</title>
+		  
+		  <script>
+			function fs(b)
+			{
+				b.disabled = true;
+				b.value = "Busy...";
+				b.form.update.value = 1;
+				b.form.submit();
+				return true;
+			}
+		  </script>
+	</head>
+	
+	<body>
+	  ##TP_PLAY error_rpt.html##
+	  <table border=0 cellspacing=0 cellpadding=3 bgcolor=#10137c>
+		<form name="typeform" method=get action="##TP_CGI_URL##">
+		  <tr>
+			<th colspan=3 class=title>
+			  Pari-Mutuel Pool Types
+			</th>
+		  </tr>
+		  <tr>
+			<th class=colhead>Type ID</td>
+			<th class=colhead>Source</td>
+			<th class=colhead>Name</td>
+		  </tr>
+		  ##TP_LOOP type_idx {[tpGetVar NumTypes]}##
+		  <tr class=active>
+			<td>
+			  ##TP_TypeID##
+			</td>
+			<td>
+			  ##TP_Source##
+			</td>
+			<td>
+			  <a href="##TP_CGI_URL##?action=ADMIN::POOLS::GoType&type_id=##TP_TypeID##&source_id=##TP_SourceID##">##TP_TypeName##</a>
+			</td>
+			##TP_ENDLOOP##
+		  </tr>
+		  ##TP_IF {[tpGetVar PERM_PoolEditType]}##
+		  <tr>
+			<th colspan=3 class=buttons>
+			  <input type=button class="btn_def" value="Add Type" onClick="return fs(this,'PMTAdd')"></input>
+			</th>
+		  </tr>
+		  <input type=hidden name=action value=ADMIN::POOLS::GoType>
+		  <input type=hidden name=update value="0">
+		  ##TP_ENDIF##
+		</form>
+	  </table>
+	</body>
+</html>
+  

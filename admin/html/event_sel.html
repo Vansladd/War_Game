@@ -1,0 +1,867 @@
+<html>
+<!-- $Id: event_sel.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Database Viewer</title>
+
+##TP_PLAY header_cal.html##
+
+##TP_PLAY JS_WriteSelect.html##
+<script>
+var sort = new Object();
+##TP_LOOP sort_idx {[tpGetVar NumSorts]}##
+sort["##TP_SortType##"] = "##TP_TypeSort##";##TP_ENDLOOP##
+
+##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+sort["C:##TP_ClassId##"]="##TP_ClassSort##"; ##TP_ENDLOOP##
+
+var nms = new Array();
+var ids = new Array();
+##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+nms[##TP_ClassId##]=new Array(##TP_LOOP type_idx {$CLASS([tpGetVar class_idx],types)}##"##TP_TypeName##"##TP_IF {[tpGetVar type_idx]!=[expr $CLASS([tpGetVar class_idx],types)-1]}##, ##TP_ENDIF####TP_ENDLOOP##);
+ids[##TP_ClassId##]=new Array(##TP_LOOP type_idx {$CLASS([tpGetVar class_idx],types)}##"##TP_TypeId##"##TP_IF {[tpGetVar type_idx]!=[expr $CLASS([tpGetVar class_idx],types)-1]}##, ##TP_ENDIF####TP_ENDLOOP##);
+##TP_ENDLOOP##
+
+function fsFB(b,t)
+{
+	var fm = document.forms["evform"];
+
+	var selectedType = fm.elements["TypeId"].selectedIndex;
+	var type         = fm.elements["TypeId"].options[selectedType].value;
+
+	fm.elements["ClassSort"].value = sort[type];
+
+	if (t == "EvAddFB") {
+		if ((type.substring(0,1) == "C") ||
+				(sort[type] != "FB" && sort[type] != "BB")) {
+			alert ("You must select a FB/BB event type!");
+			return false;
+		}
+	}
+	if (t == "EvResFB") {
+		if (sort[type] != "FB" && sort[type] != "BB") {
+			alert ("You must select a FB/BB event type!");
+			return false;
+		}
+	}
+	if (t == "EvConfStlFB") {
+		if (sort[type] != "FB" && sort[type] != "BB") {
+			alert ("You must select a FB event type!");
+			return false;
+		}
+	}
+
+	return fs(b,t);
+}
+
+
+function fs(b,t)
+{
+	if (t=="EvAdd" || t=="EvAddFB" || t=="EResFB" || t=="EvConfStlFB" ) {
+		if (!validateTypeList())
+			return false;
+	}
+
+	if (t == "EvAdd") {
+		var s = b.form.TypeId.options[b.form.TypeId.selectedIndex].value;
+		if (s == "0" || s.substring(0,1) == "C") {
+			alert ("Please choose an event type");
+			return false;
+		}
+	}
+
+	if (t == "EvShow") {
+		if (validateEventSearch() != 1) {
+			return false;
+		}
+	}
+
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function updateTypeList() {
+
+	var c = document.evform.ClassId;
+	var opt = document.evform.TypeId.options;
+
+	var cId = c.options[c.selectedIndex].value;
+	var cName = c.options[c.selectedIndex].text;
+
+	// Delete everything
+	opt.length=0;
+
+	if (cId != "0") {
+
+		opt[opt.length] = new Option( "-- all "+cName+" --", "C:"+cId );
+
+		var nm = nms[cId];
+		var id = ids[cId];
+
+		for (i=0;i<nm.length;i++) {
+			opt[opt.length] = new Option( nm[i], id[i] );
+		}
+
+	} else {
+
+		opt[opt.length] = new Option("<< All classes selected >>", "0");
+	}
+
+	opt.selectedIndex = 0;
+}
+
+function validateTypeList() {
+
+	var t = document.forms['evform'].elements['TypeId'];
+	var ret = true;
+
+	if (t.selectedIndex == -1) {
+		ret = false;
+	} else if (t.options[t.selectedIndex].value == 0) {
+		ret = false;
+	}
+
+	if (ret == false) {
+		alert("Please select an event class or event type from the list.");
+	}
+
+	return ret;
+}
+
+function updateSettleTypeList() {
+##TP_IF {[op_allowed Settle] || [op_allowed ConfirmResults]}##
+	var c = document.evsettleform.ClassId;
+	var opt = document.evsettleform.TypeId.options;
+
+	var cId = c.options[c.selectedIndex].value;
+	var cName = c.options[c.selectedIndex].text;
+
+	// Delete everything
+	opt.length=0;
+
+	if (cId != "0") {
+
+		opt[opt.length] = new Option( "-- all "+cName+" --", "C:"+cId );
+
+		var nm = nms[cId];
+		var id = ids[cId];
+
+		for (i=0;i<nm.length;i++) {
+			opt[opt.length] = new Option( nm[i], id[i] );
+		}
+
+	} else {
+
+		opt[opt.length] = new Option("<< All classes selected >>", "0");
+	}
+
+	opt.selectedIndex = 0;
+
+##TP_ENDIF##
+}
+
+function updateSelnSearchTypeList() {
+##TP_IF {[op_allowed EventSearch]}##
+	var c = document.findselnform.ClassId;
+	var opt = document.findselnform.TypeId.options;
+
+	var cId = c.options[c.selectedIndex].value;
+	var cName = c.options[c.selectedIndex].text;
+
+	// Delete everything
+	opt.length=0;
+
+	if (cId != "0") {
+
+		opt[opt.length] = new Option( "-- all "+cName+" --", "C:"+cId );
+
+		var nm = nms[cId];
+		var id = ids[cId];
+
+		for (i=0;i<nm.length;i++) {
+			opt[opt.length] = new Option( nm[i], id[i] );
+		}
+
+	} else {
+
+		opt[opt.length] = new Option("<< All classes selected >>", "0");
+	}
+
+	opt.selectedIndex = 0;
+
+	document.findselnform.SelnSearchBtn.value = "Show Selections";
+##TP_ENDIF##
+}
+function displayCalendars() {
+	new Calendar(document.forms.evform.date_lo,null,false,"lo")
+	new Calendar(document.forms.evform.date_hi,null,false,"lo")
+
+	new Calendar(document.forms.evupdform.date_lo,null,false,"lo")
+	new Calendar(document.forms.evupdform.date_hi,null,false,"lo")
+
+##TP_IF {[op_allowed Settle]|| [op_allowed ConfirmResults]}##
+	new Calendar(document.forms.evsettleform.date_lo,null,false,"lo")
+	new Calendar(document.forms.evsettleform.date_hi,null,false,"lo")
+##TP_ENDIF##
+
+##TP_IF {[op_allowed EventSearch]}##
+	new Calendar(document.forms.findselnform.date_lo,null,false,"lo")
+	new Calendar(document.forms.findselnform.date_hi,null,false,"lo")
+##TP_ENDIF##
+}
+
+
+/* Checks that the event search criteria are valid.  If all the criteria are
+ * valid, then 1 is returned and the search is executed
+ */
+function validateEventSearch() {
+
+	var date_lo = document.getElementById('date_lo').value;
+	var date_hi = document.getElementById('date_hi').value;
+	var date_range = document.getElementById('date_range').value;
+	var valid_hours = validateHours(date_range, date_lo, date_hi);
+
+	switch (valid_hours) {
+	case 0:
+		return 0;
+	case 1:
+		return 1;
+	}
+}
+
+/*
+ * Calculate date range in number of hours using either the date to/from fields
+ * or the date range dropdown.  The date to/from fields take precedence as long
+ * as they are both filled.  The date range should be less than one week for
+ * the search to be executed.
+ */
+function validateHours (date_range, date_lo, date_hi) {
+
+	var hours;
+	var date_1, date_2;
+	var date_unit = 1000*60*60;
+	var date_fields = date_lo + date_hi;
+
+	if (date_fields == "") {
+		if (date_range == "" || date_range == "-") {
+			##TP_IF {![OT_CfgGet ALLOW_UNLIMITED_EVENT_SEARCH 0]}##
+			alert("This search will return a large number of results.  Please choose a date range with a maximum of 28 days");
+			return 0;
+			##TP_ENDIF##
+		} else {
+			current_date = new Date();
+
+			switch (date_range) {
+			case "-3":
+				date_lo = current_date.getDate()-7;
+				date_hi = current_date.getDate();
+				break;
+			case "-2":
+				date_lo = current_date.getDate()-3;
+				date_hi = current_date.getDate();
+				break;
+			case "-1":
+				date_lo = current_date.getDate()-1;
+				date_hi = current_date.getDate();
+				break;
+			case "0":
+				date_lo = current_date.getDate();
+				date_hi = current_date.getDate();
+				break;
+			case "1":
+				date_lo = current_date.getDate();
+				date_hi = current_date.getDate()+1;
+				break;
+			case "2":
+				date_lo = current_date.getDate();
+				date_hi = current_date.getDate()+3;
+				break;
+			case "3":
+				date_lo = current_date.getDate();
+				date_hi = current_date.getDate()+7;
+				break;
+			case "4":
+				date_lo = current_date.getDate();
+				date_hi = current_date.getDate()+100000;
+				break;
+			}
+
+			date_1 = new Date();
+			date_2 = new Date();
+			date_1.setDate(date_lo);
+			date_2.setDate(date_hi);
+		}
+	} else {
+
+		var re = new RegExp("[0-9]{4}-[0-9]{2}-[0-9]{2}");
+
+		if (date_lo != "" && date_hi != "") {
+			if (!re.test(date_lo) || !re.test(date_hi)) {
+				alert("Please provide valid dates");
+				return 0;
+			}
+
+			var date_1_str = date_lo.split("-");
+			var date_2_str = date_hi.split("-");
+
+			date_1 = new Date(date_1_str[0], date_1_str[1], date_1_str[2]);
+			date_2 = new Date(date_2_str[0], date_2_str[1], date_2_str[2]);
+
+			date_1.setHours(parseInt(0));
+			date_1.setMinutes(parseInt(0));
+			date_1.setSeconds(parseInt(0));
+			date_2.setHours(parseInt(23));
+			date_2.setMinutes(parseInt(59));
+			date_2.setSeconds(parseInt(59));
+
+			if (date_1.getTime() > date_2.getTime()) {
+				alert("The 'date to' field cannot be before the 'date from' field");
+				return 0;
+			}
+		} else {
+			alert("Please provide a 'date from' and a 'date to'");
+			return 0;
+		}
+	}
+
+	##TP_IF {[OT_CfgGet ALLOW_UNLIMITED_EVENT_SEARCH 0]}##
+	return 1;
+	##TP_ELSE##
+	hours = Math.ceil( (date_2.getTime() - date_1.getTime())/date_unit );
+	// Event search limit is 28 days
+	if (hours <= 672) {
+		return 1;
+	} else {
+		alert("This search will return a large number of results.  Please choose a date range with a maximum of 28 days");
+		return 0;
+	}
+	##TP_ENDIF##
+}
+
+##TP_IF {[OT_CfgGet FUNC_SEARCH_HIERARCHY_BY_ID 1] } ##
+/**
+* 	Handler function for Search criteria combo box . This funtion enables / disables search button ,
+*   based on the  selected value 
+*/
+function OnCriteriaChange()
+{
+	var criteria =  document.getElementById("searchform_criteria");
+	var selectedValue = criteria.options[ criteria.selectedIndex].value;
+	var searchButton  = document.getElementById("searchform_search");
+	var id    = document.getElementById("searchform_id");
+
+	if (selectedValue != "") {
+
+		searchButton.disabled = false;
+
+	} else {
+
+		searchButton.disabled = true;
+		id.value = "";
+
+	}
+
+}
+
+/*
+*   Function to validate the entered search id ,
+*/
+function validateSearchId()
+{
+	// Regx to check , whether the entered value is valid id or not
+	var idReg = new RegExp("^([0-9]+)$");
+	var id    = document.getElementById("searchform_id");
+	var criteria =  document.getElementById("searchform_criteria");
+	var selectedValue = criteria.options[ criteria.selectedIndex].value;
+	document.getElementById("searchform_SubmitName").value =  selectedValue;
+
+		
+	if (!idReg.test(id.value)) {
+		alert("Please enter a valid id");
+		id.value = "";
+	} else {
+
+		switch(selectedValue) {
+
+		case "event" :
+			document.getElementById("searchform_EvId").value = id.value;
+		break;
+
+		case "market" :
+			document.getElementById("searchform_MktId").value = id.value;
+		break;
+
+		case "selection":
+			document.getElementById("searchform_OcId").value = id.value;
+		break;
+
+		}
+
+		document.forms['searchform'].submit();
+
+	}
+
+}
+##TP_ENDIF##
+
+</script>
+</head>
+<body onload="updateTypeList(); updateSettleTypeList(); updateSelnSearchTypeList(); displayCalendars()">
+##TP_PLAY error_rpt.html##
+<form name="evform" method=post action=##TP_CGI_URL##>
+<input type=hidden name=ClassSort value="">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::EV_SEL::DoEvSel>
+	<table border=0 cellspacing=0 cellpadding=2>
+		<tr>
+			<th colspan=2 class=title>
+				Event Selection Criteria
+			</th>
+		</tr>
+		<tr>
+			<td class=caption>Classes</td>
+			<td>
+				<select id="ClassId" name=ClassId size=10 onchange="updateTypeList()">
+					<option value=0 selected>-All Classes-</option>
+					##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+						<option value="##TP_ClassId##">##TP_ClassName##</option>
+					##TP_ENDLOOP##
+				</select>
+
+				<select name=TypeId size=10>
+					<option value="C:0"></option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+		<td class=caption>Date range</td>
+		<td>
+			<select name=date_range id="date_range">
+				<option value="-3" ##TP_IF {[OT_CfgGet EVENT_SEL_DATE_RANGE_DFLT "0"]=="-3"}## selected ##TP_ENDIF##>Last 7 days</option>
+				<option value="-2" ##TP_IF {[OT_CfgGet EVENT_SEL_DATE_RANGE_DFLT "0"]=="-2"}## selected ##TP_ENDIF##>Last 3 days</option>
+				<option value="-1" ##TP_IF {[OT_CfgGet EVENT_SEL_DATE_RANGE_DFLT "0"]=="-1"}## selected ##TP_ENDIF##>Yesterday</option>
+				##TP_IF {[OT_CfgGet ALLOW_UNLIMITED_EVENT_SEARCH 0]}##
+				<option value="-" ##TP_IF {[OT_CfgGet EVENT_SEL_DATE_RANGE_DFLT "0"]=="-"}## selected ##TP_ENDIF##>--</option>
+				##TP_ENDIF##
+				<option value="0" ##TP_IF {[OT_CfgGet EVENT_SEL_DATE_RANGE_DFLT "0"]=="0"}## selected ##TP_ENDIF##>Today</option>
+				<option value="1" ##TP_IF {[OT_CfgGet EVENT_SEL_DATE_RANGE_DFLT "0"]=="1"}## selected ##TP_ENDIF##>Tomorrow</option>
+				<option value="2" ##TP_IF {[OT_CfgGet EVENT_SEL_DATE_RANGE_DFLT "0"]=="2"}## selected ##TP_ENDIF##>Next 3 days</option>
+				<option value="3" ##TP_IF {[OT_CfgGet EVENT_SEL_DATE_RANGE_DFLT "0"]=="3"}## selected ##TP_ENDIF##>Next 7 days</option>
+			</select>&nbsp;&nbsp;or&nbsp;
+			<input text="text" size=12 name="date_lo" id="date_lo" value="">&nbsp;to&nbsp;
+			<input type="text" size=12 name="date_hi" id="date_hi" value="">
+			##TP_IF {[OT_CfgGet FUNC_BIR_SEARCH 0]}##
+			against<select name=start_or_susp>
+			<script>
+				write_select('start','start','Start Time','susp','Suspend Time')
+			</script>
+			</select>
+			##TP_ENDIF##
+		</td>
+	</tr>
+	##TP_IF {[OT_CfgGet FUNC_BIR_SEARCH 0]}##
+	<tr>
+		<td class=caption>Is BIR</td>
+		<td>
+			<select name="is_bir">
+				<option value="Y">Yes</option>
+				<option value="N">No</option>
+				<option value="-" selected>Both</option>
+			</select>
+		</td>
+	</tr>
+##TP_ENDIF##
+	<tr>
+		<td class=caption>Settled</td>
+		<td>
+			<select name=settled>
+				<option value="-" ##TP_IF {[OT_CfgGet EVENT_SEL_SETTLED_DFLT "N"]=="-"}## selected ##TP_ENDIF##>Either</option>
+				<option value="N" ##TP_IF {[OT_CfgGet EVENT_SEL_SETTLED_DFLT "N"]=="N"}## selected ##TP_ENDIF##>No</option>
+				<option value="Y" ##TP_IF {[OT_CfgGet EVENT_SEL_SETTLED_DFLT "N"]=="Y"}## selected ##TP_ENDIF##>Yes</option>
+			</select>
+			&nbsp;&nbsp;&nbsp;<b>Results</b>&nbsp;
+			<select name=result_conf>
+				<option value="-">-</option>
+				<option value="Y">All set and confirmed</option>
+				<option value="N1">All set but not confirmed</option>
+				<option value="N2">Not all set</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Status</td>
+		<td>
+			<select name=status>
+				<script>write_select('##TP_Ev_Displayed##','-','Either','A','Active','S','Suspended');</script>
+			</select>
+		</td>
+	</tr>
+
+	##TP_IF {[OT_CfgGet FUNC_ALLOW_SETTLE 0]} ##
+	<tr>
+		<td class=caption>Allow Settle</td>
+		<td>
+		<select name="allow_stl">
+			<option value="-">Either</option>
+			<option value="N">No</option>
+			<option value="Y">Yes</option>
+		</select>
+	</tr>
+	##TP_ENDIF##
+
+	<tr>
+		<th colspan="2" class="buttons">
+			<table width="100%" border="0" cellspacing="0" cellpadding="2">
+				<tr>
+					<th class="buttons">
+						<input type=button class="btn_def" value="Show Events" onClick="return fs(this,'EvShow')">
+						##TP_IF {[tpGetVar AllowDDCreation 0]}##
+						<input type=button class="btn_def" value="Add Event" onClick="return fs(this,'EvAdd')">
+						##TP_ENDIF##
+						##TP_IF {[OT_CfgGet BF_ACTIVE 0] && [OT_CfgGet BF_SHOW_UNMATCHED_EVENT_LINK 0]}##
+                                                <input type=button class="btn_def" value="Show Events Unmatched to BF" onclick="return fs(this,'EvShowUnmatch')">
+						##TP_ENDIF##
+					</th>
+					##TP_IF {[OT_CfgGet FUNC_HIDE_SUSP_EV_CLASS 0]==1}##
+					<th class="buttons">
+						<input type="button" class="btn_def" align="right" value="##TP_WhatSusp## Suspended Classes" onClick="return fs(this,'Refresh')">
+						<input type="hidden" name="show_susp_evs" value="##TP_ShowSuspEvs##">
+					</th>
+					##TP_ENDIF##
+				</tr>
+			</table>
+		</th>
+	</tr>
+
+	<tr>
+		<th colspan=2 class=buttons>
+			##TP_IF {[OT_CfgGet FUNC_Q_FB_SETUP 0]==1 && [tpGetVar AllowDDCreation 0]}##
+			<input type=button class="btn_def" value="Quick Setup" onClick="return fsFB(this,'EvAddFB')">
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGet FUNC_Q_FB_RESULT 0]==1}##
+			<input type=button class="btn_def" value="Quick Result" onClick="return fsFB(this,'EvResFB')">
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGet FUNC_Q_FB_CONFSTL 0]==1}##
+			<input type=button class="btn_def" value="Quick Confirm/Settle" onClick="return fsFB(this,'EvConfStlFB')">
+			##TP_ENDIF##
+		</th>
+	</tr>
+	##TP_IF {[op_allowed PoolQuickConfStl]}##
+	<tr>
+		<th colspan="2" class="buttons">
+			<input type="button" class="btn_def" value="Pools Quick Confirm/Settle"	onClick="return fs (this,'EvConfStlPools')">
+		</th>
+	</tr>
+	##TP_ENDIF##
+</table>
+</form>
+
+<br>
+<br>
+##TP_IF {[OT_CfgGet FUNC_SEARCH_HIERARCHY_BY_ID 1] } ##
+<form name ="searchform" method="post" action=##TP_CGI_URL##>
+<input type=hidden id="searchform_SubmitName" name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::EV_SEL::ShowSel>
+<input type=hidden id="searchform_EvId"  name="EvId"  value="" >
+<input type=hidden id="searchform_MktId" name="MktId"  value="" >
+<input type=hidden id="searchform_OcId"  name="OcId"  value="" >
+
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th colspan=4 class=title>
+			  Search by ID 
+		</th>
+	</tr>
+
+	<tr>
+		<td class =caption> 
+				Level
+		</td>
+		
+		<td>
+			<select name ="criteria" id="searchform_criteria" onchange ="OnCriteriaChange()" >
+				<option value="" selected >-----</option>
+				<option value="event"> Event </option>
+				<option value="market"> Market </option>
+				<option value="selection"> Selection </option>
+		</td>
+	</tr>
+	<tr>
+		<td class =caption>
+				Id
+		</td>	
+		<td>
+			<input type="text" id="searchform_id">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<input class="btn_def"  type="button"  id="searchform_search" value= "Search" onClick="validateSearchId()"  disabled>
+		</td>
+	</tr>
+
+</table>
+
+</form>
+##TP_ENDIF##
+
+<br>
+<br>
+
+<form name="evupdform" method=post action=##TP_CGI_URL##>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::EV_SEL::DoEvSel>
+
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th colspan=2 class=title>
+			Event Update Criteria
+		</th>
+	</tr>
+	<tr>
+		<td class=caption>Class</td>
+		<td>
+			<select name=ClassId>
+				<option value=0>--all classes--</option>
+				##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+					<option value="##TP_ClassId##">##TP_ClassName##</option>
+				##TP_ENDLOOP##
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Date Range</td>
+		<td>
+			<select name=date_range>
+				<option value="-2">Previous hour</option>
+				<option value="-1">Previous 30 mins</option>
+				<option value="-" ##TP_IF {[OT_CfgGet EVENT_UPD_START_DFLT "0"]=="-"}## selected ##TP_ENDIF##>--</option>
+				<option value="0" ##TP_IF {[OT_CfgGet EVENT_UPD_START_DFLT "0"]=="0"}## selected ##TP_ENDIF##>Today</option>
+				<option value="1" ##TP_IF {[OT_CfgGet EVENT_UPD_START_DFLT "0"]=="1"}## selected ##TP_ENDIF##>Tomorrow</option>
+				<option value="2" ##TP_IF {[OT_CfgGet EVENT_UPD_START_DFLT "0"]=="2"}## selected ##TP_ENDIF##>In the future</option>
+			</select>&nbsp;&nbsp;or&nbsp;
+			<input type=text size=12 name="date_lo" value="">&nbsp;to&nbsp;
+			<input type=text size=12 name="date_hi" value="">
+			##TP_IF {[OT_CfgGet FUNC_BIR_SEARCH 0]}##
+			against<select name=start_or_susp>
+			<script>
+				write_select('start','start','Start Time','susp','Suspend Time')
+			</script>
+			</select>
+			##TP_ENDIF##
+		</td>
+	</tr>
+	##TP_IF {[OT_CfgGet FUNC_BIR_SEARCH 0]}##
+	<tr>
+		<td class=caption>Is BIR</td>
+		<td>
+			<select name="is_bir">
+				<option value="Y">Yes</option>
+				<option value="N" selected>No</option>
+				<option value="-">Both</option>
+			</select>
+		</td>
+	</tr>
+	##TP_ENDIF##
+	<tr>
+		<td class=caption>Settled</td>
+		<td>
+			<select name=Settled>
+				<option value="-" ##TP_IF {[OT_CfgGet EVENT_UPD_SETTLED_DFLT "N"]=="-"}## selected ##TP_ENDIF##>either</option>
+				<option value="N" ##TP_IF {[OT_CfgGet EVENT_UPD_SETTLED_DFLT "N"]=="N"}## selected ##TP_ENDIF##>No</option>
+				<option value="Y" ##TP_IF {[OT_CfgGet EVENT_UPD_SETTLED_DFLT "N"]=="Y"}## selected ##TP_ENDIF##>Yes</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Status</td>
+		<td>
+			<select name=Status>
+				<option value="-" ##TP_IF {[OT_CfgGet EVENT_UPD_STATUS_DFLT "A"]=="-"}## selected ##TP_ENDIF##>either</option>
+				<option value="A" ##TP_IF {[OT_CfgGet EVENT_UPD_STATUS_DFLT "A"]=="A"}## selected ##TP_ENDIF##>Active</option>
+				<option value="S" ##TP_IF {[OT_CfgGet EVENT_UPD_STATUS_DFLT "A"]=="S"}## selected ##TP_ENDIF##>Suspended</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Displayed</td>
+		<td>
+			<select name=Displayed>
+				<option value="-">either</option>
+				<option value="Y">Yes</option>
+				<option value="N">No</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th class=buttons colspan=2>
+			<input type=button class="btn_def" value="Show Events" onClick="return fs(this,'EvUpdShow')">
+		</th>
+	</tr>
+</table>
+</form>
+
+<br>
+<br>
+
+##TP_IF {[OT_CfgGet SHOW_QUICK_LINK 0]==1}##
+	##TP_PLAY quick_link.html##
+	<br>
+	<br>
+##TP_ENDIF##
+
+##TP_IF {[op_allowed Settle] || [op_allowed ConfirmResults]}##
+<form name="evsettleform" method=post action=##TP_CGI_URL##>
+<input type=hidden name=ClassSort value="">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::EV_SEL::DoEvSettle>
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th colspan=2 class=title>
+			Event Quick Confirm/Settle Criteria
+		</th>
+	</tr>
+	<tr>
+		<td class=caption>Classes</td>
+		<td>
+			<select name=ClassId size=10 onchange="updateSettleTypeList()">
+				<option value=0 selected>-All Classes-</option>
+				##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+				<option value="##TP_ClassId##">##TP_ClassName##</option>
+				##TP_ENDLOOP##
+			</select>
+			<select name=TypeId size=10>
+				<option value="C:0"></option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Date range</td>
+		<td>
+			<select name=date_range>
+				<option value="-3">Last 7 days</option>
+				<option value="-2">Last 3 days</option>
+				<option value="-1">Yesterday</option>
+				<option value="-">--</option>
+				<option value="0" selected>Today</option>
+				<option value="1">Tomorrow</option>
+				<option value="2">Next 3 days</option>
+				<option value="3">Next 7 days</option>
+				<option value="4">In the future</option>
+			</select>&nbsp;&nbsp;or&nbsp;
+			<input type=text size=12 name="date_lo" value="">&nbsp;to&nbsp;
+			<input type=text size=12 name="date_hi" value="">
+			##TP_IF {[OT_CfgGet FUNC_BIR_SEARCH 0]}##
+			against<select name=start_or_susp>
+			<script>
+				write_select('start','start','Start Time','susp','Suspend Time')
+			</script>
+			</select>
+			##TP_ENDIF##
+		</td>
+	</tr>
+	##TP_IF {[OT_CfgGet FUNC_BIR_SEARCH 0]}##
+	<tr>
+		<td class=caption>Is BIR</td>
+		<td>
+			<select name="is_bir">
+				<option value="Y">Yes</option>
+				<option value="N">No</option>
+				<option value="-" selected>Both</option>
+			</select>
+		</td>
+	</tr>
+	##TP_ENDIF##
+	<tr>
+		<th colspan=2 class=buttons>
+			<input type=button class="btn_def" value="Show Events" onClick="return fs(this,'EvShowSettle')">
+		</th>
+	</tr>
+</table>
+</form>
+##TP_ENDIF##
+
+##TP_IF {[op_allowed EventSearch]}##
+<br>
+<br>
+<form name="findselnform" method=post action=##TP_CGI_URL##>
+<input type=hidden name=ClassSort value="">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::EV_SEL::DoSelnSearch>
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th colspan=3 class=title>
+			Selection Search
+		</th>
+	</tr>
+	<tr>
+		<td class=caption>Classes</td>
+		<td>
+			<select name=ClassId size=10 onchange="updateSelnSearchTypeList()">
+				<option value=0 selected>-All Classes-</option>
+				##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+				<option value="##TP_ClassId##">##TP_ClassName##</option>
+				##TP_ENDLOOP##
+			</select>
+			<select name=TypeId size=10>
+				<option value="C:0"></option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Date range</td>
+		<td>
+			<select name=date_range>
+				<option value="-3">Last 7 days</option>
+				<option value="-2">Last 3 days</option>
+				<option value="-1">Yesterday</option>
+				<option value="-">--</option>
+				<option value="0" selected>Today</option>
+				<option value="1">Tomorrow</option>
+				<option value="2">Next 3 days</option>
+				<option value="3">Next 7 days</option>
+				<option value="4">In the future</option>
+			</select>&nbsp;&nbsp;or&nbsp;
+			<input type=text size=12 name="date_lo" value="">&nbsp;to&nbsp;
+			<input type=text size=12 name="date_hi" value="">
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Settled</td>
+		<td>
+			<select name=Settled>
+				<option value="-">either</option>
+				<option value="N" selected>No</option>
+				<option value="Y">Yes</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Status</td>
+		<td>
+		<select name=Status>
+			<option value="-" ##TP_IF {[OT_CfgGet EVENT_UPD_STATUS_DFLT "A"]=="-"}## selected ##TP_ENDIF##>either</option>
+			<option value="A" ##TP_IF {[OT_CfgGet EVENT_UPD_STATUS_DFLT "A"]=="A"}## selected ##TP_ENDIF##>Active</option>
+			<option value="S" ##TP_IF {[OT_CfgGet EVENT_UPD_STATUS_DFLT "A"]=="S"}## selected ##TP_ENDIF##>Suspended</option>
+		</select>
+	</td>
+	</tr>
+	<tr>
+		<td class=caption>Selection</td>
+		<td><input type=text name="selection" size=30></td>
+	</tr>
+	<tr>
+		<th colspan=3 class=buttons>
+		<input type=button class="btn_def" id="SelnSearchBtn" value="Show Selections" onClick="return fs(this,'SelnSearch')">
+		</th>
+	</tr>
+</table>
+</form>
+##TP_ENDIF##
+</body>
+</html>

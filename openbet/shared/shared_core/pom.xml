@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.openbet.core</groupId>
+	<artifactId>openbet-core</artifactId>
+	<packaging>pom</packaging>
+	<version>3.262</version>
+	<name>OpenBet Core</name>
+	<description>OpenBet Core</description>
+	<url>https://wiki.openbet/display/core</url>
+	<inceptionYear>2011</inceptionYear>
+	<!--
+		Disable documentation pass -Ddocumentation.skip=true
+		Disable testing pass       -Dtest.skip=true
+	-->
+	<!-- Inherit from the Keystone pom -->
+	<parent>
+		<groupId>com.openbet.keystone</groupId>
+		<artifactId>keystone-pom</artifactId>
+		<version>RELEASE</version>
+	</parent>
+
+	<properties>
+		<api.version>3</api.version>
+		<sonar.branch>trunk</sonar.branch>
+		<module>core</module>
+
+		<scm.type>git</scm.type>
+		<scm.server>stash.int.openbet.com:7999</scm.server>
+		<scm.repo>https://stash.int.openbet.com/scm/obcore/aggregate.git</scm.repo>
+
+		<module.db.version>3.33</module.db.version>
+		<module.foundation.version>3.29</module.foundation.version>
+		<module.history.version>3.63</module.history.version>
+		<module.slap.version>3.11</module.slap.version>
+		<module.util.version>3.55</module.util.version>
+		<module.util-docs.version>3.8</module.util-docs.version>
+		<module.interfaces-cust.version>3.13</module.interfaces-cust.version>
+		<module.interfaces-messaging.version>3.9</module.interfaces-messaging.version>
+		<module.interfaces-funding.version>3.27</module.interfaces-funding.version>
+		<module.interfaces-lottery.version>3.16</module.interfaces-lottery.version>
+
+		<docs.dir>${project.build.directory}/docs</docs.dir>
+
+		<install.dir>shared/shared_core</install.dir>
+
+		<project.dir>${project.build.directory}/build/${install.dir}</project.dir>
+		<compiled.project.dir>${compiled.build.dir}/${install.dir}</compiled.project.dir>
+
+		<tcl.autopath>
+			${dependency.dir}/shared/shared_tcl
+			${project.dir}/tcl/db
+		</tcl.autopath>
+
+		<test.dir>${basedir}/test/tcl</test.dir>
+
+		<project.include.list>
+			pom.xml
+			db/**
+			harness/**
+			lib/**
+			tcl/**
+			test/appserv/**
+			test/bin/**
+		</project.include.list>
+
+		<rpm.install.dir>/opt/openbet/${install.dir}</rpm.install.dir>
+		<jenkins.default.instance>core</jenkins.default.instance>
+		<jenkins.dev.instance>${jenkins.default.instance}-dev</jenkins.dev.instance>
+		<jenkins.template.job>template-maven-cvs-core</jenkins.template.job>
+	</properties>
+	<scm>
+		<connection>scm:git:${scm.repo}</connection>
+		<developerConnection>scm:git:${scm.repo}</developerConnection>
+		<url>${scm.repo}</url>
+	</scm>
+	<build>
+		<sourceDirectory>tcl</sourceDirectory>
+		<testSourceDirectory>test/tcl</testSourceDirectory>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<!-- Core sub modules -->
+								<artifactItem>
+									<groupId>com.openbet.core.db</groupId>
+									<artifactId>openbet-core-database</artifactId>
+									<version>${module.db.version}</version>
+									<classifier>sources</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/core</outputDirectory>
+								</artifactItem>
+
+								<!--artifactItem>
+									<groupId>com.openbet.core.db</groupId>
+									<artifactId>openbet-core-database</artifactId>
+									<version>${module.db.version}</version>
+									<classifier>junit</classifier>
+									<type>tgz</type>
+									<outputDirectory>${target.dir}/test_output</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.db</groupId>
+									<artifactId>openbet-core-database</artifactId>
+									<version>${module.db.version}</version>
+									<classifier>docs</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/docs/xml</outputDirectory>
+								</artifactItem-->
+
+								<artifactItem>
+									<groupId>com.openbet.core.foundation</groupId>
+									<artifactId>openbet-core-foundation</artifactId>
+									<version>${module.foundation.version}</version>
+									<classifier>sources</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/core</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.foundation</groupId>
+									<artifactId>openbet-core-foundation</artifactId>
+									<version>${module.foundation.version}</version>
+									<classifier>junit</classifier>
+									<type>tgz</type>
+									<outputDirectory>${target.dir}/test_output</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.foundation</groupId>
+									<artifactId>openbet-core-foundation</artifactId>
+									<version>${module.foundation.version}</version>
+									<classifier>docs</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/docs/xml</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.history</groupId>
+									<artifactId>openbet-core-history</artifactId>
+									<version>${module.history.version}</version>
+									<classifier>sources</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/core</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.history</groupId>
+									<artifactId>openbet-core-history</artifactId>
+									<version>${module.history.version}</version>
+									<classifier>junit</classifier>
+									<type>tgz</type>
+									<outputDirectory>${target.dir}/test_output</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.history</groupId>
+									<artifactId>openbet-core-history</artifactId>
+									<version>${module.history.version}</version>
+									<classifier>docs</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/docs/xml</outputDirectory>
+								</artifactItem>
+
+
+								<artifactItem>
+									<groupId>com.openbet.core.util</groupId>
+									<artifactId>openbet-core-util</artifactId>
+									<version>${module.util.version}</version>
+									<classifier>sources</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/core</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.util</groupId>
+									<artifactId>openbet-core-util</artifactId>
+									<version>${module.util.version}</version>
+									<classifier>junit</classifier>
+									<type>tgz</type>
+									<outputDirectory>${target.dir}/test_output</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.util</groupId>
+									<artifactId>openbet-core-util</artifactId>
+									<version>${module.util.version}</version>
+									<classifier>docs</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/docs/xml</outputDirectory>
+								</artifactItem>
+
+								<!-- Openbet Core Customer Interface -->
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-cust</artifactId>
+									<version>${module.interfaces-cust.version}</version>
+									<classifier>sources</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/core</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-cust</artifactId>
+									<version>${module.interfaces-cust.version}</version>
+									<classifier>junit</classifier>
+									<type>tgz</type>
+									<outputDirectory>${target.dir}/test_output</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-cust</artifactId>
+									<version>${module.interfaces-cust.version}</version>
+									<classifier>docs</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/docs/xml</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-messaging</artifactId>
+									<version>${module.interfaces-messaging.version}</version>
+									<classifier>sources</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/core</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-messaging</artifactId>
+									<version>${module.interfaces-messaging.version}</version>
+									<classifier>junit</classifier>
+									<type>tgz</type>
+									<outputDirectory>${target.dir}/test_output</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-messaging</artifactId>
+									<version>${module.interfaces-messaging.version}</version>
+									<classifier>docs</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/docs/xml</outputDirectory>
+								</artifactItem>
+
+								<!-- Openbet Core Funding Interface -->
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-funding</artifactId>
+									<version>${module.interfaces-funding.version}</version>
+									<classifier>sources</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/core</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-funding</artifactId>
+									<version>${module.interfaces-funding.version}</version>
+									<classifier>junit</classifier>
+									<type>tgz</type>
+									<outputDirectory>${target.dir}/test_output</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-funding</artifactId>
+									<version>${module.interfaces-funding.version}</version>
+									<classifier>docs</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/docs/xml</outputDirectory>
+								</artifactItem>
+
+								<!-- Openbet Core Lottery Interface -->
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-lottery</artifactId>
+									<version>${module.interfaces-lottery.version}</version>
+									<classifier>sources</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/core</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-lottery</artifactId>
+									<version>${module.interfaces-lottery.version}</version>
+									<classifier>junit</classifier>
+									<type>tgz</type>
+									<outputDirectory>${target.dir}/test_output</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.interfaces</groupId>
+									<artifactId>openbet-core-interfaces-lottery</artifactId>
+									<version>${module.interfaces-lottery.version}</version>
+									<classifier>docs</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/docs/xml</outputDirectory>
+								</artifactItem>
+
+								<!-- Openbet Core Slap -->
+								<artifactItem>
+									<groupId>com.openbet.core.slap</groupId>
+									<artifactId>openbet-core-slap</artifactId>
+									<version>${module.slap.version}</version>
+									<classifier>sources</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/core</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.slap</groupId>
+									<artifactId>openbet-core-slap</artifactId>
+									<version>${module.slap.version}</version>
+									<classifier>junit</classifier>
+									<type>tgz</type>
+									<outputDirectory>${target.dir}/test_output</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.slap</groupId>
+									<artifactId>openbet-core-slap</artifactId>
+									<version>${module.slap.version}</version>
+									<classifier>docs</classifier>
+									<type>tgz</type>
+									<outputDirectory>${dependency.dir}/docs/xml</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.core.util</groupId>
+									<artifactId>openbet-util-docs</artifactId>
+									<version>${module.util-docs.version}</version>
+									<classifier>sources</classifier>
+									<type>tgz</type>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>com.openbet.shared.shared_tcl</groupId>
+									<artifactId>openbet-shared_tcl-base</artifactId>
+									<version>8.0.11</version>
+									<classifier>sources</classifier>
+									<type>tgz</type>
+								</artifactItem>
+
+								<!-- Documentation needs shared Ant  -->
+								<artifactItem>
+									<groupId>com.openbet.plugin</groupId>
+									<artifactId>openbet-maven-plugin</artifactId>
+									<version>${openbet-maven-plugin.version}</version>
+									<classifier>sources</classifier>
+									<type>tar.gz</type>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.openbet.plugin.unit-testing</groupId>
+				<artifactId>openmock-plugin</artifactId>
+				<configuration>
+					<pluginLibDir>
+                        ${project.dir}/tcl
+                    </pluginLibDir>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.openbet.plugin.appserv-testing</groupId>
+				<artifactId>appserv-mock-runner</artifactId>
+				<configuration>
+					<pluginLibDir>
+                        ${project.dir}/tcl
+					</pluginLibDir>
+					<configFile>${basedir}/test/appserv/core.cfg</configFile>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.openbet.plugin</groupId>
+				<artifactId>openbet-maven-plugin</artifactId>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>release-admin</id>
+						<phase>none</phase>
+						<goals>
+							<goal>release-admin</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- Testing configuration -->
+					<core.dir>${basedir}</core.dir>
+
+					<!-- Release configuration -->
+					<confluence.parent>OpenBet Core Versions</confluence.parent>
+					<confluence.space>${module}</confluence.space>
+					<confluence.username>svc_trading_release</confluence.username>
+					<confluence.password>xk4hHraE</confluence.password>
+					<release.note.dir>${docs.dir}/release_note</release.note.dir>
+					<release.note.filename>release_note-${project.version}.html</release.note.filename>
+					<jira.ref>OBCORE</jira.ref>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>process-resources</phase>
+						<configuration>
+							<target>
+								<copy todir="${project.dir}/tcl/db/">
+									<fileset dir="${dependency.dir}/core/${install.dir}/tcl/db/" />
+								</copy>
+								<copy todir="${project.dir}/tcl/foundation/">
+									<fileset dir="${dependency.dir}/core/${install.dir}/tcl/foundation/" />
+								</copy>
+								<copy todir="${project.dir}/tcl/history/">
+									<fileset dir="${dependency.dir}/core/${install.dir}/tcl/history/" />
+								</copy>
+								<copy todir="${project.dir}/tcl/slap/">
+									<fileset dir="${dependency.dir}/core/${install.dir}/tcl/slap/" />
+								</copy>
+								<copy todir="${project.dir}/tcl/util/">
+									<fileset dir="${dependency.dir}/core/${install.dir}/tcl/util/" />
+								</copy>
+								<copy todir="${project.dir}/tcl/interfaces/">
+									<fileset dir="${dependency.dir}/core/${install.dir}/tcl/interfaces/" />
+								</copy>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>build-documentation</id>
+						<phase>prepare-package</phase>
+						<configuration>
+							<target>
+								<!-- Add contrib and xmltask to the classpath -->
+								<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath" />
+
+								<condition property="skip.documentation">
+									<isset property="test.package" />
+								</condition>
+
+								<copy todir="${docs.dir}/static">
+									<fileset dir="${dependency.dir}/docs/static" />
+								</copy>
+
+								<shellscript shell="bash" dir="docs" failonerror="true">
+									echo "Building documentation"
+
+									${dependency.dir}/docs/tcl/generate.tcl \
+										"${project.dir}/tcl ${basedir}/harness/ ${dependency.dir}/docs/tcl" \
+										--base_dir ${basedir}\
+										--dependency_dir ${dependency.dir} \
+										--html_dir ${target.dir}/docs/api \
+										--unit_dir ${target.dir}/test_output \
+										--trace_file ${target.dir}/test_output/unit-coverage.$(date +%Y%m%d).xml \
+										--trim_module 0 \
+										--ref_count 0
+								</shellscript>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>deploy-artifacts</id>
+						<phase>install</phase>
+						<configuration>
+							<target>
+								<!-- Add contrib and xmltask to the classpath -->
+								<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath" />
+								<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="maven.plugin.classpath" />
+
+								<ant target="install" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>1.0b3</version>
+						<exclusions>
+							<exclusion>
+								<groupId>ant</groupId>
+								<artifactId>ant</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>com.oopsconsultancy</groupId>
+						<artifactId>xmltask</artifactId>
+						<version>1.16</version>
+					</dependency>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-all</artifactId>
+						<version>2.1.3</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>attach-extra</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attach-artifact</goal>
+						</goals>
+						<configuration>
+							<artifacts>
+								<!-- Add the docs artifact-->
+								<artifact>
+									<file>target/${project.artifactId}-${project.version}-docs.tgz</file>
+									<type>tgz</type>
+									<classifier>docs</classifier>
+								</artifact>
+							</artifacts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rpm-maven-plugin</artifactId>
+				<inherited>false</inherited>
+				<configuration>
+					<group>Application/OpenBet</group>
+					<prefix>/opt/openbet</prefix>
+					<requires>
+						<require>tcl &gt;= 8.5</require>
+						<require>ot-appserv &gt;= 2.26.13</require>
+					</requires>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate-sources-lib-rpm</id>
+						<goals>
+							<goal>attached-rpm</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>generate-compiled-lib-rpm</id>
+						<goals>
+							<goal>attached-rpm</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!-- Environment Settings -->
+	<issueManagement>
+		<system>JIRA</system>
+		<url>https://jira.openbet.com/browse/OBCORE</url>
+	</issueManagement>
+</project>

@@ -1,0 +1,70 @@
+<html>
+<!-- $Id: third_party_mod.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language="JavaScript">
+	function validate(f) {
+		if (f.name == "ThirdPartyMod") {
+			if (f.ThirdPartyName.value == "") {
+				alert("Third Party Name cannot be blank");
+				return false;
+			}		}
+		return true;
+	}
+
+	function fs(b,t) {
+		if (validate(b.form)) {
+			b.disabled = true;
+			b.value = "Busy...";
+			b.form.SubmitName.value=t;
+			b.form.submit();
+		return true;
+		} else {
+			return false;
+		}
+	}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+<form name="ThirdPartyMod" action="##TP_CGI_URL##" method="post" onSubmit="return false;">
+<input type="hidden" name="action" value="ADMIN::THIRDPARTY::DoThirdParty" />
+<input type="hidden" name="SubmitName" value="" />
+<table style="">
+	<tr>
+		<th colspan="2" class="title">Modify Third Party</th>
+	</tr>
+
+	<tr>
+		<td>Abbreviation:</td>
+		<td>
+			<input type="hidden" name="ThirdPartyAbbv" 
+				value="##TP_ESC esc_html####TP_ThirdPartyAbbv####TP_ESC##" />
+			##TP_ThirdPartyAbbv##
+		</td>
+
+	<tr>
+	<tr>
+		<td>Name:</td>
+		<td>
+			<input type="text" name="ThirdPartyName" value="##TP_ESC esc_html####TP_ThirdPartyName####TP_ESC##" />
+		</td>
+	</tr>
+		<td></td>
+		<td>
+			<input type="button" value="Update" 
+				onClick="return fs(this,'ThirdPartyMod');" />
+			<input type="button" value="Back"
+				onclick='document.location="?action=ADMIN::THIRDPARTY::GoThirdParties"' />
+		</td>
+	</tr>
+</table>
+</form>
+
+</body>
+
+</html>

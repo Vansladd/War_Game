@@ -1,0 +1,74 @@
+<html>
+
+<!--$Id : $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Customer flags list</title>
+</head>
+
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+
+
+<body>
+##TP_PLAY error_rpt.html##
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=4 class=title>
+		Non-Functional Customer Flag Types
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Name</th>
+	<th nowrap class=colhead>Description</th>
+	<th nowrap class=colhead>Note</th>
+	<th nowrap class=colhead>Status</th>
+</tr>
+
+##TP_IF {[tpGetVar NumFlag] == 0 }##
+<tr>
+	<td colspan=4>
+	<b><i>No flag found</i></b>
+	</td>
+</tr>
+##TP_ELSE##
+
+	##TP_LOOP flag_idx {[tpGetVar NumFlag]}##
+
+	<tr class="##TP_TCL {string map { "A" "active" "S" "suspended" } [tpBindGet Status ] }##">
+		<td><a href="##TP_CGI_URL##?action=ADMIN::CUSTFLAG::GoAdminCustFlag&flag_name=##TP_Name##">##TP_Name##</a></td>
+		<td>##TP_Desc##</td>
+		<td>##TP_Note##</td>
+		<td align="right">##TP_Status##</td>
+	</tr>
+
+	##TP_ENDLOOP##
+
+##TP_ENDIF##
+
+##TP_IF {[op_allowed  ManageCustFlags]}##
+	<tr>
+		<th class=buttons colspan=4>
+		<form action="##TP_CGI_URL##" method=get>
+		<input type=button class="btn_def" value="Add New Customer Flag" onClick="return fs(this,'FlagAdd')">
+		</th>
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value=ADMIN::CUSTFLAG::GoAdminCustFlag>
+		</form>
+	</tr>
+##TP_ENDIF##
+
+</table>
+</body>
+
+</html>

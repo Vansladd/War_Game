@@ -1,0 +1,106 @@
+<html>
+<!-- $Id: cust_flags.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Customer Flags</title>
+</head>
+<script>
+function fs(b,t,a)
+{
+	/*-----------
+	b = button
+	t = tcl command
+	a = action
+	--------------*/
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.action.value=a;
+	b.form.submit();
+	return true;
+}
+
+</script>
+<body>
+<form action="##TP_CGI_URL##" method=get>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=2 >
+<tr>
+	<th colspan=3 class=title>
+	Customer Flags
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead width="100">Flag Name</th>
+	<th nowrap class=colhead width="255">Values</th>
+	<th nowrap class=colhead>Description</th>
+</tr>
+##TP_IF {$FLAGS(num_flags)} ##
+	##TP_LOOP fg_idx {$FLAGS(num_flags)}##
+	<tr>
+		<td valign="top"><b>##TP_flag_name##</b></td>
+		<td valign="top">
+			##TP_IF {$FLAGS([tpGetVar fg_idx],tbox)}##
+			##TP_TCL -quiet {tpSetVar fv_idx 0}##
+			##TP_IF {[tpBindGet flag_name] == "IP_Country"}##
+			<input type="text" name="F_##TP_flag_name##" value="##TP_flag_value##" disabled>
+			##TP_ELSE##
+			<input type="text" name="F_##TP_flag_name##" value="##TP_flag_value##">
+			##TP_ENDIF##
+
+			##TP_ELSE##
+
+			<select name="F_##TP_flag_name##" width="255" style="width:300px; FONT-size: 12px;">
+			##TP_LOOP fv_idx {$FLAGS([tpGetVar fg_idx],num_values)}##
+				##TP_IF {$FLAGS([tpGetVar fg_idx],[tpGetVar fv_idx],selected)}##
+					<option value="##TP_flag_value##" selected>##TP_flag_value##</option>
+				##TP_ELSE##
+					<option value="##TP_flag_value##">##TP_flag_value##</option>
+				##TP_ENDIF##
+			##TP_ENDLOOP##
+			</select>
+			##TP_ENDIF##
+		</td>
+		<td width="300" valign="top" align="justify">##TP_description##&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="3" align=center>
+				<font color=red size=-1>
+				<i>##TP_note##&nbsp;</i>
+				<HR Noshade Width="100%" Size="1">
+				</font>
+		</td>
+	</tr>
+	##TP_ENDLOOP##
+##TP_ELSE##
+	<td colspan="3" align=left>
+		<font color=white size=+1>
+		<b><i>No Customer Flags</i></b>
+		</font>
+	</td>
+##TP_ENDIF##
+<tr>
+	<th class=buttons >
+		##TP_IF {[op_allowed "UpdateCustomerFlags"]}##
+  		<input type=button class="btn_def" value="Update Customer Flags" onClick="return fs(this,'UpdCustFlags','ADMIN::CUST::DoCust')">
+		##TP_ENDIF##
+	</th>
+	<th class=buttons colspan="2">
+		<input type=button class="btn_def" value="Back" onClick="return fs(this,'GoCust','ADMIN::CUST::GoCust')">
+		##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+		<input type=button class="btn_def" value="View Audit History" onClick="return fs(this,'GoAudit')">
+		<input type=hidden name=AuditInfo value="CustomerFlag">
+		##TP_ENDIF##
+	</th>
+</tr>
+</table>
+
+
+<input type=hidden name=action value="">
+<input type=hidden name=CustId value="##TP_CustId##">
+<input type=hidden name=SubmitName value="">
+</form>
+</body>
+</html>

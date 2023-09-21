@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>External Game Bets Report</title>
+  </head>
+
+  <body bgcolor=white>
+
+  <table cellpadding=2 cellspacing=0 border=0 bgcolor=#cccccc>
+  <tr bgcolor=#10137c><th colspan=16 align=left><font color=white size+=1><b>Games</b> with draw date between ##TP_START## and ##TP_END##</font></th></tr>
+
+##TP_IF {[tpGetVar nrows]==0}##
+  <tr><th colspan=15>No games found in this date range</th></tr>
+##TP_ELSE##
+      <tr bgcolor=#999999>
+	<th align=left>Draw at</th>
+	<th align=left>Game Sort</th>
+	<th align=left>Comp No</th>
+	##TP_IF {[tpGetVar BREAKDOWN]==1}##
+	<th align=left>Channel</th>
+	<th align=left>Affiliate</th>
+	##TP_ENDIF##
+	<th align=left>Number Bets</th>
+	<th align=left>Total Stake</th>
+	<th align=left>Total Refunds</th>
+	<th align=left>Total Account Winnings (not free bets)</th>
+	<th align=left>No Refunds</th>
+	<th align=left>No Openbet Winners</th>
+	<th align=left>No Cheques</th>
+	<th align=left>No Free Bets</th>
+	<th align=left>No 'prizes'</th>
+	<th align=left>Open at</th>
+	<th align=left>Shut at (datum)</th>
+      </tr>
+
+      ##TP_LOOP idx {[tpGetVar nrows]}##
+      <tr>
+      <td>##TP_draw_at##</td>
+      <td>##TP_sort##</td>
+      <td><a href="##TP_CGI_URL##?action=GoEditGame&xgame_id=##TP_xgame_id##">##TP_comp_no##</a></td>
+	##TP_IF {[tpGetVar BREAKDOWN]==1}##
+      <td>##TP_source##</td>
+      <td>##TP_aff_id##</td>
+      ##TP_ENDIF##
+      <td>##TP_number_bets##</td>
+      <td>##TP_total_stake##</td>
+      <td>##TP_total_refunds##</td>
+      <td>##TP_total_winnings##</td>
+      <td>##TP_number_refunds##</td>
+      <td>##TP_number_paymethod_o##</td>
+      <td>##TP_number_paymethod_l##</td>
+      <td>##TP_number_paymethod_f##</td>
+      <td>##TP_number_paymethod_p##</td>
+      <td>##TP_open_at##</td>
+      <td>##TP_shut_at##</td>
+      </tr> 
+      ##TP_ENDLOOP##
+##TP_ENDIF##
+
+</table>
+  </body>
+</html>

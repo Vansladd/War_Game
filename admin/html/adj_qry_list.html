@@ -1,0 +1,243 @@
+<html>
+<!-- $Id: adj_qry_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function aj_tr(status) {
+		if (status=="N" || status=="P") {
+			document.write('<tr class=settled>');
+		} else if (status=="D") {
+			document.write('<tr class=suspended>');
+		} else if (status=="A") {
+			document.write('<tr class=hidden>');
+		} else {
+			document.write('<tr class=active>');
+ 		}
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+function write_aj_auth_post_decl(status, new_status, madj_id)
+{
+	if (status == "R" && new_status == "A") {
+		document.write('<input type=checkbox name='+new_status+'_'+madj_id+' value=Y ##TP_auth_check##></td>');
+	} else if (status == "A" && new_status == "P") {
+		document.write('<input type=checkbox name='+new_status+'_'+madj_id+' value=Y ##TP_post_check##></td>');
+	} else if (status != "N" && status != "P" && status != "D" && new_status == "D") {
+		document.write('<input type=checkbox name='+new_status+'_'+madj_id+' value=Y ##TP_decl_check##></td>');
+	} else {
+		document.write('&nbsp;');
+	}
+}
+
+function write_aj_post_decl(status, new_status, madj_id)
+{
+	if (status == "R" && new_status == "P") {
+		document.write('<input type=checkbox name='+new_status+'_'+madj_id+' value=Y ##TP_post_check##></td>');
+
+	} else if (status == "R" && new_status == "D"  )  {
+
+                 document.write('<input type=checkbox name='+new_status+'_'+madj_id+' value=Y ##TP_decl_check##></td>'); 
+        }
+            else {
+		document.write('&nbsp;');
+	}
+}
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+##TP_IF {[tpGetVar MaxDisplayAdj]}##
+<b>Warning: Can only display 1000 items</b>
+
+##TP_ENDIF##
+<form name="pmt_auth_form" action="##TP_CGI_URL##" method="post">
+<table cellspacing=0 cellpadding=2 border=0>
+	<input type="hidden" name="SubmitName" value="">
+	<input type="hidden" name="action" value="ADMIN::ADJ::do_adj_auth">
+	<!-- bind search options -->
+	<input type="hidden" name="SR_username" value="##TP_SR_username##">
+	<input type="hidden" name="SR_upper_username" value="##TP_SR_upper_username##">
+	<input type="hidden" name="SR_fname" value="##TP_SR_fname##">
+	<input type="hidden" name="SR_lname" value="##TP_SR_lname##">
+	<input type="hidden" name="SR_email" value="##TP_SR_email##">
+    <input type="hidden" name="SR_acct_no_exact" value="##TP_SR_acct_no_exact##">
+	<input type="hidden" name="SR_acct_no" value="##TP_SR_acct_no##">
+	<input type="hidden" name="SR_date_1" value="##TP_SR_date_1##">
+	<input type="hidden" name="SR_date_2" value="##TP_SR_date_2##">
+	<input type="hidden" name="SR_date_range" value="##TP_SR_date_range##">
+	<input type="hidden" name="SR_status" value="##TP_SR_status##">
+	<input type="hidden" name="SR_adj_type" value="##TP_SR_adj_type##">
+	<input type="hidden" name="SR_batch_ref_id" value="##TP_SR_batch_ref_id##">
+	<input type="hidden" name="SR_operator" value="##TP_SR_operator##">
+	<input type="hidden" name="SR_auth_operator" value="##TP_SR_auth_operator##">
+	<input type="hidden" name="SR_post_operator" value="##TP_SR_post_operator##">
+	<input type="hidden" name="SR_adj_subtype" value="##TP_SR_adj_subtype##">
+
+	<input type="hidden" name="op_susp" value="##TP_op_susp##">
+
+	<tr>
+		<th colspan=15 class=title>
+		##TP_XL {Admin.Adjustment_Search_Results.SEARCH_RESULTS}##
+		</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>Date</th>
+		<th nowrap class=colhead>Type</th>
+		<th nowrap class=colhead>Sub Type</th>
+		<th nowrap class=colhead>Status</th>
+		<th nowrap class=colhead>Username</th>
+		<th nowrap class=colhead>AccountNo</th>
+		<th nowrap class=colhead>CCY</th>
+		<th nowrap class=colhead>Amount</th>
+		<th nowrap class=colhead>Raised By</th>
+                ##TP_IF {[OT_CfgGet FUNC_DO_AUTH_MAN_ADJ 0]}##
+		<th nowrap class=colhead>Authorise</th>
+                 ##TP_ENDIF##  
+		<th nowrap class=colhead>Post</th>
+		<th nowrap class=colhead>Decline</th>
+		<th nowrap class=colhead>Description</th>
+		<th nowrap class=colhead>Details</th>
+		<th nowrap class=colhead>Link</th>
+	</tr>
+	##TP_IF {[tpGetVar NumAdjs 0]==0}##
+	<tr>
+		<td colspan=15 align=center>
+		No adjustments match your search criteria
+		</td>
+	</tr>
+	##TP_ELSE##
+	<input type=hidden name=NumAdjs value="##TP_TCL {tpGetVar NumAdjs}##">
+	##TP_LOOP adj_idx {[tpGetVar NumAdjs]}##
+	<input type=hidden name="row_##TP_TCL {tpGetVar adj_idx}##" value="##TP_madj_id##">
+	<input type=hidden name="pay_mthd_##TP_TCL {tpGetVar adj_idx}##" value="##TP_PmtMthd##">
+	<script>aj_tr("##TP_status##")</script>
+		<td nowrap>##TP_Date##</td>
+		<td nowrap>##TP_TypeDesc##</td>
+		<td nowrap>##TP_SubTypeDesc##</td>
+		<td nowrap>##TP_status##</td>
+		##TP_IF {[tpGetVar PERM_ViewCustInfo 0]}##
+		<td nowrap>##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet Elite] != "Y")}##<a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_Username##</a>##TP_ELSE## * ##TP_ENDIF##</td>
+		##TP_ELSE##
+		##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet Elite] != "Y")}## ##TP_Username## ##TP_ELSE## * ##TP_ENDIF##
+		##TP_ENDIF##
+		<td nowrap>##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet Elite] != "Y")}##<a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_AcctNo##</a>##TP_ELSE## ##TP_AcctNo## ##TP_ENDIF##</td>
+		<td nowrap>##TP_CCYCode##</td>
+		<td nowrap align=right>##TP_Amount##</td>
+        	<td nowrap align=left>##TP_RaisedBy##</td>
+        ##TP_IF {[OT_CfgGet FUNC_DO_AUTH_MAN_ADJ 0]}##
+
+		##TP_IF {[op_allowed ManAdjAuth]}##
+	   	   <td nowrap align=center><script>write_aj_auth_post_decl('##TP_status##','A','##TP_madj_id##');</script></td>
+		##TP_ELSE##
+		    <td nowrap align=left>&nbsp;</td>
+		##TP_ENDIF##
+
+		##TP_IF {[op_allowed ManAdjPost]}##
+   		    <td nowrap align=center><script>write_aj_auth_post_decl('##TP_status##','P','##TP_madj_id##');</script></td>
+		##TP_ELSE##
+ 		     <td nowrap align=left>&nbsp;</td>
+		##TP_ENDIF##
+
+		##TP_IF {[op_allowed ManAdjDecline]}##
+		     <td nowrap align=center><script>write_aj_auth_post_decl('##TP_status##','D','##TP_madj_id##');</script></td>
+		##TP_ELSE##
+ 		     <td nowrap align=left>&nbsp;</td>
+		##TP_ENDIF##
+
+        ##TP_ELSE##
+
+                ##TP_IF {[op_allowed ManAdjAuth]}##
+		<td nowrap align=center><script>write_aj_post_decl('##TP_status##','P','##TP_madj_id##');</script></td>
+		##TP_ELSE##
+		<td nowrap align=left>&nbsp;</td>
+		##TP_ENDIF##
+
+		##TP_IF {[op_allowed ManAdjDecline]}##
+		<td nowrap align=center><script>write_aj_post_decl('##TP_status##','D','##TP_madj_id##');</script></td>
+		##TP_ELSE##
+		<td nowrap align=left>&nbsp;</td>
+		##TP_ENDIF##
+
+        ##TP_ENDIF##
+		<td nowrap align=left>##TP_Desc##&nbsp;</td>
+		<td nowrap align=left><a href="##TP_CGI_URL##?action=ADMIN::TXN::MADJ::GoTxn&op_ref_key=MADJ&op_ref_id=##TP_madj_id##&op_type_code=MAN">view</a></td>
+		##TP_IF {[tpBindGet RefKey] == "BET"}##
+			<td nowrap align=left><a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_RefId##">View Bet&nbsp;</td>
+		##TP_ELSEIF {[tpBindGet RefKey] == "XBET"}##
+			<td nowrap align=left><a href="##TP_CGI_URL##?action=ADMIN::BET::GoXGameReceipt&BetId=##TP_RefId##">View Bet&nbsp;</td>
+		##TP_ELSEIF {[tpBindGet RefKey] == "POOLS"}##
+			<td nowrap align=left><a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_RefId##">View Bet&nbsp;</td>
+		##TP_ELSEIF {[tpBindGet RefKey] == "PMT"}##
+			<td nowrap align=left><a href="##TP_CGI_URL##?action=ADMIN::TXN::GPMT::GoPmt&pmt_id=##TP_RefId##">View Payment&nbsp;</td>
+		##TP_ELSE##
+			<td nowrap align=left>&nbsp;</td>
+		##TP_ENDIF##
+	</tr>
+	##TP_ENDLOOP##
+	<tr>
+		<th colspan=11 class="buttons">
+			##TP_IF {[op_allowed ManAdjAuth] && [OT_CfgGet FUNC_DO_AUTH_MAN_ADJ 0] }##
+			<input type=button class="btn_def" value="##TP_XL {Admin.Adjustment_Search_Results.ADJUSTMENT_AUTHORISE}##" onClick="return fs(this,'Authorise')">
+			##TP_ENDIF##
+			##TP_IF {[op_allowed ManAdjPost] }##
+			<input type=button class="btn_def" value="##TP_XL {Admin.Adjustment_Search_Results.ADJUSTMENT_POST}##" onClick="return fs(this,'Post')">
+			##TP_ENDIF##
+			##TP_IF {[op_allowed ManAdjDecline]}##
+			<input type=button class="btn_def" value="##TP_XL {Admin.Adjustment_Search_Results.ADJUSTMENT_DECLINE}##" onClick="return fs(this,'Decline')">
+			##TP_ENDIF##
+		</th>
+		<th colspan=7 class="buttons" align=right>
+			<select name="MarkAction">
+				<script>write_select('U',
+										##TP_IF {[op_allowed ManAdjAuth]}##
+											'A','Mark Authorised',
+										##TP_ENDIF##
+										##TP_IF {[op_allowed ManAdjPost]}##
+											'P','Mark Posted',
+										##TP_ENDIF##
+										##TP_IF {[op_allowed ManAdjDecline]}##
+											'D','Mark Declined',
+										##TP_ENDIF##
+										'U','Uncheck All')</script>
+			</select>
+			<input type=button class="btn_def" value="Go" onClick="return fs(this,'UpdMarks')">
+		</th>
+	</tr>
+	##TP_ENDIF##
+</table>
+</form>
+<br>
+<br>
+
+<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th colspan=15 class=title>
+		##TP_XL {Admin.Adjustment_Search_Results.SEARCH_RESULTS}##
+		</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>Currency</th>
+		<th nowrap class=colhead>Pending</th>
+		<th nowrap class=colhead align=right>Total</th>
+	</tr>
+	##TP_LOOP s_idx {[tpGetVar SUM_nrows]}##
+	<tr>
+		<th nowrap>##TP_SUM_ccy##</th>
+		<th nowrap>##TP_SUM_pending##</th>
+		<th nowrap align=right>##TP_SUM_total##</th>
+	</tr>
+	##TP_ENDLOOP##
+</table>
+</body>
+</html>

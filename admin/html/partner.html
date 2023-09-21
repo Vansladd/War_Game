@@ -1,0 +1,80 @@
+<html>
+<!-- $Id: partner.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Partnership Flags</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+    return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+    <th colspan=2 class=title>
+    ##TP_PartnerCode## Details
+    </th>
+</tr>
+<form ACTION="##TP_CGI_URL##" method=get onSubmit="return validate(this);">
+##TP_IF {[tpGetVar opAdd 0]}##
+<tr>
+    <td class=caption>Partnership Code</td>
+    <td>
+    <input type=text name="PartnerCode" value="" size=4 maxlength=4>
+    </td>
+</tr>
+##TP_ENDIF##
+<tr>
+    <td class=caption>Description</td>
+    <td>
+    <input type="text" name="PartnerDescription" value="##TP_PartnerDescription##" size=60>
+    </td>
+</tr>
+##TP_IF {[tpGetVar FuncChannels]}##
+    <tr>
+        <td class=caption>Channels</td>
+        <td>
+        ##TP_PLAY chan_sel.html##
+        </td>
+    </tr>
+##TP_ENDIF##
+<tr>
+    <td class=caption>Disporder</td>
+    <td>
+    <input type="text" name="PartnerDisporder" value="##TP_PartnerDisporder##" size=5>
+    </td>
+</tr>
+<tr>
+    <th colspan=2 class=buttons>
+    ##TP_IF {[op_allowed ManagePartner]}##
+        ##TP_IF {[tpGetVar opAdd 0]}##
+            <input type=button class="btn_def" value="Add Partnership Flag" onClick="return fs(this,'PartnerAdd')">
+        ##TP_ELSE##
+            <input type=hidden name=PartnerCode value="##TP_PartnerCode##">
+            <input type=button class="btn_def" value="Modify Partnership Flag" onClick="return fs(this,'PartnerMod')">
+            <input type=button class="btn_def" value="Delete Partnership Flag" onClick="return fs(this,'PartnerDel')">
+        ##TP_ENDIF##
+    ##TP_ENDIF##
+    <input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+    </th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::PARTNER::DoPartner">
+</form>
+</table>
+</body>
+</html>
+

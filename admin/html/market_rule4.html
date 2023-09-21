@@ -1,0 +1,171 @@
+<html>
+<!-- $Id: market_rule4.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Rule 4 Deductions</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+
+function validate(f)
+{
+	return true;
+}
+
+var rule4_id_list = "";
+
+function write_rule4_id_list()
+{
+	document.write('<input type="hidden" name="Rule4IdList" value="'
+		+ rule4_id_list + '">\n');
+}
+
+function write_input(name,id,val,size,max)
+{
+	document.write('<input type="text" name="' + name + '_' + id +
+		'" size=' + size + ' max=' + max + ' value="' + val + '">\n');
+}
+
+function write_hidden(name,id,val)
+{
+	document.write('<input type="hidden" name="' + name + '_' + id +
+		'" value="' + val + '">\n');
+}
+
+function write_rule4_line(id,seln,applies_to,is_valid,date_lo,date_hi,amount,reason)
+{
+	if (rule4_id_list != "") {
+		rule4_id_list += ",";
+	}
+	rule4_id_list += id;
+
+	var name_t="Rule4Type_" + id;
+	var name_v="Rule4IsValid_" + id;
+	var name_s="Rule4Seln_" + id;
+
+	document.write('<tr>\n');
+	document.write('<td>\n');
+	document.write('<select name="'+name_t+'">\n');
+	write_select(applies_to,'L','Live price','S','SP');
+	document.write('</select>\n');
+	document.write('</td>\n');
+	document.write('<td>\n');
+	document.write('<select name="'+name_v+'">\n');
+	write_select(is_valid,'Y','Yes','N','No');
+	document.write('</select>\n');
+	document.write('</td>\n');
+	document.write('<td nowrap>\n');
+	write_input('Rule4DateLo',id,date_lo,19,19);
+	document.write('-');
+	write_input('Rule4DateHi',id,date_hi,19,19);
+	document.write('</td>\n');
+	document.write('<td>\n');
+	write_input('Rule4Amount',id,amount,2,2);
+	document.write('</td>\n');
+	document.write('<td>\n');
+	write_input('Rule4Reason',id,reason,40,80);
+	document.write('</td>\n');
+	document.write('</tr>\n');
+
+	write_hidden('h_Rule4Type',   id, applies_to);
+	write_hidden('h_Rule4IsValid',id, is_valid);
+	write_hidden('h_Rule4Seln',   id, seln);
+	write_hidden('h_Rule4DateLo', id, date_lo);
+	write_hidden('h_Rule4DateHi', id, date_hi);
+	write_hidden('h_Rule4Amount', id, amount);
+	write_hidden('h_Rule4Reason', id, reason);
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+ 
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<td colspan=6 class=buttons>
+	##TP_MktDesc## market for ##TP_EvDesc##
+	</td>
+</tr>
+
+<form ACTION="##TP_CGI_URL##" method=post onSubmit="return validate(this);">
+
+<tr>
+	<!---
+	<th class=colhead>Selection</th>
+	--->
+	<th class=colhead>Price Type</th>
+	<th class=colhead>Valid ?</th>
+	<th class=colhead>Time Range</font></th>
+	<th class=colhead>Deduction</th>
+	<th class=colhead>Reason</th>
+</tr>
+<script>
+##TP_LOOP rule4_idx {[tpGetVar NumRule4s]}##
+	write_rule4_line(
+		"##TP_Rule4Id##",
+		"##TP_Rule4Seln##",
+		"##TP_Rule4Type##",
+		"##TP_Rule4IsValid##",
+		"##TP_Rule4DateLo##",
+		"##TP_Rule4DateHi##",
+		"##TP_Rule4Amount##",
+		"##TP_Rule4Reason##");
+##TP_ENDLOOP##
+</script>
+
+<script>
+	write_rule4_id_list();
+</script>
+
+<tr>
+	<td>
+	<select name="NewRule4Type">
+		<option value="L">Live price</option>
+		<option value="S">SP</option>
+	</select>
+	</td>
+	<td>
+	<select name="NewRule4IsValid">
+		<option value="Y">Yes</option>
+		<option value="N">No</option>
+	</select>
+	</td>
+	<td nowrap>
+	<input type="text" name="NewRule4DateLo" size=19 value="">
+	-
+	<input type="text" name="NewRule4DateHi" size=19 value="">
+	</td>
+	<td>
+	<input type="text" name="NewRule4Amount" size=2 value="">
+	</td>
+	<td>
+	<input type="text" name="NewRule4Reason" size=40 max=80 value="">
+	</td>
+</tr>
+<tr>
+	<th colspan=6 class=buttons>
+	<input type=hidden name="EvId"   value="##TP_EvId##">
+	<input type=hidden name="MktId"  value="##TP_MktId##">
+	##TP_IF {[op_allowed SetResults]}##
+		<input type=button class="btn_def" value="Update Rule 4 Deductions" onClick="return fs(this,'UpdRule4')">
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::MARKET::DoMktRule4">
+</form>
+</table>
+<p>
+To delete a rule 4 deduction, blank the deduction field and submit the form.
+</p>
+</body>
+</html>

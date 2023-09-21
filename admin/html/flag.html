@@ -1,0 +1,120 @@
+<html>
+<!--$Id: flag.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Update Flag</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+
+function fs(b,t) {
+
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	##TP_Name## Details
+	</th>
+</tr>
+<form ACTION="##TP_CGI_URL##" method=get>
+
+##TP_IF {[tpGetVar add_flag]}##
+
+<tr>
+	<td class=caption>Name</td>
+	<td>
+	<input type="text" name="flag_name" value="##TP_Name##" size=16>
+	</td>
+</tr>
+
+##TP_ENDIF##
+
+<tr>
+	<td class=caption>Description (max 255 chars)</td>
+	<td>
+	<textarea name="description" rows=4 cols=65 wrap=virtual>##TP_Desc##</textarea>
+	</td>
+</tr>
+
+<tr>
+	<td class=caption>Note (max 255 chars)</td>
+	<td>
+	<textarea name="note" rows=4 cols=65 wrap=virtual>##TP_Note##</textarea>
+	</td>
+</tr>
+
+<tr>
+	<td class=caption>Status</td>
+	<td>
+	    <select name="status">
+	    <script>
+	    write_select('##TP_Status##','A','Active','S','Suspended')
+	    </script>
+	    </select>
+	 </td>
+</tr>
+
+<tr>
+	<th colspan=2 class=title>
+		Possible Values
+	</th>
+</tr>
+
+##TP_IF {[tpGetVar nbVal 0] > 0 }##
+
+	##TP_LOOP val_idx {[tpGetVar nbVal]}##
+		<tr>
+		##TP_IF {[tpBindGet Editable]}##
+		<td><a href="##TP_CGI_URL##?action=ADMIN::CUSTFLAG::GoAdminCustFlagVal&flag_name=##TP_Name##&flag_value=##TP_Value##&description=##TP_Description##">##TP_Value##</a></td>
+		##TP_ELSE##
+		<td>##TP_Value##</td>
+		##TP_ENDIF##
+		<td>##TP_Description##</td>
+		</tr>
+
+	##TP_ENDLOOP##
+##TP_ELSE##
+
+	<tr>
+	<td colspan=2>
+	<b><i>Free text value</i></b>
+	</td>
+	</tr>
+
+##TP_ENDIF##
+
+
+
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed ManageCustFlags]}##
+		##TP_IF {[tpGetVar add_flag 0]}##
+			<input type=button class="btn_def" value="Add flag" onClick="return fs(this,'AddFlag')">
+		##TP_ELSE##
+			<input type=hidden name=flag_name value="##TP_Name##">
+			<input type=button class="btn_def" value="Modify Flag" onClick="return fs(this,'UpdFlag')">
+			<input type=button class="btn_def" value="Add a value" onClick="return fs(this,'AddValue')">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+
+
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CUSTFLAG::DoAdminCustFlag">
+</form>
+</table>
+</body>
+
+</html>

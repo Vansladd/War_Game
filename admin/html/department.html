@@ -1,0 +1,86 @@
+<html>
+<!-- $Id: department.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Department</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language="Javascript">
+function validate(f,t)
+{
+	var b = document.forms[0];
+	
+	var err="";
+
+	if (err != "") {
+		alert(err);
+	} else {
+		fs(f,t);
+	}
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	##TP_DeptCode## Department Details
+	</th>
+</tr>
+<form ACTION="##TP_CGI_URL##" method=get>
+##TP_IF {[tpGetVar opAdd 0]}##
+<tr>
+	<td class=caption>Code</td>
+	<td>
+	<input type=text name="DeptCode" value="" size=4>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<td class=caption>Name</td>
+	<td>
+	<input type="text" name="DeptName" value="##TP_DeptName##" size=40>
+	</td>
+</tr>
+##TP_IF {[OT_CfgGet TB_EV_DB 0]}##
+<tr>
+	<td class=caption>Event DB URL</td>
+	<td>
+	<input type="text" name="DeptEvDbUrl" value="##TP_DeptEvDbUrl##" size=40>
+	</td>
+</tr>
+##TP_ELSE##
+<input type="hidden" name="DeptEvDbUrl" value="">
+##TP_ENDIF##
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed ManageLDT]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=button class="btn_def" value="Add Department" onClick="validate(this,'DeptAdd');">
+		##TP_ELSE##
+			<input type=hidden name="DeptCode" value="##TP_DeptCode##">
+			<input type=button class="btn_def" value="Modify Department" onClick="validate(this,'DeptMod');">
+			<input type=button class="btn_def" value="Delete Department" onClick="fs(this,'DeptDel');">
+			##TP_IF {![tpGetVar opAdd 0]}##
+				<input type=button class="btn_def" value="Permissions" onClick="fs(this,'DeptPerm');">
+			##TP_ENDIF##
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="fs(this,'Back');">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::LDT::DoDept">
+</form>
+</table>
+</body>
+</html>

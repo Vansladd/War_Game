@@ -1,0 +1,152 @@
+<html>
+<!-- $Id: pmt_intercept_ccy.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<meta http-equiv="Expires" content="0">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Payment Intercept Setup</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function checkFs(b,q,a,s)
+{
+		if(confirm(q))
+		{
+			return afs(b,a,s);
+		}
+		else 
+		{
+		  return false;
+		}
+}
+
+function afs(b,a,s)
+{
+		b.form.action.value = a;
+		return fs(b,s);
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+
+<!-- Error handler -->
+##TP_PLAY error_rpt.html##
+
+<!-- Intercept Currencies -->
+
+<form action="##TP_CGI_URL##" method=get>
+	
+	<input type=hidden name=SubmitName>
+	<input type=hidden name=action value="ADMIN::PMTINTCPT::DoPmtInterceptCCY">
+	
+	<table cellspacing=0 cellpadding=2 border=0>
+		<tr>
+			<th class=title colspan=7>
+			<font color=white size=+1>Payment Intercept CCY</font>
+			</th>
+		</tr>
+
+		<tr>
+			<td><b>CCY Code</b></td>
+			##TP_IF {![op_allowed ManagePmtIntercepts]}##
+				<td>##TP_ccy_code##</td>
+			##TP_ELSEIF {[tpGetVar operation] == "Add"}##
+				<td><input type=text name=ccy_code></td>
+			##TP_ELSE##
+				<td><input type=hidden name=ccy_code value="##TP_ccy_code##">##TP_ccy_code##</td>
+			##TP_ENDIF##			
+		</tr>
+
+		<tr>
+			<td><b>Status</b></td>
+			##TP_IF {![op_allowed ManagePmtIntercepts]}##
+				<td>##TP_status##</td>
+			##TP_ELSE##
+				<td><select name=status><script>write_select('##TP_status##','Y','Y','N','N')</script></select></td>
+			##TP_ENDIF##
+		</tr>
+
+		<tr>
+			<td><b>Intercept All</b></td>
+			##TP_IF {![op_allowed ManagePmtIntercepts]}##
+				<td>##TP_int_all##</td>
+			##TP_ELSE##
+				<td><select name=int_all><script>write_select('##TP_int_all##','N','None','R','Referrals','D','Declines','A','All')</script></select></td>
+			##TP_ENDIF##			
+		</tr>
+
+		<tr>
+			<td><b>Process Referred Pmt Email</b></td>
+			##TP_IF {![op_allowed ManagePmtIntercepts]}##
+				<td>##TP_refer_email##</td>
+			##TP_ELSEIF {[tpGetVar operation] == "Add"}##
+				<td><input type=text name=refer_email></td>
+			##TP_ELSE##
+				<td><input type=text name=refer_email value="##TP_refer_email##" size=40></td>
+			##TP_ENDIF##			
+		</tr>
+
+		<tr>
+			<td><b>Process Declined Pmt Email</b></td>
+			##TP_IF {![op_allowed ManagePmtIntercepts]}##
+				<td>##TP_decline_email##</td>
+			##TP_ELSEIF {[tpGetVar operation] == "Add"}##
+				<td><input type=text name=decline_email></td>
+			##TP_ELSE##
+				<td><input type=text name=decline_email value="##TP_decline_email##" size=40></td>
+			##TP_ENDIF##			
+		</tr>
+
+		<tr>
+			<td><b>Customer Refused Process Email</b></td>
+			##TP_IF {![op_allowed ManagePmtIntercepts]}##
+				<td>##TP_refused_email##</td>
+			##TP_ELSEIF {[tpGetVar operation] == "Add"}##
+				<td><input type=text name=refused_email></td>
+			##TP_ELSE##
+				<td><input type=text name=refused_email value="##TP_refused_email##" size=40></td>
+			##TP_ENDIF##			
+		</tr>
+
+		<tr>
+			<td><b>Sender Address</b></td>
+			##TP_IF {![op_allowed ManagePmtIntercepts]}##
+				<td>##TP_email_sender##</td>
+			##TP_ELSEIF {[tpGetVar operation] == "Add"}##
+				<td><input type=text name=email_sender></td>
+			##TP_ELSE##
+				<td><input type=text name=email_sender value="##TP_email_sender##" size=40></td>
+			##TP_ENDIF##			
+		</tr>
+
+		<tr>
+			<th colspan=2 class=buttons>
+			##TP_IF {![op_allowed ManagePmtIntercepts]}##
+			##TP_ELSEIF {[tpGetVar operation] == "Add"}##
+				<input type=button class="btn_def" value="Add CCY" onClick="return afs(this,'ADMIN::PMTINTCPT::DoPmtInterceptCCY','Add')">
+			##TP_ELSEIF {[tpGetVar operation] == "Upd"}##
+				<input type=button class="btn_def" value="Update CCY" onClick="return afs(this,'ADMIN::PMTINTCPT::DoPmtInterceptCCY','Upd')">
+				<input type=button class="btn_def" value="View / Modify Intercepts" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtInterceptDefn','All')">
+			##TP_ENDIF##			
+				<input type=button class="btn_def" value="Back" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtIntercept','')">
+			</th>		
+		</tr>
+
+	</table>
+</form>
+
+<p>
+<b>NOTE:</b> The <b>Intercept All</b> enables intercepts to be defined across all banks and countries for this currency. It can take the following values:
+<ul>
+    <li> <b>None</b> - Use only the intercept definition matrix for both referrals and declines.
+    <li> <b>Referrals</b> - Intercept all referrals, regardless of bank and country. Use the intercept definition matrix for declines.
+    <li> <b>Declines</b> - Intercept all declines, regardless of bank and country. Use the intercept definition matrix for referrals.
+    <li> <b>All</b> - Intercept all declines and referrals, regardless of bank and country. The intercept definition matrix will not be used.
+</ul>

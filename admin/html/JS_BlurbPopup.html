@@ -1,0 +1,18 @@
+<script language=javascript>
+
+function blurb_popup (id, sort) {
+
+	if (id == "") {
+		alert("No Id specified, does the "+sort+" exist.\n"+
+			"You must create it before you can add a blurb");
+		return;
+	}
+
+	window.open("##TP_CGI_URL##?action=ADMIN::BLURB::do_blurb&ref_id="
+	+id+"&sort="+sort,
+	"Blurb",
+	"toolbar=no,location=no,directories=no,menubar=no,resizable=yes,width=530,height=200");
+}
+
+</script>
+

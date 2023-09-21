@@ -1,0 +1,19 @@
+<html>
+	<head>
+		<!-- $Id: bir_refresh.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	</head>
+	<body onload="refresh_bir();">
+		<script language="javascript" type="text/javascript">
+			<!--
+				function refresh_bir() {
+					##TP_IF {[tpBindGet bir_idx] != ""}##
+						window.opener.refreshSameLoc("##TP_BIRTI_URL##?action=go_event&ev_id=##TP_EvId##&bir_idx=##TP_bir_idx##");
+					##TP_ELSE##
+						window.opener.refreshSameLoc();
+					##TP_ENDIF##
+					window.close();
+				}
+			//-->
+		</script>
+	</body>
+</html>

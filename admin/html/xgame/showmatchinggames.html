@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+	<!-- $Id: showmatchinggames.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+    <title>Update Matching Games</title>
+    	##TP_PLAY JS_WriteSelect.html##
+    <script language=JavaScript>
+		function fs(b,t)
+		{
+			b.disabled = true;
+			b.value = "Busy...";
+			b.form.SubmitName.value=t;
+			b.form.submit();
+			return true;
+		}
+
+
+		function confirmation(b,t) {
+			if (t == 'Activate All'){
+				var check = confirm("Are you sure you want to activate all competitions?")
+			} else if (t == 'Suspend All'){
+				var check = confirm("Are you sure you want to suspend all competitions?")
+			} else {
+				var check = 0
+			}
+			if (check){
+				fs(b,t)
+			}
+		}
+	</script>
+  </head>
+
+  <body bgcolor=white>
+
+##TP_PLAY msg_rpt.html##
+
+    <form action="##TP_CGI_URL##" method=post name="GoEditGameStatus">
+      <table cellspacing=0 cellpadding=2 border=0 bgcolor=#cccccc>
+
+      <tr bgcolor=#10137c>
+	      <th align=left colspan=6><font color=white size=+1>Pools/Lottery game search results for ##TP_DESC##</font></th>
+      </tr>
+
+      ##TP_IF {[tpGetVar nrows]==0}##
+      <tr bgcolor=#999999>
+      <td colspan=5>No games found matching search criteria</td>
+      </tr>
+      ##TP_ELSE##
+      <tr bgcolor=#99999>
+      <th align=left>Comp No.</th>
+      <th align=left>Game Type</th>
+      <th align=left>Status</th>
+      <th align=left>Draw Time</th>
+      <th align=left>Open Time</th>
+      <th align=left>Close Time</th>
+      </tr>
+      ##TP_LOOP idx {[tpGetVar nrows]}##
+      <tr>
+      <td><a href="##TP_CGI_URL##?action=GoEditGame&xgame_id=##TP_xgame_id##">##TP_comp_no##<a>
+      <input type=hidden name="xgame_id_##TP_TCL {tpGetVar idx}##" value="##TP_xgame_id##">
+      </td>
+      <td>##TP_name##</td>
+
+	  ##TP_IF {[tpGetVar Update 0]}##
+      <td>
+		<select name="game_status_##TP_TCL {tpGetVar idx}##">
+			<script>
+				write_select("##TP_status##","S","Suspended",
+											"A","Active",
+											"V","Void");
+			</script>
+		</select>
+		<input type=hidden name="old_game_status_##TP_TCL {tpGetVar idx}##" value="##TP_status##">
+      </td>
+      ##TP_ELSE##
+      <td>##TP_status##</td>
+      ##TP_ENDIF##
+
+      <td>##TP_draw_at##</td>
+      <td>##TP_open_at##</td>
+      <td>##TP_shut_at##</td>
+      <tr>
+      ##TP_ENDLOOP##
+      ##TP_ENDIF##
+
+      </table>
+      ##TP_IF {[tpGetVar Update 0]}##
+      <br />
+
+      <input type=button value="Update" onClick="return fs(this,'Update All')">
+      <input type=button value="Activate All" onClick="return confirmation(this,'Activate All')">
+      <input type=button value="Suspend All" onClick="return confirmation(this,'Suspend All')">
+      <input type=hidden name="nrows" value="##TP_TCL {tpGetVar nrows}##">
+      <input type=hidden name="EarliestDate" value="##TP_EarliestDate##">
+      <input type=hidden name="LatestDate" value="##TP_LatestDate##">
+      <input type=hidden name="sort" value="##TP_sort##">
+      <input type=hidden name="SelectStatus" value="##TP_SelectStatus##">
+      <input type=hidden name=SubmitName value="">
+	  <input type=hidden name=action value="GoEditGameStatus">
+	  ##TP_ENDIF##
+  </form>
+
+  </body>
+</html>
+

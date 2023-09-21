@@ -1,0 +1,275 @@
+<html>
+<!--$Id: qbet.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Update Streaming Qualify Group</title>
+##TP_PLAY JS_WriteSelect.html##
+
+<script language="javascript">
+
+function fs(b,t) {
+
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+}
+
+function check_beton_sub(b,t) {
+
+	if (b.form.add_qbetsub_ob_level.value != 'EVENT') {
+		alert('Subscriptions can only be linked to events');
+		return
+	}
+
+	fs(b,t);
+}
+
+
+function go_dd_popup(_type) {
+	popup = window.open("##TP_CGI_URL##?action=ADMIN::BESTBETS::go_bbet_dd&index=" + _type,
+		"popup",
+		"toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,height=400,width=400");
+	popup.focus();
+}
+
+
+function go_ccy_popup(qbet_id) {
+	popup = window.open("##TP_CGI_URL##?action=ADMIN::PERFORM::GoVSQualifyBetCCy&qlfy_bet_id=" + qbet_id,
+		"popup",
+		"toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,height=400,width=400");
+	popup.focus();
+}
+
+function set_vals(level, id, name, bet_type) {
+
+	if (bet_type == 'bet_on') {
+		document.bet_on_form.bet_on_label.value = name;
+		document.bet_on_form.add_qbet_ob_level.value = level;
+		document.bet_on_form.add_qbet_ob_id.value = id;
+		document.bet_on_form.add_qbet_name.value = name;
+		return
+	}
+
+	if (bet_type == 'bet_on_sub') {
+		document.bet_on_sub_form.bet_on_sub_label.value = name;
+		document.bet_on_sub_form.add_qbetsub_ob_level.value = level;
+		document.bet_on_sub_form.add_qbetsub_ob_id.value = id;
+		document.bet_on_sub_form.add_qbetsub_name.value = name;
+		return
+	}
+}
+
+function clear_bet(bet_type) {
+
+	if (bet_type == 'bet_on') {
+		document.bet_on_form.bet_on_label.value = '';
+		document.bet_on_form.add_qbet_ob_level.value = '';
+		document.bet_on_form.add_qbet_ob_id.value = '';
+		document.bet_on_form.add_qbet_name.value = '';
+	}
+
+	if (bet_type == 'bet_on_sub') {
+		document.bet_on_sub_form.bet_on_sub_label.value = '';
+		document.bet_on_sub_form.add_qbetsub_ob_level.value = '';
+		document.bet_on_sub_form.add_qbetsub_ob_id.value = '';
+		document.bet_on_sub_form.add_qbetsub_name.value = '';
+	}
+
+}
+
+
+function ccy_amount_submit(str) {
+
+	document.qbet_main_form.ccy_amount_change.value = 1;
+	document.qbet_main_form.ccy_amount_str.value = str;
+
+}
+
+</script>
+
+</head>
+
+<body>
+##TP_PLAY error_rpt.html##
+
+##TP_COMMENT {
+	===========================================================
+	Main group details
+	===========================================================
+}##
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	##TP_qbet_name## Streaming Group Details
+	</th>
+</tr>
+
+<form ACTION="##TP_CGI_URL##" method=get name="qbet_main_form">
+<tr>
+	<td class="caption">Name</td>
+	<td>
+	<input type="text" name="qbet_name" value="##TP_qbet_name##" size=64>
+	</td>
+</tr>
+
+<tr>
+	<td class="caption">Status</td>
+	<td>
+		<select name="qbet_status">
+	    	<script>
+				write_select('##TP_qbet_status##','A','Active','S','Suspended')
+	    	</script>
+	    </select>
+	</td>
+</tr>
+
+<tr>
+	<td class="caption">Qualification Amount</td>
+	<td>
+	<input type="text" name="qbet_amount" value="##TP_qbet_amount##" size=16>
+	</td>
+</tr>
+
+##TP_IF {[tpGetVar QBET_ID -1] != -1}##
+<tr>
+	<td class="caption">Amount per ccy</td>
+	<td><a href="javascript:go_ccy_popup('##TP_TCL {tpBufWrite [tpGetVar QBET_ID -1]}##')">View</a></td>
+</tr>
+##TP_ENDIF##
+
+
+<tr>
+	<th colspan=2 class=buttons>
+		##TP_IF {[tpGetVar QBET_ID -1] != -1}##
+			<input type=button class="btn_def" value="Modify" onClick="return fs(this,'UpdVSQualifyBet')">
+			<input type=hidden name=qlfy_bet_id value="##TP_TCL {tpBufWrite [tpGetVar QBET_ID]}##">
+		##TP_ELSE##
+			<input type=button class="btn_def" value="Add" onClick="return fs(this,'AddVSQualifyBet')">
+		##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+
+<input type=hidden name=ccy_amount_change value=0>
+<input type=hidden name=ccy_amount_str    value="">
+
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::PERFORM::DoVSQualifyBet">
+</form>
+</table>
+
+##TP_COMMENT {
+	=======================================================
+	Events/Types/Classes in that streaming group
+	=======================================================
+}##
+##TP_IF {[tpGetVar QBET_ID -1] != -1}##
+<table border=0 cellspacing=0 cellpadding=3>
+<form name="bet_on_form" action="##TP_CGI_URL##" method="POST">
+<tr>
+	<th colspan=3 class=title>
+		Bets in ##TP_qbet_name## Group
+	</th>
+</tr>
+
+<tr>
+	<th class=colhead>Name</th>
+	<th class=colhead colspan=2>Delete</th>
+</tr>
+
+##TP_LOOP qbeton_idx {[tpGetVar num_qbeton 0]}##
+<tr>
+	<td>##TP_qbeton_qlfy_bet_on_name##</td>
+	<td colspan=2><input type=button class="btn_def" value="Delete Bet" onClick="this.form.delete_qbeton_id.value=##TP_qbeton_qlfy_bet_on_id##; return fs(this,'DeleteVSQualifyBetOn');"></td>
+</tr>
+##TP_ENDLOOP##
+
+
+<tr>
+	<td><input type="text" disabled="true" name="bet_on_label"/></td>
+	<td><a href="javascript:go_dd_popup('bet_on')">Add bet</a></td>
+	<td><a href="javascript:clear_bet('bet_on');">Clear</a></td>
+</tr>
+
+<tr>
+	<th colspan=3 class=buttons>
+		<input type=button class="btn_def" value="Add Bet" onClick="return fs(this,'AddVSQualifyBetOn')">
+		<input type=hidden name=add_qbet_ob_level value="">
+		<input type=hidden name=add_qbet_ob_id value="">
+		<input type=hidden name=add_qbet_name value="">
+	</th>
+</tr>
+
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=qlfy_bet_id value="##TP_TCL {tpBufWrite [tpGetVar QBET_ID]}##">
+<input type=hidden name=delete_qbeton_id value="">
+<input type=hidden name=action value="ADMIN::PERFORM::DoVSQualifyBet">
+</form>
+</table>
+##TP_ENDIF##
+
+##TP_COMMENT {
+	THIS SECTION IS NOT CURRENTLY IN USE
+	(hence the TP_IF 0)
+	==================================================================
+	Subscription details.
+	==================================================================
+}##
+##TP_IF {0}##
+##TP_IF {[tpGetVar QBET_ID -1] != -1}##
+<table border=0 cellspacing=0 cellpadding=3>
+<form name="bet_on_sub_form" action="##TP_CGI_URL##" method="POST">
+<tr>
+	<th colspan=3 class=title>
+		Subscription event for ##TP_qbet_name## Group
+	</th>
+</tr>
+
+<tr>
+	<th class=colhead>Name</th>
+	<th class=colhead colspan=2>Delete</th>
+</tr>
+
+
+##TP_LOOP qbetonsub_idx {[tpGetVar num_qbetonsub 0]}##
+<tr>
+	<td>##TP_qlfy_bet_on_sub_name##</td>
+	<td colspan=2><input type=button class="btn_def" value="Delete Subscription" onClick="this.form.delete_qbetonsub_id.value=##TP_qlfy_bet_on_sub_id##; return fs(this,'DeleteVSQualifyBetOnSub');"></td>
+</tr>
+##TP_ENDLOOP##
+
+
+##TP_IF {[tpGetVar num_qbetonsub 0] == 0}##
+<tr>
+	<td><input type="text" disabled="true" name="bet_on_sub_label"/></td>
+	<td><a href="javascript:go_dd_popup('bet_on_sub')">Add subscription</a></td>
+	<td><a href="javascript:clear_bet('bet_on_sub');">Clear</a></td>
+</tr>
+
+<tr>
+	<th colspan=3 class=buttons>
+		<input type=button class="btn_def" value="Add subscription" onClick="return check_beton_sub(this,'AddVSQualifyBetOnSub');">
+	</th>
+</tr>
+##TP_ENDIF##
+
+<input type=hidden name=add_qbetsub_ob_level value="">
+<input type=hidden name=add_qbetsub_ob_id value="">
+<input type=hidden name=add_qbetsub_name value="">
+
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=qlfy_bet_id value="##TP_TCL {tpBufWrite [tpGetVar QBET_ID]}##">
+<input type=hidden name=delete_qbetonsub_id value="">
+<input type=hidden name=action value="ADMIN::PERFORM::DoVSQualifyBet">
+</form>
+</table>
+##TP_ENDIF##
+##TP_ENDIF##
+
+</body>
+
+</html>

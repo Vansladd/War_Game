@@ -1,0 +1,103 @@
+##TP_COMMENT $Id: JS_ValFuncs.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $##
+##TP_COMMENT Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.##
+
+##TP_IF { [tpGetVar ADD_SCRIPT_TAG 1] }##
+<script language=JavaScript>
+##TP_ENDIF##
+
+function strSplit (str, ch)
+	{
+	return str.split (ch);
+	}
+
+function strTrim (str, delim)
+	{
+	var chars = str.split ("");
+
+	var start;
+	for (start = 0;
+			delim.indexOf (chars[start]) >= 0 && start < chars.length; start++)
+		;
+
+	if (start == chars.length)
+		return "";
+
+	var end;
+	for (end = chars.length - 1;
+			delim.indexOf (chars[end]) >= 0 && end >= 0; end--)
+		;
+
+	return str.substr (start, 1 + end - start);
+	}
+
+function isInteger (arg)
+	{
+	return arg.match (/^\s*[+-]?\d+\s*$/);
+	}
+
+function isInt8 (arg)
+	{
+	return arg.match (/^\s*[+-]?\d{1,8}\s*$/);
+	}
+
+function isMoney (arg)
+	{
+	return arg.match (/^\s*\d+\.(\d\d)?\s*$/);
+	}
+
+function isFloat (arg)
+	{
+	return arg.match (/^\s*[+-]?\d+(\.\d+)?\s*$/);
+	}
+
+function isHMSinterval (arg)
+	{
+	return arg.match (/^\s*(\d{1,3}):(\d\d):(\d\d)\s*$/)
+		&& new Number (RegExp.$2) < 60
+		&& new Number (RegExp.$3) < 60;
+	}
+
+function isTime (arg)
+	{
+	return arg.match (/^\s*(\d\d):(\d\d):(\d\d)\s*$/)
+		&& new Number (RegExp.$1) < 24
+		&& new Number (RegExp.$2) < 60
+		&& new Number (RegExp.$3) < 60;
+	}
+
+function isHHMM (arg)
+	{
+	return arg.match (/^\s*(\d\d):(\d\d)\s*$/)
+		&& new Number (RegExp.$1) < 24
+		&& new Number (RegExp.$2) < 60;
+	}
+
+function isYYYYMMDD (arg)
+	{
+	return arg.match (/^\s*(\d{4,4})[-\/](\d\d)[-\/](\d\d)\s*$/)
+		&& Date.parse (RegExp.$1 + "/" + RegExp.$2 + "/" + RegExp.$3);
+	}
+
+function isDateTime (arg)
+	{
+	return arg.match
+			(/^\s*(\d{4,4})[-\/](\d\d)[-\/](\d\d)\s+(\d\d):(\d\d):(\d\d)\s*$/)
+		&& Date.parse (RegExp.$1 + "/" + RegExp.$2 + "/" + RegExp.$3)
+		&& new Number (RegExp.$4) < 24
+		&& new Number (RegExp.$5) < 60
+		&& new Number (RegExp.$6) < 60;
+	}
+
+function badCharsStr()
+	{
+	return '\t[]{}£!%<>"$\\';
+	}
+
+function isSafeStr (arg)
+	{
+	return !arg.match (/[\t[\]{}£!%<>"$\\]/);
+	}
+
+##TP_IF { [tpGetVar ADD_SCRIPT_TAG 1] }##
+</script>
+##TP_ENDIF##

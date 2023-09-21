@@ -1,0 +1,171 @@
+<html>
+<!-- $Id: bet_transfer_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Bet Transfers</title>
+</head>
+<script>
+function fs(b,t)
+{
+	if (t == "TransferBets" && !validForm()) {
+		return false;
+	}
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function validForm ()
+{
+	if (document.getElementById("TransferUsername").value == "") {
+		alert("You must enter a username to transfer bets.");
+		return false;
+	}
+	
+	if(document.getElementById("TransferUsername").value == "##TP_Username##"){
+		alert("You must enter the username of a different account to transfer bets.");
+		return false;
+	}
+
+	var transfer_form = document.getElementById("TransferForm");
+	var form_elems = transfer_form.elements;
+	var any_checked = false;
+	for (var i = 0; i < form_elems.length; i++){
+		var elem = form_elems[i];
+		
+		if (elem.type == "checkbox" && elem.checked) {
+			any_checked = true;
+			break;
+		}
+	}
+	if (!any_checked) {
+		alert("You must select which bets you want to transfer.");
+	}
+	return any_checked;
+}
+
+function bet_desc(betid)
+{
+	document.form1.action.value="ADMIN::BET::DoManualBetDesc";
+	document.form1.BetId.value=betid;
+	document.form1.submit();
+}
+</script>
+<body>
+##TP_PLAY msg_rpt.html##
+##TP_PLAY error_rpt.html##
+##TP_IF {[tpGetVar ShowCombiKey 0]}##
+	<table cellspacing=2 cellpadding=2 border=1>
+	<tr>
+		<th align=left>Key:</td>
+		<td>Banker</td>
+		<td class=combiBanker>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		<td>Cannot be combined</td>
+		<td class=combiEven>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		<td class=combiOdd>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	</tr>
+	</table>
+##TP_ENDIF##
+
+<table border=0 cellspacing=0 cellpadding=2>
+<form id="TransferForm" action="##TP_CGI_URL##" method=post>
+<tr>
+	<th colspan=10 class=title>
+	Bet history
+	</th>
+</tr>
+<tr class=subtitle>
+        <td colspan=10>
+	Username ##TP_Username##, account number ##TP_AcctNo##
+	</td>
+</tr>
+<tr class=subtitle>
+        <td colspan=10>
+	Account Currency: ##TP_Currency##
+	</td>
+</tr>
+<tr>
+	<th nowrap class=colhead>Receipt</th>
+	<th nowrap class=colhead>Placed at</th>
+	<th nowrap class=colhead>Bet</th>
+	<th nowrap class=colhead>Stake</th>
+	<th nowrap class=colhead>Leg</th>
+	<th nowrap class=colhead>Event</th>
+	<th nowrap class=colhead>Market</th>
+	<th nowrap class=colhead>Selection</th>
+	<th nowrap class=colhead>Price</th>
+	<th nowrap class=colhead>Transfer</th>
+</tr>
+##TP_IF {[tpGetVar NumBets 0] > 0}##
+##TP_LOOP bet_idx {[tpGetVar NumBets]}##
+##TP_LOOP seln_idx {$BET([tpGetVar bet_idx],num_legs)}##
+<tr>
+	##TP_IF {[tpGetVar seln_idx]==0}##
+	<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_BetId##&Manual=##TP_Manual##">##TP_BetReceipt##</a></td>
+	<td nowrap>##TP_BetTime##</td>
+	<td nowrap>##TP_BetType##</td>
+	<td nowrap align=right>##TP_BetStake##</td>
+	##TP_ELSE##
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	##TP_ENDIF##
+	<td nowrap align=right class="combi##TP_BetCombi##">##TP_BetLegNo##</td>
+	##TP_IF {$BET([tpGetVar bet_idx],[tpGetVar seln_idx],man_bet)!=1}##
+	<td nowrap class="combi##TP_BetCombi##"><a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_EvId##">##TP_EvDesc##</a></td>
+	<td nowrap class="combi##TP_BetCombi##"><a href="##TP_CGI_URL##?action=ADMIN::MARKET::GoMkt&MktId=##TP_EvMktId##">##TP_MktDesc##</a></td>
+	<td nowrap class="combi##TP_BetCombi##"><a href="##TP_CGI_URL##?action=ADMIN::SELN::GoOc&OcId=##TP_EvOcId##">##TP_SelnDesc##</a></td>
+	##TP_ELSE##
+	<td nowrap><a href="javascript:bet_desc(##TP_BetId##)">##TP_EvDesc##</a></td>
+	<td nowrap><a href="javascript:bet_desc(##TP_BetId##)">##TP_MktDesc##</a></td>
+	<td nowrap><a href="javascript:bet_desc(##TP_BetId##)">##TP_SelnDesc##</a></td>
+	##TP_ENDIF##
+	<td nowrap class="combi##TP_BetCombi##">##TP_Price##</td>
+	##TP_IF {[tpGetVar seln_idx]==0}##
+	<td nowrap class="combi##TP_BetCombi##"><input type="checkbox" name="T_##TP_TCL {tpBufWrite [tpGetVar bet_idx]}##" value="##TP_BetId##"/></td>
+	##TP_ENDIF##
+</tr>
+##TP_ENDLOOP##
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+	<td colspan=10 align=center>
+	No bets found.
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th class=buttons colspan=10>
+		<input type="button" class="btn_def" value="New Search" onClick="return fs(this,'NewSearch')">
+		<input type="button" class="btn_def" value="Customer" onClick="return fs(this,'Customer')">
+		<input type="button" class="btn_def" value="Transfer Bets" onClick="return fs(this,'TransferBets')">
+		to:
+		<input type="text" id="TransferUsername" name="TransferUsername" value="" size="20">
+	</th>
+	<input type=hidden name=SubmitName value=""/>
+	<input type=hidden name=action value="ADMIN::BET_TRANSFER::DoBetTransferSearch"/>
+	<input type=hidden name=CustId value="##TP_CustId##"/>
+	<input type=hidden name=AcctId value="##TP_AcctId##"/>
+	<input type=hidden name=Username value="##TP_Username##"/>
+	<input type=hidden name=AcctNo value="##TP_AcctNo##"/>
+	<input type=hidden name=NumBets value="##TP_TCL {tpBufWrite [tpGetVar NumBets]}##"/>
+	<input type=hidden name=BetDate1 value="##TP_BetDate1##"/>
+	<input type=hidden name=BetDate2 value="##TP_BetDate2##"/>
+</tr>
+</form>
+</table>
+
+##TP_IF {[tpGetVar ManBet 0]}##
+<form action="##TP_CGI_URL##" name="form1" method="get">
+   <input type=hidden name="action" value="ADMIN::BET::DoManualBetDesc">
+   <input type=hidden name="BetId" value="">
+</form>
+##TP_ENDIF## 
+
+</body>
+</html>

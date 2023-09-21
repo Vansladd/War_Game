@@ -1,0 +1,90 @@
+<html>
+<!-- $Id: pmt_rules.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script>
+function fs(b,pay_mthd)
+{ 
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.NewRuleMthd.value = pay_mthd;
+	b.form.action.value = "ADMIN::PMT::GoAddRule";
+	b.form.submit();
+	return true;
+}
+
+function up(b,pg_rule_id)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.pg_rule_id.value = pg_rule_id;
+	b.form.action.value = "ADMIN::PMT::GoUpPriority";
+    b.form.submit();
+    return true;
+}
+
+function view_hist(b,pay_mthd)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.pay_mthd.value = pay_mthd;
+	b.form.action.value = "ADMIN::PMT::GoViewHist";
+    b.form.submit();
+    return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<form method=get action=##TP_CGI_URL##>
+<input type=hidden name=action value="">
+<input type=hidden name=NewRuleMthd value="">
+<input type=hidden name=pg_rule_id value="">
+<input type=hidden name=pay_mthd value="">
+<tr>
+	<th colspan=5 class=title>
+	Payment Gateway Rules 
+	</th>
+</tr>
+##TP_LOOP pay_mthd_idx {$EXISTING_RULES(numMthds)}##
+		<tr>
+			<th class=colhead v-align=center colspan=5 align=left><b>##TP_pay_mthd_desc##</b></td>
+		</tr>
+		<tr colspan=5>
+			<th class=colhead>Priority</th>
+			<th class=colhead>Status</th>
+			<th class=colhead>Rule</th>
+			<th class=colhead></th>
+			<th class=colhead></th>
+		</tr>
+	##TP_LOOP rule_idx {$EXISTING_RULES([tpGetVar pay_mthd_idx],numRules)}##
+		##TP_IF {$EXISTING_RULES([tpGetVar pay_mthd_idx],[tpGetVar rule_idx],priority) < 0}##
+			<tr class=suspended>
+			<td>-</td>
+		##TP_ELSE##
+			<tr class=active>
+			<td>##TP_priority##</td>
+		##TP_ENDIF##
+		<td>##TP_status##</td>
+		<td><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoRule&pay_mthd=##TP_pay_mthd##&pg_rule_id=##TP_pg_rule_id##&status=##TP_status##">##TP_condition_desc##</a></td>
+		##TP_IF {$EXISTING_RULES([tpGetVar pay_mthd_idx],[tpGetVar rule_idx],priority) > 1}##
+			<td><input type=button class="btn_def" value="Up" onClick="return up(this,'##TP_pg_rule_id##')"></td>
+		##TP_ELSE##
+			<td></td>
+		##TP_ENDIF##
+	</tr>
+	##TP_ENDLOOP##
+	<tr>
+		<td colspan=3><input type=button class="btn_def" value="Add New ##TP_pay_mthd_desc## rule" onClick="return fs(this,'##TP_pay_mthd##')"></td>
+		<td colspan=2><input type=button class="btn_def" value="View History" onClick="return view_hist(this,'##TP_pay_mthd##')"></td>
+	<tr>
+##TP_ENDLOOP##
+</form>
+</table>
+</body>
+</html>
+

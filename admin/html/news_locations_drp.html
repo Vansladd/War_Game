@@ -1,0 +1,15 @@
+<!-- $Id: news_locations_drp.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<!-- This fragment should be included for news locations selection -->
+##TP_IF {[tpGetVar NumLocations 0]>0}##
+	<select name="location">
+		<option value="">None</option>
+	##TP_LOOP location_idx {[tpGetVar NumLocations]}##
+		<option value="##TP_code##" ##TP_selected2##>##TP_name##</option>
+	##TP_ENDLOOP##
+	</select>
+##TP_ELSE##
+	<font color=yellow>
+	<b>No Locations available</b>
+	</font>
+##TP_ENDIF##
+

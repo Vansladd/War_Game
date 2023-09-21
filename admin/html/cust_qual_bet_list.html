@@ -1,0 +1,69 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+
+<script>
+</script>
+
+</head>
+<body>
+
+<table border=0 cellspacing=0>
+<tr>
+	<th class=title colspan=5>
+	Video Streaming Qualifying Bets
+	</th>
+</tr>
+
+<tr>
+	<th nowrap class=colhead>Qualification Group</th>
+	<th nowrap class=colhead>Date Qualified</th>
+	<th nowrap class=colhead>Qualifying Bet</th>
+	<th nowrap class=colhead>Status</th>
+	<th nowrap class=colhead>Items in this Qualification Group</th>
+</tr>
+##TP_IF {[tpGetVar NumQualBets 0] == 0}##
+<tr>
+	<td colspan=5>
+		No qualifying bets found
+	</td>
+</tr>
+##TP_ELSE##
+##TP_LOOP qual_idx {[tpGetVar NumQualBets]}##
+<tr>
+	<td>
+		##TP_QualName##
+	</td>
+	<td>
+		##TP_QualDate##
+	</td>
+	<td>
+		<a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_QualBetId##">##TP_QualBetReceipt##</a>
+	</td>
+	<td>
+		##TP_QualStatus##
+	</td>
+	<td>
+		##TP_LOOP qual_sub_idx {[tpBindGet QualSubCount]}##
+		##TP_QualSubLevel## -- ##TP_QualSubName##
+		<br>
+		##TP_ENDLOOP qual_sub_idx##
+	</td>
+</tr>
+##TP_ENDLOOP qual_idx##
+##TP_ENDIF##
+<tr>
+<th class="buttons" colspan=5>
+<form method="get" action="##TP_CGI_URL##">
+	<input type="hidden" name="action" value="ADMIN::CUST::GoCust">
+	<input type="hidden" name="CustId" value="##TP_CustId##">
+	<input type="submit" class="btn_def" value="##TP_XL {Admin.BACK_BUTTON}##">
+</form>
+</th>
+</tr>
+</table>
+
+</body>
+</html>

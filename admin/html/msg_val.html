@@ -1,0 +1,70 @@
+<html>
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<script language="javascript">
+	function do_init() {
+		##TP_IF {[tpGetVar do_group_update 0] != 0}##
+		parent.go_group(document.forms.msg_val.group.value, ##TP_code_id##);
+		##TP_ENDIF##
+	}
+
+	function popUp(URL) {
+		day = new Date();
+		id = day.getTime();
+		eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1');");
+	}
+	</script>
+	</head>
+	<body bgcolor="white" onLoad="do_init()">
+		<form name="msg_val" method="post" action="##TP_CGI_URL##">
+			<input type="hidden" name="action" value="ADMIN::MSG::update_val">
+			<input type="hidden" name="group" value="##TP_group##">
+			<input type="hidden" name="code_id" value="##TP_code_id##">
+			<input type="hidden" name="code" value="##TP_code##">
+			<input type="hidden" name="lang" value="##TP_lang##">
+			<input type="hidden" name="lang_desc" value="##TP_lang_desc##">
+			##TP_PLAY error_rpt.html##
+					  <tr>
+	        ##TP_LOOP lang_idx {[tpGetVar num_langs]}##
+			##TP_IF {$LANG_VAL([tpGetVar lang_idx],lang)==[tpGetVar lang]}##
+            ##TP_IF {$LANG_VAL([tpGetVar lang_idx],defined)}##
+            <font color="green">
+            ##TP_ELSE##
+            <font color="red">
+            ##TP_ENDIF##
+			##TP_lang_val##
+            </font>
+            ##TP_ELSE##
+            <a href="javascript:parent.go_val('##TP_code_id##','##TP_lang_val##')">
+            ##TP_IF {$LANG_VAL([tpGetVar lang_idx],defined)}##
+            <font color="green">
+            ##TP_ELSE##
+            <font color="red">
+            ##TP_ENDIF##
+			##TP_lang_val##
+            </font>
+			</a>
+            ##TP_ENDIF##
+            &nbsp;
+			##TP_ENDLOOP##
+            </font>
+			<table width="100%">
+				<tr>
+					<td>Code: <b>##TP_code##</b>&nbsp;&nbsp;&nbsp;&nbsp;Language: <b>##TP_lang_desc##</b> (##TP_lang##)</b></td>
+				</tr>
+				<tr>
+					<td><textarea name="xlation" rows="5" COLS="65" scrolling="yes" wrap="soft">##TP_xlation##</textarea></td>
+				</tr>
+				<tr>
+					<td align="right">
+						<input type="submit" name="update_val" value="Update Translation">
+						##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+							<input type="button" name="view_audit" value="View Audit" onClick="javascript:popUp('##TP_CGI_URL##?action=ADMIN::AUDIT::GoAudit&AuditInfo=Xlation&Lang=##TP_lang##&CodeId=##TP_code_id##')">
+						##TP_ENDIF##
+					</td>
+				</tr>
+			</table>
+			<i>##TP_status_msg##</i>
+		</form>
+	</body>
+</html>

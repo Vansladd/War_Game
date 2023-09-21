@@ -1,0 +1,172 @@
+<html>
+<!-- $Id: perform_details.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Perform Details</title>
+
+<script language="Javascript">
+	function validate(f,t)
+	{
+		var b = document.forms[0];
+		fs(f,t);
+	}
+
+	function fs(b,t)
+	{
+
+		if (t == "ProvPerformModify") {
+			for (i=0; i < CtrChosenList.options.length ;i++){
+				CtrChosenList.options[i].selected = "true";
+			}
+			for (i=0; i < CtrNotChosenList.options.length ;i++){
+				CtrNotChosenList.options[i].selected = "true";
+			}
+		}
+		if(t =="Back") {
+			b.form.action.value="ADMIN::VIDEO::GoVideoProvidersList";
+		}
+
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+
+	function addremove(from,to){
+		var ToLength = to.options.length;
+		var highlighted = from.selectedIndex;
+	
+		//check to see that something is highlighted
+		if (!(highlighted < 0)){
+			// new option to be put in the 'to' menu;
+			var newOption = new Option(from.options[highlighted].text, from.options[highlighted].value);
+	
+			// remove the old entry
+			from.options[highlighted] = null;
+			to.options[ToLength] = newOption;
+	
+			// reset the selected options
+			from.selectedIndex = -1;
+			to.selectedIndex = -1;
+		}
+	
+		from.blur();
+		to.blur();
+	}
+
+	function init(){
+		//initialise variables
+		CtrNotChosenList = document.provider.Countries_not;
+		CtrChosenList    = document.provider.Countries;
+	}
+</script>
+
+</head>
+
+<body onLoad="init()">
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>Perform Details</th>
+</tr>
+
+<form name="provider" ACTION="##TP_CGI_URL##" method=get>
+
+<input type="hidden" name="video_provider_id" value="##TP_VIDEO_PROVIDER_ID##" size="">
+<input type="hidden" name="video_provider" value="##TP_VIDEO_PROVIDER##" size="">
+<input type="hidden" name="begin_countries" value="##TP_BEGIN_COUNTRIES##" size="">
+<tr>
+	<td class=caption>Provider Name</td>
+	<td><input type="text" name="provider_name" value="##TP_NAME##" size=32></td>
+</tr>
+<tr>
+	<td class=caption>Stream Schedule URL</td>
+	<td><input type="text" name="ev_list_url" value="##TP_EV_LIST_URL##" size=65></td>
+</tr>
+##TP_IF {[tpGetVar showCronSpecific 0] == 1}##
+<tr>
+	<td class=caption>Admin REQ Length</td>
+	<td><input type="text" name="admin_req_len" value="##TP_ADMIN_REQ_LEN##" size=6></td>
+</tr>
+<tr>
+	<td class=caption>Cron REQ Length</td>
+	<td><input type="text" name="cron_req_len" value="##TP_CRON_REQ_LEN##" size=6></td>
+</tr>
+<tr>
+	<td class=caption>Archive Days</td>
+	<td><input type="text" name="archive_days" value="##TP_ARCHIVE_DAYS##" size=6></td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[tpGetVar showCountrySpecific 0] == 1}##
+<tr>
+	<!-- Countries video provider can be viewed from -->
+	<tr>
+		<td class=caption>Countries</td>
+		<td colspan=2>
+
+			<table>
+				<tr>
+					<td align=center>
+						Streams <i>CAN</i> be viewed
+					</td>
+					<td>
+					</td>
+					<td align=center>
+						Streams <i>CANNOT</i> be viewed
+					</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<select multiple name="Countries" size=8>
+							##TP_LOOP ctr_idx {[tpGetVar NUM_SELECTED_CTRS]}##
+							<option value ="##TP_SELECTED_CTR_CODE##">##TP_SELECTED_CTR_NAME##</option>
+							##TP_ENDLOOP##
+						</select>
+					</td>
+					<td>
+						<table>
+							<tr>
+								<td>
+									&nbsp;&nbsp;
+									<input type=button name=shift value="<" onclick="addremove(CtrNotChosenList, CtrChosenList)">
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;&nbsp;
+									<input type=button name=shift ##TP_IF { [tpGetVar OffStarted] == 1}##disabled=true ##TP_ENDIF## value=">" onclick="addremove(CtrChosenList, CtrNotChosenList)">
+									&nbsp;&nbsp;&nbsp;&nbsp;
+								</td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<select multiple name="Countries_not" size=8>
+							##TP_LOOP nctr_idx {[tpGetVar NUM_NOT_SELECTED_CTRS]}##
+								<option value ="##TP_NOT_SELECTED_CTR_CODE##">##TP_NOT_SELECTED_CTR_NAME##</option>
+							##TP_ENDLOOP##
+						</select>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed VideoStreamControl]}##
+			<input type=button value="Modify Provider" onClick="validate(this,'ProvPerformModify');">
+	##TP_ENDIF##
+	<input type=button value="Back" onClick="fs(this,'Back');">
+	</th>
+</tr>
+
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::PERFORM::DoProviderPerform">
+</form>
+</table>
+</body>
+</html>

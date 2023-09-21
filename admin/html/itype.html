@@ -1,0 +1,105 @@
+<html>
+<!-- $Id: itype.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Introduction Source Types</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	##TP_Type## Details
+	</th>
+</tr>
+<form ACTION="##TP_CGI_URL##" method=get onSubmit="return validate(this);">
+##TP_IF {[tpGetVar opAdd 0]}##
+<tr>
+	<td class="caption">Introduction Source Type</td>
+	<td>
+		<input type="text" name="Type" value="" size=4 maxlength=4>
+	</td>
+</tr>		
+##TP_ELSE##
+<tr>
+	<td>
+		<input type="hidden" name="Type" value="##TP_Type##">
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<td class=caption>Description</td>
+	<td>
+	<input type="text" name="Description" value="##TP_Description##" size=60>
+	</td>
+</tr>
+##TP_IF {[tpGetVar FuncChannels]}##
+	<tr>
+		<td class=caption>Channels</td>
+		<td>
+		##TP_PLAY chan_sel.html##
+		</td>
+	</tr>
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar FuncMultiLang 0]}##
+<tr>
+	<td class=caption>Languages</td>
+	<td colspan="3">
+	##TP_PLAY lang_sel.html##
+	</td>
+</tr>
+##TP_ENDIF##
+
+<tr>
+	<td class=caption>Disporder</td>
+	<td>
+	<input type="text" name="Disporder" value="##TP_Disporder##" size=5>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Status</td>
+	<td>
+		<select name="Status">
+		<script>
+		write_select('##TP_Status##', 'A','Active','X','Suspended');
+	</script>
+	</select>
+</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed ManageHearAbout]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=button class="btn_def" value="Add Intro Source Type" onClick="return fs(this,'TypeAdd')">
+		##TP_ELSE##
+			<input type=button class="btn_def" value="Modify Intro Source Type" onClick="return fs(this,'TypeMod')">
+			<input type=button class="btn_def" value="Delete Intro Source Type" onClick="return fs(this,'TypeDel')">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::HEARABOUT::GoISource">
+</form>
+</table>
+</body>
+</html>
+

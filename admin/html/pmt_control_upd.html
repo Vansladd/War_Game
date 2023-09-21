@@ -1,0 +1,126 @@
+<html>
+<!-- $Id -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Payment Control</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+
+<form name="upd_limit" method="POST" action="##TP_CGI_URL##">
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=3 class=title>Payment Settings for ##TP_UpdDesc##</th>
+</tr>
+
+<tr>
+	<th nowrap class=colhead>&nbsp;</th>
+	<th nowrap class=colhead>Deposits</th>
+	<th nowrap class=colhead>Withdraws</th>
+</tr>
+<tr>
+	<th colspan=3 class=colhead>Hard Limits (cannot be overridden)</th>
+</tr>
+<tr>
+	<td class="caption">Allow</td>
+	<td>
+		<select name="AllowDep">
+			<script>write_select('##TP_AllowDep##','Y','Yes','N','No');</script>
+		</select>
+	</td>
+	<td>
+		<select name="AllowWtd">
+			<script>write_select('##TP_AllowWtd##','Y','Yes','N','No');</script>
+		</select>
+	</td>
+</tr>
+<tr>
+	<th nowrap class="caption">Max Transaction</th>
+	<td nowrap><input type="text" size="12" name="MaxDepH" value="##TP_MaxDepH##"></td>
+	<td nowrap><input type="text" size="12" name="MaxWtdH" value="##TP_MaxWtdH##"></td>
+</tr>
+<tr>
+	<th nowrap class="caption">Max Amount per Day</th>
+	<td nowrap><input type="text" size="12" name="MaxDayDepH" value="##TP_MaxDayDepH##" ></td>
+	<td nowrap><input type="text" size="12" name="MaxDayWtdH" value="##TP_MaxDayWtdH##"></td>
+</tr>
+##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+<tr>
+	<th nowrap class="caption">Max Amount per Week</th>
+	<td nowrap><input type="text" size="12" name="MaxWeekDepH" value="##TP_MaxWeekDepH##"></td>
+	<td nowrap><input type="text" size="12" name="MaxWeekWtdH" value="##TP_MaxWeekWtdH##"></td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th colspan=3 class=colhead>Soft Limits (Overridden at currency, pay method and account level)</th>
+</tr>
+<tr>
+	<th nowrap class="caption">Max Transaction</th>
+	<td nowrap><input type="text" size="12" name="MaxDepS" value="##TP_MaxDepS##"></td>
+	<td nowrap><input type="text" size="12" name="MaxWtdS" value="##TP_MaxWtdS##"></td>
+</tr>
+
+<tr>
+	<th nowrap class="caption">Max Amount per Day</th>
+	<td nowrap><input type="text" size="12" name="MaxDayDepS" value="##TP_MaxDayDepS##"></td>
+	<td nowrap><input type="text" size="12" name="MaxDayWtdS" value="##TP_MaxDayWtdS##"></td>
+</tr>
+
+<tr>
+	<th nowrap class="caption">Max Num per Day</th>
+	<td nowrap><input type="text" size="3" name="MaxNumDayDep" value="##TP_MaxNumDayDep##"></td>
+	<td nowrap><input type="text" size="3" name="MaxNumDayWtd" value="##TP_MaxNumDayWtd##"></td>
+</tr>
+##TP_IF {[OT_CfgGet WEEKLY_PMT_LIMITS 0]}##
+<tr>
+	<th nowrap class="caption">Max Amount per Week</th>
+	<td nowrap><input type="text" size="12" name="MaxWeekDepS" value="##TP_MaxWeekDepS##"></td>
+	<td nowrap><input type="text" size="12" name="MaxWeekWtdS" value="##TP_MaxWeekWtdS##"></td>
+</tr>
+<tr>
+	<th nowrap class="caption">Max Number per Week</th>
+	<td nowrap><input type="text" size="12" name="MaxNumWeekDep" value="##TP_MaxNumWeekDep##"></td>
+	<td nowrap><input type="text" size="12" name="MaxNumWeekWtd" value="##TP_MaxNumWeekWtd##"></td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th nowrap class="caption">Min Transaction</th>
+	<td nowrap><input type="text" size="12" name="MinDep" value="##TP_MinDep##"></td>
+	<td nowrap><input type="text" size="12" name="MinWtd" value="##TP_MinWtd##"></td>
+</tr>
+<tr>
+	<td nowrap>
+		<input type="button" name="UpdBtn" value="##TP_ButtonName##" onClick="return fs(this,'##TP_SubmitName##')">
+		##TP_IF {[tpGetVar isUpd]}##
+			<input type="button" name="DelBtn" value="Remove" onClick="return fs(this,'##TP_DelSubmitName##')">
+		##TP_ENDIF##
+		<input type="button" name="Back" value="Back" onClick="return fs(this,'Back')">
+	</td>
+</tr>
+
+##TP_IF {[tpGetVar isMthd]}##
+<input type="hidden" name="PayMthd" value="##TP_PayMthd##">
+##TP_ENDIF##
+<input type="hidden" name="Ccy" value="##TP_CcyCode##">
+<input type="hidden" name="action" value="ADMIN::PMT_CONTROL::DoControl">
+<input type="hidden" name="SubmitName" value="">
+</form>
+
+
+
+</table>
+
+
+</body>
+</html>

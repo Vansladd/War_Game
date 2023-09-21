@@ -1,0 +1,59 @@
+<html>
+<!-- $Id -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Confirm Event Update</title>
+<script>
+function fs(b) {
+	opener.set_aux_conf(
+		b.form.AuxAdminName.value,
+		b.form.AuxAdminPwd.value,
+		b.form.AuxLoginUID.value
+	);
+	window.close();
+	return false;
+}
+</script>
+</head>
+<body>
+<table border=0 cellspacing=0 cellpadding=2 align=center>
+<form name=EvCritInfo method=get action="##TP_CGI_URL##">
+<tr>
+	<th class=title colspan=2>
+	Double-check event update
+	</th>
+</tr>
+<tr>
+	<td class=caption>Name</td>
+	<td>
+	<input type=text name=AuxAdminName value="" size=20>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Password</td>
+	<td>
+	<input type=password name=AuxAdminPwd value="" size=20>
+	</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr>
+		<th width=75% class=buttons>
+		<input type=button class="btn_def" value="Confirm" onClick="return fs(this)">
+		</th>
+		<th class=goaudit width=25%>
+		<input type=button class="btn_def" value="Close" onClick="window.close()">
+		</th>
+	</tr>
+	</table>
+	</th>
+</tr>
+<input type=hidden name=AuxLoginUID value="##TP_AuxLoginUID##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::EVENT::DoEv>
+</form>
+</table>
+</body>
+</html>

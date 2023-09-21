@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<!-- $Id: pmt_reverse_wtd.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+
+<script>
+
+var pmts = new Array();
+
+##TP_LOOP rev_wtd_idx {[tpBindGet num_reversible_wtd]}##
+	pmts[pmts.length] = ##TP_pmt_id##;
+##TP_ENDLOOP##
+
+function do_all(_action,_prefix) {
+
+	var i = 0,
+		l = pmts.length,
+		c;
+
+	for (; i < l; i++) {
+		c = (_action == 'C') ? 'true' : 'false';
+		eval('document.forms["rev_wtd"].' + _prefix + '_' + pmts[i] + '.checked = ' + c);
+	}
+}
+
+function fs(_form,_action,_prefix) {
+
+	var num_checked = 0,
+		l = pmts.length,
+		i = 0, t;
+
+	for (; i < l; i++) {
+		if (eval('document.forms["rev_wtd"].' + _prefix + '_' + pmts[i] + '.checked') == 1) {
+			num_checked++;
+		}
+	}
+
+	if (!num_checked) {
+		alert('You must at least check one tickbox to perform this action');
+		return
+	}
+
+	t = confirm(_action + ' these withdrawals?');
+
+	if (t) {
+		_form.submit_name.value = _action;
+		_form.submit();
+	}
+}
+
+
+</script>
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<table cellspacing=0 cellpadding=0 border=0>
+<form action="##TP_CGI_URL##" method=post name="rev_wtd">
+<input type="hidden" name="action" value="ADMIN::PMT::DoReversibleWtd">
+<input type="hidden" name="submit_name" value="">
+<input type="hidden" name="AcctId" value="##TP_AcctId##">
+<input type="hidden" name="CustId" value="##TP_CustId##">
+<tr>
+	<th class="title" colspan="10">Reversible withdrawals details</th>
+</tr>
+
+##TP_IF {![tpBindGet num_reversible_wtd]}##
+<tr>
+	<th colspan="10" class="colhead">No reversible withdrawal found</th>
+</tr>
+##TP_ELSE##
+
+<tr>
+	<th nowrap class="colhead">Username</th>
+	<th nowrap class="colhead">Wtd Date</th>
+	<th nowrap class="colhead">Method</th>
+	<th nowrap class="colhead">Status</th>
+	<th nowrap class="colhead">Pmt ref.</th>
+	<th nowrap class="colhead">Ccy</th>
+	<th nowrap class="colhead">Amount</th>
+	<th nowrap class="colhead">Process date</th>
+	<th nowrap class="colhead">Reverse &nbsp; <a href="javascript:void(0);" onClick="do_all('C','reverse_pmt');">(check all)</a> &nbsp;/ &nbsp; <a href="javascript:void(0);" onClick="do_all('U','reverse_pmt');">(uncheck all)</th>
+	<th nowrap class="colhead">Force &nbsp; <a href="javascript:void(0);" onClick="do_all('C','force_pmt');">(check all)</a> &nbsp;/ &nbsp; <a href="javascript:void(0);" onClick="do_all('U','force_pmt');">(uncheck all)</th>
+</tr>
+
+##TP_LOOP rev_wtd_idx {[tpBindGet num_reversible_wtd]}##
+
+<input type="hidden" name="payments" value="##TP_pmt_id##"></input>
+
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&amp;CustId=##TP_cust_id##">##TP_username##</a></td>
+	<td>##TP_cr_date##</td>
+	<td>##TP_pmt_mthd_desc##</td>
+	<td>##TP_status##</td>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::TXN::GPMT::GoPmt&pmt_id=##TP_pmt_id##">##TP_pmt_id##</a></td>
+	<td>##TP_ccy_code##</td>
+	<td>##TP_amount##</td>
+	<td>##TP_process_date##</td>
+	<td align="center"><input type="checkbox" name="reverse_pmt_##TP_pmt_id##" value="Y"></input></td>
+	<td align="center"><input type="checkbox" name="force_pmt_##TP_pmt_id##" value="Y"></input></td>
+</tr>
+
+##TP_ENDLOOP##
+
+<tr>
+	<td colspan="5">&nbsp;</td>
+	<td>Total: &nbsp;</td>
+	<td>##TP_total_wtd##</td>
+	<td colspan="3">&nbsp;</td>
+</tr>
+
+##TP_ENDIF##
+
+<tr>
+	<th colspan="10" class="buttons">
+		<input type="button" value="Customer" onClick="window.location='##TP_CGI_URL##?action=ADMIN::CUST::GoCust&amp;CustId=##TP_CustId##'">
+		##TP_IF {[tpBindGet num_reversible_wtd]}##
+			##TP_IF {[op_allowed RevCustWtd] && [tpGetVar no_override_flag 0]}##
+		<input type="button" class="btn_def" value="Reverse checked" onClick="fs(this.form,'Reverse','reverse_pmt');">
+			##TP_ENDIF##
+			##TP_IF {[op_allowed ForceCustWtd]}##
+		<input type="button" class="btn_def" value="Force checked" onClick="fs(this.form,'Force','force_pmt');">
+			##TP_ENDIF##
+		##TP_ENDIF##
+	</th>
+</tr>
+
+</form>
+</table>
+
+</body>
+
+
+</html>

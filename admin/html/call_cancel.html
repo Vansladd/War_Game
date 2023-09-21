@@ -1,0 +1,77 @@
+<html>
+<!-- $Id: call_cancel.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Call Cancel</title>
+##TP_PLAY JS_WriteSelect.html## 
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<form ACTION="##TP_CGI_URL##" method=get onSubmit="return validate(this);">
+<tr>
+	<th colspan="2" class=title>
+	##TP_CancelCode## Details
+	</th>
+</tr>
+<tr>
+	<td class=caption>Cancel Code</td>
+	<td>
+	<input type=text name="CancelCode" value="##TP_CancelCode##" size=16>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Description</td>
+	<td>
+	<input type="text" name="Description" value="##TP_CancelDesc##" size=60>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Status</td>
+	<td>
+	<select name="CancelStatus">
+	<script>
+	write_select('##TP_CancelStatus##','A','Active','S','Suspended')
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Disporder</td>
+	<td>
+	<input type="text" name="CancelDisporder" value="##TP_CancelDisporder##" size=5>
+	</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+		##TP_IF {[tpGetVar opAdd 0]}##
+		<input type=button class="btn_def" value="Add Call Cancel" onClick="return fs(this,'CancelAdd')">
+		##TP_ELSE##
+		<input type=hidden name=CancelCode value="##TP_CancelCode##">
+		<input type=button class="btn_def" value="Modify Call Cancel" onClick="return fs(this,'CancelMod')">
+		<input type=button class="btn_def" value="Delete Call Cancel" onClick="return fs(this,'CancelDel')">		
+		<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+		##TP_ENDIF##
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::TB_CALL::DoCallCancel">
+</form>
+</table>
+</body>
+</html>

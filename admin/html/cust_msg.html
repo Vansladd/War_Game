@@ -1,0 +1,236 @@
+<html>
+<!-- $Id: cust_msg.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+<script src="##TP_CGI_URL##?action=DynText"></script>
+<script>
+
+
+function fs(b,t)
+{
+	if (t == "SetMsg") {
+		var m = b.form.Message.value;
+		if (m.length == 0) {
+			alert ("Can't set empty message");
+			return false;
+		}
+	}
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+top.currentIndex = 0;
+
+function showMsg(index)
+{
+	document.custMsgs.Message.value=top.msgBody[index];
+	document.custMsgs.CustMsgId.value=top.msgID[index];
+	top.currentIndex = index;
+	countChars();
+	for (var i = 0; i < top.msgSummary.length; i++)
+	{
+		var text = 'view';
+		if (i == index)
+		{
+			text = 'current';
+		}
+		changeHTML('view' + i, text);
+	}
+
+	changeHTML('currMsgDetail', top.msgDate[index] + ' (' + top.msgUser[index] + ')');
+}
+
+function countChars()
+{
+	var msg = new String(document.custMsgs.Message.value);
+	var charsLeft = 250 - msg.length;
+	if (charsLeft < 0)
+	{
+		document.custMsgs.Message.value = msg.substring(0,250);
+	}
+
+  changeHTML('charCount',Math.max(charsLeft,0) + ' characters left.');
+}
+
+function doAddFilter()
+{
+    document.forms[0].SubmitName.value = "GoFilterCustMsg";
+    document.forms[0].submit();
+}
+
+function doNewMessage()
+{
+    document.forms[0].SubmitName.value = "GoNewCustMsg";
+    document.forms[0].submit();
+}
+
+</script>
+</head>
+<body>
+
+<!-- report any errors -->
+##TP_PLAY error_rpt.html##
+
+<!-- Customer Messages -->
+<style>
+	button.cMsgBtn
+	{
+		width : 120;
+	}
+
+	a.noUnderline
+	{
+	   text-decoration : none;
+	   color           : #083194;
+	}
+
+	a.noUnderline:visited {
+		color            : #083194;
+	}
+
+	a.noUnderline:active {
+		color            : #083194;
+	}
+
+</style>
+
+<!-- Message Date Arrays -->
+<script language=javascript>
+
+	top.msgSummary = new Array();
+	top.msgBody    = new Array();
+	top.msgType    = new Array();
+	top.msgUser    = new Array();
+	top.msgDate    = new Array();
+	top.msgID      = new Array();
+
+	##TP_LOOP msg_idx {[tpGetVar NumMsgs]}##
+
+		top.msgSummary[##TP_TCL {tpBufWrite [tpGetVar msg_idx]}##] = "##TP_CustMsgEdit##";
+		top.msgBody[##TP_TCL {tpBufWrite [tpGetVar msg_idx]}##] = "##TP_CustMsgView##";
+		top.msgType[##TP_TCL {tpBufWrite [tpGetVar msg_idx]}##] = "##TP_CustMsgSort##";
+		top.msgUser[##TP_TCL {tpBufWrite [tpGetVar msg_idx]}##] = "##TP_CustMsgUname##";
+		top.msgDate[##TP_TCL {tpBufWrite [tpGetVar msg_idx]}##] = "##TP_CustMsgDate##";
+		top.msgID[##TP_TCL {tpBufWrite [tpGetVar msg_idx]}##] = "##TP_CustMsgId##";
+
+	##TP_ENDLOOP##
+
+</script>
+<script language=javascript>
+		var cmsg = new Array();
+</script>
+
+<form action="##TP_CGI_URL##" method=get name=custMsgs>
+
+<input type=hidden name=sortFilter value="##TP_sortFilter##">
+<input type=hidden name=startDateFilter value="##TP_startDateFilter##">
+<input type=hidden name=endDateFilter value="##TP_endDateFilter##">
+<input type=hidden name=userFilter value="##TP_userFilter##">
+<input type=hidden name=keysFilter value="##TP_keysFilter##">
+
+<input type=hidden name=CustId value="##TP_CustId##">
+<input type=hidden name=CustMsgId value="">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CUST::DoCust">
+
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th class=title colspan=3>
+			Customer message
+		</th>
+	</tr>
+		<!-- Message table -->
+		<script>
+		var prevType = '';
+
+		  if (top.msgBody.length > 0)
+		  {
+				for (var i = 0; i < top.msgSummary.length; i++)
+				{
+
+					if (prevType != top.msgType[i])
+					{
+						document.write('  <tr>');
+						document.write('    <td colspan=3><b>');
+						write_which(top.msgType[i], "O", "Operator", "S", "Supervisor","C","Customer services","H","Hospitality","M","Marketing","X","Security");
+						document.write('    </b></td>');
+						document.write('  </tr>');
+					}
+					prevType = top.msgType[i];
+
+					document.write('  <tr>');
+					document.write('    <td width=30>&nbsp;&nbsp;</td>');
+					document.write('    <td align=center rowspan=2><a id=view' + i + ' class=noUnderline href="javascript:showMsg(' + i + ');">view</a></td>');
+					document.write('    <td>' + top.msgDate[i] + ' (' + top.msgUser[i] + ')</td>');
+					document.write('  </tr>');
+					document.write('  <tr>');
+					document.write('    <td width=30>&nbsp;&nbsp;</td>');
+					document.write('    <td>' + top.msgSummary[i] + '</td>');
+					document.write('  </tr>');
+				}
+			}
+		</script>
+
+	##TP_IF {[tpGetVar NumMsgs] > 0}##
+	<tr>
+	  <td colspan=3><hr size=1 color=#777777></td>
+	</tr>
+	<tr>
+	  <td colspan=3 align=center>
+	  <script>addDynamic('currMsgDetail');</script>
+	</td>
+	</tr>
+	<tr>
+	  <td colspan=3 align=center>
+	    <textarea cols=50 rows=5 wrap=physical name="Message" onKeyUp="countChars()" onChange="countChars()"></textarea>
+	  </td>
+	</tr>
+	<tr>
+	  <td colspan=3 align=center><small><script>addDynamic('charCount');</script></small>&nbsp;&nbsp;</td>
+		<script>showMsg(0);</script>
+	</tr>
+	<tr>
+	  <td colspan=3 align=center>
+	    <table width=100%>
+	      <tr>
+	        <td align=center><a class=noUnderline href="Javascript:showMsg(0);">First</a></td>
+	        <td align=center><a class=noUnderline href="Javascript:showMsg(Math.max(0,top.currentIndex - 1))">Previous</a></td>
+	        <td align=center><a class=noUnderline href="Javascript:showMsg(Math.min(top.msgBody.length - 1, top.currentIndex + 1))">Next</a></td>
+	        <td align=center><a class=noUnderline href="Javascript:showMsg(top.msgBody.length - 1)">Last</a></td>
+	      </tr>
+	    </table>
+	  </td>
+	</tr>
+	##TP_ELSE##
+	<input type=hidden name=Message>
+	<tr>
+	  <td colspan=3>There are no messages for this customer</td>
+	</tr>
+	##TP_ENDIF##
+	<tr>
+	  <th class=buttons align=center colspan=3>
+	  	##TP_IF {[tpGetVar NumMsgs] > 0 || [tpGetVar Filtered]}##
+			<Input type=button class=cMsgBtn name=addFilterBtn onClick="doAddFilter();" value="##TP_IF {![tpGetVar Filtered]}##Add Filter##TP_ELSE##Change Filter##TP_ENDIF##">
+			##TP_ENDIF##
+
+			##TP_IF {[tpGetVar Filtered]}##
+			<Input type=button class=cMsgBtn name=clrFilterBtn onClick="return fs(this,'GoCustMsgs');" value="Clear Filter">
+			##TP_ENDIF##
+
+			##TP_IF {[op_allowed SetCustMsg]}##
+				##TP_IF {[tpGetVar NumMsgs] > 0}##
+			  <input type=button class="btn_def" class=cMsgBtn name=updateBtn onClick="return fs(this,'SetMsg')" value="Update Message">
+			  ##TP_ENDIF##
+			  <input type=button class="btn_def" class=cMsgBtn name=newMsgBtn onClick="doNewMessage()" value="New Message">
+			##TP_ENDIF##
+			<Input type=button class=cMsgBtn name=backBtn onClick="return fs(this,'GoCust');" value="Back">
+		</th>
+	</tr>
+</table>
+</form>

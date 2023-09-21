@@ -1,0 +1,37 @@
+<!-- $Id: bf_event.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+##TP_IF {[tpGetVar BfHid 0]==1}##
+	<tr>
+		<input type=hidden name="BFMapId" value="##TP_EvBFMapId##">
+		<input type=hidden name="BFEvItemsId" value="##TP_EvBFEvItemsId##">
+	</tr>
+	##TP_TCL {tpSetVar BfHid 0}##
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar BfEvMatch 0]==1}##
+	<tr>
+	<td class=caption>Betfair Event Match</td>
+	<td>
+		##TP_IF {[OT_CfgGet BF_MANUAL_MATCH 0] && [op_allowed BFMatch]}##
+		<select name="BF_EventMatch">
+			##TP_IF {[OT_CfgGet BF_USE_ACTIVE_EV 0] && ([tpBindGet is_mapped_event_in_list] == -1) && ([tpBindGet BFEV_nrows] > 0)}##
+				<option value = "##TP_Old_ev_id##" selected style="color:red" >##TP_BFEV_name##</option>
+			##TP_ENDIF##
+			<option value = "" ##TP_IF {[tpBindGet Old_ev_id] == ""}## selected ##TP_ENDIF## >-</option>
+			##TP_LOOP bf_ev_idx {[tpGetVar BFEvRows]}##
+				<option value = "##TP_BF_Ev_Id##" ##TP_IF {[tpBindGet Old_ev_id] == [tpBindGet BF_Ev_Id]}## selected style="color:red" ##TP_ENDIF## >
+					##TP_BF_Ev_Name##
+				</option>
+			##TP_ENDLOOP##
+		</select>
+		##TP_ELSE##
+			##TP_LOOP bf_ev_idx {[tpGetVar BFEvRows]}##
+				##TP_IF {[tpBindGet Old_ev_id] == [tpBindGet BF_Ev_Id]}##
+					##TP_BF_Ev_Name##
+				##TP_ENDIF##
+			##TP_ENDLOOP##
+		##TP_ENDIF##
+	</td>
+	</tr>
+	<input type=hidden name="BF_EvId_old" value="##TP_Old_ev_id##">
+	##TP_TCL {tpSetVar BfEvMatch 0}##
+##TP_ENDIF##

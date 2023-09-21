@@ -1,0 +1,528 @@
+<html>
+<!-- $Id: bir.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Control Information</title>
+<script language=JavaScript>
+
+var errorList = "";
+
+function add_err(e_str)
+{
+  if (errorList.length > 0) {
+    errorList += "\n";
+  }
+  errorList += e_str;
+}
+
+function viewTabLang(b) 
+{
+	var lang = null;
+
+	var lang_index = document.getElementById('TabLanguage').selectedIndex;
+	lang = document.getElementById('TabLanguage').options[lang_index].value;
+
+	b.form.TabLanguage.value=lang;	
+	b.form.submit();
+	return true;	
+}
+
+function showTemplateMaps(b)
+{
+	var templId = null;
+
+	var templId_index = document.getElementById('Templ_Selector').selectedIndex;
+	templId = document.getElementById('Templ_Selector').options[templId_index].value;
+	
+	b.form.TemplSelnId.value=templId;
+	b.form.submit();
+	return true;	
+}
+
+
+
+function validate(f)
+{
+  var refresh_MINI           = f.refresh_MINI.value;
+  var refresh_SCHED          = f.refresh_SCHED.value;
+  var refresh_EVENT          = f.refresh_EVENT.value;
+  var refresh_COMM           = f.refresh_COMM.value;
+  var refresh_HOME           = f.refresh_HOME.value;
+  var refresh_ALLBL          = f.refresh_ALLBL.value;
+  var refresh_SPORT          = f.refresh_SPORT.value;
+  var refresh_COMP           = f.refresh_COMP.value;
+  var refresh_CROSS          = f.refresh_CROSS.value;
+  var refresh_EVLST          = f.refresh_EVLST.value;
+
+  var errorList = "";
+/*
+  if (isInteger(refresh_MINI, false, 5)) {
+    errorList += "MiniApp Refresh Rate must be an integer\n";
+  }
+  if (isInteger(refresh_SCHED, false, 5)) {
+    errorList += "MaxiApp Schedule Refresh Rate must be an integer\n";
+  }
+  if (isInteger(refresh_EVENT, false, 5)) {
+    errorList += "MaxiApp Event Refresh Rate must be an integer\n";
+  }
+  if (isInteger(refresh_COMM, false, 5)) {
+    errorList += "MaxiApp Commentary Refresh Rate must be an integer\n";
+  }
+*/
+  if (errorList == "") {
+    return true;
+  } else {
+    alert("There are some errors in the form:\n\n" + errorList);
+    return false;
+  }
+}
+
+function DelSelTab(chosen) {
+
+	var f = document.FrmSportTab;
+
+	if (chosen == "") {
+		alert("No sport tab was selected to Remove.");
+	} else {
+		f.TabId.value = chosen;
+		f.SubmitName.value = "BIRDoDelTab";
+		f.submit();
+	}
+}
+
+function TabDetails(chosen) {
+	if (chosen == "") {
+		alert("No sport tab was selected to view template information.");
+	} else {
+		parent.MainArea.location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir_tab_detail&TabId="+chosen;
+	}
+	
+}
+
+function UpdSelTab(chosen) {
+
+	if (chosen == "") {
+		alert("No sport tab was selected to update.");
+	} else {
+		location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir_add_tab&map_id="+chosen;
+	}
+}
+
+function UpdSelTempl(t) {
+
+	chosen = ""
+	len = t.form.EditTempl.length
+
+	chosen = t.form.EditTempl.value;
+
+	for (i = 0; i < len; i++) {
+		if (t.form.EditTempl[i].checked) {
+			chosen = t.form.EditTempl[i].value
+		}
+	}
+	if (chosen == "") {
+		alert("No template was selected to update.");
+	} else {
+		parent.MainArea.location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir_add_templ&TemplSelnId="+chosen;
+	}
+}
+
+
+function UpdSelTemplMap(t) {
+
+	chosen = ""
+	len = t.form.templMaps.length
+
+	chosen = t.form.templMaps.value;
+
+	for (i = 0; i < len; i++) {
+		if (t.form.templMaps[i].checked) {
+			chosen = t.form.templMaps[i].value
+		}
+	}
+
+	if (chosen == "") {
+		alert("No template map was selected to update.");
+	} else {
+		parent.MainArea.location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir_add_templ_map&EvOcGrpId="+chosen;
+	}
+}
+
+function AddNewTemplateMap()
+{
+	parent.MainArea.location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir_add_templ_map";
+}
+
+function AddNewTemplate()
+{
+	parent.MainArea.location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir_add_templ";
+}
+
+function AddNewTab()
+{
+	parent.MainArea.location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir_add_tab";
+}
+
+function fs(b,t)
+{
+	if (t == 'Update' && !validate(b.form)) {
+		return false;
+	}
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3 width=680px>
+<form action="##TP_CGI_URL##" method=get>
+<tr>
+  <th colspan=2 class=title>
+  Betting in Running Information
+  </th>
+</tr>
+
+##TP_IF {[OT_CfgGet FUNC_BIR_FEED_SIMPLE_MINI 1]}##
+<tr>
+  <td class=caption>MiniApp Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_MINI" size=5 value="##TP_refresh_MINI##">
+    <b>(seconds)</b>
+  </td>
+</tr>
+##TP_ELSE##
+<input type=hidden name="refresh_MINI" value="##TP_refresh_MINI##">
+##TP_ENDIF##
+
+##TP_IF {[OT_CfgGet FUNC_BIR_FEED_SCHEDULE 1]}##
+<tr>
+  <td class=caption>Schedule Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_SCHED" size=5 value="##TP_refresh_SCHED##">
+    <b>(seconds)</b>
+  </td>
+</tr>
+##TP_ELSE##
+<input type=hidden name="refresh_SCHED" value="##TP_refresh_SCHED##">
+##TP_ENDIF##
+
+<tr>
+  <td class=caption>Event Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_EVENT" size=5 value="##TP_refresh_EVENT##">
+    <b>(seconds)</b> (Can be overridden by class)
+  </td>
+</tr>
+<tr>
+  <td class=caption>Commentary Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_COMM" size=5 value="##TP_refresh_COMM##">
+    <b>(seconds)</b> (Can be overridden by class)
+  </td>
+</tr>
+
+<tr>
+  <td class=caption>Home Page Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_HOME" size=5 value="##TP_refresh_HOME##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class or Event-List)
+  </td>
+</tr>
+<tr>
+  <td class=caption>All Betlive Page Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_ALLBL" size=5 value="##TP_refresh_ALLBL##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class or Event-List)
+  </td>
+</tr>
+<tr>
+  <td class=caption>Sport Page Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_SPORT" size=5 value="##TP_refresh_SPORT##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class or Event-List)
+  </td>
+</tr>
+<tr>
+  <td class=caption>Competition Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_COMP" size=5 value="##TP_refresh_COMP##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class or Event-List)
+  </td>
+</tr>
+<tr>
+  <td class=caption>Cross-Sell App Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_CROSS" size=5 value="##TP_refresh_CROSS##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class or Event-List)
+  </td>
+</tr>
+<tr>
+  <td class=caption>Event-List Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_EVLST" size=5 value="##TP_refresh_EVLST##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class)
+  </td>
+</tr>
+
+<tr>
+  <td class=caption>Home Page Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_HOME" size=5 value="##TP_refresh_HOME##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class or Event-List)
+  </td>
+</tr>
+<tr>
+  <td class=caption>All Betlive Page Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_ALLBL" size=5 value="##TP_refresh_ALLBL##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class or Event-List)
+  </td>
+</tr>
+<tr>
+  <td class=caption>Sport Page Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_SPORT" size=5 value="##TP_refresh_SPORT##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class or Event-List)
+  </td>
+</tr>
+<tr>
+  <td class=caption>Competition Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_COMP" size=5 value="##TP_refresh_COMP##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class or Event-List)
+  </td>
+</tr>
+<tr>
+  <td class=caption>Cross-Sell App Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_CROSS" size=5 value="##TP_refresh_CROSS##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class or Event-List)
+  </td>
+</tr>
+<tr>
+  <td class=caption>Event-List Refresh Rate</td>
+  <td>
+    <input type=text name="refresh_EVLST" size=5 value="##TP_refresh_EVLST##">
+    <b>(seconds)</b> (Can be overridden by smaller value in Class)
+  </td>
+</tr>
+
+<tr>
+  <th colspan=2 class=buttons>
+  <input type=button value="Update" onClick="return fs(this,'Update')">
+  </th>
+  <input type=hidden name=SubmitName value="">
+  <input type=hidden name=action value=ADMIN::BIR::do_bir>
+</tr>
+</form>
+</table>
+<br>
+
+
+
+##TP_IF {[OT_CfgGet FUNC_BIR_FEED_SCHEDULE 0]}##
+<table border=0 cellspacing=0 cellpadding=3>
+<form action="##TP_CGI_URL##" method=get>
+<tr>
+	<th colspan=4 class=title>
+		Schedule Views
+	</th>
+</tr>
+<tr>
+	<th class="colhead">Day</th>
+	<th class="colhead">Minimise All</th>
+	<th class="colhead">Show Top</th>
+	<th class="colhead">Show All</th>
+</tr>
+<tr>
+	<td class=caption>Today</td>
+	<td><input type="radio" name="sched_0" value="MIN" ##TP_schedsel_0_MIN##></td>
+	<td><input type="radio" name="sched_0" value="TOP" ##TP_schedsel_0_TOP##></td>
+	<td><input type="radio" name="sched_0" value="ALL" ##TP_schedsel_0_ALL##></td>
+</tr>
+<tr>
+	<td class=caption>Tomorrow</td>
+	<td><input type="radio" name="sched_1" value="MIN" ##TP_schedsel_1_MIN##></td>
+	<td><input type="radio" name="sched_1" value="TOP" ##TP_schedsel_1_TOP##></td>
+	<td><input type="radio" name="sched_1" value="ALL" ##TP_schedsel_1_ALL##></td>
+</tr>
+<tr>
+	<td class=caption>2 Days Time</td>
+	<td><input type="radio" name="sched_2" value="MIN" ##TP_schedsel_2_MIN##></td>
+	<td><input type="radio" name="sched_2" value="TOP" ##TP_schedsel_2_TOP##></td>
+	<td><input type="radio" name="sched_2" value="ALL" ##TP_schedsel_2_ALL##></td>
+</tr>
+<tr>
+	<td class=caption>3 Days Time</td>
+	<td><input type="radio" name="sched_3" value="MIN" ##TP_schedsel_3_MIN##></td>
+	<td><input type="radio" name="sched_3" value="TOP" ##TP_schedsel_3_TOP##></td>
+	<td><input type="radio" name="sched_3" value="ALL" ##TP_schedsel_3_ALL##></td>
+</tr>
+<tr>
+	<td class=caption>Others</td>
+	<td><input type="radio" name="sched_-1" value="MIN" ##TP_schedsel_-1_MIN##></td>
+	<td><input type="radio" name="sched_-1" value="TOP" ##TP_schedsel_-1_TOP##></td>
+	<td><input type="radio" name="sched_-1" value="ALL" ##TP_schedsel_-1_ALL##></td>
+</tr>
+<tr>
+	<th colspan=4 class=buttons>
+		<input type=button value="Update" onClick="return fs(this,'BIRScheduleUpd')">
+	</th>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::BIR::do_bir>
+</tr>
+</form>
+</table>
+<br>
+##TP_ENDIF##
+
+
+
+<table border="0" cellspacing="0" cellpadding="3">
+<tr><th colspan="3" class="title">Refresh rate by class</th></tr>
+<tr>
+	<th class="colhead">Class</th>
+	<th class="colhead">Event (secs)</th>
+	<th class="colhead">Commentary (secs)</th>
+</tr>
+##TP_IF {[tpGetVar NumClasses 0]>0}##
+	##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+		<tr>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir_refresh&ClassID=##TP_ClassID##">##TP_ClassName##</a></td>
+			<td>##TP_class_EVENT##</td>
+			<td>##TP_class_COMM##</td>
+		</tr>
+	##TP_ENDLOOP##
+##TP_ELSE##
+	<tr>
+		<td colspan="3">
+		<b><i>There are no class-specific refresh rates defined</i></b>
+		</td>
+	</tr>
+##TP_ENDIF##
+##TP_IF {[op_allowed ManageBIR]}##
+	<form action="##TP_CGI_URL##" method=get>
+	<tr>
+		<th class=buttons colspan=3>
+			<input type=button value="Add New Class" onClick="return fs(this,'BIRRefreshAdd')">
+			<input type=hidden name=SubmitName value="">
+			<input type=hidden name=action value=ADMIN::BIR::go_bir_refresh>
+		</th>
+	</tr>
+	</form>
+##TP_ENDIF##
+
+</table>
+
+##TP_IF {[tpGetVar DisplayManageFlash]}##
+<table border=0 cellspacing=0 cellpadding=3>
+<form action="##TP_CGI_URL##" method=get>
+<tr>
+  <th colspan=2 class=title>
+  Betting in Running Flash-App Control
+  </th>
+</tr>
+<tr>
+	<td>Display BIR Mini Flash App on Customer Screens</td>
+	<td>
+		<select name="display_mini">
+			<option value="Y" ##TP_IF {[tpGetVar DisplayBIRFlashMini] == "Y"}##selected="selected"##TP_ENDIF##>Yes</option>
+			<option value="N" ##TP_IF {[tpGetVar DisplayBIRFlashMini] == "N"}##selected="selected"##TP_ENDIF##>No</option>
+		</select>
+	</td>
+</tr>
+<tr>
+	<td>Display BIR Cross-Sell Flash App on Customer Screens</td>
+	<td>
+		<select name="display_cs">
+			<option value="Y" ##TP_IF {[tpGetVar DisplayBIRFlashCS] == "Y"}##selected="selected"##TP_ENDIF##>Yes</option>
+			<option value="N" ##TP_IF {[tpGetVar DisplayBIRFlashCS] == "N"}##selected="selected"##TP_ENDIF##>No</option>
+		</select>
+	</td>
+</tr>
+<tr>
+	<td>Display Reduced or Full BIR Flash App at Event Level</td>
+	<td>
+		<select name="display_fe">
+			<option value="Y" ##TP_IF {[tpGetVar DisplayBIRFlashEvent] == "Y"}##selected="selected"##TP_ENDIF##>Full</option>
+			<option value="N" ##TP_IF {[tpGetVar DisplayBIRFlashEvent] == "N"}##selected="selected"##TP_ENDIF##>Reduced</option>
+		</select>
+	</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+		<input type=button value="Update" onClick="return fs(this,'BIRFlashControl')">
+	</th>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::BIR::do_bir>
+</tr>
+</form>
+</table>
+##TP_ENDIF##
+
+<br>
+
+<div>
+<form  action="##TP_CGI_URL##" method=get>
+Sport Tab Language
+	<select id="TabLanguage" name=TabLanguage OnChange="viewTabLang(this);"> 
+	##TP_LOOP lang_idx {[tpGetVar NumberLangs]}##
+		<option value="##TP_lang_Name##" ##TP_lang_Selected## > ##TP_lang_Name## </option>
+	##TP_ENDLOOP##
+	</select> 
+
+<input type="hidden" name="action" value="ADMIN::BIR::do_bir">
+<input type=hidden name="TabLanguage" value="">
+<input type=hidden name=SubmitName value="BIRTabLang">
+
+</form>
+</div>
+
+<a name="SportTabs" />
+<table border=0 cellspacing=0 cellpadding=3 width=680px>
+<form name="FrmSportTab" action="##TP_CGI_URL##" method=get>
+<tr>
+	<th colspan=8 class=title>
+		Sport Tab Mappings
+	</th>
+</tr>
+	<tr>
+		<th class="colhead">Sport Name</th>
+		<th class="colhead">Level</th>
+		<th class="colhead">Name</th>
+		<th class="colhead">Language</th>
+		<th class="colhead">Display Order</th>
+		<th class="colhead"></th>
+		<th class="colhead"></th>
+	</tr>
+##TP_LOOP tab_idx {[tpGetVar NumberTabs]}##
+	<tr>
+		<td><a href="#" OnClick="return TabDetails('##TP_tab_MapID##')">##TP_tab_SportName##</a></td>
+		<td>##TP_tab_LevelDesc##</td>
+		<td>##TP_tab_Name##</td>
+		<td>##TP_tab_Languages##</td>
+		<td> ##TP_tab_DispOrder##</td>
+		<td><a href="#" OnClick="return UpdSelTab('##TP_tab_MapID##')">Update</a></td>
+		<td><a href="#" OnClick="return DelSelTab('##TP_tab_MapID##')">Delete</a></td>
+
+	</tr>
+##TP_ENDLOOP##
+<th colspan=8 class=buttons>
+	<input type=button value="Add" onClick="return AddNewTab()">
+</th>
+
+<input type=hidden name=action value=ADMIN::BIR::do_bir>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=TabId value="">
+</form>
+</table>
+</body>
+</html>

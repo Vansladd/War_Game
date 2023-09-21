@@ -1,0 +1,121 @@
+<!-- $Id: seo_text_boxes.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+
+<input type="button" value="Show / Hide SEO Tags" onClick="show_hide_seo();" ##TP_IF {![op_allowed SeoTags]}##disabled##TP_ENDIF##><br/>
+<input type="hidden" id="last_focus" name="last_focus" value="_title_tag">
+<input type="hidden" id="title_tag" name="title_tag" value="">
+<input type="hidden" id="desc_tag" name="desc_tag" value="">
+<input type="hidden" id="key_tag" name="key_tag" value="">
+<input type="hidden" id="h1h2_tag" name="h1h2_tag" value="">
+<div id="seo_text_boxes" style="display:none">
+	<table>
+		<tr>
+			<td>
+				<table>
+					<tr>
+						<td><i>&nbsp;Title</i></td>
+					</tr>
+					<tr>
+						<td>
+							<textarea cols="51" rows="2" id="_title_tag" name="_title_tag" wrap="soft" value="" onFocus="updateLastFocus('_title_tag')" onKeyUp="update_char_remaining('_title_tag')"></textarea>
+						</td>
+						<td>
+							<table>
+								<tr>
+									<td><i>Remaining:</i></td>
+								</tr>
+								<tr>
+									<td align="right"><input type="text" size="3" id="_title_tag_rem" readonly></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td><i>&nbsp;Description</i></td>
+					</tr>
+					<tr>
+						<td>
+							<textarea cols="51" rows="5" id="_desc_tag" name="_desc_tag" wrap="soft" value="" onFocus="updateLastFocus('_desc_tag')" onKeyUp="update_char_remaining('_desc_tag')"></textarea>
+						</td>
+						<td>
+							<table>
+								<tr>
+									<td><i>Remaining:</i></td>
+								</tr>
+								<tr>
+									<td align="right"><input type="text" size="3" id="_desc_tag_rem" readonly></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td><i>&nbsp;Keywords</i></td>
+					</tr>
+					<tr>
+						<td>
+							<textarea cols="51" rows="5" id="_key_tag" name="_key_tag" wrap="soft" value="" onFocus="updateLastFocus('_key_tag')" onKeyUp="update_char_remaining('_key_tag')"></textarea>
+						</td>
+						<td>
+							<table>
+								<tr>
+									<td><i>Remaining:</i></td>
+								</tr>
+								<tr>
+									<td align="right"><input type="text" size="3" id="_key_tag_rem" readonly></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td><i>&nbsp;H1 / H2 Tags</i></td>
+					</tr>
+					<tr>
+						<td>
+							<textarea cols="51" rows="5" id="_h1h2_tag" name="_h1h2_tag" wrap="soft" value="" onFocus="updateLastFocus('_h1h2_tag')" onKeyUp="update_char_remaining('_h1h2_tag')"></textarea>
+						</td>
+						<td>
+							<table>
+								<tr>
+									<td><i>Remaining:</i></td>
+								</tr>
+								<tr>
+									<td align="right"><input type="text" size="3" id="_h1h2_tag_rem" readonly></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td>
+				<table>
+					<tr>
+						<td class="center">
+							DKIs
+						</td>
+					</tr>
+					<tr>
+						<td align="right">
+							Optional Tags&nbsp;<input type="checkbox" id="optional_dki" checked>
+						<td>
+					</tr>
+					<tr>
+						<td>
+							<select id="dki_sel" name="dki_sel" style="width:125px" size="6" onDblClick="addDKI()">
+								<option value="CATEGORY">CATEGORY</option>
+								<option value="CLASS">CLASS</option>
+								<option value="REGION">REGION</option>
+								<option value="COUPON">COUPON</option>
+								<option value="TYPE">TYPE</option>
+								<option value="EVENT">EVENT</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<i>Double-Click to add<br>a DKI to the tag</i>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</div>

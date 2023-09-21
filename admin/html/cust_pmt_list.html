@@ -1,0 +1,168 @@
+<!-- $Id: cust_pmt_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+##TP_IF {[OT_CfgGet FUNC_CARD_CHANGE_ALLOWED 0]}##
+<script>
+function openOkToDelete() {
+
+        var username = document.getElementById("CCChangeUsername").value;
+
+        // popup colour chooser window
+        var url = "##TP_CGI_URL##?action=ADMIN::CUST::GoOkToDelete&username="+username;
+        var name = "oktodelete";
+        var features = "width=750,height=300,resizable=yes,menubar=no,toolbar=no,status=yes";
+
+        colour_win = window.open(url, name, features);
+}
+</script>
+##TP_ENDIF##
+
+##TP_IF {[op_allowed ViewPayMethod] && [tpGetVar PmtDispError 0] != 1}##
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th colspan=12 class=title>##TP_PaymentListTitle##</th>
+</tr>
+
+##TP_IF {[OT_CfgGet CAP_CUST_PAYMTHD_DISPLAY 0]}##
+
+	##TP_IF {[tpGetVar RemovedCPMs] > [OT_CfgGet CAP_CUST_PAYMTHD_DISPLAY 0]}##
+		<tr>
+			<th colspan = 12>
+				##TP_IF {[tpGetVar showAllCPMs] ==1}##
+					<a id="hidePayments" href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&amp;CustId=##TP_CustId##&amp;showAllCPMs=0#cpm_anchor">Show active, suspended & ##TP_TCL {tpBufWrite [OT_CfgGet CAP_CUST_PAYMTHD_DISPLAY ""]}## most recently removed payment methods</a>
+				##TP_ELSE##
+					<a id="showPayments" href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&amp;CustId=##TP_CustId##&amp;showAllCPMs=1#cpm_anchor">Show all payment methods (##TP_TCL {tpBufWrite $CPM_CUST(total_cpms)}## payment methods in total)</a>
+				##TP_ENDIF##
+			</th>
+		</tr>
+	##TP_ENDIF##
+
+##TP_ENDIF##
+
+<tr>
+	<th nowrap class=colhead>Date</th>
+	<th nowrap class=colhead>Method</th>
+	<th nowrap class=colhead>PMB Expiry (days)</th>
+	<th nowrap class=colhead>Card No./Neteller ID</th>
+	##TP_IF {[OT_CfgGet DCASH_REQUIRE_CV2 0]}##
+		<th nowrap class=colhead>CSC Response</th>
+	##TP_ENDIF##
+	<th nowrap class=colhead>Status</th>
+	<th nowrap class=colhead>DEP OK?</th>
+	<th nowrap class=colhead>WTD OK?</th>
+	<th nowrap class=colhead>DEP Order</th>
+	<th nowrap class=colhead>WTD Order</th>
+	<th nowrap class=colhead>Type</th>
+	<th nowrap class=colhead>Balance</th>
+</tr>
+##TP_IF {$CPM_CUST(total_cpms)==0}##
+<tr>
+	<td colspan=11 align=center>
+	No payment methods for this customer!
+	</td>
+</tr>
+##TP_ELSE##
+##TP_LOOP cpm_idx {$CPM_CUST(num_rows)}##
+	<tr>
+
+	<td nowrap>##TP_CPM_cr_date##</td>
+	<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::PMT::go_pay_mthd_auth&amp;cpm_id=##TP_CPM_cpm_id##&amp;CustId=##TP_CPM_cust_id##&amp;pay_mthd=##TP_CPM_pay_mthd##&amp;from_cust_details=1">##TP_TCL { tpBufWrite [tpBindGet CPM_Desc_[tpGetVar cpm_idx]]} ##</a></td>
+	<td nowrap>##TP_CPM_pmb_period##</td>
+	<td nowrap>
+		##TP_TCL {tpBufWrite [tpGetVar CPM_Card_No_[tpGetVar cpm_idx]]}##
+		##TP_IF {[tpGetVar CPM_Is_Entropay_Card_[tpGetVar cpm_idx]]}## (Entropay) ##TP_ENDIF##
+		##TP_TCL {tpBufWrite [tpGetVar CPM_Neteller_Id_[tpGetVar cpm_idx]]}##
+		##TP_TCL {tpBufWrite [tpGetVar CPM_envoy_uniq_ref_[tpGetVar cpm_idx]]}##
+	</td>
+	##TP_IF {[OT_CfgGet DCASH_REQUIRE_CV2 0]}##
+		<td nowrap>##TP_CPM_cvv2_resp##</td>
+	##TP_ENDIF##
+	<td nowrap>
+		<script>
+		write_which("##TP_CPM_status##","A","Active","S","Suspended","X","Removed")
+		</script>
+	</td>
+	<td nowrap>
+		<script>
+		write_which("##TP_CPM_auth_dep##","Y","Yes","N","No","P","Pending","E","Exclusive","M","Mandatory")
+		</script>
+	</td>
+	<td nowrap>
+		##TP_IF {[tpBindGet CPM_auth_wtd] == "N"}##
+			##TP_IF {[tpBindGet CPM_linked_cpm_id] > 0}##
+				<a href="##TP_CGI_URL##?action=ADMIN::PMT::go_pay_mthd_auth&amp;cpm_id=##TP_CPM_linked_cpm_id##&amp;CustId=##TP_CPM_cust_id##&amp;pay_mthd=##TP_CPM_linked_pay_mthd##&amp;from_cust_details=1">Linked</a>
+			##TP_ELSE##
+				No
+			##TP_ENDIF##
+		##TP_ELSE##
+			<script>
+			write_which("##TP_CPM_auth_wtd##","Y","Yes","N","No","P","Pending","E","Exclusive","M","Mandatory")
+			</script>
+		##TP_ENDIF##
+	</td>
+	<td nowrap>##TP_CPM_order_dep##</td>
+	<td nowrap>##TP_CPM_order_wtd##</td>
+	<td nowrap>##TP_CPM_type##</td>
+	<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::PMT_MULTIPLE::GoPMBHistory&amp;cpm_id=##TP_CPM_cpm_id##&amp;CustId=##TP_CPM_cust_id##&amp;Username=##TP_Username##&amp;AcctNo=##TP_AcctNo##&amp;AcctId=##TP_AcctId##">##TP_CPM_pmb##</a></td>
+</tr>
+##TP_ENDLOOP##
+
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar CshCPM]==0}##
+<tr>
+	<td nowrap></td>
+	<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::PMT::do_pay_mthd_add&amp;Username=##TP_Username##&amp;AcctNo=##TP_AcctNo##&amp;pay_mthd=CSH&amp;CustId=##TP_CustId##">Cash</a></td>
+	<td nowrap colspan=7></td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet BOSS_MEDIA_CASINO 0] == 1}##
+<form method=get action="##TP_CGI_URL##">
+<tr>
+	<th colspan=12 class=buttons>
+		<input type="button" class="btn_def" value="Check BossMedia Session" onClick="this.form.submit()"
+	</th>
+</tr>
+<input type=hidden name=action value="ADMIN::CUST::DoBossMediaQuery">
+<input type=hidden name=CustId value="##TP_CustId##">
+</form>
+##TP_ENDIF##
+
+##TP_IF {[OT_CfgGet CAP_CUST_PAYMTHD_DISPLAY 0]}##
+
+	##TP_IF {[tpGetVar RemovedCPMs] > [OT_CfgGet CAP_CUST_PAYMTHD_DISPLAY 0]}##
+
+		##TP_IF {[tpGetVar showAllCPMs] ==0}##
+			<tr id="moreToShow">
+				<th colspan="12"><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&amp;CustId=##TP_CustId##&amp;showAllCPMs=1#cpm_anchor">More ...</a></th>
+			</tr>
+		##TP_ENDIF##
+
+	##TP_ENDIF##
+
+##TP_ENDIF##
+
+
+<tr>
+	<form method=get action="##TP_CGI_URL##">
+	##TP_IF {[OT_CfgGet FUNC_CARD_CHANGE_ALLOWED 0]}##
+	<th class="buttons" colspan="12">
+		<input id="CCChangeUsername" type="hidden" name="CCChangeUsername" value="##TP_Username##">
+		<input type="button" class="btn_def" value="Card Change Allowed?" onClick="javascript:openOkToDelete();">
+	##TP_ENDIF##
+	##TP_IF {[OT_CfgGet FUNC_ZERO_CPM_BALANCES 0] && [op_allowed ZeroCPMBalance]}##
+		<input type="button" class="btn_def" value="Zero Method Balances" onClick="javascript:fs(this,'ZeroCPMBalances');">
+	##TP_ENDIF##
+	<input type="hidden" name="action" value="ADMIN::CUST::DoCust">
+	<input type="hidden" name="CustId" value="##TP_CustId##">
+	<input type="hidden" name="SubmitName" value="">
+	</th>
+	</form>
+</tr>
+
+<form method=get action="##TP_CGI_URL##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::PMT::go_auth_qry">
+</form>
+</table>
+<br>
+
+##TP_ENDIF##

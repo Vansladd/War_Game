@@ -1,0 +1,566 @@
+<html>
+<!-- $Id: bet_receipt.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Database Viewer</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function fs(b,t)
+{
+##TP_IF {[OT_CfgGet NO_UNVETTED_BET_DESCRIPTION 0] == 1}##
+
+	if (t == "GoManualBetDescUpd") {
+		var r = confirm("Update Manual Bet Description ?");
+		if (r == false){
+			return false;
+		}
+
+		var s = b.form.current.value;
+		if (s.length > 1020){
+			alert("Description text is too long (1020 max).");
+			return false;
+		}
+	}
+##TP_ENDIF##
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function fs_man_adj(b,t,bet_id) {
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value= t;
+
+	b.form.action.value    = "ADMIN::ADJ::GoManAdj"
+	b.form.ManAdj_ref_key.value   = "BET";
+	b.form.ManAdj_ref_id.value    = bet_id
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_IF {[tpGetVar IS_ELITE 0]!=0}##
+	<font color="red"><b>&nbsp; * Elite Customer</b></font>
+##TP_ENDIF##
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<h3>Bet receipt ##TP_Receipt##</h3>
+##TP_IF {[tpGetVar ShowCombiKey 0]}##
+	<table cellspacing=2 cellpadding=2 border=1>
+	<tr>
+		<th align=left>##TP_XL {Admin.Bet_Receipt.COMBI_KEY}##:</td>
+		<td>##TP_XL {Admin.Bet_Receipt.COMBI_BANKER}##</td>
+		<td class=combiBanker>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		<td>##TP_XL {Admin.Bet_Receipt.CANNOT_BE_COMBINED}##</td>
+		<td class=combiEven>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		<td class=combiOdd>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	</tr>
+	</table>
+##TP_ENDIF##
+<center>
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th
+		##TP_IF {[OT_CfgGetTrue FUNC_DISP_BIR]}##
+			colspan=7
+		##TP_ELSE##
+			colspan=6
+		##TP_ENDIF##
+		class=title>
+	##TP_XL {Admin.Bet_Receipt.SELN_DETAILS}##
+	</th>
+</tr>
+##TP_IF {[tpGetVar ManualStl] == "0"}##
+<tr>
+	<th class=colhead><font color=white>##TP_XL {Admin.Bet_Receipt.LEG}##</font></th>
+	<th class=colhead><font color=white>##TP_XL {Admin.Bet_Receipt.SORT}##</font></th>
+	<th class=colhead><font color=white>##TP_XL {Admin.Bet_Receipt.EVENT}##</font></th>
+	<th class=colhead><font color=white>##TP_XL {Admin.Bet_Receipt.SELN}##</font></th>
+	<th class=colhead><font color=white>##TP_XL {Admin.Bet_Receipt.RESULT}##</font></th>
+	<th class=colhead><font color=white>##TP_XL {Admin.Bet_Receipt.PRICE}##</font></th>
+	##TP_IF {[OT_CfgGetTrue FUNC_DISP_BIR]}##
+	<th class=colhead><font color=white>##TP_XL {Admin.Bet_Receipt.IN_RUNNING}##</font></th>
+	##TP_ENDIF##
+</tr>
+##TP_LOOP leg_idx {[tpGetVar num_legs]}##
+	<tr>
+		<td valign=top class="combi##TP_BetCombi##">##TP_TCL {expr {1+[tpGetVar leg_idx]}}##</td>
+		<td valign=top class="combi##TP_BetCombi##">##TP_LegSort##</td>
+		<td valign=top class="combi##TP_BetCombi##">##TP_EventClass##<br>
+		##TP_EventType##<br>
+		<a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_EventId##">##TP_EventName##</a><br>
+		##TP_EventStart##<br>
+		<a href="##TP_CGI_URL##?action=ADMIN::MARKET::GoMkt&MktId=##TP_MarketId##">##TP_MarketName##
+		##TP_IF {$BET([tpGetVar leg_idx],leg_sort) == "CW"}##
+		(###TP_BIR_INDEX##)
+		##TP_ENDIF##
+		</a></td>
+		<td valign=top class="combi##TP_BetCombi##">
+		##TP_LOOP part_idx {$BET([tpGetVar leg_idx],num_parts)}##
+			<a href="##TP_CGI_URL##?action=ADMIN::SELN::GoOc&OcId=##TP_SelnId##">##TP_SelnName##</a><br>
+		##TP_ENDLOOP##
+		</td>
+		<td valign=top class="combi##TP_BetCombi##">
+		##TP_LOOP part_idx {$BET([tpGetVar leg_idx],num_parts)}##
+			##TP_SelnResult##<br>
+		##TP_ENDLOOP##
+		</td>
+		<td valign=top class="combi##TP_BetCombi##">
+		##TP_LOOP part_idx {$BET([tpGetVar leg_idx],num_parts)}##
+			##TP_SelnPrice##
+			##TP_IF {[OT_CfgGet SHOW_EARLY_PRICES 0]==1}##
+			##TP_EPActive##
+			##TP_ENDIF##
+			##TP_IF {[tpBindGet Ew_places] != ""}##
+				each-way:##TP_Ew_places##@##TP_Ew_fac_num##/##TP_Ew_fac_den##
+			##TP_ENDIF##<br>
+		##TP_ENDLOOP##
+		</td>
+		##TP_IF {[OT_CfgGet FUNC_DISP_BIR 0]}##
+		<td valign=top class="combi##TP_BetCombi##">##TP_InRunning##</td>
+		##TP_ENDIF##
+	</tr>
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+	##TP_IF {[OT_CfgGet NO_UNVETTED_BET_DESCRIPTION 0] == 1}##
+	<th class=colhead>##TP_XL {Admin.Bet_Receipt.MAN_BET_DESC_CONFIGURABLE}##</th><th class=colhead></th><th class=colhead>##TP_XL {Admin.Bet_Receipt.MAN_BET_DESC_ORIG}##</th>
+	##TP_ELSE##
+	<th class=colhead colspan=7><font color=white>##TP_XL {Admin.Bet_Receipt.BET_DESCRIPTION}##</font></th>
+	##TP_ENDIF##
+	</tr>
+	##TP_IF {[OT_CfgGet NO_UNVETTED_BET_DESCRIPTION 0] == 1}##
+		<form name="bet_man_desc_upd" method=post action=##TP_CGI_URL##>
+		<input type=hidden name=action value=ADMIN::BET::GoManualBetDescUpd>
+		<input type=hidden name=SubmitName value="">
+	##TP_ENDIF##
+	<tr>
+	##TP_IF {[OT_CfgGet NO_UNVETTED_BET_DESCRIPTION 0] == 1}##
+	<td><textarea name="current" wrap=virtual cols=50 rows=10>##TP_ManDesc##</textarea></td>
+	<td><input type="button" value="<" class="btn_def" onClick="javascript:bet_man_desc_upd.current.value=bet_man_desc_upd.original.value"></td>
+	<td><textarea name="original" readonly wrap=virtual cols=50 rows=10>##TP_TempManDesc##</textarea></td>
+</tr>
+<tr>
+	<td colspan=2><input type=button class="btn_def" value="##TP_XL {Admin.Bet_Receipt.UPDATE_BUTTON}##" name="UpdDesc" onClick="return fs(this,'GoManualBetDescUpd')"><td>
+	##TP_ELSE##
+	<td><textarea name="original" readonly wrap=virtual cols=50 rows=10>##TP_ManDesc##</textarea></td>
+	##TP_ENDIF##
+</tr>
+##TP_IF {[OT_CfgGet FUNC_MAN_BET_CLASS 0]}##
+<tr>
+	<td>
+		<b>##TP_XL {Admin.Bet_Receipt.EVENT_CLASS}##: </b>##TP_ManEventClass##
+	</td>
+</tr>
+<tr>
+	<td>
+		<b>##TP_XL {Admin.Bet_Receipt.EVENT_TYPE}##: </b>##TP_ManEventType##
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<td>
+		<b>##TP_XL {Admin.Bet_Receipt.TO_SETTLE_ON}##: </b>##TP_ToSettleAtStr##
+	</td>
+</tr>
+##TP_IF {[OT_CfgGet NO_UNVETTED_BET_DESCRIPTION 0] == 1}##
+<input type="hidden" name="ToStlAt" value="##TP_ToSettleAt##" size="10">
+<input type="hidden" name="NextAction" value="ADMIN::BET::GoBetReceipt">
+<input type="hidden" name="BetId" value="##TP_BetId##">
+</form>
+##TP_ENDIF##
+##TP_ENDIF##
+</table>
+<br>
+
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th colspan=2 class=title>
+	##TP_XL {Admin.Bet_Receipt.BET_DETAILS}##
+	</th>
+</tr>
+<tr>
+	<th class=colhead>##TP_XL {Admin.Bet_Receipt.FIELD}##</th>
+	<th class=colhead>##TP_XL {Admin.Bet_Receipt.VALUE}##</th>
+</tr>
+<tr>
+##TP_IF {![OT_CfgGet FUNC_HIDE_USERNAMES 0]}##
+	<td>Username</td>
+	<td>
+	##TP_IF {[tpGetVar PERM_ViewCustInfo 0]}##
+		##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet Elite] != "Y")}##
+			<a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_Username##</a>&nbsp;(##TP_AcctNo##)</td></tr>
+		##TP_ELSE##
+			##TP_AcctNo## (*)
+		##TP_ENDIF##
+	##TP_ELSE##
+		##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet Elite] != "Y")}##
+			##TP_Username##
+		##TP_ELSE##
+			##TP_AcctNo## (*)
+		##TP_ENDIF##
+	##TP_ENDIF##
+##TP_ENDIF##
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.AFF_ID}##</td><td>##TP_AffId##</td>
+</tr>
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.BET_TYPE}##</td><td>##TP_BetType##</td>
+</tr>
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.LEG_TYPE}##</td><td>##TP_LegType##</td>
+</tr>
+<tr>
+    <td>##TP_XL {Admin.Bet_Receipt.SOURCE}##</td><td>##TP_Source##</td>
+</tr>
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.NUM_LINES}##</td><td>##TP_NumLines##</td>
+</tr>
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.BET_DATE}##</td><td>##TP_BetDate##</td>
+</tr>
+##TP_IF {[tpGetVar RETRO] == 1}##
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.RETRO_DATE}##</td><td>##TP_RetroDate##</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<td>Rep code</td><td>##TP_RepCode##</td>
+</tr>
+<tr>
+	<td>On-Course Type</td>
+	<td##TP_IF {[tpBindGet OnCourseType] != "--"}## style="color:white; background-color:green; font-weight:bold;"##TP_ENDIF##>##TP_OnCourseType##</td>
+</tr>
+##TP_IF {[tpGetVar ManualStl] == 1}##
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.REAL_BET_DATE}##</td><td>##TP_RealBetDate##</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.CCY}##</td><td>##TP_CCYCode##</td>
+</tr>
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.STAKE}##</td><td>##TP_Stake##</td>
+</tr>
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.STAKE_PER_LINE}##</td><td>##TP_StakePerLine##</td>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_BET_RCPT_SHOW_TAX 0]}##
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.TAX}##</td><td>##TP_TaxInfo##</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet ENABLE_FREEBETS2 "FALSE"] == "TRUE"}##
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.TOKEN_VALUE}##</td><td>##TP_TokenValue##</td>
+	</tr>
+##TP_ENDIF##
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.RECEIPT}##</td><td>##TP_Receipt##</td>
+</tr>
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.MAX_PAYOUT}##</td><td>##TP_MaxPayout##</td>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_BET_RCPT_SHOW_OPERATOR 0]}##
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.OPERATOR}##</td><td>##TP_Operator##</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_BET_RCPT_SHOW_LINE_NO 0]}##
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.TERMINAL_ID}##</td><td>##TP_TerminalID##</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[tpGetVar RETRO] == 1}##
+<tr>
+	<td>##TP_XL {Admin.Bet_Receipt.RETRO_TERM_CODE}##</td><td>##TP_RetroTermCode##</td>
+</tr>
+<tr>
+	<td>Retrospective Username</td><td>##TP_RetroUsername##</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_BET_RCPT_SHOW_IP 1]}##
+<tr>
+	<td>IP address</td><td>##TP_IPaddr##</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_BET_RCPT_SHOW_OVERRIDES 1]}##
+<tr>
+	##TP_IF {[tpGetVar bet_number_of_overrides] == 0}##
+	<td>##TP_XL {Admin.Bet_Receipt.OVERRIDES}##</td><td>##TP_XL {none}##</td>
+	 ##TP_ELSE##
+        <td>##TP_XL {Admin.Bet_Receipt.OVERRIDES}##</td><td><a href="##TP_CGI_URL##?action=ADMIN::CALL::GoOverride&RefId=##TP_BetId##&RefKey=BET">##TP_bet_number_of_overrides_str##</a></td>
+	##TP_ENDIF##
+</tr>
+##TP_ENDIF##
+
+<tr></tr>
+
+##TP_IF {[tpGetVar num_pmts] == 0}##
+<td>Payment Status</td><td>(No Payments)</td>
+##TP_ELSE##
+	##TP_LOOP pmt_idx {[tpGetVar num_pmts]}##
+	<tr>
+		##TP_IF {[tpGetVar pmt_idx] == 0}##
+			<td>Payment Status</td>
+		##TP_ELSE##
+			<td></td>
+		##TP_ENDIF##
+		##TP_IF {[tpGetVar pmt_idx]+1 == [tpGetVar num_pmts] && [tpGetVar internal_funds_used] == 1}##
+		<td>##TP_PmtStatus##</td>
+		##TP_ELSE##
+		<td><a href="##TP_CGI_URL##?action=ADMIN::TXN::GPMT::GoPmt&pmt_id=##TP_PmtID##">Call# ##TP_CallID##: ##TP_PmtStatus##</a></td>
+		##TP_ENDIF##
+	</tr>
+##TP_ENDLOOP##
+##TP_ENDIF##
+
+
+##TP_IF {[tpGetVar NumAdjs] != 0}##
+	<tr>
+		<td>Linked Manual Adjustments</td>
+		<td>
+		##TP_LOOP adj_idx {[tpGetVar NumAdjs]}##
+			<a href="##TP_CGI_URL##?action=ADMIN::TXN::MADJ::GoTxn&&op_ref_id=##TP_ManAdjId##">##TP_ManAdjId##</a><br>
+		##TP_ENDLOOP##
+		</td>
+	</tr>
+##TP_ENDIF##
+
+	<tr>
+		<th colspan=2 class=buttons>
+			<form name="form" action="##TP_CGI_URL##" method=post onSubmit="return false;">
+				<input type="hidden" name="SubmitName" value="">
+				<input type="hidden" name="action"     value="">
+				<input type="hidden" name="BetId"      value="##TP_BetId##">
+				<!-- For ManAdj -->
+				<input type="hidden" name="ManAdj_ref_key" value="##TP_ManAdj_ref_key##">
+				<input type="hidden" name="ManAdj_ref_id"  value="##TP_ManAdj_ref_id##">
+				<input type="hidden" name="ManAdj_group"   value="BET">
+				<input type=button class="btn_def" value="##TP_XL {Admin.Bet_Receipt.CREATE_MAN_ADJ_BUTTON}##" onClick="return fs_man_adj(this,'GoManAdj','##TP_BetId##')">
+			</form>
+		</th>
+	</tr>
+
+##TP_IF {[tpGetVar ManualStl] == 1}##
+<tr>
+    <td>Batch reference ID</td><td>##TP_BatchRefID##</td>
+</tr>
+<tr>
+    <td>Batch Location</td><td>##TP_BatchLocation##</td>
+</tr>
+##TP_ENDIF##
+
+<tr></tr>
+##TP_IF {[tpGetVar settled N]=="YES"}##
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.WINNINGS}##</td><td>##TP_Winnings##</td>
+	</tr>
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.REFUNDS}##</td><td>##TP_Refunds##</td>
+	</tr>
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.WIN_LINES}##</td><td>##TP_NumLinesWin##</td>
+	</tr>
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.LOSE_LINES}##</td><td>##TP_NumLinesLose##</td>
+	</tr>
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.VOID_LINES}##</td><td>##TP_NumLinesVoid##</td>
+	</tr>
+	<tr class=infoyes>
+		<td colspan=2>
+		<font color=white>
+		##TP_IF {[tpGetVar BetStatus] != "X"}##
+		<b>##TP_XL {Admin.Bet_Receipt.BET_HAS_BEEN_SETTLED}##</b>
+		##TP_ELSE##
+		<b>##TP_XL {Admin.Bet_Receipt.BET_HAS_BEEN_CANCELLED}##</b>
+		##TP_ENDIF##
+		</font>
+		</td>
+	</tr>
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.SETTLED_AT}##</td><td>##TP_SettledAt##</td>
+	</tr>
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.SETTLED_BY}##</td><td>##TP_SettledBy##&nbsp;
+		(<script>write_which("##TP_SettledHow##","S","##TP_XL {Admin.Bet_Receipt.SETTLED_BY_SETTLER}##","M","##TP_XL {Admin.Bet_Receipt.SETTLED_MANUALLY}##");</script>)
+		</td>
+	</tr>
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.SETTLE_INFO}##</td><td>##TP_SettleInfo##&nbsp;</td>
+	</tr>
+	##TP_IF {[tpGetVar BetStatus] != "X"}##
+	<tr>
+		<th colspan="2">
+		<form action="##TP_CGI_URL##" method="post">
+				<input type="button" value="Unsettle" onClick="return fs(this,'DoUnsettle')">
+				<input type="hidden" name="action" value="ADMIN::UNSTL::ReDirect">
+				<input type="hidden" name="SubmitName" value="">
+				<input type="hidden" name="bet_receipt" value="##TP_Receipt##">
+				<input type="hidden" name="bet_id" value="##TP_BetId##">
+				<input type="hidden" name="unstl_type" value="BET">
+		</form>
+		</th>
+	</tr>
+	##TP_ENDIF##
+##TP_ELSEIF {[tpGetVar settled]=="NO"}##
+	<tr class=infono>
+		<td colspan=2>
+		<font color=white><b>##TP_XL {Admin.Bet_Receipt.BET_NOT_SETTLED_YET}##</b></font>
+		</td>
+	</tr>
+##TP_ELSEIF {[tpGetVar settled]=="PENDING"}##
+	<tr bgcolor=white>
+		<td colspan=2>&nbsp;</td>
+	</tr>
+	<tr bgcolor=#6666cc>
+		<td colspan=2>
+		<font color=white><b>##TP_XL {Admin.Bet_Receipt.NEEDS_SETTLE_CONFIRM}##</b></font>
+		</td>
+	</tr>
+	<tr>
+		<td>Winnings</td><td>##TP_P_Winnings##</td>
+	</tr>
+	##TP_IF {[OT_CfgGet FUNC_BET_RCPT_SHOW_TAX 1] && [tpGetVar TaxType -] == "W"}##
+		<tr>
+			<td>##TP_XL {Admin.Bet_Receipt.WINNINGS_TAX}##</td><td>##TP_P_Tax##</td>
+		</tr>
+	##TP_ENDIF##
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.REFUNDS}##</td><td>##TP_P_Refund##</td>
+	</tr>
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.WIN_LINES}##</td><td>##TP_P_NumLinesWin##</td>
+	</tr>
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.LOSE_LINES}##</td><td>##TP_P_NumLinesLose##</td>
+	</tr>
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.VOID_LINES}##</td><td>##TP_P_NumLinesVoid##</td>
+	</tr>
+##TP_ENDIF##
+##TP_IF {[tpGetVar ap_paid Y]!="Y"}##
+	<tr>
+		<td>##TP_XL {Admin.Bet_Receipt.ANTEPOST_BET}##</td>
+		##TP_IF {[tpGetVar ap_paid N]=="A"}##
+			<td>##TP_XL {Admin.Bet_Receipt.PAID}##</td>
+		##TP_ELSE##
+			<td>##TP_XL {Admin.Bet_Receipt.UNPAID}##</td>
+		##TP_ENDIF##
+	</tr>
+##TP_ENDIF##
+##TP_IF {[tpGetVar ap_paid Y] == "N"}##
+	<tr>
+		<th colspan=2 class=buttons>
+		<form action=##TP_CGI_URL## method=get>
+			<input type=hidden name=BetId value="##TP_BetId##">
+			<input type=hidden name=CustId value="##TP_CustId##">
+			<input type=hidden name=action value=ADMIN::BET::PayForAP>
+			##TP_IF {[op_allowed PayAntepost]}##
+			<input type=submit class="btn_def" value="Pay AP Bet">
+			##TP_ENDIF##
+		</form>
+		</th>
+	</tr>
+##TP_ENDIF##
+##TP_IF {[tpGetVar settled N] == "YES" && [tpGetVar ShopFieldingBet N] == "Y" && [op_allowed CancelBet] && [tpGetVar BetStatus A] != "X"}##
+	<tr>
+		<th colspan=2 class=buttons>
+		<form action=##TP_CGI_URL## method="post">
+			<input type="hidden" name="Manual" value="##TP_Manual##"/>
+			<input type="hidden" name="BetId" value="##TP_BetId##"/>
+			<input type="hidden" name="BetType" value="##TP_BetType##" />
+			<input type="button" class="btn_def" value="Cancel Settled Bet" onClick="return fs(this,'CancelSettledBet')"/>
+			<input type="hidden" name="SubmitName" value="">
+			<input type="hidden" name="action" value="ADMIN::BET::DoManualSettle"/>
+		</form>
+		</th>
+	</tr>
+##TP_ENDIF##
+</table>
+
+##TP_IF {[OT_CfgGet BF_ACTIVE 0]}##
+	##TP_PLAY bf_bet_receipt.html##
+##TP_ENDIF##
+
+##TP_IF {[op_allowed Settle CancelBet]}##
+	##TP_IF {[tpGetVar settled N] != "YES"}##
+		<br>
+		<table cellspacing=0 cellpadding=2 border=0>
+		<form action=##TP_CGI_URL## method="post">
+		<input type=hidden name="Manual" value="##TP_Manual##">
+		<tr>
+			<th colspan=2 class=title>
+			##TP_XL {Admin.Bet_Receipt.MANUAL_SETTLEMENT}##
+		</th>
+		</tr>
+		<tr>
+			<td class=caption>##TP_XL {Admin.Bet_Receipt.WINNINGS}##</td>
+			<td>
+			<input name=BetWinnings size=10 value="##TP_P_Winnings##">
+			##TP_IF {[OT_CfgGet FUNC_BET_RCPT_SHOW_TAX 1] && [tpGetVar TaxType -]=="W"}##
+				&nbsp;&nbsp;
+				##TP_XL {Admin.Bet_Receipt.TAX}##
+				<input name=BetWinningsTax size=10 value="##TP_P_Tax##"> (@##TP_TaxRate##%)
+			##TP_ELSE##
+				<input type=hidden name=BetWinningsTax value=0>
+			##TP_ENDIF##
+			</td>
+		</tr>
+		<tr>
+			<td class=caption>##TP_XL {Admin.Bet_Receipt.REFUND}##</td>
+			<td><input name=BetRefund size=10 value="##TP_P_Refund##"></td>
+		</tr>
+		<tr>
+			<td class=caption>##TP_XL {Admin.Bet_Receipt.LINES}##</td>
+			<td>
+			<b>##TP_XL {Win}##</b>
+			<input name=BetWinLines size=3 value="##TP_P_NumLinesWin##">
+			&nbsp;&nbsp;&nbsp;
+			<b>##TP_XL {Lose}##</b>
+			<input name=BetLoseLines size=3 value="##TP_P_NumLinesLose##">
+			&nbsp;&nbsp;&nbsp;
+			<b>##TP_XL {Void}##</b>
+			<input name=BetVoidLines size=3 value="##TP_P_NumLinesVoid##">
+			</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>
+			<i>(##TP_XL {Admin.Bet_Receipt.TOTAL_NUM_LINES_SHOULD_BE}## ##TP_NumLines##)</i>
+			</td>
+		</tr>
+		<tr>
+			<td class=caption>##TP_XL {Admin.Bet_Receipt.COMMENT}##</td>
+			<td>
+			<input name=BetComment size=40>
+			</td>
+		</tr>
+		<input type=hidden name=BetId value="##TP_BetId##">
+		<input type="hidden" name="BetType" value="##TP_BetType##" />
+		<tr>
+			<th colspan=2 class=buttons>
+			##TP_IF {([op_allowed Settle] && [tpGetVar settled]!="PENDING") ||
+			([op_allowed SettleParkedBet] && [tpGetVar settled]=="PENDING")}##
+			<input type=button class="btn_def" value="##TP_XL {Admin.Bet_Receipt.SETTLE_BET_BUTTON}##" onClick="return fs(this,'StlBet')">
+			##TP_ENDIF##
+			##TP_IF {[op_allowed CancelBet]}##
+			<input type=button class="btn_def" value="##TP_XL {Admin.Bet_Receipt.CANCEL_BET_BUTTON}##" onClick="return fs(this,'CancelBet')">
+			##TP_ENDIF##
+			</th>
+		</tr>
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value=ADMIN::BET::DoManualSettle>
+		</form>
+		</table>
+	##TP_ENDIF##
+##TP_ENDIF##
+</center>
+</body>
+</html>

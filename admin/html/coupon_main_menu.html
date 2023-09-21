@@ -1,0 +1,121 @@
+<html>
+<!-- $Id: coupon_main_menu.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Coupons</title>
+##TP_PLAY JS_ValFuncs.html##
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+var errorList = "";
+function add_err(e_str)
+{
+	if (errorList.length > 0) {
+		errorList += "\n";
+	}
+	errorList += e_str;
+}
+
+function validate(f)
+{
+	var class_name  = strTrim(f.ClassName.value, " ");
+	var disporder   = strTrim(f.DispOrder.value, " ");
+
+	errorList = "";
+
+	if (class_name.length == 0) {
+		add_err("class name cannot be empty");
+	} else {
+		if (!isSafeStr(class_name)) {
+			add_err("don't use these characters in group name : "
+				+ "tab [ ] { } < > \" \\ $");
+		}
+	}
+	if (disporder.length > 0) {
+		if (!isInt8(disporder, true)) {
+			add_err("disporder must be an integer between +/-99999999");
+		}
+	}
+
+	if (errorList != "") {
+		alert("There are some errors in the form:\n\n" + errorList);
+		return false;
+	}
+	return true;
+}
+
+function write_tr(status,displayed)
+{
+	if (status == 'S') {
+		document.write('<tr class=suspended>');
+	} else if (displayed != 'Y') {
+		document.write('<tr class=hidden>');
+	} else {
+		document.write('<tr class=active>');
+	}
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+var main_form;
+
+function LangDispPopup(b,id)
+{
+	if (id == "") {
+		id = 0;
+	}
+
+	main_form = b.form;
+
+	window.open("##TP_CGI_URL##?action=ADMIN::LANG::GoLangDisp&Id="
+				+id+"&IdSort=C",
+		"languages",
+		"toolbar=no,location=no,directories=no,scrollbar=yes,menubar=no,resizable=yes,width=450,height=300");
+}
+
+function ViewDispPopup(b,id,name)
+{
+	if (id == "") {id = 0;}
+	main_form = b.form;
+
+	window.open("##TP_CGI_URL##?action=ADMIN::VIEWS::GoViewDisporders&id="+id+"&sort=CLASS&name="+name,
+		"Views",
+		"toolbar=no,location=no,directories=no,menubar=no,scrollbar=yes,resizable=yes,width=450,height=300");
+}
+
+function blurb_popup (id, sort) {
+	if (id == "") {
+		alert("No Id specified, does the "+sort+" exist.\n"+
+			"You must create it before you can add a blurb");
+		return;
+	}
+
+	window.open("##TP_CGI_URL##?action=ADMIN::BLURB::do_blurb&ref_id="+id+"&sort="+sort,
+		"Blurb",
+		"toolbar=no,location=no,directories=no,menubar=no,resizable=yes,width=600,height=200");
+}
+
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+<br>
+
+##TP_IF {[tpGetVar ClassId ""] != ""}##
+	##TP_TCL {ADMIN::COUPON::get_class_coupons [tpGetVar ClassId]}##
+##TP_ELSEIF {[tpGetVar Category ""] != ""}##
+	##TP_TCL {ADMIN::COUPON::get_cat_coupons [tpGetVar Category]}##
+##TP_ELSEIF {[tpGetVar ClassId ""] == "" && [tpGetVar Category ""] == ""}##
+	##TP_TCL {ADMIN::COUPON::get_multi_cat_coupons}##
+##TP_ENDIF##
+
+##TP_ENDIF##
+
+</body>
+</html>

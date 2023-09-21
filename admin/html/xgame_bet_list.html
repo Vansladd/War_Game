@@ -1,0 +1,69 @@
+<html>
+<!-- $Id: xgame_bet_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+</head>
+<body>
+##TP_IF {[tpGetVar IS_ELITE 0]!=0}##
+	<font color="red"><b>&nbsp; * Elite Customer</b></font>
+##TP_ENDIF##
+##TP_PLAY error_rpt.html##
+
+##TP_IF {[op_allowed BrowseXGame]==0}##
+<p>You do not have permission to view pools and lottery bets</p>
+##TP_ELSE##
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th class=title colspan=19>
+	Pools and Lotteries Query Result
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Sub ID</th>
+	<th nowrap class=colhead>Customer</th>
+    <th nowrap class=colhead>Account No</th>
+	<th nowrap class=colhead>Game Type</th>
+	<th nowrap class=colhead>Selections</th>
+	<th nowrap class=colhead>Currency</th>
+	<th nowrap class=colhead>Stake</th>
+	<th nowrap class=colhead>Comp No</th>
+	<th nowrap class=colhead>Bet ID</th>
+	<th nowrap class=colhead>Placed at</th>
+	<th nowrap class=colhead>Results</th>
+	<th nowrap class=colhead>Settled</th>
+	<th nowrap class=colhead>Winnings</th>
+	<th nowrap class=colhead>Refund</th>
+</tr>
+##TP_IF {[tpGetVar NumBets]>0}##
+##TP_LOOP bet_idx {[tpGetVar NumBets]}##
+<tr>
+	<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoXGameSub&SubId=##TP_SubId##">##TP_SubId##</td>
+	<td nowrap>##TP_IF {[op_allowed EliteCustAccess] || (![op_allowed EliteCustAccess] && [tpBindGet Elite] != "Y")}## ##TP_CustName## ##TP_ELSE##*##TP_ENDIF##</td>
+    <td nowrap>##TP_AcctNo##</td>
+	<td nowrap>##TP_GameName##</td>
+	<td nowrap>##TP_BetPicks##</td>
+	<td nowrap>##TP_BetCCY##</td>
+	<td nowrap align=right>##TP_BetStake##</td>
+	<td nowrap>##TP_CompNo##</a></td>
+	<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoXGameReceipt&BetId=##TP_BetID##">##TP_BetID##</a></td>
+	<td nowrap>##TP_BetTime##</td>
+	<td nowrap>##TP_Result##</td>
+	<td nowrap>##TP_BetSettled##</td>
+	<td nowrap align=right>##TP_Winnings##</td>
+	<td nowrap align=right>##TP_Refund##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+	<td colspan=18 align=center>
+	No bets found.
+	</td>
+</tr>
+##TP_ENDIF##
+</table>
+
+##TP_ENDIF## <!-- permission -->
+</body>
+</html>

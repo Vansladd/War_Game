@@ -1,0 +1,17 @@
+URU_UK_MIN_ADDRESS|Provides authentication of name and address against edited electoral roll and postcode address file.|URU|Edited Name and Address|
+URU_UK_MAX_ADDRESS|Provides authentication of name and address against full electoral roll and postcode address file.|URU|Complete Name and Address|
+URU_UK_DRIVERS|Provides authentication of driving-license number.|URU|Drivers Licence|
+URU_UK_ELECTRICITY|Provides authentication against electicity utility bill information.|URU|Electricity Bill|
+URU_UK_PHONE|Provides authentication against land telephone number and ex-directory status.|URU|Telephone Number|
+URU_UK_PASSPORT|Provides authentication of passport number.|URU|Passport Number|
+URU_UK_MORTALITY|Provides checking of a name at an address against the "Halo Register" data.|URU|Mortality|
+URU_UK_DOB|Provides residence and date of birth checking.|URU|Residency & DOB|
+URU_UK_CREDIT_DEBIT|Confirms credit/debit card details and links them to an address.|URU|Credit/Debit Card|
+GEO_IP_LOCATION|Provides checking of geographical location of IP address.|IP|IP Address|
+OB_CARD_SCHEME|Provides checking of credit/debit card scheme.|CARD|Card Scheme|
+OB_CARD_BIN|Check for fraudulent BIN ranges|CARD|Credit/Debit Card BIN|
+GENERIC_ADDRESS|Test harness address check|GEN|Generic Address|
+GENERIC_PHONE|Test harness phone check|GEN|Generic Phone|
+URU_UK_ELECTORAL_ROLL|Provides checking of Electoral Roll.|URU|Electoral Roll|
+URU_UK_CALLID|Provides checking of CallId.|URU|Call Id|
+AUTH_PRO_DOB|Check details against age.|AUTH_PRO|Residency & DOB|

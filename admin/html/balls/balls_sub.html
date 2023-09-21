@@ -1,0 +1,93 @@
+<html>
+<!-- $Id: balls_sub.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+</head>
+<body>
+
+<!-- If there is an error show the report -->
+##TP_PLAY error_rpt.html##
+
+<!-- If the user has the permission show the balls subscription -->
+
+##TP_IF {[tpGetVar HasPerm 0] == 1}##
+
+<h3>Balls Subscription Id - ##TP_SubId##</h3>
+
+<!-- Display subscription details -->
+<center>
+<table cellspacing=0 cellpadding=2 border=0>
+<tr bgcolor=#10137c>
+	<th colspan=2 align=left>
+	<font size=+1 color=white>Subscription Details</font>
+	</th>
+</tr>
+<tr bgcolor=black>
+	<th align=left><font color=white>Field</font></th>
+	<th align=left><font color=white>Value</font></th>
+</tr>
+<tr><td>Customer</td><td><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_Username##</a></td></tr>
+<tr><td>Account Number</td><td>##TP_AcctNo##</td></tr>
+<tr><td>Date placed</td><td>##TP_BetDate##</td></tr>
+<tr><td>Game</td><td>##TP_Game##</td></tr>
+<tr><td>Selection</td><td>##TP_Seln##</td></tr>
+<tr><td>Draws</td><td>##TP_Draws##</td></tr>
+<tr><td>Currency</td><td>##TP_CcyCode##</td></tr>
+<tr><td>Stake per draw</td><td>##TP_Stake##</td></tr>
+<tr><td>Winnings</td><td>##TP_Winnings##</td></tr>
+<tr><td>Odds</td><td>##TP_Odds##</td></tr>
+<tr><td>Completed</td><td>##TP_Completed##</td></tr>
+</table>
+
+<br>
+
+<!-- Display details for the draws the subscription has been placed for -->
+<table cellspacing=0 cellpadding=2 border=0 bgcolor=#cccccc>
+##TP_IF {[tpGetVar NumDrawsMade] == 0}##
+	<tr bgcolor=#999999>
+		<th>No draw submissions to date</th>
+	</tr>
+##TP_ELSE##
+	<tr bgcolor=#999999>
+		<th nowrap align=left>Draw</th>
+		<th nowrap align=left>Date Made</th>
+		<th nowrap align=left>Ball 1</th>
+		<th nowrap align=left>Ball 2</th>
+		<th nowrap align=left>Ball 3</th>
+		<th nowrap align=left>Ball 4</th>
+		<th nowrap align=left>Ball 5</th>
+		<th nowrap align=left>Ball 6</th>
+		<th nowrap align=left>Win</th>
+		<th nowrap align=left>Payout</th>
+		<th nowrap align=left>Payout Date</th>
+	</tr>
+	##TP_LOOP draw_idx {[tpGetVar NumDrawsMade]}##
+
+		<!-- Display winning draws in yellow -->
+		##TP_IF {$DRAW([tpGetVar draw_idx],win) == "Y"}##
+			<tr bgcolor=#FFFF66>
+		##TP_ELSE##
+		<tr>
+		##TP_ENDIF##
+
+		<td nowrap>##TP_DrawId##</td>
+		<td nowrap>##TP_DrawDate##</td>
+		<td nowrap align=center>##TP_Ball1##</td>
+		<td nowrap align=center>##TP_Ball2##</td>
+		<td nowrap align=center>##TP_Ball3##</td>
+		<td nowrap align=center>##TP_Ball4##</td>
+		<td nowrap align=center>##TP_Ball5##</td>
+		<td nowrap align=center>##TP_Ball6##</td>
+		<td nowrap align=center>##TP_Win##</td>
+		<td nowrap align=right>##TP_Payout##</td>
+		<td nowrap align=center>##TP_PayoutDate##</td>
+	</tr>
+	##TP_ENDLOOP##
+##TP_ENDIF##
+</table>
+
+</body>
+##TP_ENDIF##
+</html>

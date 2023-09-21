@@ -1,0 +1,49 @@
+<html>
+<!-- $Id: main_area.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+##TP_IF {[tpGetVar FuncOffice 0]}##
+	##TP_TCL -quiet {tpSetVar OFFICE_BACKGROUND 1}##
+	##TP_TCL -quiet {ob_office::action::H_header}##
+
+	<style type="text/css">
+		#adminHome {
+			display: none;
+		}
+	</style>
+##TP_ELSE##
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<style type="text/css">
+		body {
+			background-color: black;
+			font-family: verdana, arial, helvetica;
+		}
+		#adminHome td {
+			color: white;
+		}
+	</style>
+##TP_ENDIF office##
+
+<title>Openbet Administration</title>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table id="adminHome" width="100%" border=0 cellpadding=0 cellspacing=0>
+<tr>
+	<td colspan=2>&nbsp;</td>
+</tr>
+<tr>
+	<td width=60>
+		&nbsp;
+	</td>
+	<td style="font-size: 20px">Administration screens</td>
+</tr>
+<tr><td colspan=2>&nbsp;<br>&nbsp;<br></td></tr>
+<tr>
+	<td width=60>
+		&nbsp;
+	</td>
+	<td>##TP_LicInfo##</td>
+</tr>
+</table>
+</body>
+</html>

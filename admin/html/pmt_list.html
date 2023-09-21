@@ -1,0 +1,83 @@
+<html>
+<!-- $Id: pmt_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script>
+function wr_tr(status,settled) {
+	if (settled=="N") {
+		if (status=="G") {
+			document.write('<tr class=active>');
+		} else if (status=="B") {
+			document.write('<tr class=suspended>');
+		} else {
+			document.write('<tr class=settled>');
+		}
+	} else {
+		document.write('<tr>');
+	}
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th colspan=16 class=title>
+	Payment search results
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Date</th>
+	<th nowrap class=colhead>Sort</th>
+	<th nowrap class=colhead>Status</th>
+	<th nowrap class=colhead>Source</th>
+	<th nowrap class=colhead>Settled</th>
+	<th nowrap class=colhead>Username</th>
+	<th nowrap class=colhead>RefNo</th>
+	<th nowrap class=colhead>CCY</th>
+	<th nowrap class=colhead>Amount</th>
+	<th nowrap class=colhead>CardNo</th>
+	<th nowrap class=colhead>Start</th>
+	<th nowrap class=colhead>Expiry</th>
+	<th nowrap class=colhead>Issue</th>
+	<th nowrap class=colhead>AuthCode</th>
+	<th nowrap class=colhead>Gateway UID</th>
+	<th nowrap class=colhead>Msg</th>
+</tr>
+##TP_IF {[tpGetVar NumPmts 0]==0}##
+<tr>
+	<td colspan=16 align=center>
+	No payments match your search criteria
+	</td>
+</tr>
+##TP_ELSE##
+##TP_LOOP pmt_idx {[tpGetVar NumPmts]}##
+<script>wr_tr("##TP_PmtStatus##","##TP_PmtSettled##")</script>
+	<td nowrap>##TP_Date##</td>
+	<td nowrap>##TP_PmtSort##</td>
+	<td nowrap>##TP_PmtStatus##</td>
+	<td nowrap>##TP_PmtSource##</td>
+	<td nowrap>##TP_PmtSettled##</td>
+	##TP_IF {[tpGetVar PERM_ViewCustInfo 0]}##
+	<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_CustId##">##TP_Username##</a></td>
+	##TP_ELSE##
+	##TP_Username##
+	##TP_ENDIF##
+	<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoPmt&RefNo=##TP_RefNo##">##TP_RefNo##</a></td>
+	<td nowrap>##TP_CCYCode##</td>
+	<td nowrap align=right>##TP_Amount##</td>
+	<td nowrap>##TP_CardNo##</td>
+	<td nowrap>##TP_StartDt##&nbsp;</td>
+	<td nowrap>##TP_ExpiryDt##&nbsp;</td>
+	<td nowrap>##TP_IssueNo##&nbsp;</td>
+	<td nowrap>##TP_AuthCode##&nbsp;</td>
+	<td nowrap>##TP_GWUID##&nbsp;</td>
+	<td nowrap>##TP_GWMsg##&nbsp;</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ENDIF##
+</table>
+</body>
+</html>

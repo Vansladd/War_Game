@@ -1,0 +1,174 @@
+<html>
+<!-- $Id: channel.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Channel</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+
+var fraudSettingChanged = false;
+
+function validate(f)
+{
+	return true;
+}
+
+function changed()
+{
+	fraudSettingChanged = true;
+}
+
+function fs(b,t)
+{
+	var confirmed = true;
+	if (fraudSettingChanged)
+	{
+		confirmed = confirm("Please Note: This will effect the global fraud screening. Do you wish to proceed?");
+	}
+
+	if (confirmed)
+	{
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	##TP_ChannelName## Details
+	</th>
+</tr>
+<form ACTION="##TP_CGI_URL##" method=get onSubmit="return validate(this);">
+##TP_IF {[tpGetVar opAdd 0]}##
+<tr>
+	<td class=caption>Code</td>
+	<td>
+	<input type=text name="ChannelId" value="" size=1>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<td class=caption>Name</td>
+	<td>
+	<input type="text" name="ChannelName" value="##TP_ChannelName##" size=40>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Tax Rate</td>
+	<td>
+	<input type="text" name="ChannelTaxRate" value="##TP_ChannelTaxRate##" size=5>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Max Stake Mul</td>
+	<td>
+	<input type="text" name="ChannelMaxStakeMul" value="##TP_ChannelMaxStakeMul##" size=5>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Stl Conf Limit</td>
+	<td>
+	<input type="text" name="ChannelStlPayLimit" value="##TP_ChannelStlPayLimit##" size=10>
+	</td>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_FRAUD_SCREEN 0]}##
+  ##TP_IF {[op_allowed ManageFraudSetting]}##
+	<tr>
+	  <td class=caption>Allow Fraud Screen</td>
+	  <td>
+	    <select name="FraudSetting" onChange="javascript:changed();">
+	    <script>
+	    write_select('##TP_FraudSetting##','Y','Yes','N','No','M','Monitor')
+	    </script>
+	    </select>
+	  </td>
+	</tr>
+  ##TP_ENDIF##
+##TP_ELSE##
+<input type="hidden" name="FraudSetting" value="##TP_FraudSetting##" />
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_ASYNC_BET 0]}##
+	<tr>
+	  <td class=caption>Auto-referral Betting</td>
+	  <td>
+	    <select name="AsyncBetting">
+	    <script>
+	    write_select('##TP_AsyncBetting##','Y','Yes','N','No')
+	    </script>
+	    </select>
+	  </td>
+	</tr>
+##TP_ELSE##
+<input type="hidden" name="AsyncBetting" value="##TP_AsyncBetting##" />
+##TP_ENDIF##
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed ManageChannel]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=button class="btn_def" value="Add Channel" onClick="return fs(this,'ChanAdd')">
+		##TP_ELSE##
+			<input type=hidden name=ChannelId value="##TP_ChannelId##">
+			<input type=button class="btn_def" value="Modify Channel" onClick="return fs(this,'ChanMod')">
+			<input type=button class="btn_def" value="Delete Channel" onClick="return fs(this,'ChanDel')">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CHANNEL::DoChannel">
+</form>
+</table>
+##TP_IF {[OT_CfgGet FUNC_CHAN_TIME_BET_LIMITS 0]}##
+	##TP_IF {![tpGetVar opAdd 0]}##
+		<br>
+		<form method=get action="##TP_CGI_URL##">
+		<table border=0 cellspacing=0 cellpadding=3>
+		<tr>
+			<th colspan=3 class=title>
+			Min bet by time
+			</th>
+		</tr>
+		<tr>
+			<th class=colhead colspan=2>Time Range</th>
+			<th class=colhead>Min Bet</th>
+		</tr>
+		##TP_LOOP cbl_idx {[tpGetVar NumCBL]}##
+			<tr>
+		    	<td class=ra>##TP_CBLTimeFrom##</td>
+				<td class=ra>##TP_CBLTimeTo##</td>
+				##TP_IF {[op_allowed ManageChannel]}##
+			    	<td class=ra><a HREF="##TP_CGI_URL##?action=ADMIN::CHANNEL::GoCBL&CBLId=##TP_CBLId##">##TP_CBLMinBet##</a></td>
+				##TP_ELSE##
+					<td class=ra>##TP_CBLMinBet##</td>
+				##TP_ENDIF##
+			</tr>
+		##TP_ENDLOOP##
+		##TP_IF {[op_allowed ManageChannel]}##
+			<tr>
+				<th colspan=3 class=buttons>
+					<input type=button class="btn_def" value="Add Time Range" onClick="return fs(this,'ChanAdd')">
+				</th>
+			</tr>
+		##TP_ENDIF##
+		</table>
+		<input type=hidden name=ChannelId value="##TP_ChannelId##">
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value="ADMIN::CHANNEL::GoCBL">
+		</form>
+	##TP_ENDIF##
+##TP_ENDIF##
+</body>
+</html>

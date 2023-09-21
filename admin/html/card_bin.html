@@ -1,0 +1,115 @@
+<html>
+<!-- $Id: card_bin.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add Card Bin</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function fs(b,t)
+{
+	var bin = b.form.CardBin.value;
+	if (bin.length != 6) {
+		alert("Card bin must be 6 digits");
+		return false;
+	}
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	Card Bin ##TP_CardBin##
+	</th>
+</tr>
+<form action="##TP_CGI_URL##" method=get>
+##TP_IF {[tpGetVar opAdd 0]}##
+	<tr>
+		<td class=caption>Card Range</td>
+		<td>
+		<input type=text name="CardBin" value="" size=6>&nbsp;<i>6 digits</i>
+		</td>
+	</tr>
+##TP_ELSE##
+	<input type=hidden name="CardBin"  value="##TP_CardBin##">
+##TP_ENDIF##
+<tr>
+	<td class=caption>Bank</td>
+	<td>
+	<input type=text name="CardBank" value="##TP_CardBank##" size=60>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Scheme</td>
+	<td>
+	<select name="CardReqScheme">
+			##TP_LOOP scheme_idx {[tpGetVar NumSchemes]}##
+				<option value="##TP_Scheme##" ##TP_SchemeSel##>##TP_SchemeName##</option>
+			##TP_ENDLOOP##
+		</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Country</td>
+	<td>
+	<input type=text name="CardCountry" size=40 value="##TP_CardCountry##">
+	</td>
+</tr>
+<tr>
+	<td class=caption>Type</td>
+	<td>
+	<select name="CardType">
+	<script>
+	write_select("##TP_CardType##","?","Unknown","C","Credit","D","Debit")
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Allow Deposit</td>
+	<td>
+	<select name=CardAllowDep>
+	<script>
+	write_select('##TP_CardAllowDep##','Y','Yes','N','No')
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Allow Withdrawal</td>
+	<td>
+	<select name=CardAllowWtd>
+	<script>
+	write_select('##TP_CardAllowWtd##','Y','Yes','N','No')
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed ManageCardBin]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=button class="btn_def" value="Add Bin" onClick="return fs(this,'BinAdd')">
+		##TP_ELSE##
+			<input type=button class="btn_def" value="Modify Bin" onClick="return fs(this,'BinMod')">
+			<input type=button class="btn_def" value="Delete Bin" onClick="return fs(this,'BinDel')">
+			<input type=button class="btn_def" value="View Audit History" onClick="return fs(this, 'GoAudit')">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=AuditInfo value="CardInfo">
+<input type=hidden name=action value=ADMIN::CARD::DoCardBin>
+</form>
+</table>
+</body>
+</html>

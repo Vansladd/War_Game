@@ -1,0 +1,26 @@
+<html>
+<!-- $Id: training_cust_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Currency Table</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+##TP_LOOP cust_list_uames_idx {[tpGetVar NumUnames]}##
+##TP_UNAME##<br/>
+##TP_ENDLOOP##
+
+</body>
+</html>

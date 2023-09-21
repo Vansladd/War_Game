@@ -1,0 +1,20 @@
+	<li>
+		<span>Verification</span>
+		<ul>
+		##TP_IF {[op_allowed VrfProfileDef]}##
+		<li><a href="##TP_CGI_URL##?action=ADMIN::VERIFICATION::GoProfileDefList"   target="MainArea"><b>Profile Definitions</b></a></li>
+		##TP_ENDIF##
+		##TP_IF {[op_allowed VrfSearch]}##
+		<li><a href="##TP_CGI_URL##?action=ADMIN::VERIFICATION::GoSearch"           target="MainArea"><b>Search Checks</b></a></li>
+		##TP_ENDIF##
+		##TP_IF {[op_allowed VrfManCheck]}##
+		<li><a href="##TP_CGI_URL##?action=ADMIN::VERIFICATION::GoManualList"       target="MainArea"><b>Manual Check</b></a></li>
+		##TP_ENDIF##
+		##TP_IF {[op_allowed VrfProvider]}##
+		<li><a href="##TP_CGI_URL##?action=ADMIN::VERIFICATION::PROVIDER::GoProviderList" target="MainArea"><b>External Providers</b></a></li>
+		##TP_ENDIF##
+		##TP_IF {[OT_CfgGet FUNC_AGE_VRF_REASON 0] && [op_allowed VrfAgeManage]}##
+			<li><a href="##TP_CGI_URL##?action=ADMIN::VERIFICATION::GoReasonList" target="MainArea"><b>Status Reasons</b></a></li>
+		##TP_ENDIF##
+		</ul>
+	</li>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<artifact created="2016-04-15 13:50:25" projectName="OpenBet Core Lottery Interfaces" type="sources" groupId="com.openbet.core.interfaces" artifactId="openbet-core-interfaces-lottery" version="3.16">
+    <openbet corporatePomVersion="2" teamPomVersion="11.29" pluginVersion="2.17.0"/>
+    <scm module="" server="stash.int.openbet.com:7999" tag="HEAD" type="git" branch="master" repo="https://stash.int.openbet.com/scm/obcore/interfaces-lottery.git"/>
+    <artifactory url="https://artifactory.int.openbet.com/artifactory/openbet-release-local/com/openbet/core/interfaces/openbet-core-interfaces-lottery/3.16" buildTag="openbet-core-interfaces-lottery-3.16-20160415.135014"/>
+    <files>
+        <file location="pkgIndex.tcl" sha1sum="7e90673d6afddb2b01334bcf9d6fe892b36151d4"/>
+        <file location="pom.xml" sha1sum="05ba71ef637cf4e6109ff33370ae56e08e11d1e2"/>
+        <file location="xgame.tcl" sha1sum="acd2539de0627fabe627a9f7ce03226cb62556f6"/>
+    </files>
+</artifact>

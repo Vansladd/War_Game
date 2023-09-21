@@ -1,0 +1,190 @@
+/*
+ * $Id: menu.css,v 1.1 2011/10/06 13:12:52 xbourgui Exp $
+ * Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.
+ *
+ * OpenBet Office Menu css
+ */
+
+/* Horitonal Menu */
+#hmenuDiv
+{
+	position: absolute;
+	top: 0.2em;
+	left: 0;
+	margin-left: -1.2em;
+	z-index: 999;
+}
+#hmenu
+{
+	list-style: none;
+}
+#hmenu ul
+{
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	width: 14em;
+	z-index: 999;
+	position: relative;
+	overflow: visible;
+}
+#hmenu li {
+	margin: 0;
+	position: relative;
+	float: left;
+	width: 14em;
+	border: solid 1px #cecece;
+	display: block;
+	height: auto;
+	z-index: 999;
+}
+#hmenu ul li
+{
+	border-width: 1px 1px 0 0;
+}
+#hmenu ul ul li
+{
+	border-width: 1px 1px 0 1px;
+}
+#hmenu ul ul li:last-child
+{
+	border-width: 1px;
+}
+#hmenu a, #hmenu span
+{
+	font-size: 10px;
+	font-weight: bold;
+	color: #737573;
+	text-decoration: none;
+	display: block;
+	padding: 0.2em;
+	margin: 0.1em 0 0.2em 0.1em;
+	width: 13.5em;
+	height: auto;
+	cursor: pointer;
+}
+#hmenu a img {
+	border: none;
+	padding-right: 1px;
+	vertical-align: text-top;
+}
+#hmenu ul li a
+{
+	background-image: none;
+}
+#hmenu a:hover, #hmenu li:hover, #hmenu ul li:hover, #hmenu ul li a:hover,
+li.over
+{
+	color: #0000ff;
+	background-color: #deeeff;
+}
+#hmenu ul
+{
+	display: none;
+}
+#hmenu ul ul, #hmenu ul ul ul          /* all see this */
+{
+	display: none;
+	position: absolute;
+	margin-top: -1.8em;
+	margin-left: 9em;
+}
+#hmenu ul li>ul, #hmenu ul ul li>ul    /* non-IE browsers see this */
+{
+	margin-top: -1.4em;
+}
+#hmenu li:hover ul ul, #hmenu li:hover ul ul ul, #hmenu li:hover ul ul ul ul,
+#hmenu li:hover ul ul ul ul ul
+{
+	display: none;
+}
+#hmenu li:hover ul, #hmenu ul li:hover ul, #hmenu ul ul li:hover ul,
+#hmenu ul ul ul li:hover ul, #hmenu ul ul ul ul li:hover ul
+{
+	display: block;
+}
+li>ul {
+	top: auto;
+	left: auto;
+}
+
+/* disabling the menu */
+ul#hmenu.disabled li a:hover, ul#hmenu.disabled li:hover
+{
+	color: #737573;
+	background-color: white;
+}
+ul#hmenu.disabled a, ul#hmenu.disabled span
+{
+	cursor: default;
+}
+ul#hmenu.disabled li:hover ul
+{
+	display: none;
+}
+
+/* hiding a menu-item */
+#hmenu ul li.hide a
+{
+	display: none;
+}
+#hmenu ul li.hide
+{
+	border: solid 0px #cecece;
+	border-width: 0 0 0 0;
+}
+
+
+/* Vertical Menu with onclick expand/collapse */
+#vclickMenu {
+	padding: 0;
+	margin: 8px 0 0 0;
+}
+ul#vclickMenu {
+	border: 1px solid #cecece;
+	border-top: none;
+}
+#vclickMenu ul {
+	display: block;
+	padding: 0;
+	margin: 0;
+}
+#vclickMenu li {
+	list-style: none;
+	border-top: 1px solid #cecece;
+}
+#vclickMenu ul li {
+	position: relative;
+}
+#vclickMenu li ul {
+	position: relative;
+	display: none;
+}
+#vclickMenu a, #vclickMenu span {
+	color: #737573;
+	height: auto;
+	cursor: pointer;
+	font-size: 10px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+#vclickMenu li a, #vclickMenu li span {
+	display: block;
+	padding: 3px 3px 3px 18px;
+	font-weight: normal;
+	height: auto;
+}
+#vclickMenu li span {
+	padding: 3px 3px 2px 15px;
+	background: transparent;
+	background-repeat: no-repeat;
+	background-position: 3px;
+}
+#vclickMenu a:hover, #vclickMenu span:hover, #vclickMenu .over {
+	color: #0000ff;
+	background-color: #deeeff;
+	font-weight: normal;
+}
+#vclickMenu b {
+	font-weight: normal;
+}
+

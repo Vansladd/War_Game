@@ -1,0 +1,137 @@
+<html>
+<!-- $Id: charity.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<title>Add/Modify Pools/Lottery Charities</title>
+
+<script language="JavaScript">
+
+function validate(f) {
+	var err_msg = "";
+
+	if (f.charity_id.value == "") {
+		err_msg += "  Id\n";
+	}
+
+	if (f.name.value == "") {
+		err_msg += "  Name\n";
+	}
+
+	##TP_IF {[OT_CfgGet OPENBET_CUST ""] != "BlueSQ"}##
+		if (f.email_msg.value == "") {
+			err_msg += "  Email Message\n";
+		}
+	##TP_ENDIF##
+	
+	if (err_msg != "") {
+		alert("Please enter a value for the following and then resubmit:\n" + err_msg);
+		return false;
+	}
+
+	return true;
+}
+
+function confirm_delete(f) {
+	return confirm("Are you sure you want to delete this charity?");
+}
+</script>
+</head>
+<body bgcolor="white" text="black" link="#0000ee" vlink="#3333ff" alink="#ff0000">
+##TP_PLAY error_rpt.html##
+
+<form name="charity_form" action="##TP_CGI_URL##" method="post" onSubmit="return validate(this);">
+
+<table border="0" cellspacing="0" cellpadding="3" bgcolor="#10137c">
+<tr>
+	<td colspan="5" align="left">
+	<font color="white" size="+1"><b>Charity ###TP_charity_id## Details</b></font>
+	</td>
+</tr>
+##TP_IF {[tpGetVar charity_id] == ""}## 
+<tr bgcolor="#cccccc">
+	<td align="right"><b>Id</b></td>
+	<td>
+	<input type="text" name="charity_id" value="##TP_new_charity_id##" size="10">
+	</td>
+</tr>
+##TP_ELSE##
+<tr bgcolor="#cccccc">
+	<td align="right"><b>Create Date</b></td>
+	<td>
+		##TP_charity_cr_date##
+	</td>
+</tr>
+##TP_ENDIF##
+
+<tr bgcolor="#cccccc">
+	<td align="right"><b>Name</b></td>
+	<td>
+	<input type="text" name="name" value="##TP_charity_name##" size="50" maxlength="50">
+	</td>
+</tr>
+ 
+##TP_IF {[OT_CfgGet OPENBET_CUST ""] != "BlueSQ"}## 
+
+<tr bgcolor="#cccccc">
+	<td align="right"><b>Email Message</b></td>
+	<td>
+	<textarea rows="5" cols="50" wrap="virtural" name="email_msg">##TP_charity_email_msg##</textarea>
+	</td>
+</tr>
+##TP_ENDIF##
+
+<tr bgcolor="#cccccc">
+	<td align="right"><b>Affiliate</b></td>
+	<td>
+	<select name="aff_id">
+##TP_LOOP aff_idx {$CHARITY_AFFS(num_rows)}##
+		<option value="##TP_chr_aff_id##" ##TP_IF {[tpGetVar charity_aff_id] == $CHARITY_AFFS([tpGetVar aff_idx],id)}##selected##TP_ENDIF##>##TP_chr_aff_name##</option>
+##TP_ENDLOOP##
+	</select>
+	</td>
+</tr>
+
+<tr bgcolor="#cccccc">
+	<td align="right"><b>Game type</b></td>
+	<td>
+	<select name="sort">
+	<option value="PBUST3" ##TP_IF {[tpGetVar sort] ==  "PBUST3"}##selected##TP_ENDIF##>Prizebuster 3 </option>
+	<option value="PBUST4" ##TP_IF {[tpGetVar sort] == "PBUST4"}##selected##TP_ENDIF##>Prizebuster 4</option>
+	<option value="" ##TP_IF {[tpGetVar sort] == ""}##selected##TP_ENDIF##>--No game type--</option>
+	</select>
+	</td>
+<tr>
+	<th colspan="5" align="left">
+	<font color="white">
+##TP_IF {[tpGetVar charity_id] == ""}##
+		<input type="submit" class="btn_def" value="Add Charity">
+<input type="hidden" name="action" value="GoXGameCharityAdd">
+##TP_ELSE##
+		<input type="submit" class="btn_def" value="Modify Charity">
+<input type="hidden" name="action" value="GoXGameCharityMod">
+<input type="hidden" name="charity_id" value="##TP_charity_id##">
+</form>
+
+<form name="del_form" action="##TP_CGI_URL##" method="get" onSubmit="return confirm_delete(this);">
+		<input type="submit" class="btn_def" value="Remove Charity">
+<input type="hidden" name="action" value="GoXGameCharityDel">
+<input type="hidden" name="charity_id" value="##TP_charity_id##">
+##TP_ENDIF##
+</form>
+	</font>
+	</th>
+</tr>
+</table>
+
+##TP_IF {[tpGetVar HTTP_ERROR ""] != ""}##
+<p> 
+	HTTP_ERROR::::##TP_HTTP_ERROR##
+	<br>
+	This charity has been added but there was a problem with sending emails to customers.
+	<br>
+	##TP_XL {Admin.SUPPORT_EMAIL_MESSAGE}##
+</p>	
+##TP_ENDIF##
+
+</body>
+</html>

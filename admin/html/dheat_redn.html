@@ -1,0 +1,63 @@
+<html>
+<!-- $Id: dheat_redn.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Selection DeadHeat Reductions</title>
+</head>
+<script language="JavaScript">
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	history.go(-1);
+	return true;
+}
+</script>
+<body>
+<table border=1 cellspacing=1 cellpadding=1>
+<tr>
+	<th class=title colspan=##TP_ColSpan##>
+	DeadHeat Reductions
+	</th>
+</tr>
+<tr>
+<th class=colhead>Win Redn</th>
+<th class=colhead>Mkt Place Redn</th>
+<th class=colhead colspan=##TP_ColSpan##>Each Way Terms</th>
+</tr>
+<tr>
+<th class=colhead colspan="2"></th>
+##TP_LOOP terms_idx {[tpGetVar NumTerms 0]}##
+	<th class=colhead> ##TP_TERMS_ew_places##@##TP_TERMS_ew_fac_num##/##TP_TERMS_ew_fac_den## </th>
+##TP_ENDLOOP##
+</tr>
+<tr>
+<td>
+##TP_IF {$w_dh_den([tpGetVar OcId]) != ""}##
+	##TP_TCL -quiet {tpBufWrite "$w_dh_num([tpGetVar OcId]) / $w_dh_den([tpGetVar OcId])"}##
+##TP_ENDIF##
+</td>
+<td>
+##TP_IF {$p_dh_den([tpGetVar OcId]) != ""}##
+	##TP_TCL -quiet {tpBufWrite "$p_dh_num([tpGetVar OcId]) / $p_dh_den([tpGetVar OcId])"}##
+##TP_ENDIF##
+</td>
+	##TP_LOOP terms_idx {[tpGetVar NumTerms 0]}##
+		<td>
+		##TP_IF {$p_dh_num([tpBindGet TERMS_ew_terms_id],[tpGetVar OcId]) != ""}##
+			##TP_TCL -quiet {tpBufWrite "$p_dh_num([tpBindGet TERMS_ew_terms_id],[tpGetVar OcId]) / $p_dh_den([tpBindGet TERMS_ew_terms_id],[tpGetVar OcId])"}##
+		##TP_ENDIF##
+		</td>
+	##TP_ENDLOOP##
+</tr>
+<tr>
+	<form action="##TP_CGI_URL##" method=get>
+	<th colspan=##TP_ColSpan## class=buttons>
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+	</form>
+</tr>
+</table>
+</body>
+</html>

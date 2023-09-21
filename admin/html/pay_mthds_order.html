@@ -1,0 +1,224 @@
+<html>
+<!-- $Id: pay_mthds_order.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+
+<script>
+function fs(b,t)
+{
+
+	if (t == 'do_view_delete') {
+		var a = confirm('Are you sure you want to delete this view?');
+		if (!a) return;
+	}
+
+	b.form.SubmitName.value=t;
+
+	if (t == 'DoPayMthdGrpUpdate') {
+		b.form.action.value = 'ADMIN::PMT_MTHD_ORDER::DoPayMthdGrpUpdate';
+	}
+
+	if (t == 'GoPayMthdGrpAdd') {
+		b.form.action.value = 'ADMIN::PMT_MTHD_ORDER::GoPayMthdGrpAdd';
+	}
+
+	if (t == 'GoPayMthdAdd') {
+		b.form.action.value = 'ADMIN::PMT_MTHD_ORDER::GoPayMthdAdd';
+	}
+
+	if (t == 'DoPayMthdUpdate' || t == 'DoPayMthdDelete') {
+		b.form.action.value = 'ADMIN::PMT_MTHD_ORDER::DoPayMthdUpdate';
+	}
+
+	if (t == 'DoPayMthdDispCtrlUpdate') {
+		b.form.action.value = 'ADMIN::PMT_MTHD_ORDER::DoPayMthdDispCtrlUpdate';
+	}
+
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+
+<body>
+	##TP_PLAY error_rpt.html##
+	##TP_PLAY msg_rpt.html##
+	<form name="pay_mthd_grp_lang" method="get" action="##TP_CGI_URL##">
+		<input type="hidden" name="SubmitName" value="">
+		<input type="hidden" name="action" value="ADMIN::PMT_MTHD_ORDER::GoView">
+		<table cellspacing=0 cellpadding=2 border=0 >
+			<tr>
+				<th colspan=20 class=title>
+					Change View
+				</th>
+			</tr>
+
+			<tr>
+				<td class="captionindex">
+					Select View
+				</td>
+				<!-- TP_IF {[tpBindGet lang]=="en"} selected TP_ENDIF -->
+				<td>
+					<select name="view_id">
+						##TP_LOOP view_idx {[tpGetVar num_views]}##
+							<option value="##TP_l_view_id##" ##TP_l_selected##>##TP_l_view_name##</option>
+						##TP_ENDLOOP##
+					</select>
+				</td>
+				<td>
+					<input type=button class="btn_def" value="Go" onClick="return fs(this,'PayMthdSelLanguage')">
+				</td>
+			</tr>
+		</table>
+	</form>
+
+	<form name="view_def" method="get" action="##TP_CGI_URL##">
+	<input type="hidden" name="SubmitName" value="">
+	<input type="hidden" name="view_id" value="##TP_ViewID##">
+	<input type="hidden" name="action" value="ADMIN::PMT_MTHD_ORDER::DoViewDef">
+	<table>
+		<tr>
+			<td class=buttons colspan=20>
+				<input type=button class="btn_def" value="Delete Current View" onClick="return fs(this,'do_view_delete')">
+			</td>
+		</tr>
+	</table>
+	</form>
+
+	<!-- a form for setting the display control -->
+	<form name="pay_mthd_disp_ctrl" method="get" action="##TP_CGI_URL##">
+		<input type="hidden" name="SubmitName" value="">
+		<input type="hidden" name="view_id" value="##TP_ViewID##">
+		<input type="hidden" name="action" value="">
+		<table cellspacing=0 cellpadding=2 border=0 >
+			<tr>
+				<th colspan=20 class=title>
+					Payment method display control
+				</th>
+			</tr>
+			<tr>
+				<td colspan=20>
+					<input type="radio" name="disp_ctrl" value="C" ##TP_disp_ctrl_C_chk##>
+					Include "Default" Group (display CPMs available via CPM rules but not included in a view)
+				</td>
+			</tr>
+			<tr>
+				<td colspan=20>
+					<input type="radio" name="disp_ctrl" value="V" ##TP_disp_ctrl_V_chk##>
+					Don't include "Default" Group (only display CPMs included in this view)
+				</td>
+			</tr>
+			<tr>
+				<td class=buttons colspan=20>
+					<input type=button class="btn_def" value="Update" onClick="return fs(this,'DoPayMthdDispCtrlUpdate')">
+				</td>
+			</tr>
+		</table>
+	</form>
+
+	<!-- first, one form for payment method groups -->
+	<form name="pay_mthd_grp_order" method="get" action="##TP_CGI_URL##">
+		<input type="hidden" name="SubmitName" value="">
+		<input type="hidden" name="view_id" value="##TP_ViewID##">
+		<input type="hidden" name="action" value="">
+		<table cellspacing=0 cellpadding=2 border=0 >
+			<tr>
+				<th colspan=20 class=title>
+					Payment method groups order
+				</th>
+			</tr>
+			<tr>
+				<th class=colhead>
+					Select
+				</th>
+				<th class=colhead>
+					Group
+				</th>
+				<th class=colhead>
+					Deposit Order
+				</th>
+				<th class=colhead>
+					Withdraw order
+				</th>
+			</tr>
+			##TP_LOOP grp_idx {[tpGetVar num_groups 0]}##
+				<tr>
+					<td><input type="checkbox" name="slct_grp" value="##TP_g_view_pm_grp_id##"></td>
+					<td>##TP_g_group##</td>
+					<td><input type="text" name="GRP_DEP_##TP_g_view_pm_grp_id##" value="##TP_g_deporder##"></td>
+					<td><input type="text" name="GRP_WTD_##TP_g_view_pm_grp_id##" value="##TP_g_wtdorder##"></td>
+				</tr>
+			##TP_ENDLOOP##
+			<tr>
+				<td class=buttons colspan=20>
+					<input type=button class="btn_def" value="Update" onClick="return fs(this,'DoPayMthdGrpUpdate')">
+					<input type=button class="btn_def" value="Add" onClick="return fs(this,'GoPayMthdGrpAdd')">
+				</td>
+			</tr>
+		</table>
+	</form>
+	<!-- second, the form for payment methods -->
+	<form name="pay_mthd_order" method="get" action="##TP_CGI_URL##">
+		<input type="hidden" name="view_id" value="##TP_ViewID##">
+		<table cellspacing=0 cellpadding=2 border=0 >
+			<tr>
+				<th colspan=20 class=title>
+					Payment methods order
+				</th>
+			</tr>
+			<tr>
+				<th class=colhead>
+					Update
+				</th>
+				<th class=colhead>
+					Delete
+				</th>
+				<th class=colhead>
+					Group
+				</th>
+				<th class=colhead>
+					Payment Method
+				</th>
+				<th class=colhead>
+					Payment method type
+				</th>
+				<th class=colhead>
+					Description
+				</th>
+				<th class=colhead>
+					Deposit Order
+				</th>
+				<th class=colhead>
+					Withdraw order
+				</th>
+			</tr>
+			##TP_LOOP mthd_idx {[tpGetVar num_methods 0]}##
+				##TP_IF {[tpBindGet m_change_group]==1}##
+					<tr><td colspan=20 class=buttons>&nbsp;</td></tr>
+				##TP_ENDIF##
+				<tr>
+					<td><input type="checkbox" name="slct_mthd" value="##TP_m_view_pmt_id##"></td>
+					<td><input type="checkbox" name="del_slct_mthd" value="##TP_m_view_pmt_id##"></td>
+					<td>##TP_m_group##</td>
+					<td>##TP_m_pay_mthd##</td>
+					<td>##TP_m_type##</td>
+					<td>##TP_m_desc##</td>
+					<td><input type="text" name="MTHD_DEP_##TP_m_view_pmt_id##" value="##TP_m_deporder##"></td>
+					<td><input type="text" name="MTHD_WTD_##TP_m_view_pmt_id##" value="##TP_m_wtdorder##"></td>
+				</tr>
+			##TP_ENDLOOP##
+			<tr>
+				<td class=buttons colspan=20>
+					<input type=button class="btn_def" value="Update" onClick="return fs(this,'DoPayMthdUpdate')">
+					<input type=button class="btn_def" value="Delete" onClick="return fs(this,'DoPayMthdDelete')">
+					<input type=button class="btn_def" value="Add" onClick="return fs(this,'GoPayMthdAdd')">
+				</td>
+			</tr>
+		</table>
+		<input type="hidden" name="SubmitName" value="">
+		<input type="hidden" name="action" value="">
+	</form>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<tr>
+	<th colspan="11" class="title">Customer Status Flags</th>
+</tr>
+<tr>
+	<th class=caption align=left>Username</th>
+	##TP_IF {[OT_CfgGetTrue FUNC_FLG_SEARCH_CUST_GRP]}##
+		<th class="caption" align="left">Group</th>
+	##TP_ENDIF##
+	<th class=caption align=left>Flag</th>
+	<th class=caption align=left>Status</th>
+	<th class=caption align=left>Created On</th>
+	<th class=caption align=left>Created By</th>
+	<th class=caption align=left>Reason</th>
+	<th class=caption align=left>Triggering Action</th>
+	<th class=caption align=left>Cleared On</th>
+	<th class=caption align=left>Cleared By</th>
+	<th class=caption>&nbsp;</td>
+</tr>
+##TP_LOOP cf_idx {[tpGetVar NumCustFlags]}##
+<tr class="##TP_status##">
+	<td><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_cust_id##">##TP_username##</a></td>
+	##TP_IF {[OT_CfgGetTrue FUNC_FLG_SEARCH_CUST_GRP]}##
+		<td>##TP_cust_code_desc##</td>
+	##TP_ENDIF##
+	<td>##TP_status_flag_name##</td>
+	<td>##TP_status##</td>
+	<td>##TP_set_flag_date##</td>
+	<td>##TP_set_flag_uname##</td>
+	<td width="300">##TP_set_flag_reason##</td>
+	<td>
+	##TP_IF {$CUST_STATUS_FLAGS([tpGetVar cf_idx],ref_id) != ""}##
+		##TP_IF {$CUST_STATUS_FLAGS([tpGetVar cf_idx],ref_key) == "XSYS" || $CUST_STATUS_FLAGS([tpGetVar cf_idx],ref_key) == "XSUB"}##
+			<a href="##TP_CGI_URL##?action=ADMIN::XSYSSUB::DoSubDetails&xsys_sub_id=##TP_ref_id##">View Subscription</a>
+		##TP_ELSEIF {$CUST_STATUS_FLAGS([tpGetVar cf_idx],ref_key) == "XFER"}##
+			<a href="##TP_CGI_URL##?action=ADMIN::TXN::XSYS::GoTxn&op_ref_id=##TP_ref_id##">View Xfer</a>
+		##TP_ELSEIF {$CUST_STATUS_FLAGS([tpGetVar cf_idx],ref_key) == "LOTO"}##
+			<a href="##TP_CGI_URL##?action=ADMIN::BET::GoXGameReceipt&BetId=##TP_ref_id##">View Bet</a>
+		##TP_ELSEIF {$CUST_STATUS_FLAGS([tpGetVar cf_idx],ref_key) == "POOL"}##
+			<a href="##TP_CGI_URL##?action=ADMIN::BET::GoPoolsReceipt&BetId=##TP_ref_id##">View Bet</a>
+		##TP_ELSE##
+			<a href="##TP_CGI_URL##?action=ADMIN::TXN::##TP_ref_key##::GoTxn&op_ref_key=##TP_ref_key##&op_ref_id=##TP_ref_id##&CustId=##TP_cust_id##">View Txn</a>
+		##TP_ENDIF##
+	##TP_ENDIF##
+	</td>
+	<td>##TP_clear_flag_date##</td>
+	<td>##TP_clear_flag_uname##</td>
+	<td>
+		##TP_IF {$CUST_STATUS_FLAGS([tpGetVar cf_idx],status)=="active" && $CUST_STATUS_FLAGS([tpGetVar cf_idx],status_flag_tag)=="LARGE_RET"}##
+			<a href="javascript:LR_to_FC_flag('##TP_cust_flag_id##');">[change to FC]</a>
+		##TP_ELSE##
+			&nbsp;
+		##TP_ENDIF##
+
+		##TP_IF {$CUST_STATUS_FLAGS([tpGetVar cf_idx],status)=="active" && [tpBindGet allowDelete] == "Y"}##
+			<a href="javascript:go_delete_flag('##TP_cust_flag_id##');">[clear]</a>
+		##TP_ELSE##
+			&nbsp;
+		##TP_ENDIF##
+	</td>
+</tr>
+##TP_ENDLOOP##

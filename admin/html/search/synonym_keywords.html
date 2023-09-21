@@ -1,0 +1,94 @@
+<html>
+<!-- $Id: synonym_keywords.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script type="text/javascript">
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+##TP_IF {[tpGetVar ShowExtraInfo 0] != 0}##
+<h3>Keywords ##TP_KeywordInfo## ##TP_SynonymInfo## ##TP_LangInfo##</h3>
+##TP_ENDIF##
+
+<form method="get" action="##TP_CGI_URL##">
+	<input type="hidden" name="action" value="ADMIN::SEARCH::DoSynonymKeywords" />
+	<input type="hidden" name="SubmitName"   value="" />
+
+	<input type="hidden" name="crit_keyword" value="##TP_crit_keyword##" />
+	<input type="hidden" name="crit_synonym" value="##TP_crit_synonym##" />
+	<input type="hidden" name="crit_lang"    value="##TP_crit_lang##" />
+
+<table cellspacing="0" cellpadding="2" border="0">
+	<tr>
+		<th class="title">
+		Keywords
+		</th>
+		<th class="buttons">
+			<div align="right">
+			<input type="button" value="Back" onClick="return fs(this,'BackSynonymSearch')" />
+			</div>
+		</th>
+	</tr>
+
+	<tr>
+		<th class="colhead">
+		Keyword
+		</th>
+		<th class="colhead">
+		Delete?
+		</th>
+	</tr>
+
+##TP_IF {[tpGetVar NumKeywords 0]==0}##
+	<tr>
+		<td align="center" colspan="2">
+		No keywords match your search criteria
+		</td>
+	</tr>
+##TP_ELSE##
+	##TP_LOOP keyword_idx {[tpGetVar NumKeywords]}##
+	<tr>
+		<td>
+			<a target="MainArea" href="##TP_CGI_URL##?action=ADMIN::SEARCH::GoSynonymList&keyword=##TP_Keyword##&synonym=##TP_Synonym##&lang=##TP_Lang##&crit_keyword=##TP_crit_keyword##&crit_synonym=##TP_crit_synonym##&crit_lang=##TP_crit_lang##">
+			##TP_Keyword##
+			</a>
+		</td>
+		<td class="buttons">
+			<div align="center">
+			<input type="checkbox" name="word_to_delete" value="##TP_Keyword##" />
+			</div>
+		</td>
+	</tr>
+	##TP_ENDLOOP##
+##TP_ENDIF##
+
+	<tr>
+		<th class="buttons">
+			<input type="button" value="Delete Selected" onClick="return fs(this,'DeleteKeyword')" />
+		</th>
+		<th class="buttons">
+			<div align="right">
+			<input type="button" value="Back" onClick="return fs(this,'BackSynonymSearch')" />
+			</div>
+		</th>
+	</tr>
+
+</table>
+</form>
+
+</body>
+</html>

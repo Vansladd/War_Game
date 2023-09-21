@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>External Game Reports</title>
+	<SCRIPT LANGUAGE="JavaScript">
+	##TP_PLAY calendar.js##
+        </SCRIPT>
+	##TP_PLAY JS_WriteSelect.html##
+  </head>
+
+  <body bgcolor=white>
+
+  <table cellspacing=0 cellpadding=2 bgcolor=#cccccc border=0>
+
+  <tr bgcolor=#10137c><th align=left colspan=5><font color=white size=+1>Pools/Lottery Price History</th></tr>
+
+   <form name=selectionForm action="##TP_CGI_URL##">
+
+      <input type=hidden name=action value="DoPriceHistory">
+
+
+      <tr><td rowspan=2><b>Valid at:</b></td>
+      <td align=right>      <a href="javascript:doNothing();" onclick="setDateField(document.selectionForm.fromDate); top.newWin = window.open('##TP_CGI_URL##?action=go_popup_calendar', 'cal', 'dependent=yes, width=210, height=230, titlebar=yes')">Date:</a></td>
+      <td><INPUT size=10 NAME=fromDate></td>
+      </tr>
+      <tr><td align=right>Time:</td>
+      <td><INPUT TYPE="text" size=8 NAME=startTime VALUE="00:00:00"></td>
+      </tr>
+
+	  <!-- tr><td colspan=2>&nbsp;</td></tr>
+
+      <tr><td rowspan=2><b>To:</b></td>
+      <td align=right>      <a href="javascript:doNothing();" onclick="setDateField(document.selectionForm.toDate); top.newWin = window.open('##TP_CGI_URL##?action=go_popup_calendar', 'cal', 'dependent=yes, width=210, height=230, titlebar=yes')">Date:</a></td>
+      <td><INPUT size=10 NAME=toDate></td>
+      </tr>
+      <tr><td align=right>Time:</td>
+      <td><INPUT TYPE="text" size=8 NAME=endTime VALUE="23:59:59"></td>
+      </tr -->
+
+
+	  <tr><td colspan=2>&nbsp;</td></tr>
+
+	  <tr>
+	  <td colspan=2><b>Game Type:</b></td>
+		<td>
+			##TP_IF {[tpGetVar NumGameTypes 0] == 0}##
+				<b>No game definitions found</b>
+			##TP_ELSE##
+				<select name=sort>
+					<script>
+						write_select("##TP_GameType##","all","All Games"
+							##TP_LOOP game_type_idx {[tpGetVar NumGameTypes]}##
+								,"##TP_GameSort##","##TP_GameName##"
+							##TP_ENDLOOP##
+						);
+					</script>
+				</select>
+			##TP_ENDIF##
+		</td>
+	  </tr>
+
+	  <tr><td colspan=2>&nbsp;</td></tr>
+	
+	<tr bgcolor=#10137c><td colspan=3><font color=white>
+	<input type=submit class="btn_def" value="Display Price History" name="sort"></font>
+	</td>
+	</tr>
+
+      </table>
+    </form>
+    
+  </body>
+</html>

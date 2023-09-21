@@ -1,0 +1,29 @@
+<html>
+<!-- $Id: paymthd_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table cellspacing="0" cellpadding="2" border="0">
+	<tr>
+		<th colspan="8" class=title>Payment Schemes</th>
+	</tr>
+	<tr>
+		<th class=colhead>Code</th>
+		<th class=colhead>Description</th>
+		<th class=colhead>Withdrawal Delay (mins)</th>
+		<th class=colhead>Withdrawal Delay Threshold</th>
+	</tr>
+	##TP_LOOP paymthd_idx {[tpGetVar nrows]}##
+	<tr>
+		<td><a href="##TP_CGI_URL##?action=ADMIN::PMT::go_pay_mthd&pay_mthd=##TP_pay_mthd##">##TP_pay_mthd##</a></td>
+		<td>##TP_desc##</td>
+		<td>##TP_wtd_delay_mins##</td>
+		<td>##TP_wtd_delay_threshold##</td>
+	</tr>
+	##TP_ENDLOOP##
+</table>
+</body>
+</html>

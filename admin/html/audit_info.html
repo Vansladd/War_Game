@@ -1,0 +1,59 @@
+<html>
+<!-- $Id: audit_info.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Openbet Administration - Audit Info</title>
+</head>
+<script language="JavaScript">
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+<body>
+<table border=1 cellspacing=0 cellpadding=1>
+<tr>
+	<th class=title colspan=##TP_NumCols##>
+	Audit Information
+	</th>
+</tr>
+<tr>
+	##TP_LOOP col_idx {[tpGetVar NumCols]}##
+	<th class=colhead nowrap>##TP_ColName##</th>##TP_ENDLOOP##
+</tr>
+##TP_LOOP row_idx {[tpGetVar NumRows]}##
+<tr>
+	##TP_LOOP col_idx {[tpGetVar NumCols]}##
+	##TP_IF {[tpGetVar row_idx]==0 || $DATA([tpGetVar row_idx],[tpGetVar col_idx],same)==1}##
+		<td nowrap>
+	##TP_ELSE##
+		<td class=adiff nowrap>
+	##TP_ENDIF##
+	##TP_ESC esc_html esc_js####TP_Data####TP_ESC##&nbsp;
+	</td>
+	##TP_ENDLOOP##
+</tr>
+##TP_ENDLOOP##
+<tr>
+	<form action="##TP_CGI_URL##" method=get>
+	<th colspan=##TP_NumCols## class=buttons>
+	##TP_IF {[tpGetVar HideBack 1]}##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	##TP_ENDIF##
+	</th>
+	<input type=hidden name=action value="ADMIN::AUDIT::DoAuditBack">
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=BackAction value="##TP_BackAction##">
+	##TP_LOOP hidden_idx {[tpGetVar NumHidden]}##
+		<input type=hidden name="##TP_HiddenName##" value="##TP_HiddenValue##">
+	##TP_ENDLOOP##
+	</form>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<html>
+<!-- $Id -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Payment Control</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=4 class=title>Withdrawal Limits</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Number of Days since first deposit</th>
+	<th nowrap class=colhead>Days between withdrawals</th>
+	<th nowrap class=colhead>Max Withdrawals</th>
+	<th nowrap class=colhead>&nbsp;</th>
+</tr>
+<tr>
+	<th colspan=3 class=colhead>Default email: fraud_check@willhill.com</td>
+	<th class=colhead>edit</td>
+</tr>
+<tr>
+	<td>0</td>
+	<td>1</td>
+	<td>24</td>
+	<td>del</td>
+</tr>
+<tr>
+	<td>4</td>
+	<td>2</td>
+	<td>2000</td>
+	<td>del</td>
+</tr>
+<form name="add_fraud_limit" method="POST" action="##TP_CGI_URL##">
+<tr>
+	<td><input type="text" size="4" name="NumDays"></td>
+	<td><input type="text" size="4" name="DaysBetween"></td>
+	<td><input type="text" size="4" name="MaxWtd"></td>
+	<td nowrap><input type="button" name="AddBtn" value="Add / Amend" onClick="return fs(this,'AddWtdLimit')" ></td>
+</tr>
+<input type="hidden" name="action" value="ADMIN::PMT_FRAUD::DoWtdLimit">
+<input type="hidden" name="SubmitName" value="">
+</form>
+<tr>
+	<th colspan=3 class=colhead>Quick Cash email: fraud_check_quickcash@willhill.com</td>
+	<th class=colhead>edit</td>
+</tr>
+<tr>
+	<td>0</td>
+	<td>1</td>
+	<td>24</td>
+	<td>del</td>
+</tr>
+<tr>
+	<td>4</td>
+	<td>7</td>
+	<td>50</td>
+	<td>del</td>
+</tr>
+<tr>
+	<td>31</td>
+	<td>7</td>
+	<td>100</td>
+	<td>del</td>
+</tr>
+<tr>
+	<td>91</td>
+	<td>7</td>
+	<td>250</td>
+	<td>del</td>
+</tr>
+<tr>
+	<td>181</td>
+	<td>7</td>
+	<td>500</td>
+	<td>del</td>
+</tr>
+<tr>
+	<td>365</td>
+	<td>7</td>
+	<td>1000</td>
+	<td>del</td>
+</tr>
+<form name="add_fraud_limit" method="POST" action="##TP_CGI_URL##">
+<tr>
+	<td><input type="text" size="4" name="NumDays"></td>
+	<td><input type="text" size="4" name="DaysBetween"></td>
+	<td><input type="text" size="4" name="MaxWtd"></td>
+	<td nowrap><input type="button" name="AddBtn" value="Add / Amend" onClick="return fs(this,'AddWtdLimit')" ></td>
+</tr>
+</table>
+<input type="hidden" name="action" value="ADMIN::PMT_FRAUD::DoWtdLimit">
+<input type="hidden" name="SubmitName" value="">
+</form>
+
+<form name="add_pmt_method" method="POST" action="##TP_CGI_URL##">
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=3 class=title>Add Payment Method for Fraud Notication</th>
+</tr>
+<tr>
+	<td>Payment Type</td>
+	<td>
+		<select name="Payment Type">
+			<option>Card - Mastercard</option>
+			<option>Card - Visa Credit</option>
+			<option>Card - Switch</option>
+		</select>
+	</td>
+</tr>
+<tr>
+	<td>Email notification:</td>
+	<td><input type="text" size="20" name="Email"></td>
+</tr>
+<tr>
+	<td nowrap><input type="button" name="AddBtn" value="Add" onClick="return fs(this,'AddWtdLimit')" ></td>
+	<td>&nbsp;</td>
+</tr>
+</table>
+
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=3 class=title>Large Returns</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Type</th>
+	<th nowrap class=colhead>Sub Type</th>
+	<th nowrap class=colhead>Amount</th>
+</tr>
+<tr>
+	<td>Sports</td>
+	<td>ALL</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>Sports</td>
+	<td>Horses</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>Sports</td>
+	<td>Dogs</td>
+	<td>5000</td>
+</tr>
+<tr>
+	<td>Sports</td>
+	<td>Football</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>External</td>
+	<td>Poker</td>
+	<td>500</td>
+</tr>
+<tr>
+	<td>External</td>
+	<td>Casino</td>
+	<td>24000</td>
+</tr>
+<tr>
+	<td>External</td>
+	<td>Bingo</td>
+	<td>500</td>
+</tr>
+<form name="add_large_returns" method="POST" action="##TP_CGI_URL##">
+<tr>
+	<td>
+		<select name="Type">
+			<option>Sports</option>
+			<option>External</option>
+			<option>Fog</option>
+		</select>
+	</td>
+	<td>
+		<select name="SubType">
+			<option>--ALL--</option>
+		</select>
+	</td>
+	<td><input type="text" size="4" name="Amount"></td>
+</tr>
+<tr>
+	<td nowrap><input type="button" name="AddBtn" value="Add / Amend" onClick="return fs(this,'AddWtdLimit')" ></td>
+	<td colspan=2>&nbsp;</td>
+</tr>
+<input type="hidden" name="action" value="ADMIN::PMT_FRAUD::DoWtdLimit">
+<input type="hidden" name="SubmitName" value="">
+</form>
+
+
+</body>
+</html>

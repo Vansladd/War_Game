@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+    <title>Default Draw Times</title>
+</head>
+
+<body bgcolor=white>
+<table cellspacing=0 cellpadding=2 border=0 bgcolor="#cccccc">
+	<form action="##TP_CGI_URL##">		
+		<input type=hidden name=sort value="##TP_sort##">
+	<tr bgcolor="#10137c">
+		<th colspan=5 align=left><font color=white size=+1>Edit Default Draw Times for ##TP_sort##</th>
+	</tr>
+    <tr bgcolor="#999999">
+		<th align=left>Draw</th>
+		<th align=left>Default Shut Time</th>
+		<th align=left>Format</th>
+		<th align=left>Default Draw Time</th>
+		<th align=left>Format</th>
+    </tr>
+		<input type=hidden name=action value="add_default_time">
+		<input type=hidden name=num_draws value="##TP_TCL {tpGetVar NumDraws}##">
+    ##TP_LOOP draw_idx {[tpGetVar NumDraws]}##
+    <tr>
+		<input type=hidden name=draw_##TP_TCL {tpGetVar draw_idx}## value="##TP_DrawName##">
+		<td>##TP_DrawName##</td>
+		<td><input name=default_shut_at_##TP_TCL {tpGetVar draw_idx}## size=8 value=##TP_DefaultShutAt##></td>
+		<td><i>(HH:MM:SS)</i></td>
+		<td><input name=default_draw_at_##TP_TCL {tpGetVar draw_idx}## size=8 value=##TP_DefaultDrawAt##></td>
+		<td><i>(HH:MM:SS)</i></td>
+    </tr>
+    ##TP_ENDLOOP##
+	<tr bgcolor="#10137c">
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td><input type=submit class="btn_def" value="Submit Default Times"></td>
+	</tr>
+    </form>
+</table>
+</body>
+</html>

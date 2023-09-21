@@ -1,0 +1,27 @@
+/*
+ * $Id: menu_ie7.css,v 1.1 2011/10/06 13:12:52 xbourgui Exp $
+ * Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.
+ *
+ * OpenBet Office Menu css for IE7
+ * Included for all versions of IE less than 8
+ */
+
+#vclickMenu li a, #vclickMenu li span {
+	height: 16px;  /* IE rendering bug */
+}
+
+/* Hack to remove whitespace from IE lists */
+#vclickMenu li a {
+	display: inline-block;
+}
+#vclickMenu li a {
+	display: block;
+}
+#vclickMenu li span {
+	display: inline-block;
+}
+#vclickMenu li span {
+	display: block;
+}
+/* End hack */
+

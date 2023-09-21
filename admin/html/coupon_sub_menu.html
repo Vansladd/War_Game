@@ -1,0 +1,56 @@
+<!----- COUPONS ----->
+
+##TP_IF {[OT_CfgGet FUNC_CHANNELS 0]}##
+	##TP_TCL {tpBindString NumCols 4}##
+##TP_ELSE##
+	##TP_TCL {tpBindString NumCols 2}##
+##TP_ENDIF##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=##TP_NumCols## class=title>
+	##TP_ClassName## Coupons
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Description</th>
+	<th class=colhead>Displayed</th>
+	##TP_IF {[OT_CfgGet FUNC_CHANNELS 0]}##
+		<th class=colhead>Channels</th>
+		<th class=colhead>Fastkey</th>
+	##TP_ENDIF##
+</tr>
+##TP_IF {[tpGetVar NumCoupons 0]}##
+##TP_LOOP coupon_idx {[tpGetVar NumCoupons]}##
+<tr>
+	<td>
+	<a HREF="##TP_CGI_URL##?action=ADMIN::COUPON::GoCoupon&ClassId=##TP_ClassId##&Category=##TP_Category##&CouponId=##TP_CouponId##&FromClass=##TP_FromClass##">##TP_CouponDesc##</a>
+	</td>
+	<td>##TP_CouponDisp##</td>
+	##TP_IF {[OT_CfgGet FUNC_CHANNELS 0]}##
+		<td>##TP_CouponChannels##&nbsp;</td>
+		<td>##TP_CouponFastkey##&nbsp;</td>
+	##TP_ENDIF##
+</tr>
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+	<td colspan=##TP_NumCols##>
+	<b>No coupons defined</b>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[op_allowed ManageCoupon]}##
+<tr>
+<form ACTION="##TP_CGI_URL##" method=get >
+<th colspan=##TP_NumCols## class=buttons>
+	<input type=hidden name="ClassId" value="##TP_ClassId##">
+	<input type=hidden name="Category" value="##TP_Category##">
+	<input type=hidden name="FromClass" value="##TP_FromClass##">
+	<input type=button value="Add Coupon" onClick="return fs(this,'AddCoupon')">
+</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::COUPON::GoCoupon>
+</form>
+##TP_ENDIF##
+</table>

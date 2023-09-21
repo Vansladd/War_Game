@@ -1,0 +1,142 @@
+<html>
+<!-- $Id: commentary_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>TV Channels</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function reload_page(b, type) {
+	var form   =  b.form;
+	var sclass =  form.sclass.value;
+	var stype  =  form.stype.value;
+	var sevent =  form.sevent.value;
+
+	if (type == 'c') {
+		javascript:location.href='##TP_CGI_URL##?action=ADMIN::COMM::GoCommentaryList&class=' + sclass;
+	} else if (type == 't') {
+		javascript:location.href='##TP_CGI_URL##?action=ADMIN::COMM::GoCommentaryList&class=' + sclass + '&type=' + stype;
+	} else {
+		javascript:location.href='##TP_CGI_URL##?action=ADMIN::COMM::GoCommentaryList&class=' + sclass + '&type=' + stype + '&event=' + sevent;
+	}
+}
+</script>
+</head>
+<body>
+
+##TP_PLAY error_rpt.html##
+
+<table border="0" cellspacing="0" cellpadding="3">
+
+<tr><th colspan="9" class="title">Commentary</th></tr>
+
+	<form action="##TP_CGI_URL##" method=get>
+<tr>
+	<th class="colhead">&nbsp;</th>
+	<th class="colhead">
+		Class<br>
+		<select name="sclass" onchange="reload_page(this,'c')">
+			##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+			<option value="##TP_CLASS_ID##" ##TP_CLASS_SELECTED##>##TP_CLASS_NAME##</option>
+			##TP_ENDLOOP##
+		</select>
+	</th>
+	<th class="colhead">
+		Type<br>
+		<select name="stype" onchange="reload_page(this,'t')">
+			##TP_LOOP type_idx {[tpGetVar NumTypes]}##
+			<option value="##TP_TYPE_ID##" ##TP_TYPE_SELECTED##>##TP_TYPE_NAME##</option>
+			##TP_ENDLOOP##
+		</select>
+	</th>
+	<th class="colhead">
+		Event</br>
+		<select name="sevent" onchange="reload_page(this,'e')">
+			##TP_LOOP event_idx {[tpGetVar NumEvents]}##
+			<option value="##TP_EVENT_ID##" ##TP_EVENT_SELECTED##>##TP_EVENT_NAME##</option>
+			##TP_ENDLOOP##
+		</select>
+	</th>
+	<th class="colhead">Comment Type</th>
+	<th class="colhead">Score 1</th>
+	<th class="colhead">Score 2</th>
+	<th class="colhead">Free Text</th>
+	<th class="colhead">Disporder</th>
+</tr>
+##TP_IF {[tpGetVar NumComments 0]>0}##
+	##TP_LOOP comment_idx {[tpGetVar NumComments]}##
+		<tr>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::COMM::GoCommentary&CommentId=##TP_CommentId##">View Commentary</a></td>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::CLASS::GoClass&ClassId=##TP_EvClassId##">##TP_EvClass##</a></td>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::TYPE::GoType&ClassId=##TP_EvClassId##&TypeId=##TP_EvTypeId##">##TP_EvType##</a></td>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_EvId##">##TP_Ev##</a></td>
+			<td>##TP_CommentType##</td>
+			<td>##TP_CommentCol1##</td>
+			<td>##TP_CommentCol2##</td>
+			<td>##TP_CommentCol3##</td>
+			<td>##TP_Disporder##</td>
+		</tr>
+	##TP_ENDLOOP##
+##TP_ELSE##
+	<tr>
+		<td colspan="8">
+		<b><i>There is no commentary defined</i></b>
+		</td>
+	</tr>
+##TP_ENDIF##
+
+	<tr class=subtitle>
+		<td colspan="9" class="newsInfo">Additional commentary can be added via the event screens</td>
+	</tr>
+
+##TP_IF {[op_allowed ManageComments]}##
+	<tr>
+		<th class=buttons colspan=8>
+			##TP_IF {[tpBindGet ShowEvId] != "-1"}##
+				<input type=button value="Add New Commentary" onClick="return fs(this,'CommentAdd')">
+			##TP_ENDIF##
+			<input type=hidden name="ShowEvId" value="##TP_ShowEvId##">
+			<input type=hidden name=SubmitName value="">
+			<input type=hidden name=action value=ADMIN::COMM::GoCommentary>
+		</th>
+	</tr>
+##TP_ENDIF##
+	</form>
+
+</table>
+<table border="0" cellspacing="0" cellpadding="3">
+	<tr>
+		<th colspan="9" class="title">Clear logs for commentary version 3</th>
+	</tr>
+	<tr>
+		<th class="colhead">Event Id</th>
+		<th class="colhead">Username</th>
+		<th class="colhead">Date</th>
+	</tr>
+	##TP_IF {[tpGetVar NumLogs 0]>0}##
+		##TP_LOOP clear_log_idx {[tpGetVar NumLogs]}##
+			<tr>
+
+				<td>##TP_EV_ID##</td>
+				<td>##TP_USERNAME##</td>
+				<td>##TP_C_DATE##</td>
+			</tr>
+		 ##TP_ENDLOOP##
+	##TP_ELSE##
+	<tr>
+		<td colspan="8">
+			<b><i>There is no log information</i></b>
+		</td>
+	</tr>
+	##TP_ENDIF##
+</table>
+</body>
+</html>

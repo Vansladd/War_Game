@@ -1,0 +1,115 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+
+function fs(b,t) {
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th class=title colspan=2>
+	Templates
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead  colspan=2>Name</th>
+</tr>
+##TP_IF {[tpGetVar NumTemplates 0]==0}##
+<tr>
+	<td  colspan=2>
+	No Templates
+	</td>
+</tr>
+##TP_ELSE##
+##TP_LOOP tmpl_idx {[tpGetVar NumTemplates]}##
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::AUTO_LETTERS::GoTemplate&template_id=##TP_template_id##">##TP_template_name##</a></td>
+</tr>
+##TP_ENDLOOP##
+##TP_ENDIF##
+<form action="##TP_CGI_URL##" method=get>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::AUTO_LETTERS::DoTemplate>
+
+<tr>
+	<td>
+		<input type=text name=template_name>
+	</td>
+	<td >
+		<input type=button class="btn_def" value="Add Template" onClick="return fs(this,'AddTemplate')">
+	</td>
+</tr>
+
+</form>
+</table>
+<br>
+<br>
+<br>
+
+##TP_IF {[op_allowed AutoLettersFields]}##
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th colspan=5 class=title>
+	Available Fields
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Desc</th>
+	<th nowrap class=colhead>Table</th>
+	<th nowrap class=colhead>Identifier</th>
+	<th nowrap class=colhead>Edit</th>
+	<th nowrap class=colhead>Delete</th>
+</tr>
+##TP_IF {[tpGetVar NumFields 0]==0}##
+<tr>
+	<td>
+	No Fields
+	</td>
+</tr>
+##TP_ELSE##
+##TP_LOOP fld_idx {[tpGetVar NumFields]}##
+<tr>
+	<td>##TP_desc##</td>
+	<td>##TP_table_code##</td>
+	<td>##TP_identifier##</td>
+	##TP_IF {$FIELDS([tpGetVar fld_idx],table_code)=="Special"}##
+		<td colspan=2>&nbsp;</td>
+	##TP_ELSE##
+	<td><a href="##TP_CGI_URL##?action=ADMIN::AUTO_LETTERS::DoField&field_id=##TP_field_id##&SubmitName=ViewField">e</a></td>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::AUTO_LETTERS::DoField&field_id=##TP_field_id##&SubmitName=DeleteField">x</a></td>
+	##TP_ENDIF##
+</tr>
+##TP_ENDLOOP##
+##TP_ENDIF##
+
+<form action="##TP_CGI_URL##" method=get>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::AUTO_LETTERS::DoField>
+<input type=hidden name=edit_field_id value="##TP_edit_field_id##">
+<tr>
+	<td><input type=text name=edit_desc value="##TP_edit_desc##"></td>
+	<td>
+		<select name="edit_table_code">
+			<script>write_select('##TP_edit_table_code##','C','tCustomer','R','tCustomerReg', 'A', 'tAcct')</script>
+		</select>
+	</td>
+	<td><input type=text name=edit_identifier value="##TP_edit_identifier##"></td>
+	<td colspan=2>
+		<input type=button class="btn_def" value="##TP_button_string##" onClick="return fs(this,'AddUpdField')">
+	</td>
+</tr>
+</table>
+##TP_ENDIF##
+
+</body>
+</html>

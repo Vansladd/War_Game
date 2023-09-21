@@ -1,0 +1,58 @@
+<html>
+<!-- $Id: cust_msf.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Max Stake Factor By Class</title>
+</head>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=1>
+<tr>
+	<th colspan=2 class=title>
+	Max Stake Factor
+	</th>
+</tr>
+<form action="##TP_CGI_URL##" method=post>
+<tr>
+	<th nowrap class=colhead>Class</th>
+	<th nowrap class=colhead>Factor</th>
+</tr>
+##TP_LOOP msf_idx {[tpGetVar NumClasses]}##
+<tr bgcolor=###TP_TCL {expr {[tpGetVar msf_idx]%2==0?"cccccc":"999999"}}##>
+	<td>##TP_ClassName##</a></td>
+	<td><input type=text name="MSF_##TP_ClassId##" size="5" value="##TP_ClassMSF##"></td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[tpGetVar NumClasses 0]==0}##
+<tr>
+	<td colspan=2 align=left>
+	<font color=white size=+1>
+	<b><i>There are no classes defined</i></b>
+	</font>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button class="btn_def" value="Update Class Limits" onClick="return fs(this,'ClassMSF')">
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+	<input type=hidden name=CustId value="##TP_CustId##">
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::CUST::DoCustMSF>
+</tr>
+</form>
+</table>
+</body>
+</html>

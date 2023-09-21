@@ -1,0 +1,91 @@
+<html>
+<!-- $Id: void_confirm.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+	<head>
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<title>Select Class</title>
+
+		<script>
+			function fs(b,t) {
+				b.form.SubmitName.value=t;
+				b.form.submit();
+				return true;
+			}
+		</script>
+
+	</head>
+
+	<body>
+		<form name="late_bets_option_form" method="get" action="##TP_CGI_URL##">
+
+			<input type="hidden" name="SubmitName" value="">
+			<input type="hidden" name="action" value="ADMIN::LATEBET::VoidLateBets">
+
+			<table cellspacing="0" cellpadding="2" border="0">
+				##TP_IF {[tpGetVar numBets] == 0}##
+					<tr>
+						<th class="title">No Bets Available</th>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<th colspan="4" class="buttons">
+
+				##TP_ELSE##
+					<tr>
+						<th colspan="4" class="title">Void Confirmation</th>
+					</tr>
+					<tr>
+						<th class="colhead">Bet Receipt</th>
+						<th class="colhead">Date</th>
+						<th class="colhead">Market</th>
+						<th class="colhead">Event</th>
+					</tr>
+					##TP_LOOP bet_idx {[tpGetVar numBets]}##
+						<tr>
+							<td>
+								<a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_BET_ID##">##TP_RECEIPT##&nbsp;</a>
+							</td>
+							<td>
+								##TP_DATE##&nbsp;
+							</td>
+							<td>
+								<a href="##TP_CGI_URL##?action=ADMIN::MARKET::GoMkt&MktId=##TP_MARKET_ID##">##TP_MARKET##&nbsp;
+							</td>
+							<td>
+								<a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_EV_ID##">##TP_EVENT##</a>
+							</td>
+						</tr>
+					##TP_ENDLOOP##
+					<tr>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td colspan="4">
+							<i>Date range - ##TP_DATE_FROM## to ##TP_DATE_TO##</i>
+						</td>
+					</tr>
+					<tr>
+						<th colspan="4" class="buttons">Void ALL these bets?</th>
+					</tr>
+					<tr>
+						<th colspan="4" class="buttons">
+							<input type="button" value="Yes" onClick="return fs(this,'doVoid')">&nbsp;&nbsp;&nbsp;&nbsp;
+				##TP_ENDIF##
+	
+						<input type="button" value="Back" onClick="return fs(this,'voidOption')">
+					</th>
+				</tr>
+
+				<input type="hidden" name="category" value="##TP_CATEGORY_ID##">
+				<input type="hidden" name="class" value="##TP_CLASS_ID##">
+				<input type="hidden" name="type" value="##TP_TYPE_ID##">
+				<input type="hidden" name="event" value="##TP_EVENT_ID##">
+				<input type="hidden" name="market" value="##TP_MARKET_ID##">
+				<input type="hidden" name="selection" value="##TP_SELECTION_ID##">
+				<input type="hidden" name="bet_ids" value="##TP_BET_IDS##">
+			</table>
+
+		</form>
+	</body>
+</html>

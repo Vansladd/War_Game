@@ -1,0 +1,362 @@
+<html>
+<!-- $Id: user.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>User Permissions</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+
+function validate(f,t) {
+	if (t == "UserMod" || t=="UserAdd") {
+##TP_IF {[OT_CfgGetTrue FUNC_ADMIN_USER_THIRDPARTIES]}##
+		if (isNaN(f.phone_switch.value)) {
+			alert("Value for Switch must be a number");
+			f.phone_switch.focus();
+			return false;
+		}
+##TP_ENDIF##
+	}
+	return true;
+}
+
+
+function fs(b,t)
+{
+	if (validate(b.form,t)) {
+		if (t == "NoGroups") {
+			b.form.AdminUserOp.value=1;
+		}
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	} else {
+		return false;
+	}
+}
+function uncheck()
+{
+	field = document.perm_form.elements;
+	for (i = 0; i < field.length; i++)
+		field[i].checked = false;
+}
+
+##TP_IF {[OT_CfgGet FUNC_ADMIN_HIERARCHY 0] && ![tpGetVar opAdd 0]}##
+
+var posn_group_array = new Array();
+##TP_LOOP pos_idx {[tpGetVar NumPositions]}##
+posn_group_array[##TP_TCL {tpBufWrite [tpGetVar pos_idx]}##] = new Array();
+##TP_LOOP pos_grp_idx {[tpGetVar NumGroups]}##
+posn_group_array[##TP_TCL {tpBufWrite [tpGetVar pos_idx]}##][##TP_TCL {tpBufWrite [tpGetVar pos_grp_idx]}##] = ##TP_PosGrpChecked##;
+##TP_ENDLOOP##
+##TP_ENDLOOP##
+
+function setPositionGroups()
+{
+  //uncheck all position groups
+  for (var i = 0; i<document.position_groups.elements.length; i++) {
+    document.position_groups.elements[i].checked = false;
+  }
+  var posn_idx = document.user_form.position.selectedIndex;
+  if (posn_idx == 0) {return;}
+  else {posn_idx = posn_idx-1;}
+  for (i=0; i<posn_group_array[posn_idx].length; i++) {
+    if (posn_group_array[posn_idx][i]==1) {
+      document.position_groups.elements[i].checked = true;
+    }
+  }
+}
+##TP_ENDIF##
+</script>
+</head>
+<body onload="parent.frames['TopBar'].location.reload();##TP_IF {[OT_CfgGet FUNC_ADMIN_HIERARCHY 0] && [tpGetVar opAdd 0] == 0}##setPositionGroups();##TP_ENDIF##">
+##TP_PLAY msg_rpt.html##
+##TP_PLAY error_rpt.html##
+<form method=post action="##TP_CGI_URL##" name=perm_form>
+##TP_IF {![tpGetVar opAdd 0]}##
+	<table border=0 cellspacing=0 cellpadding=1 ##TP_IF {[OT_CfgGet PERM_COLS 3] < 3}##width="600"##TP_ENDIF##>
+	<tr>
+		<th class=title colspan=##TP_TCL {tpBufWrite [OT_CfgGet PERM_COLS 3]}##>
+		##TP_Username##
+		##TP_IF {[tpGetVar AdminUserOp 0] == 0}##
+		group
+		##TP_ENDIF##
+		permissions
+		</th>
+	</tr>
+	##TP_IF {[tpGetVar AdminUserOp 0]==0}##
+	##TP_LOOP group_idx {[expr {2*(([tpGetVar NumGroups]+1)/2)}]}##
+		##TP_IF {[tpGetVar group_idx]%2 == 0}##
+			<tr>
+		##TP_ENDIF##
+		##TP_IF {[tpGetVar group_idx] < [tpGetVar NumGroups]}##
+			<td>
+				<input value="Y" type="checkbox" name="AG_##TP_GroupId##" ##TP_GroupSelected##
+			##TP_IF {![tpGetVar CanAssignRights 0]}##
+				disabled="disabled"
+			##TP_ENDIF##
+				> &nbsp;
+			##TP_GroupName##
+			</td>
+		##TP_ELSE##
+			<td>&nbsp;</td>
+		##TP_ENDIF##
+		##TP_IF {([tpGetVar group_idx]+1)%2 == 0}##
+			</tr>
+		##TP_ENDIF##
+	##TP_ENDLOOP##
+	##TP_ELSE##
+		##TP_IF {[tpGetVar NumPermGrps 0]>0}##
+			##TP_LOOP grp_idx {[tpGetVar NumPermGrps]}##
+				<tr class=subtitle>
+					<th colspan=##TP_TCL {tpBufWrite [OT_CfgGet PERM_COLS 3]}## align=left>
+					##TP_AdminOpGrp##
+					</td>
+				</tr>
+				##TP_TCL -quiet {tpSetVar NumPerms $AO([tpGetVar grp_idx],n_perms)}##
+
+				##TP_LOOP perm_idx {[expr {[OT_CfgGet PERM_COLS 3]*(([tpGetVar NumPerms]+[OT_CfgGet PERM_COLS 3]-1)/[OT_CfgGet PERM_COLS 3])}]}##
+					##TP_IF {[tpGetVar perm_idx]%[OT_CfgGet PERM_COLS 3] == 0}##
+						<tr>
+					##TP_ENDIF##
+					##TP_IF {[tpGetVar perm_idx] < [tpGetVar NumPerms]}##
+						<td>
+							<input type="checkbox" name="AP_##TP_AdminOp##" ##TP_OpSelected##
+							##TP_IF {![tpGetVar CanAssignRights 0]}##
+								disabled="disabled"
+							##TP_ENDIF##
+							> &nbsp;
+							##TP_AdminOpDesc## &nbsp;
+						</td>
+					##TP_ELSE##
+						<td>&nbsp;</td>
+					##TP_ENDIF##
+					##TP_IF {([tpGetVar perm_idx]+1)%[OT_CfgGet PERM_COLS 3] == 0}##
+						</tr>
+					##TP_ENDIF##
+				##TP_ENDLOOP##
+
+			##TP_ENDLOOP##
+		##TP_ELSE##
+			<tr>
+				<td colspan=##TP_TCL {tpBufWrite [OT_CfgGet PERM_COLS 3]}##>
+				<b>No permissions assigned currently</b>
+				</td>
+			</tr>
+		##TP_ENDIF##
+	##TP_ENDIF##
+		<tr>
+			<th colspan=##TP_TCL {tpBufWrite [OT_CfgGet PERM_COLS 3]}## class=buttons>
+			##TP_IF {[tpGetVar CanAssignRights 0]}##
+
+				##TP_IF {[tpGetVar HasGroup 1]==0}##
+				<input type=button class="btn_def" value="No Groups" onClick="return fs(this,'NoGroups')">
+				##TP_ELSE##
+				<input type=button class="btn_def" value="Uncheck All" onClick="uncheck()">
+				##TP_ENDIF##
+				<input type=button class="btn_def" value="Update Permissions" onClick="return fs(this,'UpdPerms')">
+
+			##TP_ENDIF##
+
+			##TP_IF {[tpGetVar AdminUserOp 0] == 1}##
+				<input type="button" class="btn_def" value="View Audit" onClick="return fs(this,'UserAudit');" />
+			##TP_ELSE##
+				<input type="button" class="btn_def" value="View Audit" onClick="return fs(this,'GroupsAudit');" />
+			##TP_ENDIF##
+				<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+			</th>
+		</tr>
+	</table>
+<input type=hidden name=UserId value="##TP_UserId##">
+<input type=hidden name=AdminUserOp value="##TP_IF {[tpGetVar AdminUserOp 0]==1}##1##TP_ENDIF##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::USERS::DoUser>
+</form>
+##TP_ENDIF##
+<br />
+
+##TP_IF {[tpGetVar CanAssignRights 0]}##
+<form method=get action="##TP_CGI_URL##" name="user_form">
+<table border=0 cellspacing=0 cellpadding=2>
+##TP_IF {[tpGetVar opAdd 0]}##
+	<tr>
+		<th class=title colspan=2>
+		New user
+		</th>
+	</tr>
+	<tr>
+		<td class=caption>Username</td>
+		<td>
+		<input type=text name=username size=20 value="##TP_Username##">
+		</td>
+	</tr>
+##TP_ELSE##
+	<tr>
+		<th class=title colspan=2>
+		##TP_Username## update
+		</th>
+	</tr>
+	<input type=hidden name=username value="##TP_Username##">
+##TP_ENDIF##
+<tr>
+  <td class="caption">First Name</td>
+  <td><input type="text" name="fname" size="20" value="##TP_Fname##" /></td>
+</tr>
+<tr>
+  <td class="caption">Last Name</td>
+  <td><input type="text" name="lname" size="20" value="##TP_Lname##" /></td>
+</tr>
+<tr>
+	<td class=caption>Password</td>
+	<td>
+	<input type=password name=password_1 size=20 value="##TP_Pwd_1##" >
+	</td>
+</tr>
+<tr>
+	<td class=caption>(again)</td>
+	<td>
+	<input type=password name=password_2 size=20 value="##TP_Pwd_2##" >
+	</td>
+</tr>
+<tr>
+	<td class=caption>Email</td>
+	<td>
+	<input type=text name=email size=20 value="##TP_Email##">
+	</td>
+</tr>
+<tr>
+	<td class=caption>Status</td>
+	<td>
+	<select name=status value=##TP_Status##>
+	<script>
+	write_select('##TP_Status##','P','Password Expired','A','Active','S','Suspended','L','Locked')
+	</script>
+	</select>
+	</td>
+</tr>
+##TP_IF {[OT_CfgGetTrue FUNC_ADMIN_USER_THIRDPARTIES]}##
+<tr>
+	<td class="caption">Third Party</td>
+	<td>
+		<select name="thirdparty" value="##TP_ThirdParty##">
+			<option value="">No Third Party</option>
+			##TP_LOOP tp_idx {[tpGetVar NumThirdParties]}##
+				<option value="##TP_ThirdPartyFlag##"
+				##TP_IF {[tpBindGet ThirdPartyFlag] == [tpBindGet ThirdParty]}##
+				selected="selected"
+				##TP_ENDIF##
+				>##TP_ThirdPartyName##</option>
+			##TP_ENDLOOP##
+		</select>
+	</td>
+</tr>
+
+
+<tr>
+	<td class="caption">Agent ID</td>
+	<td><input name="agent_id" value="##TP_AgentId##" /></td>
+</tr>
+
+<tr>
+	<td class="caption">Switch</td>
+	<td><input name="phone_switch" value="##TP_PhoneSwitch##" /></td>
+</tr>
+##TP_ENDIF##
+
+##TP_IF {[OT_CfgGet FUNC_ADMIN_HIERARCHY 0]}##
+<tr>
+  <td class="caption">Position</td>
+  <td>
+    <select name="position" onChange="javascript:setPositionGroups()">
+      <option value="">--ROOT--</option>
+	  ##TP_LOOP pos_idx {[tpGetVar NumPositions]}##
+	  <option value="##TP_PosId##" ##TP_PosSelected##>##TP_PosName##</option>
+      ##TP_ENDLOOP##
+    </select>
+  </td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[tpGetVar opAdd 0]}##
+<tr>
+	<td class=caption>Clone</td>
+	<td>
+	<input type=text name=clone size=20 value="##TP_Clone##">
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet OVERRIDE_CODES 0]}##
+<tr>
+  <td class="caption">Override Code</td>
+  <td><input type="text" name="overridecode" size="20" value="##TP_OverrideCode##" /></td>
+</tr>
+##TP_ENDIF##
+
+<tr>
+	<td class="caption">Is Automated?</td>
+	##TP_IF {[tpGetVar IsAutomated] == 1}##
+		<td><input type="checkbox" name="is_automated" id="is_automated" checked="checked"/></td>
+	##TP_ELSE##
+		<td><input type="checkbox" name="is_automated" id="is_automated"/></td>
+	##TP_ENDIF##
+</tr>
+
+
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[tpGetVar opAdd 0]}##
+	<input type=button class="btn_def" value="Add User" onClick="return fs(this,'UserAdd')">
+	##TP_ELSE##
+	<input type=button class="btn_def" value="Update User" onClick="return fs(this,'UserMod')">
+	##TP_ENDIF##
+	##TP_IF {[tpGetVar LoggedIn N] == "Y" && [tpGetVar UserId 0] > 1}##
+	<input type=button class="btn_def" value="Logout" onClick="return fs(this,'UserLogout')">
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</td>
+</tr>
+</table>
+<input type=hidden name=Username value="##TP_Username##">
+<input type=hidden name=UserId value="##TP_UserId##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::USERS::DoUser>
+</form>
+##TP_ENDIF##
+<!-- show group membership from position -->
+##TP_IF {[OT_CfgGet FUNC_ADMIN_HIERARCHY 0] && ![tpGetVar opAdd 0]}##
+<br />
+<table border=0 cellspacing=0 cellpadding=1>
+  <form name="position_groups" action="##TP_CGI_URL##">
+  <tr>
+    <th class=title colspan=3>
+    Group memberships inherited from position
+    </th>
+  </tr>
+##TP_LOOP group_idx {[expr {2*(([tpGetVar NumGroups]+1)/2)}]}##
+  ##TP_IF {[tpGetVar group_idx]%2 == 0}##
+    <tr>
+  ##TP_ENDIF##
+  ##TP_IF {[tpGetVar group_idx] < [tpGetVar NumGroups]}##
+    <td>
+    ##TP_IF {[tpGetVar CanAssignRights 0]}##
+      <input value="Y" type="checkbox" name="PG_##TP_TCL {tpBufWrite [tpGetVar group_idx]}##" disabled />&nbsp;
+    ##TP_ENDIF##
+    ##TP_GroupName##&nbsp;
+    </td>
+  ##TP_ELSE##
+    <td>&nbsp;</td>
+  ##TP_ENDIF##
+  ##TP_IF {([tpGetVar group_idx]+1)%2 == 0}##
+    </tr>
+  ##TP_ENDIF##
+##TP_ENDLOOP##
+  </form>
+</table>
+##TP_ENDIF##
+
+##TP_IF {[OT_CfgGet BF_ACTIVE 0] && [OT_CfgGet BF_ACCOUNT_PER_USER 0] && [op_allowed MapBFAcctToAdmin]}##
+	##TP_PLAY bf_admin.html##
+##TP_ENDIF##
+</body>
+</html>

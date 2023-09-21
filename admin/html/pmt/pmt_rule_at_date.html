@@ -1,0 +1,70 @@
+<html>
+<!-- $Id: pmt_rule_at_date.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th colspan=3 class=title>
+	##TP_pay_mthd## Rule with priority ##TP_priority## at ##TP_change_date##
+	</th>
+</tr>
+<tr>
+	<td colspan=2>Rule Name: ##TP_rule_name##</td>
+</tr>
+<tr>
+	<td>Status: ##TP_status##</td>
+</tr>  
+</table>
+<br>
+<br>
+##TP_IF {[tpGetVar num_clauses 0]} ##
+<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th colspan=3 class=title>
+		Rule Clauses
+		</th>
+	</tr>
+	##TP_LOOP clause_idx {[tpGetVar num_clauses 0]}##
+		<input type="hidden" name="##TP_clause_criterion##" value="##TP_clause_criterion##">
+		<input type="hidden" name="operator_##TP_clause_criterion##" value="##TP_operator##">
+		<input type="hidden" name="values_##TP_clause_criterion##" value="##TP_values##">
+		<tr>
+		<td colspan=2>##TP_clause##</td>
+	##TP_ENDLOOP##
+</table>
+<br>
+<br>
+##TP_ENDIF##
+##TP_IF {[tpGetVar num_clauses 0]} ##
+<table cellspacing=0 cellpadding=2 border=0>
+		<tr><td>Payment Gateway Account</td>
+		    <td>Payment Gateway Host</td>
+		    <td>%</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		    ##TP_LOOP acct_idx {[tpGetVar num_accts 0]}##
+		    	<tr>
+				<td>##TP_acct##</td>
+				<td>##TP_host##</td>
+				<td>##TP_percentage##</td>
+				</tr>
+	         ##TP_ENDLOOP##
+		</table>
+		<br>
+		<br>
+</table>
+##TP_ENDIF##
+</script>
+</body>
+</html>
+
+

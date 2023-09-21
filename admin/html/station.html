@@ -1,0 +1,92 @@
+<html>
+<!-- $Id: station.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Station</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<form ACTION="##TP_CGI_URL##" method="POST">
+<table border=0 cellspacing=0 cellpadding=3>
+	<tr>
+		<th colspan=2 class=title>
+		TV/Radio Station Details
+		</th>
+	</tr>
+	<tr>
+		<td class=caption>Name</td>
+		<td>
+		<input type="text" name="StationName" value="##TP_StationName##" size=32 maxlength=32>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>ID</td>
+		<td>
+		<input type="text" name="StationCode" value="##TP_StationCode##" size=32 maxlength=32>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Status</td>
+		<td>
+			<select name="StationStatus">
+			<script>
+			write_select('##TP_StationStatus##','A','Active','S','Suspended')
+			</script>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Disporder</td>
+		<td>
+		<input type=text name="StationDisporder" value="##TP_StationDisporder##" size=8>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Image</td>
+		<td>
+		<input type="text" name="StationImage" value="##TP_StationImage##" size=32 maxlength=32>
+		</td>
+	</tr>
+##TP_IF {[OT_CfgGetTrue FUNC_VIEWS]}##
+	<tr>
+		<td class="caption">Views</td>
+		<td colspan="2">
+		##TP_PLAY view_sel.html##
+		</td>
+	</tr>
+##TP_IF {[OT_CfgGetTrue FUNC_VIEWS_LANG_LIST]}##
+	<tr class=subtitle><td class="newsInfo" colspan="2">Languages: These are the languages that will be able to see this Station with the current views setup</td></tr>
+	<tr><td class="newsInfobold" colspan="2">##TP_lang_list##</td></tr>
+##TP_ENDIF##
+##TP_ENDIF##
+	<tr>
+		<th colspan=2 class=buttons>
+		##TP_IF {[op_allowed ManageTVChannels]}##
+			##TP_IF {[tpGetVar opAdd 0]}##
+				<input type=button value="Add Station" onClick="return fs(this,'StationAdd')">
+			##TP_ELSE##
+				<input type=hidden name=StationId value="##TP_StationId##">
+				<input type=button value="Modify Station" onClick="return fs(this,'StationMod')">
+				<input type=button value="Delete Station" onClick="return fs(this,'StationDel')">
+			##TP_ENDIF##
+		##TP_ENDIF##
+		<input type=button value="Back" onClick="return fs(this,'Back')">
+		</th>
+	</tr>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value="ADMIN::STATION::DoStation">
+</table>
+</form>
+</body>
+</html>

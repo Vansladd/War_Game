@@ -1,0 +1,293 @@
+<html>
+<!-- $Id: debt_man_sel.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+
+##TP_PLAY header_cal.html##
+
+<script>
+function fs(b,t) {
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function doAudit(audit, b) {
+	b.form.AuditInfo.value = audit;
+	return fs(b, "GoAudit");
+}
+
+selected = false;
+
+function selectAllCusts(b) {
+
+	val = true;
+	if (selected == false) {
+		val = true;	
+		b.value="Select None";
+		selected = true;
+	} else {
+		val = false;	
+		b.value="Select All";
+		selected = false;
+	}
+	
+	##TP_LOOP row_idx {[tpGetVar debt_num_rows]}##
+	this.document.getElementById('chk_##TP_cust_id##').checked = selected;
+	##TP_ENDLOOP##
+}
+
+function displayCalendars() {
+	new Calendar(document.forms.debt_management_selection.fOpenedFrom,null,false,"lo");
+	new Calendar(document.forms.debt_management_selection.fOpenedTo,null,false,"lo");
+	new Calendar(document.forms.debt_management_sel.NewReviewDate,null,false,"lo");
+}
+
+function checkDateFrom() {
+	var dateArray = new Array();
+	dateArray = document.forms.debt_management_selection.fOpenedFrom.value.split('-');
+	if (dateArray.length != 3) {
+		alert ('Error in date field format (should be yyyy-MM-DD)');
+		document.forms.debt_management_selection.fOpenedFrom.value = '';
+		return;
+	}
+}
+
+function checkDateTo() {
+	var dateArray = new Array();
+	dateArray = document.forms.debt_management_selection.fOpenedTo.value.split('-');
+	if (dateArray.length != 3) {
+		alert ('Error in date field format (should be yyyy-MM-DD)');
+		document.forms.debt_management_selection.fOpenedTo.value = '';
+		return;
+	}
+}
+
+function checkDate() {
+	var dateArray = new Array();
+	dateArray = document.forms.debt_management_sel.NewReviewDate.value.split('-');
+	if (dateArray.length != 3) {
+		alert ('Error in date field format (should be yyyy-MM-DD)');
+		document.forms.debt_management_sel.NewReviewDate.value = '';
+		return;
+	}
+}
+
+##TP_IF {![OT_CfgGet RIGHTNOW_DEBT_MAN_ENABLED 1]}##
+
+function updateLetterSelect() {
+
+	template = document.debt_management_sel.LetterTemplate.options[document.debt_management_sel.LetterTemplate.selectedIndex].value;
+
+	var selectionBox = document.debt_management_sel.Letter;
+	selectionBox.options.length = 0;
+
+	##TP_LOOP template_idx {[tpGetVar debt_num_templates]}##
+	if (template == "##TP_template_id##") {
+		selectionBox.options[selectionBox.options.length] = new Option('(New)',0,true);
+		##TP_LOOP letter_idx {[tpGetVar debt_num_letters]}##
+			##TP_IF {[tpBindGet ltr_tmplt_id] == [tpBindGet template_id]}##
+				selectionBox.options[selectionBox.options.length] = new Option('##TP_letter_name##',##TP_letter_id##);
+			##TP_ENDIF##
+		##TP_ENDLOOP##
+		return
+	}
+	##TP_ENDLOOP##
+}
+
+##TP_ENDIF##
+
+</script>
+
+</head>
+##TP_IF {[OT_CfgGet RIGHTNOW_DEBT_MAN_ENABLED 1]}##
+<body onload="displayCalendars();">
+##TP_ELSE##
+<body onload="displayCalendars(); updateLetterSelect();">
+##TP_ENDIF##
+	##TP_PLAY error_rpt.html##
+	##TP_PLAY msg_rpt.html##
+		<table cellspacing=0 cellpadding=2 border=0 >
+			<tr>
+				<th colspan=21 class=title>
+					Debt Chase Arrears
+				</th>
+			</tr>
+			<form name="debt_management_selection" method=post action="##TP_CGI_URL##">
+			<tr>
+				<td nowrap class=caption colspan=2>
+					Username
+				</td>
+				<td nowrap  colspan=5>
+					<input type="text" size="8" name="fUsername" value="##TP_fUsername##">
+				</td>
+			</tr>
+				<td nowrap class=caption colspan=2>
+					Account number
+				</td>
+				<td nowrap colspan=5>
+					<input type="text" size="8" name="fAcctNo" value="##TP_fAcctNo##">
+				</td>
+			<tr>
+				<td nowrap class=caption colspan=2>
+					Account opened between
+				</td>
+				<td nowrap  colspan=5>
+					<input type="text" size="6" name="fOpenedFrom" value="##TP_fOpenedFrom##" onChange="checkDateFrom()">&nbsp;
+					and &nbsp;<input type="text" size="6" name="fOpenedTo" value="##TP_fOpenedTo##" onChange="checkDateTo()">
+				</td>
+			</tr>
+			<tr>
+				<td nowrap class=caption colspan=2>
+					Current balance between
+				</td>
+				<td nowrap  colspan=5>
+					<input type="text" size="8" name="fCurrBalHigher" value="##TP_fCurrBalHigher##">&nbsp;
+					and &nbsp;<input type="text" size="8" name="fCurrBalLower" value="##TP_fCurrBalLower##">
+				</td>
+			</tr>
+			<tr>
+				<td nowrap class=caption colspan=2>
+					Statement balance between
+				</td>
+				<td nowrap  colspan=5>
+					<input type="text" size="8" name="fStBalHigher" value="##TP_fStBalHigher##">
+					&nbsp;and&nbsp;<input type="text" size="8" name="fStBalLower" value="##TP_fStBalLower##">
+				</td>
+			</tr>
+			<tr>
+				<td nowrap class=caption colspan=2>
+					Number of times in Ledger
+				</td>
+				<td nowrap  colspan=5>
+					<input type="text" size="8" name="fLedgerHigher" value="##TP_fLedgerHigher##">
+					&nbsp;and&nbsp;<input type="text" size="8" name="fLedgerLower" value="##TP_fLedgerLower##">
+				</td>
+			</tr>
+			<tr>
+				<td nowrap class=caption colspan=2>
+					Number of times in OAD
+				</td>
+				<td nowrap  colspan=5>
+					<input type="text" size="8" name="fOadHigher" value="##TP_fOadHigher##">
+					&nbsp;and&nbsp;<input type="text" size="8" name="fOadLower" value="##TP_fOadLower##">
+				</td>
+			</tr>
+			<tr>
+				<td nowrap class=caption colspan=2>
+					Running balance between
+				</td>
+				<td nowrap  colspan=5>
+					<input type="text" size="8" name="fRunnBalHigher" value="##TP_fRunnBalHigher##">
+					&nbsp;and&nbsp;<input type="text" size="8" name="fRunnBalLower" value="##TP_fRunnBalLower##">
+				</td>
+			</tr>
+			<tr>
+				<td><input type=button class="btn_def" value="Apply Filter" onClick="return fs(this,'GoDebtManSel')"></td>
+			</tr>
+				<input type="hidden" name="SubmitName" value="">
+				<input type="hidden" name="action" value="ADMIN::DEBT_MANAGEMENT::GoDebtManSel">
+				<input type="hidden" name="csort" value="##TP_csort##">
+				<input type="hidden" name="StatementDate" value="##TP_StatementDate##">
+				<input type="hidden" name="filter" value="1">
+			</form>
+			
+			<form name="debt_management_sel" method="post" action="##TP_CGI_URL##">
+			<tr>
+				<th nowrap class=colhead>Select</th>
+				<th nowrap class=colhead>Credit Control</th>
+				<th nowrap class=colhead>Username</th>
+				<th nowrap class=colhead>Account<br>number</th>
+				<th nowrap class=colhead>Opened</th>
+				<th nowrap class=colhead>Customer<br> Group</th>
+				<th nowrap class=colhead>First name</th>
+				<th nowrap class=colhead>Last name</th>
+				<th nowrap class=colhead>Balance</th>
+				<th nowrap class=colhead>Statement<br>Balance</th>
+				<th nowrap class=colhead>Debt paid</th>
+				<th nowrap class=colhead>Last payment<br> date</th>
+				<th nowrap class=colhead>Last payment<br> amount</th>
+				<th nowrap class=colhead>Largest<br> payment</th>
+				<th nowrap class=colhead>Times in<br>Chase Arrears</th>
+				<th nowrap class=colhead>Times in<br>Ledger</th>
+				<th nowrap class=colhead>Times in<br>OAD</th>
+				<th nowrap class=colhead>Running Balance</th>
+			</tr>
+			##TP_LOOP row_idx {[tpGetVar debt_num_rows]}##
+			<tr>
+				<td><input type="checkbox" name="sc" id="chk_##TP_cust_id##" value="##TP_cust_id##">
+				<input type="hidden" name="cid_##TP_cust_id##" value="##TP_cust_debt_id##">
+				</td>
+				<td><a href="##TP_CGI_URL##?action=ADMIN::DEBT_MANAGEMENT::GoUpdateDetails&cust_id=##TP_cust_id##&is_chase=1&csort=##TP_csort##&StatementDate=##TP_StatementDate##" target="_blank">Credit Control</a></td>
+				<td><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_cust_id##" target="_blank">##TP_username##</a></td>
+				<td>##TP_acct_no##</td>
+				<td>##TP_cust_reg_date##</td>
+				<td>##TP_cust_group##</td>
+				<td>##TP_fname##</td>
+				<td>##TP_lname##</td>
+				<td nowrap>##TP_balance##</td>
+				<td nowrap>##TP_st_balance##</td>
+				<td nowrap>##TP_debt_paid##</td>
+				<td>##TP_lp_date##</td>
+				<td>##TP_lp_amount##</td>
+				<td nowrap>##TP_largest_payment##</td>
+				<td>##TP_count_ca##</td>
+				<td>##TP_count_ledger##</td>
+				<td>##TP_count_oad##</td>
+				<td nowrap>##TP_running_balance##</td>
+			</tr>
+			##TP_ENDLOOP##
+
+			##TP_IF {![OT_CfgGet RIGHTNOW_DEBT_MAN_ENABLED 1]}##
+			<tr>
+				<td class=buttons colspan=3>
+					Choose Review Date
+				</td>
+				<td class=buttons colspan=3>
+					<input type="text" size="12" name="NewReviewDate" onChange="checkDate()">
+				</td>
+				<td class=buttons colspan=3>
+					Choose Template
+				</td>
+				<td class=buttons colspan=3>
+					<select name="LetterTemplate" onChange="updateLetterSelect()">
+						##TP_LOOP template_idx {[tpGetVar debt_num_templates]}##
+							<option value="##TP_template_id##">##TP_template_name##</option>
+						##TP_ENDLOOP##
+					</select>
+				</td>
+				<td class=buttons colspan=3>
+				Choose Letter
+				</td>
+				<td class=buttons colspan=12>
+					<select name="Letter">
+						##TP_LOOP letter_idx {[tpGetVar debt_num_letters]}##
+							<option value="##TP_letter_id##">##TP_letter_name##</option>
+						##TP_ENDLOOP##
+							<option value="0" selected="selected">(New)</option>
+					</select>&nbsp;&nbsp;&nbsp;
+					<!-- Send Letter is now closely associated with moving to Arrears
+					<input type=button class="btn_def" value="Send Letter" onClick="return fs(this,'SendLetter')"> -->
+				</td>
+			</tr>
+			##TP_ENDIF##
+			<tr>
+				<td class=buttons colspan=21>
+					<input type=button name="selectAll" class="btn_def" value="Select All" onClick="selectAllCusts(this)">
+					<input type=button class="btn_def" value="Send Arrears Letter" onClick="return fs(this,'MoveToDebtDiary')">
+					<input type=button class="btn_def" value="Remove from further processing" onClick="return fs(this,'RemoveFromDebtManSel')">
+					<!-- <input type=button class="btn_def" value="View Audit History" onClick="return doAudit('CustomerDebt',this)"> -->
+					<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+				</td>
+			</tr>
+		</table>
+		<input type="hidden" name="SubmitName" value="">
+		<input type="hidden" name="action" value="ADMIN::DEBT_MANAGEMENT::DoDebtManSel">
+		<input type="hidden" name="AuditInfo" value="">
+		<input type="hidden" name="csort" value="##TP_csort##">
+		<input type="hidden" name="StatementDate" value="##TP_StatementDate##">
+	</form>
+</body>
+</html>

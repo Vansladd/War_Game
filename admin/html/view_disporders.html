@@ -1,0 +1,44 @@
+<!--$Id: view_disporders.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $-->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<script>
+	function fs(b)
+	{
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.submit();
+		return true;
+	}
+	</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<form name=ViewDisporder method=get action="##TP_CGI_URL##">
+<input type=hidden name=action value=ADMIN::VIEWS::DoViewDisporders>
+<input type=hidden name="name" value="##TP_name##">
+<input type=hidden name="id"   value="##TP_id##">
+<input type=hidden name="sort" value="##TP_sort##">
+<table border="0" cellspacing="0" cellpadding="2">
+<tr>
+	<th class=title colspan=2>
+	View Display Orders for ##TP_name##
+	</th>
+</tr>
+##TP_LOOP view_idx {$VIEWDISP(num_views)}##
+<tr>
+	<td>##TP_view_name##</td>
+	<td><input type="text" name="view_##TP_view_code##" value="##TP_disporder##" size="4" maxlength="4"></td>
+</tr>
+##TP_ENDLOOP##
+<tr>
+	<th class=buttons><input type=button class="btn_def" value="Update" onClick="return fs(this)"></th>
+	<th class=goaudit><input type=button class="btn_def" value="Cancel" onClick="window.close()"></th>
+</tr>
+</table>
+</form>
+</body>
+</html>

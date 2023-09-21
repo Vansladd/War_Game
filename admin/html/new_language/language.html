@@ -1,0 +1,411 @@
+<html>
+<!-- $Id: language.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Language</title>
+<script language="javascript" src="##TP_CGI_URL##?action=ADMIN::ASYNC_BET::GoScript" type="text/javascript"></script>
+<script type="text/javascript" src="##TP_OFFICE_STATIC_URL##/js/xmlhttp.js"></script>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+var isoLanguageCodes = new Array();
+var isoLanguageNames = new Array();
+##TP_LOOP iso_idx {[tpGetVar NumIsoLangCodes]}##
+isoLanguageCodes[##TP_TCL {tpGetVar iso_idx}##] = "##TP_IsoLangCode##";
+isoLanguageNames[##TP_TCL {tpGetVar iso_idx}##] = "##TP_IsoLangName##";
+##TP_ENDLOOP##
+
+
+function fs(b,t)
+{
+	if (t == "LangMod") {
+		if (!validate()) { return false; }
+	}
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+
+function fsAudit(b,t,audit)
+{
+	b.form.SubmitName.value=t;
+	b.form.AuditInfo.value = audit;
+	b.form.submit();
+	return true;
+}
+
+
+function findIsoLang(pattern, searchtype) {
+	if (searchtype == "code") {
+		var searchArray = isoLanguageCodes;
+	} else if (searchtype == "name") {
+		var searchArray = isoLanguageNames;
+	} else {
+		return -1;
+	}
+
+	for (var i = 0 ; i < searchArray.length; i++) {
+		if (searchArray[i].toUpperCase() == pattern.toUpperCase()) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+
+function validate()
+{
+	var languageCode = document.getElementById("idLanguageLang").value;
+	var languageName = document.getElementById("idLanguageName").value;
+	var defaultLanguageCode = document.getElementById("idLanguageDefaultLanguage").value;
+	var disporder = document.getElementById("idLanguageDispOrder").value;
+
+
+	var languageCodeIdx = findIsoLang(languageCode,"code");
+	var languageNameIdx = findIsoLang(languageName,"name");
+
+	var response = true;
+
+	// if language code is not standard && language name is standard
+	if ((languageCodeIdx == -1) && (languageNameIdx != -1)) {
+		var standardCode = isoLanguageCodes[languageNameIdx];
+		response = window.confirm("The standard code for \"" + languageName + "\" is '" + standardCode + "' not '" + languageCode + "'. Do you want to continue?");
+		if (!response) return false;
+	}
+
+	// if language code is standard & language name is not standard
+	if ((languageCodeIdx != -1) && (languageNameIdx == -1)) {
+		var standardName = isoLanguageNames[languageCodeIdx];
+		response = window.confirm("Code '" + languageCode + "' is generally described as \"" + standardName + "\" not \"" + languageName + "\". Do you want to continue?");
+		if (!response) return false;
+	}
+
+	// if default language not entered for non standard code
+	if ((languageCodeIdx == -1) && (defaultLanguageCode == "")) {
+		response = window.confirm("External systems may require a default for non-standard languages like '" + languageCode + "'. Do you want to continue?");
+		if (!response) return false;
+	}
+
+	// if default language not standard
+	if ((defaultLanguageCode != "") && (findIsoLang(defaultLanguageCode,"code") == -1)) {
+		response = window.confirm("External systems will use '" + defaultLanguageCode + "' and this is not a standard code. Do you want to continue?");
+		if (!response) return false;
+	// if language = default
+	} else if (defaultLanguageCode == "##TP_LanguageSystemDefault##") {
+		response = window.confirm("The default language is the same as the system default. Some external systems will use '" + defaultLanguageCode + "' instead of '" + languageCode + "'. Do you want to continue?");
+		if (!response) return false;
+	}
+
+	if (disporder == "") {
+		alert("Please set a display order.");
+		response = false;
+	}
+
+	return response;
+}
+
+function updateResult(response) {
+
+	var details = response.split('|');
+	var action = details[0];
+	var final = details[1];
+	var err = details[2];
+	switch(action)
+	{
+		case 'LangAdd':
+			document.getElementById("idLanguageLang").disabled = true;
+			document.getElementById("idLanguageName").disabled = true;
+			//document.getElementById("idLanguageXlName").disabled = true;
+			document.getElementById("idLanguageStatus").disabled = true;
+			document.getElementById("idLanguageDisplayed").disabled = true;
+			document.getElementById("idLanguageDispOrder").disabled = true;
+			document.getElementById("idLanguageSportsbookWarning").disabled = true;
+			document.getElementById("idAddLanguage").disabled = true;
+			var divElem = document.getElementById("idDivLangAdd");
+			divElem.style.display = "block";
+			if (err != '') {
+				divElem.style.color = "#FF0000";
+				divElem.innerHTML = err;
+			} else {
+				if (parseInt(final)) {
+					divElem.style.color = "#008000";
+					divElem.innerHTML = "Language has been added.";
+					document.getElementById("idCloningDiv").style.display = "block";
+				} else {
+					divElem.style.color = "#0000FF";
+					divElem.innerHTML = "Language is being added...";
+				}
+			}
+			break;
+		case 'CloneLangWebsiteConfig':
+			document.getElementById("idCloneLangWebsiteConfigButton").disabled = true;
+			var divElem = document.getElementById("idDivCloneLangWebsiteConfig");
+			divElem.style.display = "block";
+			if (err != '') {
+				divElem.style.color = "#FF0000";
+				divElem.innerHTML = err;
+			} else {
+				if (parseInt(final)) {
+					divElem.style.color = "#008000";
+					divElem.innerHTML = "Language website config data has been cloned.";
+				} else {
+					divElem.style.color = "#0000FF";
+					divElem.innerHTML = "Language website config data is being cloned...";
+				}
+			}
+			break;
+		case 'CloneLangDisplayManagerConfig':
+			var divElem = document.getElementById("idDivCloneLangDisplayManagerConfig");
+			document.getElementById("idCloneLangDisplayManagerConfigButton").disabled = true;
+			divElem.style.display = "block";
+			if (err) {
+				divElem.style.color = "#FF0000";
+				divElem.innerHTML = err;
+			} else {
+				if (parseInt(final)) {
+					divElem.style.color = "#008000";
+					divElem.innerHTML = "Language display manager config data has been cloned.";
+				} else {
+					divElem.style.color = "#0000FF";
+					divElem.innerHTML = "Language display manager config data is being cloned...";
+				}
+			}
+			break;
+		case 'CloneImageLocationsFlag':
+			var divElem = document.getElementById("idDivCloneImageLocationsFlag");
+			document.getElementById("idCloneImageLocationsFlagButton").disabled = true;
+			divElem.style.display = "block";
+			if (err) {
+				divElem.style.color = "#FF0000";
+				divElem.innerHTML = err;
+			} else {
+				if (parseInt(final)) {
+					divElem.style.color = "#008000";
+					divElem.innerHTML = "Language images locations have been cloned.";
+				} else {
+					divElem.style.color = "#0000FF";
+					divElem.innerHTML = "Language images locations are being cloned...";
+				}
+			}
+			break;
+		default:
+			alert('No action triggered.');
+			break;
+	}
+}
+
+
+function addClone(action) {
+
+	if ( document.getElementById('idLanguageLang').value != '' && document.getElementById('idLanguageName').value != '' && document.getElementById('idLanguageDispOrder').value != '') {
+
+		if (!validate()) { return false; }
+
+		// Update divs
+		updateResult(action+'|0|');
+
+		// Building up the parameters string
+		var params = '';
+		// standard parameters group
+
+		params += 'do_action=' + action;
+		params += '&new_lang=' + document.getElementById('idLanguageLang').value;
+		if (action == 'LangAdd') {
+			//adding language
+			params += '&lang_name=' + document.getElementById('idLanguageName').value;
+			//params += '&lang_xl_name=' + document.getElementById('idLanguageXlName').value;
+			params += '&lang_status=' + document.getElementById('idLanguageStatus').value;
+			params += '&lang_displayed=' + document.getElementById('idLanguageDisplayed').value;
+			params += '&lang_disp_order=' + document.getElementById('idLanguageDispOrder').value;
+			params += '&lang_sportsbook_warn=' + document.getElementById('idLanguageSportsbookWarning').value;
+			params += '&lang_default_lang=' + document.getElementById('idLanguageDefaultLanguage').value;
+		} else {//cloning
+			params += '&root_lang=' + document.getElementById('idRootLanguageLang').value;
+		}
+
+		// Sending AJAX request to the server
+		var call_back_function = function(_req) {asynchProcessHTMLResponse(_req,'updateResult','There was an error in the server while cloning data');};
+		HttpRequest('##TP_CGI_URL##?action=ADMIN::LANGUAGE::DoAddClone', 'POST', call_back_function, params, true);
+	} else {
+		alert('Please specify the code, name and display order for the language.');
+	}
+}
+
+
+function goSelectISOLanguage() {
+	popup=window.open("##TP_CGI_URL##?action=ADMIN::LANGUAGE::GoISOLanguagesList","popup","toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,height=600,width=350");
+	popup.focus();
+}
+
+
+function populateLanguagesForm(code,name) {
+	document.getElementById("idLanguageLang").value = code;
+	document.getElementById("idLanguageName").value = name;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	##TP_IF {[tpGetVar LanguageName] != ""}## ##TP_LanguageName## Details ##TP_ELSE## Add Language ##TP_ENDIF##
+	</th>
+</tr>
+<form ACTION="##TP_CGI_URL##" method=get> <!--onSubmit="return validate(this);">-->
+<tr>
+	<td class=caption>Code</td>
+	<td>
+	<input type=text id="idLanguageLang" name="LanguageLang" value="##TP_LanguageLang##" size=2 ##TP_IF {![tpGetVar opAdd 0]}## disabled ##TP_ENDIF##>
+	##TP_IF {[tpBindGet LanguageLang] == ""}## <a href="#" onclick="goSelectISOLanguage()">Select standard code</a>##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Name</td>
+	<td>
+	<input type="text" id="idLanguageName" name="LanguageName" value="##TP_LanguageName##" size=32>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Status</td>
+	<td>
+	<select id="idLanguageStatus" name="LanguageStatus">
+	<script>
+	write_select('##TP_LanguageStatus##','A','Active','S','Suspended')
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Display</td>
+	<td>
+	<select id="idLanguageDisplayed" name="LanguageDisplayed">
+	<script>
+	write_select('##TP_LanguageDisplayed##','Y','Yes','N','No')
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Display Order</td>
+	<td>
+	<input type="text" id="idLanguageDispOrder" name="LanguageDispOrder" value="##TP_LanguageDispOrder##" size=3>
+	</td>
+</tr>
+<tr>
+	<td class=caption>DisplaySportsbook Warning</td>
+	<td>
+	<select id="idLanguageSportsbookWarning" name="LanguageSportsbookWarning">
+	<script>
+	write_select('##TP_LanguageSportsbookWarning##','Y','Yes','N','No')
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Default Language</td>
+	<td>
+	<select id="idLanguageDefaultLanguage" name="LanguageDefaultLanguage">
+	<option value="">--</option>
+	<script>
+	write_select('##TP_LanguageDefaultLanguage##'##TP_LOOP lang_idx {[tpGetVar NumLangs]} ##, '##TP_LangId##', '##TP_LangId##' ##TP_ENDLOOP##);
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Default Locale</td>
+	<td>
+	<select id="idLanguageDefaultLocale" name="LanguageDefaultLocale">
+	<option value="">--</option>
+	<script>
+	write_select('##TP_LanguageDefaultLocale##'##TP_LOOP locale_idx {[tpGetVar NumLocales]} ##, '##TP_LocaleCode##', '##TP_LocaleCode##' ##TP_ENDLOOP##);
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed AddLanguage]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+		<input type=button class="btn_def" value="Add Language" onClick="return addClone('LangAdd')" id="idAddLanguage">
+		<input type=hidden id="idLanguageXlName" name="LanguageXlName" value="##TP_LanguageXlName##">
+		##TP_ELSE##
+			<input type=hidden name=LanguageLang value="##TP_LanguageLang##">
+			<input type=button class="btn_def" value="Modify Language" onClick="return fs(this,'LangMod')">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	<div  id="idDivLangAdd" style="display:none;"/>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::LANGUAGE::DoLanguage">
+</table>
+##TP_IF {[tpGetVar opAdd 0]}##
+<div id="idCloningDiv" style="display:none">
+<table>
+<tr>
+<td>
+<table>
+<tr>
+	<th colspan=2 class=title>
+	Clone Root Language
+	</th>
+</tr>
+<tr>
+	<td class=caption>Root Language</td>
+	<td>
+	<select id="idRootLanguageLang" name="RootLanguageLang">
+	<script>
+	##TP_LOOP lang_idx {[tpGetVar NumLanguages]}##
+	write_select('##TP_RootLanguageLang##','##TP_LanguageLang##','##TP_LanguageLang##');
+	##TP_ENDLOOP##
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Website Language Config</td>
+	<td>
+		<input type=button class="btn_def" value="Clone" onClick="return addClone('CloneLangWebsiteConfig');" id="idCloneLangWebsiteConfigButton">
+	</td>
+</tr>
+<tr>
+	<td class=caption>Display Manager Settings</td>
+	<td>
+		<input type=button class="btn_def" value="Clone" onClick="return addClone('CloneLangDisplayManagerConfig');" id="idCloneLangDisplayManagerConfigButton">
+	</td>
+</tr>
+<tr>
+	<td class=caption>Image Locations</td>
+	<td>
+		<input type=button class="btn_def" value="Clone" onClick="return addClone('CloneImageLocationsFlag');" id="idCloneImageLocationsFlagButton">
+	</td>
+</tr>
+</table>
+</td>
+<td>
+<table>
+<tr>
+	<td><div id="idDivCloneLangWebsiteConfig" style="display:none;"/></td>
+</tr>
+<tr>
+	<td><div id="idDivCloneLangDisplayManagerConfig" style="display:none;"/></td>
+</tr>
+<tr>
+	<td><div id="idDivCloneImageLocationsFlag" style="display:none;"/></td>
+</tr>
+</table>
+</td>
+</tr>
+</div>
+##TP_ENDIF##
+</form>
+</table>
+</body>
+</html>

@@ -1,0 +1,149 @@
+##TP_COMMENT $Id: bet_details.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $##
+##TP_COMMENT Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.##
+
+<!-- Bet Details -->
+<tr>
+	<th class="title" style="padding: 3px 3px 3px 3px; background-color: ##TP_liab_colour##" colspan="2">Bet Details</th>
+</tr>
+<tr>
+	<td colspan="2">
+		<table cellspacing="0" cellpadding="2" border="0" align="left">
+			<tr>
+				<td>
+					<table>
+						<tr>
+						
+							<td class="subcaption">Receipt</td>
+							<td>##TP_receipt##</td>
+							<td class="subcaption">Username</td>
+							<td>
+								<a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCust&CustId=##TP_cust_id##">##TP_username##</a>
+							</td>
+							<td class="subcaption">Account No</td>
+							<td>##TP_acct_no##</td>
+							##TP_IF {[OT_CfgGet FUNC_CUST_BET_TOTALS 0]}##
+							<td><input type="button" value="Bet Totals" onClick="return goCustBetTotals(##TP_cust_id##)"></td>
+							##TP_ENDIF##
+						##TP_IF {[OT_CfgGet FUNC_ASYNC_BET_DETAILS 0]}##
+							<td class="subcaption">Locked By</td>
+							<td>##TP_IF {[tpBindGet locked_by] == ""}##-##TP_ELSE####TP_locked_by####TP_ENDIF##</td>
+						##TP_ENDIF##
+						</tr>
+						<tr>
+							<td class="subcaption">Name</td>
+							<td>##TP_cust_name##</td>
+							<td class="subcaption">Liability Group</td>
+							<td>##TP_liab_desc##</td>
+							<td class="subcaption">Freebet value</td>
+							<td>##TP_fb_value##</td>
+							<td class="subcaption">Max Stake Factor - Bet</td>
+							<td>##TP_bet_stake_scale##</td>
+						</tr>
+						<tr>
+							<td class="subcaption">Shop No.</td>
+							<td>##TP_shop_no##</td>
+							<td class="subcaption">Address</td>
+							<td>##TP_addr_line_1##, ##TP_postcode##</td>
+							<td class="subcaption">District</td>
+							<td>##TP_district_id##</td>
+							<td class="subcaption">Telephonist</td>
+							<td>##TP_admin_user##</td>
+						</tr>
+						<tr>
+							<td class="subcaption">Bet Placed At</td>
+							<td>##TP_cr_date##</td>
+							<td class="subcaption">Bet Type</td>
+							<td>##TP_bet_type##</td>
+							<td class="subcaption">No Lines</td>
+							<td>##TP_num_lines##</td>
+							<td class="subcaption">Max Bet</td>
+							<td>##TP_max_bet##</td>
+						</tr>
+						<tr>
+							<td class="subcaption">CCY</td>
+							<td>##TP_ccy_code##</td>
+							<td class="subcaption">Total Stake</td>
+							<td##TP_IF {[string is double -strict [tpBindGet stake]] && [tpBindGet stake] < 0.0}## class="negative"##TP_ENDIF## style="font-size: 16px">
+								<span id="total_stake">
+									##TP_TCL {tpBufWrite [comma_num_str [tpBindGet stake]]}##
+								</span>
+							</td>
+							<td class="subcaption">Stake Per Line</td>
+							<td##TP_IF {[string is double -strict [tpBindGet stake_per_line]] && [tpBindGet stake_per_line] < 0.0}## class="negative"##TP_ENDIF## style="font-size: 16px">
+								##TP_TCL {tpBufWrite [comma_num_str [tpBindGet stake_per_line]]}##&nbsp;
+								<span id="betDetailsActionStake" style="##TP_IF {![tpGetVar ACTION_STAKE_PER_LINE 0]}##display: none;##TP_ENDIF## color: red; font-weight: bold">
+									(New Offer: ##TP_TCL {tpBufWrite [comma_num_str [tpBindGet action_stake_per_line]]}##)
+								</span>
+							</td>
+							<td class="subcaption">Payout</td>
+							<td##TP_IF {[string is double -strict [tpBindGet potential_payout]] && [tpBindGet potential_payout] < 0.0}## class="negative"##TP_ENDIF##  style="font-size: 16px">
+								
+								##TP_TCL {tpBufWrite [comma_num_str [tpBindGet potential_payout]]}##
+							</td>
+						</tr>
+						<tr>
+							<td class="subcaption">Sys CCY</td>
+							<td>##TP_default_ccy##</td>
+							<td class="subcaption">Sys Total Stake</td>
+							<td##TP_IF {[string is double -strict [tpBindGet stake_sys]] && [tpBindGet stake_sys] < 0.0}## class="negative"##TP_ENDIF##  style="font-size: 16px">
+								##TP_TCL {tpBufWrite [comma_num_str [tpBindGet stake_sys]]}##
+							</td>
+							<td class="subcaption">Sys Stake Per Line</td>
+							<td##TP_IF {[string is double -strict [tpBindGet stake_per_line_sys]] && [tpBindGet stake_per_line_sys] < 0.0}## class="negative"##TP_ENDIF##  style="font-size: 16px">
+								##TP_TCL {tpBufWrite [comma_num_str [tpBindGet stake_per_line_sys]]}##
+							</td>
+							<td class="subcaption">Sys Payout</td>
+							<td##TP_IF {[string is double -strict [tpBindGet potential_payout_sys]] && [tpBindGet potential_payout_sys] < 0.0}## class="negative"##TP_ENDIF## style="font-size: 16px">
+								##TP_TCL {tpBufWrite [comma_num_str [tpBindGet potential_payout_sys]]}##
+							</td>
+						</tr>
+						<tr>
+							<td class="subcaption">Channel</td>
+							<td>##TP_channel_desc##</td>
+							<td class="subcaption">Status</td>
+							<td>
+								##TP_IF {$ASYNC(0,status) == "A"}##Active
+								##TP_ELSEIF {$ASYNC(0,status) == "X"}##Cancelled
+								##TP_ELSEIF {$ASYNC(0,status) == "S"}##Suspended
+								##TP_ELSE##Timed Out
+								##TP_ENDIF##
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td class="subcaption">Channel</td>
+				<td>##TP_channel_desc##</td>
+				<td class="subcaption">Status</td>
+				<td>
+					##TP_IF {[tpBindGet off_status] == "O"}##
+						Telephonist has overriden
+					##TP_ELSE##
+						<table>
+							<tr>
+							<tr><td class="subcaption">&nbsp;</td></tr>
+							##TP_IF {[OT_CfgGet FUNC_ASYNC_BET_DETAILS 0]}##
+								<td class="subcaption">
+									##TP_IF {[tpGetVar own_lock 0]}##
+									<input type="button" class="btn_def" value="Unlock" onClick="javascript:location.href='##TP_CGI_URL##?action=ADMIN::ASYNC_BET::GoBet&bet_id='+##TP_bet_id##+'&attempt_unlock=Y&bet_group_id='+'##TP_bet_group_id##'">
+									##TP_ELSE##
+									<input type="button" class="btn_def" value="Lock" onClick="javascript:location.href='##TP_CGI_URL##?action=ADMIN::ASYNC_BET::GoBet&bet_id='+##TP_bet_id##+'&attempt_lock=Y&bet_group_id='+'##TP_bet_group_id##'">
+									##TP_ENDIF##
+								</td>
+							##TP_ENDIF##
+							</tr>
+							<tr><td class="subcaption">
+									<strong>Time to resolve&nbsp;:&nbsp;</strong><span id="countDownToResolve" width="300"></span>s<br>
+									Add time:<input type="text" id="newResTime" size="5">s<br>
+									<input type="button" id="addNewResTimeButton" class="btn_def" value="Add time" onClick="if (isValidInteger(document.getElementById('newResTime').value)) {  addTime(##TP_bet_id##,document.getElementById('newResTime').value); } else { alert('Please specify the time as a positive integer value');}">
+							</td></tr>
+							<tr><td class="subcaption">&nbsp;</td></tr>
+							<tr><td class="subcaption">&nbsp;</td></tr>
+							<tr><td class="subcaption">&nbsp;</td></tr>
+						</table>
+					##TP_ENDIF##
+				</td>
+			</tr>
+		</table>
+	</td>
+</tr>
+<!-- End Of Bet Details -->

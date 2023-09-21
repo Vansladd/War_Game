@@ -1,0 +1,443 @@
+<html>
+<!-- $Id: feed_mapping.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ppatel -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>##TP_ProviderTitle## Event Matching</title>
+
+<style type="text/css">
+	.even {
+		background-color: #8ACAFF;
+	}
+	
+	.odd {
+		background-color: #ADDDFF;
+	}
+	.even-started {
+		background-color: #FFBABA;
+	}
+	
+	.odd-started {
+		background-color: #FFDDDD
+	}
+</style>
+
+</head>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+
+popup = null;
+
+function update_filters(b,t) {
+
+	if (t == "sports_filter_n") {
+		sel_idx  = b.selectedIndex;
+		sport_id = b.options[sel_idx].value;
+
+		document.getElementById(t).value = sport_id;
+		document.getElementById('date_filter_n').value = 'A';
+	}
+
+	if (t == "sports_filter_p") {
+		sel_idx  = b.selectedIndex;
+		sport_id = b.options[sel_idx].value;
+
+		document.getElementById(t).value = sport_id;
+		document.getElementById('date_filter_p').value = 'A';
+	}
+
+
+	if (t == "sports_filter_g") {
+		sel_idx  = b.selectedIndex;
+		sport_id = b.options[sel_idx].value;
+
+		document.getElementById(t).value = sport_id;
+		document.getElementById('date_filter_g').value = 'A';
+	}
+
+	if (t == "date_filter_n") {
+		sel_idx = b.selectedIndex;
+		date    = b.options[sel_idx].value;
+
+		document.getElementById(t).value = date;
+		document.getElementById('sports_filter_n').value = '--';
+	}
+
+	if (t == "date_filter_p") {
+		sel_idx = b.selectedIndex;
+		date    = b.options[sel_idx].value;
+
+		document.getElementById(t).value = date;
+		document.getElementById('sports_filter_p').value = '--';
+	}
+
+
+	if (t == "date_filter_g") {
+		sel_idx  = b.selectedIndex;
+		date = b.options[sel_idx].value;
+
+		document.getElementById(t).value = date;
+		document.getElementById('sports_filter_g').value = '--';
+	}
+
+	document.filters.SubmitName.value=t;
+	document.filters.submit();
+	return true;
+}
+
+function update_match_id(t) {
+
+	sel_idx  = t.selectedIndex;
+	match_id = t.options[sel_idx].value;
+	document.getElementById('type_id').value         = document.getElementById('FIND_TYPE_' + match_id).value;
+	document.getElementById('match_id').value        = match_id;
+	document.getElementById('match_button').disabled = false;
+}
+
+function launch_dd_popup_with_variables(t,type_id,match_id) {
+
+	document.getElementById('type_id').value  = type_id;
+	document.getElementById('match_id').value = match_id;
+	go_dd_popup(t);
+
+}
+
+function go_dd_popup(b) {
+
+	type_id     = document.getElementById('type_id').value;
+	url         = "##TP_CGI_URL##?action=ADMIN::FEED_MAPPING::GoDD&type_id=" + type_id + "&disable_dd_evs=##TP_FEED_DISABLE_DD_EVS##&feed_prov=##TP_FEED_PROVIDER##";
+	type        = "popup";
+	attributes  = "toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,";
+	attributes += "resizable=yes,height=600,width=600";
+
+	if (popup) {
+		popup.close();
+	}
+
+	popup = window.open(url,type,attributes);
+	popup.focus();
+
+	event_choice = "target";
+
+}
+
+// interface for the dd popup
+function set_vals(level, id, name) {
+
+	if (level == "EVENT") {
+		
+		document.getElementById('event_id').value = id;
+
+		document.filters.SubmitName.value='map_event';
+		document.filters.submit();
+		return true;
+
+
+	} else {
+		alert("Please select an event.");
+		popup.focus();
+		return 0;
+	}
+
+}
+
+</script>
+
+
+
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+	<table>
+		<th class="title" align="right" colspan="2">
+			##TP_FEED_PROVIDER## Competitions
+		</th>
+		<tr>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::FEED_MAPPING::GoCompetitionList&FeedProvider=##TP_FEED_PROVIDER##">Competition List</a></td>
+			<td>&nbsp;</td>
+		</tr>
+	</table>
+	<br/>
+
+	<form name="filters" method="post">
+		<input type="hidden" name="SubmitName" value="">
+		<input type="hidden" name="action" value="ADMIN::FEED_MAPPING::Do##TP_Provider##">
+		<input type="hidden" name="match_id"      id="match_id" value=""/>
+		<input type="hidden" name="event_id"      id="event_id" value=""/>
+		<input type="hidden" name="type_id"       id="type_id"  value=""/>
+
+		<input type="hidden" name="archive_hours_u"      id="archive_hours_u" value=""/>
+		<input type="hidden" name="archive_hours_m"      id="archive_hours_m" value=""/>
+
+		<input type="hidden" name="disable_dd_evs" value="##TP_FEED_DISABLE_DD_EVS##" />
+
+		<input type="hidden" id="sports_filter_n" name="sports_filter_n" value="##TP_CommEvSport_N##">
+		<input type="hidden" id="date_filter_n"   name="date_filter_n"   value="##TP_StartTime_N##">
+
+		<input type="hidden" id="sports_filter_p" name="sports_filter_p" value="##TP_CommEvSport_P##">
+		<input type="hidden" id="date_filter_p"   name="date_filter_p"   value="##TP_StartTime_P##">
+
+		<input type="hidden" id="sports_filter_g" name="sports_filter_g" value="##TP_CommEvSport_G##">
+		<input type="hidden" id="date_filter_g"   name="date_filter_g"   value="##TP_StartTime_G##">
+	</form>
+
+	<form name="matching" method="post">
+
+		<table cellpadding="3">
+			<tr>
+				<th class="title" colspan="2">
+					Unmatched Events
+				</th>
+			</tr>
+			<tr>
+				<td>
+					Filter By <b>Sport:</b>&nbsp;
+					<select name="sports_filter_N" onChange="return update_filters(this,'sports_filter_n');">
+						<script type="text/javascript">
+							write_select('##TP_CommEvSport_N##'
+							,'--', 'All'
+							##TP_LOOP sport_idx {[tpGetVar NumSports]}##
+					 		,"##TP_Sport##","##TP_SportName##"
+					 		##TP_ENDLOOP##
+							);
+						</script>
+					</select>
+				</td>
+				<td>
+					&nbsp;<b>Date:</b>&nbsp;
+					<select name="date_filter_N" onChange="return update_filters(this,'date_filter_n');">
+						##TP_TCL {tpSetVar status_idx "N"}##
+						<script type="text/javascript">
+							write_select('##TP_StartTime_N##'
+							,'A', 'All'
+							##TP_IF {[OT_CfgGet FEED_EV_MATCHING_DATE_RANGE "-1"] != -1}##
+								,'C','From ##TP_TCL {tpBufWrite [OT_CfgGet FEED_EV_MATCHING_DATE_RANGE]}## day(s) in the past'
+							##TP_ENDIF##
+							##TP_LOOP date_idx {[tpGetVar NumDates_N 0]}##
+					 		,"##TP_Date##","##TP_Date##"
+					 		##TP_ENDLOOP##
+							);
+						</script>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<i>The events shown in red below have status set as = 'Started'</i>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					##TP_IF {[tpGetVar FEED_NUM_UNMATCHED] == 0}##
+						No Unmatched Events Available
+					##TP_ELSE##
+						<select name="unmatched_event" size="10" onChange="update_match_id(this)">
+	
+							##TP_LOOP feed_idx  {[tpGetVar FEED_NUM_UNMATCHED]}##
+								<option name="match_##TP_FEED_MATCH_ID##" value="##TP_FEED_MATCH_ID##" ##TP_IF {[tpBindGet FEED_MATCH_HAS_STARTED] == "Y"}##class="odd-started"##TP_ENDIF##>
+									&nbsp;##TP_FEED_COMM_EV_NAME##
+								</option>
+							##TP_ENDLOOP##
+
+						</select>
+
+						##TP_LOOP feed_idx  {[tpGetVar FEED_NUM_UNMATCHED]}##
+						<input type="hidden" name="FIND_TYPE_##TP_FEED_MATCH_ID##" id="FIND_TYPE_##TP_FEED_MATCH_ID##" value="##TP_FEED_MATCH_TYPE_ID##"/>
+						##TP_ENDLOOP##
+					##TP_ENDIF##
+				</td>
+			</tr>
+			<tr>
+				<th class="title" align="right" colspan="2">
+					<input type="button" id="match_button" value="Map to OpenBet Event" OnClick="return go_dd_popup(this);" disabled/>
+				</th>
+			</tr>
+		</table>
+
+	</form>
+
+	<br/>
+
+##TP_IF {[tpGetVar SHOW_PENDING_EVENTS 1] == 1}##
+
+	<form name="pending" method="post">
+
+		<table cellpadding="3">
+			<tr>
+				<th class="title" colspan="2">
+					Pending Events
+				</th>
+			</tr>
+			<tr>
+				<td>
+					Filter By <b>Sport:</b>&nbsp;
+					<select name="sports_filter_P" onChange="return update_filters(this,'sports_filter_p');">
+						<script type="text/javascript">
+							write_select('##TP_CommEvSport_P##'
+							,'--', 'All'
+							##TP_LOOP sport_idx {[tpGetVar NumSports]}##
+					 		,"##TP_Sport##","##TP_SportName##"
+					 		##TP_ENDLOOP##
+							);
+						</script>
+					</select>
+				</td>
+				<td>
+					&nbsp;<b>Date:</b>&nbsp;
+					<select name="date_filter_P" onChange="return update_filters(this,'date_filter_p');">
+						##TP_TCL {tpSetVar status_idx "P"}##
+						<script type="text/javascript">
+							write_select('##TP_StartTime_P##'
+							,'A', 'All'
+							##TP_IF {[OT_CfgGet FEED_EV_MATCHING_DATE_RANGE "-1"] != -1}##
+								,'C','From ##TP_TCL {tpBufWrite [OT_CfgGet FEED_EV_MATCHING_DATE_RANGE]}## day(s) in the past'
+							##TP_ENDIF##
+							##TP_LOOP date_idx {[tpGetVar NumDates_P 0]}##
+					 		,"##TP_Date##","##TP_Date##"
+					 		##TP_ENDLOOP##
+							);
+						</script>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<i>The events shown in red below have status set as = 'Started'</i>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<table bordercolor="black">
+						##TP_IF {[tpGetVar FEED_NUM_PENDING] == 0}##
+							<tr>
+								<td>
+									No Pending Events Available
+								</td>
+							</tr>
+						##TP_ELSE##
+							##TP_LOOP feed_idx  {[tpGetVar FEED_NUM_UNMATCHED]} {[tpGetVar FEED_NUM_UN_AND_PEND]}## 
+								<tr class="##TP_IF {[expr [tpGetVar feed_idx ] % 2] == 0}##even##TP_ELSE##odd##TP_ENDIF####TP_IF {[tpBindGet FEED_MATCH_HAS_STARTED] == "Y"}##-started##TP_ENDIF##">
+									<td>
+										##TP_FEED_COMM_EV_NAME##
+									</td>
+									<td>
+										&nbsp;-->&nbsp;
+									</td>
+									<td>
+										&nbsp;<a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_FEED_MATCH_EV_ID##">##TP_FEED_MATCH_EV_DESC##</a>&nbsp;
+									</td>
+									<td> 
+										&nbsp;<a href="##TP_CGI_URL##?action=ADMIN::FEED_MAPPING::Do##TP_Provider##ConfirmMap&match_id=##TP_FEED_MATCH_ID##">Confirm Mapping</a>&nbsp
+									</td>
+									<td>
+										&nbsp;<a href="##TP_CGI_URL##?action=ADMIN::FEED_MAPPING::Do##TP_Provider##RemoveMap&match_id=##TP_FEED_MATCH_ID##&sports_filter_n=##TP_CommEvSport_N##&sports_filter_g=##TP_CommEvSport_G##">Remove Mapping</a>&nbsp;
+									</td>
+									<td>
+										&nbsp;<a href="#"  onClick="launch_dd_popup_with_variables(this,'##TP_FEED_MATCH_TYPE_ID##','##TP_FEED_MATCH_ID##')">Change and Confirm Mapping</a>&nbsp;
+									</td>
+								</tr>
+							##TP_ENDLOOP##
+						##TP_ENDIF##
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<th class="title" align="right" colspan="2">
+					&nbsp;
+				</th>
+			</tr>
+		</table>
+	</form>
+
+	<br/>
+
+##TP_ENDIF##
+
+	<form name="matched" method="post">
+
+		<table cellpadding="3">
+			<tr>
+				<th class="title" colspan="2">
+					Matched Events
+				</th>
+			</tr>
+			<tr>
+				<td>
+					Filter By <b>Sport:</b>&nbsp;
+					<select name="sports_filter_G" onChange="return update_filters(this,'sports_filter_g');">
+						<script type="text/javascript">
+							write_select('##TP_CommEvSport_G##'
+							,'--', 'All'
+							##TP_LOOP sport_idx {[tpGetVar NumSports]}##
+					 		,"##TP_Sport##","##TP_SportName##"
+					 		##TP_ENDLOOP##
+							);
+						</script>
+					</select>
+				</td>
+				<td>
+					&nbsp;<b>Date:</b>&nbsp;
+					<select name="date_filter_G" onChange="return update_filters(this,'date_filter_g');">
+						##TP_TCL {tpSetVar status_idx "G"}##
+						<script type="text/javascript">
+							write_select('##TP_StartTime_G##'
+							,'A', 'All'
+							##TP_IF {[OT_CfgGet FEED_EV_MATCHING_DATE_RANGE "-1"] != -1}##
+								,'C','From ##TP_TCL {tpBufWrite [OT_CfgGet FEED_EV_MATCHING_DATE_RANGE]}## day(s) in the past'
+							##TP_ENDIF##
+							##TP_LOOP date_idx {[tpGetVar NumDates_G 0]}##
+					 		,"##TP_Date##","##TP_Date##"
+					 		##TP_ENDLOOP##
+							);
+						</script>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<i>The events shown in red below have status set as = 'Started'</i>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<table bordercolor="black">
+						##TP_IF {[tpGetVar FEED_NUM_MATCHED] == 0}##
+							<tr>
+								<td>
+									No Matched Events Available
+								</td>
+							</tr>
+						##TP_ELSE##
+							##TP_LOOP feed_idx  {[tpGetVar FEED_NUM_UN_AND_PEND]} {[tpGetVar FEED_NUM_TOTAL]}##
+								<tr class="##TP_IF {[expr [tpGetVar feed_idx ] % 2] == 0}##even##TP_ELSE##odd##TP_ENDIF####TP_IF {[tpBindGet FEED_MATCH_HAS_STARTED] == "Y"}##-started##TP_ENDIF##">
+									<td>
+										##TP_FEED_COMM_EV_NAME##
+									</td>
+									<td>
+										&nbsp;-->&nbsp;
+									</td>
+									<td>
+										&nbsp;<a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_FEED_MATCH_EV_ID##">##TP_FEED_MATCH_EV_DESC##</a>&nbsp;
+									</td>
+									<td>
+										&nbsp;<a href="##TP_CGI_URL##?action=ADMIN::FEED_MAPPING::Do##TP_Provider##RemoveMap&match_id=##TP_FEED_MATCH_ID##&sports_filter_n=##TP_CommEvSport_N##&sports_filter_g=##TP_CommEvSport_G##">Remove Mapping</a>&nbsp;
+									</td>
+									<td>
+										&nbsp;<a href="#"  onClick="launch_dd_popup_with_variables(this,'##TP_FEED_MATCH_TYPE_ID##','##TP_FEED_MATCH_ID##')">Change Mapping</a>&nbsp;
+									</td>
+								</tr>
+							##TP_ENDLOOP##
+						##TP_ENDIF##
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<th class="title" align="right" colspan="2">
+					&nbsp;
+				</th>
+			</tr>
+		</table>
+	</form>
+
+</body>
+</html>

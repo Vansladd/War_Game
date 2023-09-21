@@ -1,0 +1,132 @@
+<html>
+<!-- $Id: ldt.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Locations and Departments</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	Locations
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Code</th>
+	<th nowrap class=colhead>Name</th>
+</tr>
+##TP_IF {[tpGetVar NumLocs 0]>0}##
+##TP_LOOP loc_idx {[tpGetVar NumLocs]}##
+<tr>
+	##TP_IF {[op_allowed ManageLDT]}##
+		<td><a href="##TP_CGI_URL##?action=ADMIN::LDT::GoLoc&LocCode=##TP_LocCode##">##TP_LocCode##</a></td>
+	##TP_ELSE##
+		##TP_LocCode##
+	##TP_ENDIF##
+	<td>##TP_LocName##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+	<td colspan=2>
+	<b><i>There are no locations defined</i></b>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[op_allowed ManageLDT]}##
+	<tr>
+		<th class=buttons colspan=2>
+		<form action="##TP_CGI_URL##" method=get>
+		<input type=button class="btn_def" value="Add Location" onClick="return fs(this,'LocAdd')">
+		</th>
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value=ADMIN::LDT::GoLoc>
+		</form>
+	</tr>
+##TP_ENDIF##
+</table>
+
+<br>
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=3 class=title>
+	Departments
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Code</th>
+	<th nowrap class=colhead>Name</th>
+	<th nowrap class=colhead>Event Database URL</th>
+</tr>
+##TP_IF {[tpGetVar NumDepts 0]>0}##
+##TP_LOOP dept_idx {[tpGetVar NumDepts]}##
+<tr>
+	##TP_IF {[op_allowed ManageLDT]}##
+		<td><a href="##TP_CGI_URL##?action=ADMIN::LDT::GoDept&DeptCode=##TP_DeptCode##">##TP_DeptCode##</a></td>
+	##TP_ELSE##
+		##TP_DeptCode##
+	##TP_ENDIF##
+	<td>##TP_DeptName##</td>
+	<td>##TP_DeptEvDbUrl##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+	<td colspan=2>
+	<b><i>There are no departments defined</i></b>
+	</td>
+</tr>
+##TP_ENDIF##
+
+##TP_IF {[op_allowed ManageLDT]}##
+	<tr>
+		<th class=buttons colspan=3>
+		<form action="##TP_CGI_URL##" method=get>
+		<input type=button class="btn_def" value="Add Department" onClick="return fs(this,'DeptAdd')">
+		</th>
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value=ADMIN::LDT::GoDept>
+		</form>
+	</tr>
+##TP_ENDIF##
+
+</table>
+
+<br>
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=3 class=title>
+	Terminals
+	</th>
+</tr>
+
+##TP_IF {[op_allowed ManageLDT]}##
+	<tr>
+		<th class=buttons colspan=7>
+		<form action="##TP_CGI_URL##" method=get>
+		<input type=button class="btn_def" value="Show Terminals" onClick="return fs(this, 'TermShow')">
+		<input type=button class="btn_def" value="Add Terminal" onClick="return fs(this,'TermAdd')">
+		</th>
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value=ADMIN::LDT::GoTerm>
+		</form>
+	</tr>
+##TP_ENDIF##
+</table>
+
+</body>
+</html>

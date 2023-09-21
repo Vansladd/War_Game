@@ -1,0 +1,30 @@
+<!-- $Id: display_sorts_link_mktgrp_header.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<table cellspacing="0" cellpadding="2" border="0">
+
+	<tr>
+		<th colspan="4" class="title">
+			Link Market Group to Display Sort
+		</th>
+	</tr>
+
+	<tr>
+		<td class="caption">Sport:</td>
+
+		<td >
+			<input disabled="true" type="text" name="" value="##TP_sportName##" maxlength="32" />
+		</td>
+		##TP_IF {[OT_CfgGet USE_DISPSORT_DISP_ORDER 0]}##
+		<td >Disp Order:</td>
+		<td>
+		<input disabled="true" type="text" name="disporder" value="##TP_DispSortDisporder##" maxlength="5" size=5 />
+		</td>
+		##TP_ENDIF##
+	</tr>
+	<tr>
+		<td class="caption">Name:</td>
+		<td colspan="1">
+			<input disabled="true"  type="text" name="name" value="##TP_DispSortName##" maxlength="32" size=30 />		
+		</td>
+	</tr>
+
+</table>

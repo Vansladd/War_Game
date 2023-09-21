@@ -1,0 +1,47 @@
+<html>
+	<!-- $Id: profile_def_list.html,v 1.1 2011/10/04 12:41:14 xbourgui Exp $ -->
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<title>OpenBet Administration</title>
+	</head>
+	<body>
+		<form action="##TP_CGI_URL##" method="post">
+			<table cellspacing="0" cellpadding="2" border="0">
+				<tr>
+					<th colspan="5" class="title">Verification Profile Definitions</th>
+				</tr>
+				<tr>
+					<th class="colhead">Desc</th>
+					<th class="colhead">Status</th>
+					<th class="colhead">Channels</th>
+				</tr>
+				##TP_IF {[tpGetVar count] > 0}##
+				##TP_LOOP idx {[tpGetVar count]}##
+				<tr>
+					##TP_IF {[tpGetVar manual]}##
+					<td><a href="##TP_CGI_URL##?action=ADMIN::VERIFICATION::GoManual&profile_def_id=##TP_profile_def_id##&channels=##TP_channels##&cust_id=##TP_cust_id##">##TP_desc##</a></td>
+					##TP_ELSE##
+					<td><a href="##TP_CGI_URL##?action=ADMIN::VERIFICATION::GoProfileDef&profile_def_id=##TP_profile_def_id##">##TP_desc##</a></td>
+					##TP_ENDIF##
+					<td>##TP_status##</td>
+					<td>##TP_channels##</td>
+				</tr>
+				##TP_ENDLOOP##
+				##TP_ELSE##
+				<tr>
+					<td colspan="##TP_IF {[tpGetVar manual]}##4##TP_ELSE##5##TP_ENDIF##">No Verification Profiles found</td>
+				</tr>
+				##TP_ENDIF##
+				##TP_IF {![tpGetVar manual]}##
+				<tr>
+					<th colspan="5" class="buttons">
+						<input type="submit" value="Create New Profile">
+					</th>
+				</tr>
+				##TP_ENDIF##
+			</table>
+			<input type="hidden" name="action"  value="ADMIN::VERIFICATION::NewProfileDef">
+		</form>
+	</body>
+</html>

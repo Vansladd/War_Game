@@ -1,0 +1,105 @@
+<html>
+<!-- $Id: rval.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Redemption Values</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function go_dd_popup() {
+	popup = window.open("##TP_CGI_URL##?action=ADMIN::FREEBETS::go_bet_dd_level",
+		"popup",
+		"toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,height=480,width=400");
+	popup.focus();
+}
+
+function set_vals_3(level, id, type, name) {
+	f = document.rval_select;
+	if (!f) {
+		alert("unable to find form");
+		return;
+	}
+
+	f.level.value = level;
+	f.key.value   = id;
+	f.name.value  = name;
+	f.type.value  = type;
+
+}
+function set_vals(level, id, name) {
+	set_vals_3(level, id, "", name);
+}
+function shift_focus() {
+	document.rval_select.Back.focus();
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<table border=0 cellspacing=0 cellpadding=2>
+<form name=rval_select action="##TP_CGI_URL##" method=get >
+	<tr>
+		<th class=title colspan=2>Redemption Value Details</td>
+	</tr>
+	<tr>
+		<td class=caption>Redemption Value Name</td>
+		##TP_IF {[tpGetVar PERM_ModifyFreeBets] !=""}##
+		<td><input type=text name="rname" value="##TP_RName##" size=30 maxlength=30></td>
+		##TP_ELSE##
+	  <td>##TP_Name##</td>
+		<input type=hidden name="rname" value="##TP_RName##">
+		##TP_ENDIF##
+	</tr>
+
+	<!-- Specific Redemption key information -->
+	<tr>
+		<td class=caption>Bet Level</td>
+		<td>
+			<input type=text name=level value="##TP_BetLevel##" onFocus="javascript:shift_focus();" size=14>
+			&nbsp;&nbsp;&nbsp;
+			<a href="javascript:go_dd_popup();">change</a>
+		</td>
+	</tr>
+<!--	<tr>  -->
+<!--		<td class=caption>Name</td>  -->
+<!--		<td><input type=text name=name value="##TP_Name##" onFocus="javascript:shift_focus();" size=32></td>  -->
+<!--	</tr>  -->
+
+	<input type=hidden name=key value="##TP_BetID##">
+	<input type=hidden name=type value="##TP_BetType##">
+
+<!--	<input type=text name=level value="##TP_BetLevel##"> -->
+<!--	<input type=text name=name value="##TP_Name##">      -->
+
+	<tr>
+		<th class=buttons colspan=2>
+			##TP_IF {[tpGetVar PERM_ModifyFreeBets] != "" && [tpGetVar opAdd]}##
+			<input type=button class="btn_def" value="Add Redemption Value" onClick="return fs(this,'RValAdd')">
+	  	##TP_ELSE##
+			<input type=button class="btn_def" value="Modify Redemption Value" onClick="return fs(this,'RValMod')">
+			<input type=button class="btn_def" value="Delete Redemption Value" onClick="return fs(this, 'RValDel')">
+			##TP_ENDIF##
+			<input type=button class="btn_def" value="Back" name="Back" onClick="return fs(this,'Back')">
+		</th>
+	</tr>
+	
+	
+<input type=hidden name=RValID value="##TP_RValID##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::FREEBETS::DoRVal>
+<input type=hidden name=opAdd value=##TP_TCL {tpGetVar opAdd}##>
+</form>
+</table>
+</body>
+</html>

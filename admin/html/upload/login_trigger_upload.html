@@ -1,0 +1,141 @@
+<html>
+<!-- $Id: login_trigger_upload.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Uploaded Files</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+##TP_PLAY upload/JS_CheckFileName.html##
+
+</script>
+
+##TP_IF {[tpGetVar FuncOffice 0]}##
+	<script src="##TP_OFFICE_STATIC_URL##/js/package.js" language="javascript" type="text/javascript"></script>
+	<script language="javascript" type="text/javascript">
+			document.Package.mapURL('office', '##TP_OFFICE_STATIC_URL##/js');
+			document.gifURL = '##TP_OFFICE_STATIC_URL##/images';
+	</script>
+	<script src="##TP_OFFICE_STATIC_URL##/js/base.js" language="javascript" type="text/javascript"></script>
+	<script src="##TP_OFFICE_STATIC_URL##/js/sortable_table.js" language="javascript" type="text/javascript"></script>
+##TP_ENDIF##
+</head>
+
+<body ##TP_IF {[tpGetVar FuncOffice 0]}## onload="new SortableTable(getObject('sortTable'),getObject('sortRow'))" ##TP_ENDIF##>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3 id="sortTable">
+<thead>
+	<tr>
+		<th colspan=5 class=title>
+		Uploaded Files
+		</th>
+	</tr>
+
+	<tr id="sortRow">
+		<th class=colheadSortText>Type</th>
+		<th class=colheadSortText>Time</th>
+		<th class=colheadSortText>Filename</th>
+		<th class=colhead>Edit</th>
+		<th class=colhead>Delete Uploaded File</th>
+	</tr>
+</thead>
+<tbody>
+	##TP_LOOP file_idx {[tpGetVar NumFiles]}##
+	<tr>
+		<td>##TP_FileType##</td>
+		<td>##TP_FileTime##</td>
+		<td><a HREF="##TP_CGI_URL##?action=ADMIN::UPLOAD::GoUploadFile&FileType=##TP_FileType##&FullName=##TP_FileKey##&upload_type=##TP_upload_type##">##TP_FileName##</a></td>
+		<td>
+			##TP_IF {$FILE([tpGetVar file_idx],is_reject)}##
+				<a HREF="##TP_CGI_URL##?action=ADMIN::UPLOAD::GoUploadFile&FileType=##TP_FileType##&FullName=##TP_FileKey##&upload_type=##TP_upload_type##&edit=1">Edit</a>
+			##TP_ENDIF##
+		</td>
+		<td valign=top align=center><a HREF="##TP_CGI_URL##?action=ADMIN::UPLOAD::DoUploadFile&SubmitName=FileDel&FileType=##TP_FileType##&FullName=##TP_FileKey##&upload_type=##TP_upload_type##">[delete]</a></td>
+	</tr>
+	##TP_ENDLOOP##
+</tbody>
+</table>
+
+##TP_IF {[tpGetVar UPLOADED 0]==1}##
+<font color=green><font size=+1>
+The file has been successfully uploaded and is now ready to be processed.
+</font></font>
+##TP_ENDIF##
+
+<br>
+
+<form method=post action="##TP_CGI_URL##" enctype="multipart/form-data">
+<input type="hidden" name="returl" value="##TP_CGI_URL##">
+<input type="hidden" name="retaction" value="ADMIN::UPLOAD::GoUpload">
+<input type="hidden" name="upload_type" value="##TP_upload_type##">
+<input type="hidden" name="action" value="ADMIN::UPLOAD::DoUpload">
+<table border=0 cellspacing=0 cellpadding=1>
+	<tr>
+		<th colspan=2 class=title>
+		Select file to upload
+		</th>
+	</tr>
+	<tr>
+		<td class=caption>File type</td>
+		<td>
+			<select name="filetype">
+				<option value="trigger_accts">Update Details</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Filename</td>
+		<td>
+		<input type="file" name="filename" size=40>
+		</td>
+	</tr>
+	<tr>
+		<th colspan=2 class=buttons>
+		<input type="submit" name="DoIt" value="Upload File">
+		##TP_IF {![OT_CfgGet DISABLE_BACK_BUTTONS 0]}##
+		<a href="##TP_CGI_URL##?action=ADMIN::LOGINTRIGGERS::GoLoginTriggerUpdateDetails" target="MainArea">Back</a>
+		##TP_ENDIF##
+		</th>
+	</tr>
+</table>
+</form>
+
+
+<b>Notes</b><br>
+Files to be uploaded must be in <a href="#CSV">CSV</a> format.
+The first line of each file must contain the appropriate column names for the file. The types of file are as follows:</br>
+
+<table cellspacing=1 border=0 cellpadding=1>
+	<tr>
+		<th colspan=4 class=title>
+		File Formats
+		</th>
+	</tr>
+
+	<tr>
+		<th class=colhead>Update Details</th>
+	</tr>
+
+	<tr>
+		<td valign=top align=left>
+			<ol>
+				<li>ACCT_NO</li>
+			</ol>
+		</td>
+	</tr>
+</table>
+
+<br><br>
+
+<a name="CSV"><b>CSV Files</b></a><br>
+
+<p>A CSV file is a comma-separated file. Fields which themselves contain commas need to be enclosed in double quotes.<p>
+
+</body>
+</html>

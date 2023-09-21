@@ -1,0 +1,32 @@
+##TP_COMMENT $Id: alert.html,v 1.1 2011/10/04 12:37:26 xbourgui Exp $##
+##TP_COMMENT Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.##
+##TP_COMMENT Deprecated, use Alert2##
+
+<!-- Alert -->
+##TP_IF {[tpGetVar OFFICE_MODAL_POPUP 0]}##
+	<div class="modalPopup" id="alertDivModal" style="display: none">
+##TP_ENDIF##
+<div class="popup" id="alertDiv" style="display: none">
+	<div class="popupTitle" id="alertTitle"></div>
+	<form name="alertForm" action="#" method="get">
+		<table class="popup" id="alertTable" cellspacing="0" cellpadding="0" border="0">
+			<tbody>
+				<tr>
+					<td class="popupDesc" style="text-align: center">
+						<img src="##TP_OFFICE_STATIC_URL##/images/alert.gif##TP_OFFICE_STATIC_VERSION##" />
+					</td>
+					<td class="popupValue" id="alertMsg"></td>
+				</tr>
+				<tr>
+					<td class="popupButton" colspan="2">
+						<input type="submit" name="ok" value="##TP_XL {OFFICE_ALERT_OK}##" />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+</div>
+##TP_IF {[tpGetVar OFFICE_MODAL_POPUP 0]}##
+	</div>
+##TP_ENDIF##
+<!-- /Alert -->

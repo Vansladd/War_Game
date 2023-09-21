@@ -1,0 +1,117 @@
+<html>
+<head> 
+	<title> Add new Bir Tab </title>  
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##"></meta>
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet"></link>
+
+	<script language=JavaScript>
+
+	function validate(f)
+	{
+		error_text = ""
+
+		if (f.DispOrder.value == "") 
+		{
+			error_text = "\n You must enther a display order."
+		}
+
+		if (f.SportId.value == "") 
+		{
+			error_text = error_text + "\n You must select a sport."
+		}
+
+		if (error_text != "") 
+		{
+			alert('There has been errors :'+error_text);
+			return 0; 
+		}
+
+		return 1;
+	}
+
+	
+	function fs(b,t)
+	{
+
+		if (!validate(b.form)) {
+			return false;
+		}
+
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+
+		return true;
+	}
+
+	function GoBack()
+	{
+		parent.MainArea.location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir#SportTabs";
+	}
+	
+
+	function clear_vals()
+	{
+	}
+
+	</script>
+
+</head>
+<body>
+
+
+<form name="BIRTab" action="##TP_CGI_URL##" method=get>
+<input type=hidden name="action" value="ADMIN::BIR::do_bir">
+<input type=hidden name=SubmitName value="">
+
+<input type=hidden name=MapId value='##TP_tab_map_id##'>
+<input type=hidden name=ObId value='##TP_tab_ob_id##'>
+<input type=hidden name=ObLevel value='##TP_tab_ob_level##'>
+
+	<table>
+		<tr>
+			<td class=caption>Sport Group</td>
+			<td >
+				##TP_IF {[tpGetVar InsertMode] == 1}##
+					<select name="SportId" >
+						##TP_LOOP sport_idx {[tpGetVar NumSports]}##
+							<option value="##TP_sportId##">##TP_sportName##</option>
+						##TP_ENDLOOP##
+					</select>
+				##TP_ELSE##
+					<input type=hidden type=field name="SportId" value='##TP_sport_id##'>
+					<input disabled="true" type=field name="SportName" value='##TP_sport_name##'>
+				##TP_ENDIF##
+			</td>
+		</tr>
+		<tr>
+			<td class=caption>Language</td>
+			<td>
+			<select name=TabLang> 
+				##TP_LOOP lang_idx {[tpGetVar NumberLangs]}##
+				<option value="##TP_lang_Name##" ##TP_lang_Selected## > ##TP_lang_Name## </option>
+				##TP_ENDLOOP##
+			</select> 
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td class=caption>Display Order</td>
+			<td><input type=field name=DispOrder size=3 value=##TP_tab_disp_order##></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<th class="buttons" span=4>
+
+			##TP_IF {[tpBindGet sport_name] == "undefined"}##
+				<input disabled="true" type=button value="Save">
+			##TP_ELSE##
+				<input type=button value="Save" OnClick="return fs(this,'BIRTabUpdate')">
+			##TP_ENDIF##
+			<input type=button value="Back" OnClick="return GoBack()">
+		</th>
+
+	</table>
+
+</form>

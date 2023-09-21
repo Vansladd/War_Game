@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BatchTransfer payment-method="c2p" version="1.0" mode="##TP_TCL {OT_CfgGet GWTD_C2P_TEST_LIVE test}##"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+	xsd:noNamespaceSchemaLocation="batchtransfer.xsd">
+	<responseLevel emailId="##TP_TCL {OT_CfgGet GWTD_C2P_EMAIL {}}##">##TP_TCL {OT_CfgGet GWTD_C2P_RESP_LEVEL error}##</responseLevel>
+	<submissionTimeStamp>##TP_TCL {clock format [clock seconds] -format "%Y-%m-%dT%H:%M:%S %Z" -gmt 1}##</submissionTimeStamp>
+	##TP_LOOP line_idx {[tpGetVar num_lines 0]}##
+	<Credit>
+		<merchantId>##TP_mid##</merchantId>
+		<userName>##TP_ext_email_addr##</userName>
+		<amount>##TP_amount_by_100##</amount>
+		<curCode>##TP_ccy_code##</curCode>
+		<productId>##TP_product_id##</productId>
+		<merchantTransId>##TP_pmt_id##</merchantTransId>
+		<referenceId/>
+	</Credit>
+	##TP_ENDLOOP##
+</BatchTransfer>

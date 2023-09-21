@@ -1,0 +1,111 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<script language=javascript>
+	function fs(b,t) {
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+	
+	function init() {
+		change_dropdown(document.getElementById("type"))
+	}
+	
+	var large_ret_cat = [
+		["ESB", "Sports"], 
+		["XSYS", "External"],
+		["LOTO", "Lotteries"],
+		["FOG", "FOG"],
+		["POOL", "Pools"]
+	]
+
+	function change_dropdown(sel) {
+		document.getElementById("lrg_ret_filler").style.display = "none"
+		for ( var i in large_ret_cat )
+		{
+			c_name = large_ret_cat[i][0]
+			if (sel.value == c_name) {
+				document.getElementById(c_name + "_combo").style.display = "block"
+				document.getElementById(c_name + "_combo").name          = "refId_0"
+
+				if (document.getElementById(c_name + "_combo").type == "hidden") {
+					document.getElementById("lrg_ret_filler").style.display = "block"
+				}
+
+			} else {
+				document.getElementById(c_name + "_combo").style.display = "none"
+				document.getElementById(c_name + "_combo").name          = "void"
+			}
+		}
+	}
+
+</script>
+</head>
+<body onload="init()">
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<table cellspacing="0" cellpadding="2" border="0">
+<form action="##TP_CGI_URL##">
+<input type="hidden" name="SubmitName">
+<input type="hidden" name="SubmitArg">
+<input type="hidden" name="action" value="ADMIN::CUST::DoCustReturnLimits">
+<input type="hidden" name="acctId" value="##TP_TCL {reqGetArg acctId}##">
+<input type="hidden" name="CustId" value="##TP_TCL {reqGetArg CustId}##">
+
+		<tr>
+			<th class="title" colspan="4"> Large Returns </th>
+		</tr>
+		<tr>
+			<td class=caption>Type</td>
+			<td>
+				<select id="type" onchange="change_dropdown(this)" name="productArea_0">
+					<script>
+						for ( var i in large_ret_cat ) {
+							document.write("<option value='"+large_ret_cat[i][0]+"'>"+large_ret_cat[i][1]+"</option>");
+						}
+					</script>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class=caption>Sub Type</td>
+			<td>
+				<select id="XSYS_combo" name="refId_0">
+					<option SELECTED value="-1">Default</option>
+					##TP_LOOP ext_idx {[tpGetVar NumExtHosts]}##
+						<option value="##TP_eh_id##">##TP_eh_name##</option>
+					##TP_ENDLOOP##
+				</select>
+			
+				<select id="ESB_combo" name="refId_0">
+					<option SELECTED value="-1">Default</option>
+					##TP_LOOP cat_idx {[tpGetVar NumSportsCats]}##
+						<option value="##TP_sc_id##">##TP_sc_name##</option>
+					##TP_ENDLOOP##
+				</select>
+				<input id="POOL_combo" name="refId_0" type="hidden" value="-1">
+				<input id="LOTO_combo" name="refId_0" type="hidden" value="-1">
+				<input id="FOG_combo"  name="refId_0" type="hidden" value="-1">
+				<span id="lrg_ret_filler">-</span>
+			</td>
+		</tr>
+		<tr>
+			<td class=caption>Amount</td>
+			<td>
+				<input name="limit_0" value="##TP_amt##" size="20">
+			</td>
+		</tr>
+		<tr>
+			<th colspan=4 class=buttons>
+				<input type=button class="btn_def" value="Update" onClick="return fs(this,'doAdd')">
+			</th>
+		</tr>
+</form>
+</table>
+</body>
+</html>

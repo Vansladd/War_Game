@@ -1,0 +1,76 @@
+<html>
+<!-- $Id: cust_man_wtd_hist.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Customer Manual Withdrawals</title>
+</head>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=8 class=buttons>
+	Manual withdrawals
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Done</th>
+	<th nowrap class=colhead>Date</th>
+	<th nowrap class=colhead>Amount</th>
+	<th nowrap class=colhead>Method</th>
+	<th nowrap class=colhead>Code</th>
+	<th nowrap class=colhead>Extra detail</th>
+	<th nowrap class=colhead>Location</th>
+	<th nowrap class=colhead>Collect time</th>
+</tr>
+##TP_LOOP mw_idx {[tpGetVar NumManWtds]}##
+<form action="##TP_CGI_URL##" method=get>
+<tr>
+	##TP_IF {$MW([tpGetVar mw_idx],status)=="D"}##
+	<td><input type=checkbox name="Status_##TP_MWRId##" CHECKED>
+	##TP_ELSE##
+	<td><input type=checkbox name="Status_##TP_MWRId##">
+	##TP_ENDIF##
+	<input type=hidden name="CStatus_##TP_MWRId##" value="##TP_Status##">
+	<td>##TP_Date##</td>
+	<td align=right>##TP_Amount##</td>
+	<td>##TP_Method##&nbsp;</td>
+	<td>##TP_Code##&nbsp;</td>
+	<td>##TP_ExtraInfo##&nbsp;</td>
+	<td>##TP_Location##&nbsp;</td>
+	<td>##TP_CollectTime##&nbsp;</td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[tpGetVar NumManWtds 0]==0}##
+<tr>
+	<td colspan=8 align=left>
+	<font color=white size=+1>
+	<b><i>No manual withdrawals for this customer</i></b>
+	</font>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th class=buttons colspan=8>
+	<input type=button class="btn_def" value="Update" onClick="return fs(this,'UpdManWtd')">
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'GoCust')">
+	</th>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::CUST::DoCust>
+	<input type=hidden name=CustId value="##TP_CustId##">
+	<input type=hidden name=AcctId value="##TP_AcctId##">
+</tr>
+</form>
+</table>
+</body>
+</html>

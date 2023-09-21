@@ -1,0 +1,75 @@
+<html>
+	<!-- $Id: country_list.html,v 1.1 2011/10/04 12:41:14 xbourgui Exp $ -->
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<script language="JavaScript">
+			function fs(b, t)
+			{
+				b.disabled = true;
+				b.value = "Busy...";
+				b.form.SubmitName.value = t;
+				b.form.submit();
+				return true;
+			}
+
+			function toggle(b, c)
+			{
+				check = eval("b.form.status_" + c);
+				if (check.disabled) {
+					check.disabled = false;
+				} else {
+					check.disabled = true;
+				}
+			}
+		</script>
+		##TP_PLAY JS_WriteSelect.html##
+	</head>
+	<body>
+		##TP_PLAY error_rpt.html##
+		##TP_PLAY msg_rpt.html##
+		<form action="##TP_CGI_URL##" method="post">
+			<input type="hidden" name="SubmitName">
+			<input type="hidden" name="action"         value="ADMIN::VERIFICATION::DoCountry">
+			<input type="hidden" name="profile_def_id" value="##TP_profile_def_id##">
+			<table cellspacing="0" cellpadding="2" border="0">
+				<tr>
+					<th colspan="4" class="title">Verification Profile Countries</th>
+				</tr>
+				<tr>
+					<th class="colhead" colspan="2">Country</th>
+					<th class="colhead">Status</th>
+					<th class="colhead">Grace Period (days)</th>
+				</tr>
+				##TP_IF {[tpGetVar cty_count]}##
+				##TP_LOOP idx {[tpGetVar cty_count]}##
+				<tr>
+					<td>##TP_name##</td>
+					<td>
+						<input type="checkbox" name="check_##TP_code##" value="##TP_code##" onClick="return toggle(this, '##TP_code##')"##TP_IF {!$COUNTRY([tpGetVar idx],cty_bin)}## disabled##TP_ENDIF####TP_IF {$COUNTRY([tpGetVar idx],prfl_check)}## checked##TP_ENDIF##>
+					</td>
+					<td>
+						<select name="status_##TP_code##"##TP_IF {!$COUNTRY([tpGetVar idx],cty_bin) || !$COUNTRY([tpGetVar idx],prfl_check)}## disabled##TP_ENDIF##>
+							<script>write_select("##TP_status##", "A", "Active", "G", "Grace Period", "S", "Suspended")</script>
+						</select>
+					</td>
+					<td>
+						<input type="text" name="grace_##TP_code##" value="##TP_grace_days##" ##TP_IF {!$COUNTRY([tpGetVar idx],cty_bin)}## disabled##TP_ENDIF##>
+					</td>
+				</tr>
+				##TP_ENDLOOP##
+				##TP_ELSE##
+				<tr>
+					<td colspan="4">No Countries assigned</td>
+				</tr>
+				##TP_ENDIF##
+				<tr>
+					<th colspan="4" class="buttons">
+						<input type="button" value="Update" onClick="return fs(this,'UpdCountry')">
+						<input type="button" value="Back"   onClick="return fs(this,'Back')">
+					</th>
+				</tr>
+			</table>
+		</form>
+	</body>
+</html>

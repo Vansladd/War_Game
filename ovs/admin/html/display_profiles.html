@@ -1,0 +1,85 @@
+<html>
+<!-- $Id: display_profiles.html,v 1.1 2011/10/04 12:41:14 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>PRovider profile selection</title>
+<body>
+
+<table cellspacing=0 cellpadding=1 border=0>
+	<tr>
+		<th class=title colspan=2>
+		Provider / Profile selection
+		</th>
+	</tr>
+</table>
+
+
+<table cellspacing=0 cellpadding=1 border=0>
+	##TP_IF {[tpGetVar num_sub_checks] > 0}##
+	##TP_LOOP prov_idx {[tpGetVar num_sub_checks]}##
+		<tr>
+			<td colspan=2></td>
+			<td class=caption>##TP_Ovs_Checks##</td>
+			<td colspan=2></td>
+		</tr>
+	##TP_ENDLOOP##
+</table>
+<br>
+
+<!--display any profiles that exactly match -->
+<form method=get action="##TP_CGI_URL##">
+	<table cellspacing=0 cellpadding=1 border=0>
+		<tr>
+			<th class=title colspan=2>
+			Exact Profile Matches
+			</th>
+		</tr>
+		<tr>
+##TP_IF {[tpGetVar num_profs] > 0}##
+	##TP_LOOP prov_idx {[tpGetVar num_profs]}##
+		<tr>
+			<td class=title>##TP_Provider## </td>
+			<td class=caption>##TP_Desc##</td>
+		</tr>
+	##TP_ENDLOOP##
+##TP_ELSE##
+		<tr>
+			<td colspan=2>No exact matches exist</td>
+		</tr>
+##TP_ENDIF##
+</form>
+<!--NEw form for completed checks -->
+<form method=get action="##TP_CGI_URL##">
+<tr/>
+<tr/>
+<tr>
+	<th class=title colspan=2>
+	Complete Profile Matches (not exact)
+	</th>
+</tr>
+<tr>
+			<td colspan=2>No complete matches exist</td>
+</tr>
+<tr/>
+<tr>
+	<th class=title colspan=2>
+	Complete Profile Matches (not exact)
+	</th>
+</tr>
+<tr>
+			<td colspan=2>No incomplete matches exist</td>
+</tr>
+<tr/>
+</form>
+
+
+	</table>
+
+<br>
+<br>
+
+
+
+</body>
+</html>

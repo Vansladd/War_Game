@@ -1,0 +1,154 @@
+<html>
+<!-- $Id: bf_synonym.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Synonyms</title>
+
+<script language=JavaScript>
+
+function fs(b,t)
+{
+	if (t == "GoUpdSyn")
+	{
+		if (b.form.SynGrpSelId.selectedIndex == -1) {
+			alert("Select a Group to modify");
+			return false;
+		}
+        }
+	if (t == "SearchSyn")
+	{
+		if (b.form.SynDesc.value == "")
+		{
+			alert ("Enter a valid Synonym");
+			return false;
+		} 
+		else if (b.form.SynDesc.value.search('%') != -1)
+		{ 
+			alert("% character is not allowed");
+			return false;
+		}
+	}
+	if (t=="QSearchSyn") {
+		if (b.form.SynGrpSelId.selectedIndex == -1) {
+			alert("Select a Group / Synonym for searching");
+			return false;
+		}
+
+	}
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+
+</head>
+
+<body>
+##TP_PLAY error_rpt.html##
+
+##TP_IF {[tpGetVar SynAdded 0]}##
+	<h3 class="succeeded">New Synonym Added to a new group</h3>
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar SynUpdated 0]}##
+	<h3 class="succeeded">Synonym Updated to the existing group</h3>
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar SynDeleted 0]}##
+        <h3 class="succeeded">Synonym Deleted Sucessfully</h3>
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar SynExists 0]}##
+	<h3 class="failed">Synonym already exists</h3>
+##TP_ENDIF##
+
+<form action="##TP_CGI_URL##" method="get">
+<table border="0" cellspacing="0" cellpadding="3" >
+	<tr>
+		<th colspan="4" class="title">
+			Search,Add & Upload Synonymns
+		</th>
+	</tr>
+	<tr>
+		<td class="caption">Search Synonym</td>
+		<td>
+			<input type="text" name="SynDesc" value="##TP_SynDesc##" size="20">
+		</td>
+		<td>
+			<select name="MatchType">
+				<option value="EM" ##TP_IF {[tpBindGet MatchType] == "EM"}##selected##TP_ENDIF##>Exact Match</option>
+				<option value="ST" ##TP_IF {[tpBindGet MatchType] == "ST"}##selected##TP_ENDIF##>Starts With</option>
+				<option value="EN" ##TP_IF {[tpBindGet MatchType] == "EN"}##selected##TP_ENDIF##>Ends With</option>
+				<option value="CN" ##TP_IF {[tpBindGet MatchType] == "CN"}##selected##TP_ENDIF##>Contains</option>
+			</select>
+		</td>
+		<td>
+			(case&nbsp;insensitive&nbsp;
+			<input type="checkbox" name="SynCase" value="Y" ##TP_IF {[tpBindGet SynCase] == "Y"}##checked="checked"##TP_ENDIF##>
+			&nbsp;)
+		</td>
+	</tr>
+	<tr>
+		<td class="caption">Type</td>
+		<td>
+			<select name="SynType">
+				<option value="ID" ##TP_IF {[tpBindGet SynType] == "ID"}##selected##TP_ENDIF##>Identifier</option>
+				<option value="SP" ##TP_IF {[tpBindGet SynType] == "SP"}##selected##TP_ENDIF##>Separator</option>
+			</select>
+		</td>
+
+	</tr>
+	<tr>
+		<th class="buttons" colspan="4">
+			<input type=button class="btn_def" value="Add" onClick="return fs(this,'GoAddSyn')">
+			<input type=button class="btn_def" value="Upload" onClick="return fs(this,'GoUplSyn')">
+			<!--- <input type=button class="btn_def" value="Upload" onClick="location.href='##TP_CGI_URL##?action=ADMIN::UPLOAD::GoUpload&amp;upload_type=SYN'"> -->
+			<input type=button class="btn_def" value="Search" onClick="return fs(this,'SearchSyn')">
+		</th>
+	</tr>
+</table>
+
+
+##TP_IF {[tpBindGet Nrows] == "0"}##
+	<h3 class="succeeded">No Synonyms Found</h3>
+##TP_ENDIF##
+<table>
+	<tr>
+		<th class="title">
+			##TP_IF {[tpGetVar SynMod] == 1}##
+				Modify
+			##TP_ELSE##
+				Quick Search
+			##TP_ENDIF##
+		</th>
+    </tr>
+	<tr>
+		<td>
+			<select name="SynGrpSelId" size="5">
+				##TP_LOOP grp_idx {[tpGetVar Nrows]}##
+				<option name="##TP_SynDescr##" value="##TP_SynGrpId##">##TP_SynDescr##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
+				##TP_ENDLOOP##
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th class="buttons">
+			##TP_IF {[tpGetVar SynMod] == 1}##
+				<input type="button" class="btn_def" value="Modify" onClick="return fs(this,'GoUpdSyn')">
+			##TP_ELSE##
+				<input type="button" class="btn_def" value="Search" onClick="return fs(this,'QSearchSyn')">
+			##TP_ENDIF##
+		</th>
+	</tr>
+</table>
+<input type="hidden" name="SubmitName" value="">
+<input type="hidden" name="upload_type" value="SYN">
+<input type="hidden" name="action" value="ADMIN::BETFAIR_SYN::DoBFSynonym">
+</form>
+</body>
+</html>
+

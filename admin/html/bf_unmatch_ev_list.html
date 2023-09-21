@@ -1,0 +1,124 @@
+<html>
+<!-- $Id: bf_unmatch_ev_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Unmatched Events List</title>
+<script>
+
+function go_dd_popup(ev_type_id,ev_id,ev_sub_type_id) {
+	var str = "matchedEvent_"+ev_id;
+	bf_match_name= document.getElementById(str).innerHTML;
+	popup = window.open("##TP_CGI_URL##?action=ADMIN::BETFAIR_DD::GoBfDD&ev_type_id="+ev_type_id+"&ev_id="+ev_id+"&ev_sub_type_id="+ev_sub_type_id+"&bf_match_name="+bf_match_name,
+				"popup",
+				"toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,height=400,width=600");
+	popup.focus();
+}
+
+function set_vals(bf_ev_items_id,ev_id,bf_name) {
+	f = document.fmBfUnmatched;
+	if (!f) {
+		alert("unable to find form fmBfUnmatched");
+		return;
+	}
+	var str1 = "matchedEvent_"+ev_id;
+	document.getElementById(str1).innerHTML = bf_name;
+
+  var str = "BF_EventMatch_"+ev_id;
+	document.getElementById(str).value = bf_ev_items_id;
+}
+
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+
+<form action="##TP_CGI_URL##" name="fmBfUnmatched" method=post>
+
+##TP_IF {![tpGetVar EvMatched 1]}##
+        <h3 class="failed">Could not match the events</h3>
+##TP_ENDIF##
+
+##TP_TCL {tpBindString NumCols 8}##
+
+<table border=0 cellspacing=0 cellpadding=3>
+	<tr>
+		<th colspan=##TP_NumCols## class=title>
+			Events (Sort by Start Time)
+		</th>
+	</tr>
+	<tr>
+		<th class=colhead>Category</th>
+		<th class=colhead>Class</th>
+		<th class=colhead>Type</th>
+		##TP_IF {[OT_CfgGet BF_SUB_TYPE_MATCH 0]}##
+			<th class=colhead>Sub Type</th>
+		##TP_ENDIF##
+		<th class=colhead>Event</th>
+		<th class=colhead>Start time</th>
+		##TP_IF {[OT_CfgGet BF_MANUAL_MATCH 0] && [op_allowed BFMatch]}##
+			<th class=colhead>Betfair Events</th>
+			<th class=colhead>Matched Event</th>
+		##TP_ENDIF##
+	</tr>
+	##TP_IF {[tpBindGet Nrows]>0}##
+		##TP_LOOP ev_idx {[tpBindGet Nrows]}##
+    	<tr>
+				<td>##TP_Category##</td>
+				<td>##TP_Class##</td>
+				<td>##TP_Type##</td>
+				##TP_IF {[OT_CfgGet BF_SUB_TYPE_MATCH 0] && [op_allowed BFMatch]}##
+					<td>##TP_SubType##</td>
+				##TP_ENDIF##
+				<td>##TP_Event##</td>
+				<td>##TP_StartTime##</td>
+				##TP_IF {[OT_CfgGet BF_MANUAL_MATCH 0] && [op_allowed BFMatch]}##
+					<td>
+						##TP_IF {[OT_CfgGet BF_SUB_TYPE_MATCH 0] && [op_allowed BFMatch]}##
+							<a class="caption" href="javascript:go_dd_popup(##TP_EvTypeId##,##TP_EvId##,##TP_SubTypeId##)">Betfair Hierarchy</a>
+						##TP_ELSE##
+							<a class="caption" href="javascript:go_dd_popup(##TP_EvTypeId##,##TP_EvId##,'')">Betfair Hierarchy</a>
+						##TP_ENDIF##
+					</td>
+					<td>
+						<div id=matchedEvent_##TP_EvId##> </div>
+						<input type=hidden id="BF_EventMatch_##TP_EvId##" name="BF_EventMatch_##TP_EvId##" >
+					</td>
+				##TP_ENDIF##
+      </tr>
+
+			<input type=hidden name="EvId_##TP_TCL {tpGetVar ev_idx}##" value="##TP_EvId##">
+			<input type=hidden name="EvTypeId_##TP_TCL {tpGetVar ev_idx}##" value="##TP_EvTypeId##">
+			<input type=hidden name="ClassSort_##TP_TCL {tpGetVar ev_idx}##" value="##TP_ClassSort##">
+			<input type=hidden name="EvStartTime_##TP_TCL {tpGetVar ev_idx}##" value="##TP_StartTime##">
+		##TP_ENDLOOP##
+		##TP_IF {[OT_CfgGet BF_MANUAL_MATCH 0] && [op_allowed BFMatch]}##
+	  <tr>
+    	<th class=buttons colspan=##TP_NumCols##>
+				<input type=button class="btn_def" value="Match Events" onClick="return fs(this,'MatchEvent')">
+	    </th>
+    </tr>
+		##TP_ENDIF##
+	##TP_ELSE##
+		<tr>
+			<td colspan=##TP_NumCols##>No events matched the search criteria.</td>
+		</tr>
+	##TP_ENDIF##
+
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::BETFAIR_EV::DoEvBFMatch>
+	<input type=hidden name="Nrows" value="##TP_Nrows##">
+</table>
+</form>
+</body>
+</html>

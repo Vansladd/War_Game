@@ -1,0 +1,124 @@
+<html>
+<head>
+	<title>Sport Tab Details</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##"></meta>
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet"></link>
+
+	<script language=JavaScript>
+
+	function GoBack()
+	{
+		parent.MainArea.location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir#SportTabs";
+	}
+
+	function AddTemplMap()
+	{
+		parent.MainArea.location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir_add_templ_map&MapId=##TP_MapId##";
+	}
+	
+	function ViewMktMap(chosen) {
+
+		TabIdVal = document.FrmUpdTabTempl.TabId.value;
+		if (chosen == "") {
+			alert("No template map was selected to update.");
+		} else {
+			parent.MainArea.location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir_add_mkt_map&TemplId="+chosen+"&TabId="+TabIdVal;
+		}
+
+	}
+
+	function UpdSelTemplMap(chosen) {
+
+		TabIdVal = document.FrmUpdTabTempl.TabId.value;
+
+		if (chosen == "") {
+			alert("No template map was selected to update.");
+		} else {
+			parent.MainArea.location.href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir_add_templ&TemplId="+chosen+"&TabId="+TabIdVal;
+		}
+
+	}
+
+	function DelSelTemplMap(t) {
+
+		var chosen = ""
+		var MapIdVal = ""
+
+		len = t.form.tatemaps.length
+
+		chosen = t.form.tatemaps.value;
+
+		for (i = 0; i < len; i++) {
+			if (t.form.tatemaps[i].checked) {
+			chosen = t.form.tatemaps[i].value
+			}
+		}
+
+		MapIdVal = t.form.MapId.value;
+
+		if (chosen == "") {
+			alert("No template map was selected to update.");
+		} else {
+			t.form.MktName.value = chosen;	
+			t.form.SubmitName.value = "BIRDoDelTemplMap";
+			t.form.submit();
+		}
+
+	}
+	</script>
+
+<head>
+<body>
+
+
+<h2>##TP_SportName## (##TP_TabLang##)</h2>
+<table border=0 cellspacing=0 cellpadding=3>
+<form name="FrmUpdTabTempl"  action="##TP_CGI_URL##" method=get>
+
+
+	<tr>
+		<th colspan=3 class=title>
+			Template Mappings
+		</th>
+	</tr>
+	<tr>
+		<th class="colhead">Template Name</th>
+		<th class="colhead">Display Order</th>
+		<th class="colhead"></th>
+	</tr>
+
+##TP_LOOP templ_idx {[tpGetVar NumberTabTemplates]}##
+	<tr>
+		<td>
+			##TP_IF {$::TEMPL([tpGetVar templ_idx],disp_order) != "--"}##
+				<a href="#" OnClick="return ViewMktMap('##TP_templ_Id##')">##TP_templ_Name##</a>
+			##TP_ELSE##
+				##TP_templ_Name##
+			##TP_ENDIF##
+		</td>
+		<td>##TP_templ_DispOrder##</td>
+		<td>##TP_IF {$::TEMPL([tpGetVar templ_idx],disp_order) != "--"}##
+				<a href="#" OnClick="return UpdSelTemplMap('##TP_templ_Id##')" >Update</A>
+			##TP_ELSE##
+				<a href="#" OnClick="return UpdSelTemplMap('##TP_templ_Id##')" >Add</A>
+			##TP_ENDIF##
+	</tr>
+##TP_ENDLOOP##
+
+	<th colspan=3 class=buttons>
+		<input type=button value="Back" onClick="return GoBack();">
+	</th>
+
+
+<input type=hidden name=TabId value ="##TP_TabId##">
+<input type=hidden name=TemplSelnId value="##TP_tatempl_TemplId##">
+
+<input type=hidden name=action value=ADMIN::BIR::do_bir>
+<input type=hidden name=SubmitName value="">
+
+</form>
+</table>
+
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<html>
+<!-- $Id: partner_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Partnership Flags Table</title>
+</head>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+    <th colspan=4 class=title>
+    Partnership Flags
+    </th>
+</tr>
+<tr>
+    <th nowrap class=colhead>Symbol</th>
+    <th nowrap class=colhead>Name</th>
+    <th nowrap class=colhead>Channels</th>
+    <th nowrap class=colhead>Disporder</th>
+</tr>
+##TP_LOOP partner_idx {[tpGetVar NumPartner]}##
+<tr>
+    <td><a href="##TP_CGI_URL##?action=ADMIN::PARTNER::GoPartner&PartnerCode=##TP_PartnerCode##">##TP_PartnerCode##</a></td>
+    <td>##TP_PartnerDescription##</td>
+    <td class=ra>##TP_PartnerChannels##</td>
+    <td class=ra>##TP_PartnerDisporder##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[tpGetVar NumPartner 0]==0}##
+<tr>
+    <td colspan=5>
+    <b><i>There are no Partnership Flags defined</i></b>
+    </td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[op_allowed ManagePartner]}##
+    <tr>
+        <th class=buttons colspan=5>
+        <form action="##TP_CGI_URL##" method=get>
+        <input type=button class="btn_def" value="Add New Partnership Flag" onClick="return fs(this,'PartnerAdd')">
+        </th>
+        <input type=hidden name=SubmitName value="">
+        <input type=hidden name=action value=ADMIN::PARTNER::GoPartner>
+        </form>
+    </tr>
+##TP_ENDIF##
+</table>
+</body>
+</html>
+

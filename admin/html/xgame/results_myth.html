@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Enter Results for ##TP_SORT##</title>
+  </head>
+
+  <body bgcolor=white>
+    <h1>Enter Results</h1>
+    <h3>##TP_SORT##, competition ##TP_COMP_NO##, draw time ##TP_DRAW_AT##</h3>
+
+    <form action="##TP_CGI_URL##">
+      <input type=hidden name=action value="DoEditResults">
+	<input type=hidden name=xgame_id value="##TP_XGAME_ID##">
+	<input type=hidden name=SORT value="##TP_SORT##">
+	<input type=hidden name=NUM_MAX value="##TP_NUM_MAX##">
+	<input type=hidden name=NUM_RESULTS_MIN value="##TP_NUM_RESULTS_MIN##">
+	<input type=hidden name=NUM_RESULTS_MAX value="##TP_NUM_RESULTS_MAX##">
+
+<table border=1>
+<tr><th>Match number</th><th>Home Win</th><th>Draw</th><th>Away Win</th><th>Void</th></tr>
+##TP_CONTENT##
+
+</table>
+
+<input type=submit class="btn_def" value="Submit Changes">
+
+    </form>
+  </body>
+</html>

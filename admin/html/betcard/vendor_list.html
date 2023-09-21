@@ -1,0 +1,54 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th colspan=16 class=title>
+	Vendor search results
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Account No.</th>
+	<th nowrap class=colhead>Username</th>
+	<th nowrap class=colhead>Vendor name</th>
+	<th nowrap class=colhead>Forename</th>
+	<th nowrap class=colhead>Surname</th>
+	<th nowrap class=colhead>Address</th>
+	<th nowrap class=colhead>Postcode</th>
+	<th nowrap class=colhead>Country</th>
+	<th nowrap class=colhead>Currency</th>
+	<th nowrap class=colhead>Deposist Balance</th>
+	<th nowrap class=colhead>Withdrawal Balance</th>
+</tr>
+##TP_IF {[tpGetVar NumVendors 0]==0}##
+<tr>
+	<td colspan=16 align=center>
+	No vendors match your search criteria
+	</td>
+</tr>
+##TP_ELSE##
+##TP_LOOP vendor_idx {[tpGetVar NumVendors]}##
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::BETCARD::GoVendor&vendor_id=##TP_V_vendor_id##">##TP_V_vendor_acct_no##</a></td>
+	<td>##TP_V_vendor_uname##</td>
+	<td>##TP_V_vendor_name##</td>
+	<td>##TP_V_f_name##</td>
+	<td>##TP_V_l_name##</td>
+	<td>##TP_V_addr_street_1##</td>
+	<td>##TP_V_addr_postcode##</td>
+	<td>##TP_V_country_name##</td>
+	<td>##TP_V_ccy_name##</td>
+	<td>##TP_V_deposit_balance##</td>
+	<td>##TP_V_withdrawal_balance##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ENDIF##
+</table>
+</body>
+</html>

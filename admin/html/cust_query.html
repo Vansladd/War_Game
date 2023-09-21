@@ -1,0 +1,836 @@
+<html>
+<!-- $Id: cust_query.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY header_cal.html##
+<script>
+var Title = parent.parent.document.title;
+
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function submitonenter(f,e)
+{
+	var keycode;
+	if (window.event) keycode = window.event.keyCode;
+	else if (e) keycode = e.which;
+	else return true;
+
+	if (keycode == 13)
+	{
+		f.form.submit();
+		return false;
+	}
+	else
+		return true;
+}
+
+
+function displayCalendars() {
+	new Calendar(document.forms.cust_search_criteria.RegDate1,null,false,"lo")
+	new Calendar(document.forms.cust_search_criteria.RegDate2,null,false,"lo")
+	##TP_IF {[OT_CfgGet FUNC_CUST_REG_SEARCH 0]}##
+		new Calendar(document.forms.cust_registrations.RegDate1,null,false,"lo")
+		new Calendar(document.forms.cust_registrations.RegDate2,null,false,"lo")
+	##TP_ENDIF##
+	##TP_IF {[OT_CfgGet FUNC_CUST_ACCT_SUSP_SEARCH 0]}##
+		new Calendar(document.forms.cust_account_suspension.SuspDate1,null,false,"lo")
+		new Calendar(document.forms.cust_account_suspension.SuspDate2,null,false,"lo")
+	##TP_ENDIF##
+	##TP_IF {[OT_CfgGet FUNC_CUST_TXN_SEARCH 0]}##
+		new Calendar(document.forms.cust_trans_blocking.BDate1,null,false,"lo")
+		new Calendar(document.forms.cust_trans_blocking.BDate2,null,false,"lo")
+	##TP_ENDIF##
+	##TP_IF {[OT_CfgGet FUNC_CUST_CARD_TYPE_SEARCH 0]}##
+	new Calendar(document.forms.cust_card_type_search.RegDate1,null,false,"lo")
+	new Calendar(document.forms.cust_card_type_search.RegDate2,null,false,"lo")
+	new Calendar(document.forms.cust_card_type_search.CardRegDate1,null,false,"lo")
+	new Calendar(document.forms.cust_card_type_search.CardRegDate2,null,false,"lo")
+	##TP_ENDIF##
+	new Calendar(document.forms.cust_activity_search.FirstDate1,false)
+	new Calendar(document.forms.cust_activity_search.FirstDate2,false)
+	new Calendar(document.forms.cust_activity_search.LastDate1,false)
+	new Calendar(document.forms.cust_activity_search.LastDate2,false)
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_IGF] && [op_allowed IGFExpPtsViewJrnl]}##
+	new Calendar(document.forms.expjrnlform.ExpPtsJrnlDate1,null,false,"lo")
+	new Calendar(document.forms.expjrnlform.ExpPtsJrnlDate2,null,false,"lo")
+	##TP_ENDIF##
+
+}
+
+function setShopSearchDisplayLoad(){
+	var shopCheck = document.getElementById("LBOCheck");
+	var elems     = document.getElementsByName("LBOSearchRow");
+
+	for (var i = 0; i < elems.length; i++){
+		var rowElem = elems[i];
+		if (shopCheck.checked) {
+			rowElem.style.display = "";
+		} else {
+			rowElem.style.display = "none";
+		}
+	}
+}
+
+function setShopSearchDisplay() {
+	// Make sure we can see all the rows
+	setShopSearchDisplayLoad()
+
+	var lboCheck = document.getElementById("LBOCheck");
+	var status = document.getElementById("AcctStatus");
+
+	// Set the status to active as we don't want closed accounts by default
+	if (lboCheck.checked) {
+		for (i = 0; i < status.options.length; i++) {
+			if (status.options[i].value == "A") {
+				status.selectedIndex = status.options[i].index;
+				break;
+			}
+		}
+	} else {
+		for (i = 0; i < status.options.length; i++) {
+			if (status.options[i].value == "") {
+				status.selectedIndex = status.options[i].index;
+				break;
+			}
+		}
+	}
+}
+
+window.onbeforeunload = function () {
+
+        var re = /.*Secure Area.*/;
+        if (re.test(parent.parent.document.title)) {
+                parent.parent.document.title = Title;
+        }
+}
+
+</script>
+##TP_PLAY JS_WriteSelect.html##
+</head>
+<body onload="displayCalendars(); ##TP_IF {[OT_CfgGetTrue FUNC_SHOP_FIELDING_ACCOUNTS]}##setShopSearchDisplayLoad();##TP_ENDIF##">
+##TP_IF {[tpGetVar PERM_ViewCustInfo 0]}##
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<form name="cust_search_criteria" method=get action="##TP_CGI_URL##">
+<tr>
+	<th colspan=2 class=title>
+	##TP_XL {Admin.Cust_Search.CRITERIA}##
+	</th>
+</tr>
+##TP_IF {[OT_CfgGet FUNC_CUST_USERNAME_SEARCH 0]}##
+<tr>
+	<td class=captionindex>Username</td>
+	<td>
+	<input type="text" name="Username" value="" size=32 onKeyPress="return submitonenter(this,event)">
+	&nbsp;
+	(exact:
+	<input type="checkbox" name="ExactName" value="Y" ##TP_IF {[OT_CfgGet FUNC_RELAXED_CUST_SEARCH 0] == 0}##checked##TP_ENDIF##>
+	&nbsp;&nbsp;case insensitive:
+	<input type="checkbox" name="UpperName" value="Y" ##TP_IF {[OT_CfgGet FUNC_RELAXED_CUST_SEARCH 0]}##checked##TP_ENDIF##>
+	##TP_IF {[OT_CfgGetTrue FUNC_SHOP_FIELDING_ACCOUNTS]}##
+	&nbsp;&nbsp;LBO account:
+	<input type="checkbox" id="LBOCheck" name="LBOCustomer" value="Y" onClick="setShopSearchDisplay();">
+	##TP_ENDIF##
+	&nbsp;)
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGetTrue FUNC_SHOP_FIELDING_ACCOUNTS] || [OT_CfgGetTrue FUNC_SHOP_ACCOUNTS]}##
+##TP_IF {![OT_CfgGetTrue FUNC_SHOP_ACCOUNTS]}##
+<tr name="LBOSearchRow" style="display:none">
+##TP_ELSE##
+<tr>
+##TP_ENDIF##
+	<td class=caption>Shop District</td>
+	<td>
+		<input type="text" name="DistrictNo" value="" maxlength="5" size="5" />
+		( exact :
+		<input type="checkbox" name="full_district_no" value="yes" checked />
+		&nbsp;)
+	</td>
+</tr>
+##TP_IF {![OT_CfgGetTrue FUNC_SHOP_ACCOUNTS]}##
+<tr name="LBOSearchRow" style="display:none">
+##TP_ELSE##
+<tr>
+##TP_ENDIF##
+	<td class=caption>Shop Number</td>
+	<td>
+		<input type="text" name="ShopNumber" value="" maxlength="6" size="6" />
+		( exact :
+		<input type="checkbox" name="full_shop_no" value="yes" checked />
+		&nbsp;)
+	</td>
+</tr>
+##TP_IF {![OT_CfgGetTrue FUNC_SHOP_ACCOUNTS]}##
+<tr name="LBOSearchRow" style="display:none">
+##TP_ELSE##
+<tr>
+##TP_ENDIF##
+	<td class=caption>Shop Name</td>
+	<td>
+		<input type="text" name="ShopName" value="" maxlength="20" size="20" />
+		( exact :
+		<input type="checkbox" name="full_shop_name" value="yes" checked />
+		&nbsp;)
+	</td>
+</tr>
+##TP_ENDIF##
+
+##TP_IF {[OT_CfgGetTrue FUNC_SHOP_FIELDING_ACCOUNTS]}##
+<tr name="LBOSearchRow" style="display:none">
+	<td class=caption>Shop Fielding Type</td>
+	<td>
+		<select name="OwnerType">
+			<option value="">N/A</option>
+			<option value="LOG">Logged Customer</option>
+			<option value="REG">Regular</option>
+			<option value="OCC">Occasional</option>
+			<option value="VAR">Various</option>
+			<option value="STR">Stranger</option>
+		</select>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_NICK_SEARCH 0]}##
+<tr>
+	<td class=captionindex>Nickname</td>
+	<td>
+	<input type="text" name="Nickname" value="" size=32>
+	&nbsp;
+	(exact:
+	<input type="checkbox" name="ExactNickname" value="Y" ##TP_IF {[OT_CfgGet FUNC_RELAXED_CUST_SEARCH 0] == 0}##checked##TP_ENDIF##>
+	&nbsp;&nbsp;case insensitive:
+	<input type="checkbox" name="UpperNickname" value="Y" ##TP_IF {[OT_CfgGet FUNC_RELAXED_CUST_SEARCH 0]}##checked##TP_ENDIF##>
+	&nbsp;)
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGetTrue FUNC_EXT_ID] && [op_allowed ExtIdFunc]}##
+<tr>
+	##TP_IF {[tpGetVar NumExtGroups] >1}##
+	<td class=caption>External Id</td>
+	<td>
+		<select name="ext_group_code">
+			<option value="" selected>-</option>
+			##TP_LOOP ext_group_idx {[tpGetVar NumExtGroups]}##
+				<option value="##TP_ExtGroupCode##">##TP_ExtGroupDisp## (id:##TP_ExtGroupCode##)</option>
+			##TP_ENDLOOP##
+		</select>
+		<input type="hidden" value="Y" name="is_multiple" />
+		<input type="text" name="ext_cust_id" value="" size=16>
+	</td>
+	##TP_ELSE##
+		##TP_LOOP ext_group_idx {[tpGetVar NumExtGroups]}##
+			<td class=caption>##TP_ExtGroupDisp##</td>
+			<td>
+				<input type="hidden" value="##TP_ExtGroupCode##" name="ext_group_code" />
+				<input type="text" name="ext_cust_id" value="" size=16>
+			</td>
+		##TP_ENDLOOP##
+	##TP_ENDIF##
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_NAME_SEARCH 0]}##
+<tr>
+	<td class=caption>Name</td>
+	<td>
+	<input type="text" name="FName" value="" size=16>
+	&nbsp;&nbsp;
+	<input type="text" name="LName" value="" size=16>
+	&nbsp;
+        (sort by first name:
+	<input type="checkbox" name="SortByFirstName" value="Y">
+	&nbsp;)
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_ADDR_SEARCH 0]}##
+<tr>
+	<td class=caption>Address</td>
+	<td>
+	<input type="text" name="Address" value="" size=40>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Postcode</td>
+	<td>
+	<input type="text" name="Postcode" value="" size=40>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_EMAIL_SEARCH 0]}##
+<tr>
+	<td class=caption>Email</td>
+	<td>
+	<input type="text" name="Email" value="" size=40 onKeyPress="return submitonenter(this,event)">
+	&nbsp;
+	(leading part:
+	<input type="checkbox" name="LeadingEmail" value="Y" checked>
+	&nbsp;)
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_ACCT_NO_SEARCH 0]}##
+<tr>
+	<td class=caption>##TP_XL {Admin.Cust_Search.ACCTNO}##</td>
+	<td>
+	<input type="text" name="AcctNo" value="" size=32 onKeyPress="return submitonenter(this,event)">
+	&nbsp;
+	(exact:<input type="checkbox" name="ExactAccNo" value="Y" ##TP_IF {[OT_CfgGet FUNC_RELAXED_CUST_SEARCH 0] == 0}##checked##TP_ENDIF##>&nbsp;
+	&nbsp;&nbsp;case insensitive:
+	<input type="checkbox" name="UpperAccNo" value="Y" ##TP_IF {[OT_CfgGet FUNC_RELAXED_CUST_SEARCH 0]}##checked##TP_ENDIF##>
+	&nbsp;)
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[tpGetVar FuncIdCardSearch 0]}##
+<tr>
+	<td class=caption>Id Card No</td>
+	<td>
+	<input type="text" name="IdCardNo" value="" size=20>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[op_allowed SearchElite]}##
+<tr>
+        <td class=caption>##TP_XL {Admin.Cust_Search.ELITE_CUST}##</td>
+        <td>
+	<input type="checkbox" name="EliteSearch" value="Y">&nbsp;
+        </td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_BET_CCY_SEARCH 0]}##
+<tr>
+	<td class=caption>Betting currency</td>
+	<td>
+	<select name="CCYCode">
+		<option value="">N/A</option>
+	##TP_LOOP ccy_idx {[tpGetVar NumCCYs]}##
+		<option value="##TP_CCYCode##">##TP_CCYName##</option>
+	##TP_ENDLOOP##
+	</select>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_REG_CTY_SEARCH 0]}##
+<tr>
+	<td class=caption>Registration country</td>
+	<td>
+	<select name="CNTRYCode">
+		<option value="">N/A</option>
+	##TP_LOOP cntry_idx {[tpGetVar NumCNTRYs]}##
+		<option value="##TP_CNTRYCode##">##TP_CNTRYName##</option>
+	##TP_ENDLOOP##
+	</select>
+	&nbsp;(exclude <input type="checkbox" name="CNTRYExclude" value="Y">)
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_REG_DATE_SEARCH 0]}##
+<tr>
+	<td class=caption>##TP_XL {Admin.Cust_Search.REG_DATE}## ##TP_XL {between}##:</td>
+	<td>
+	<input type="text" name="RegDate1" value="" size=10 style="width: 100px;">
+	&nbsp;##TP_XL {and}##&nbsp;
+	<input type="text" name="RegDate2" value="" size=10 style="width: 100px;">
+	</td>
+</tr>
+##TP_ENDIF##
+
+##TP_IF {1 == 1}##
+<tr>
+	<td class=caption>##TP_XL {Total Winnings between}## ##TP_XL {between}##:</td>
+	<td>
+	<input type="text" name="twinning1" value="" size=10 style="width: 100px;">
+	&nbsp;##TP_XL {and}##&nbsp;
+	<input type="text" name="twinning2" value="" size=10 style="width: 100px;">
+	
+	<input type="text" name="tdate1" value="" size=10 style="width: 100px;">
+	&nbsp;##TP_XL {and}##&nbsp;
+	<input type="text" name="tdate2" value="" size=10 style="width: 100px;">
+	</td>
+</tr>
+##TP_ENDIF##
+
+
+##TP_IF {[OT_CfgGet FUNC_CUST_BET_COUNT_SEARCH 0]}##
+<tr>
+	<td class=caption>##TP_XL {Admin.Cust_Search.BET_COUNT}## ##TP_XL {between}##:</td>
+	<td>
+	<input type="text" name="BetCount1" value="" size=5>
+	&nbsp;##TP_XL {and}##&nbsp;
+	<input type="text" name="BetCount2" value="" size=5>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_MSF_SEARCH 0]}##
+<tr>
+	<td class=caption>##TP_XL {Admin.Cust_Search.MSF}## ##TP_XL {between}##:</td>
+	<td>
+	<input type="text" name="StakeScale1" value="" size=5>
+	&nbsp;##TP_XL {and}##&nbsp;
+	<input type="text" name="StakeScale2" value="" size=5>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_ACCT_STATUS_SEARCH 0]}##
+<tr>
+	<td class=caption>##TP_XL {Admin.Cust_Search.ACCT_STATUS}##</td>
+	<td>
+	<select name="AcctStatus">
+		<option value="">##TP_XL {N/A}##</option>
+		<option value="A">##TP_XL {Admin.ACCT_STATUS_ACTIVE}##</option>
+		<option value="S">##TP_XL {Admin.ACCT_STATUS_SUSP}##</option>
+		<option value="C">##TP_XL {Admin.ACCT_STATUS_CLOSED}##</option>
+	</select>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_ACCT_BAL_SEARCH 0]}##
+<tr>
+	<td class=caption>##TP_XL {Admin.Cust_Search.ACCT_BAL}## ##TP_XL {between}##:</td>
+	<td>
+	<input type="text" name="AcctBal1" value="" size=10>
+	&nbsp;##TP_XL {and}##&nbsp;
+	<input type="text" name="AcctBal2" value="" size=10>
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_IP_SEARCH 0]}##
+<tr>
+    <td class=caption>IP Address</td>
+    <td>
+    <input type="text" name="IPAddress" value="" size=20>
+	( exact :
+	<input type="checkbox" name="full_ip" value="yes" checked>
+	&nbsp;)
+	</td>
+</tr>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_EXT_CUST_SEARCH 0]}##
+##TP_PLAY "ext/ext_cust_search.html"##
+##TP_ENDIF##
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button class="btn_def" value="##TP_XL {Admin.Cust_Search.BUTTON}##" onClick="return fs(this,'CustSearch')">
+	##TP_IF {[OT_CfgGetTrue FUNC_ALLOW_ADD_CUST]}##
+	<input type=button class="btn_def" value="Add Customer" onClick="return fs(this,'AddCust')">
+	##TP_ENDIF##
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::CUST::DoCustQuery>
+</form>
+</table>
+##TP_IF {[OT_CfgGet FUNC_CUST_CARD_SEARCH 0]}##
+
+<!-- Card search -->
+
+<br>
+<table cellspacing=0 cellpadding=2 border=0>
+<form action="##TP_CGI_URL##">
+<tr>
+	<th colspan=2 class=title>
+	Card Search
+	</th>
+</tr>
+<tr>
+	<td class=caption>Card number</td>
+	<td>
+	<input type=text name=CardNo value="" size=20 onfocus="parent.parent.document.title = Title + ' - Secure Area';" onblur="parent.parent.document.title = Title;">
+	</td>
+</tr>
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button class="btn_def" value="Find Card Owner" onClick="return fs(this,'CardSearch')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::CUST::DoCardSearch>
+</form>
+</table>
+
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_REG_SEARCH 0]}##
+<!-- Registration reports -->
+<br>
+<table cellspacing=0 cellpadding=2 border=0>
+<form name="cust_registrations" action="##TP_CGI_URL##">
+<tr>
+	<th colspan=2 class=title>
+	Customer Registrations
+	</th>
+</tr>
+<tr>
+	<td class=caption>Date range</td>
+	<td>
+	<input type="text" name="RegDate1" value="" size=10>
+	&nbsp;<b>and</b>&nbsp;
+	<input type="text" name="RegDate2" value="" size=10>
+	</td>
+</tr>
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button class="btn_def" value="Show Registrations" onClick="return fs(this,'CustRegAnal')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::CUST::DoCustRegAnal>
+</form>
+</table>
+<br>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_ACCT_SUSP_SEARCH 0]}##
+<!-- Account suspensions -->
+
+<table cellspacing=0 cellpadding=2 border=0>
+<form name="cust_account_suspension" action="##TP_CGI_URL##">
+<tr>
+	<th colspan=2 class=title>
+	Customer Account Suspensions
+	</th>
+</tr>
+<tr>
+	<td class=caption>Date range</td>
+	<td>
+	<input type="text" name="SuspDate1" value="" size=10>
+	&nbsp;<b>and</b>&nbsp;
+	<input type="text" name="SuspDate2" value="" size=10>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Status Code</td>
+	<td>
+	<select name="Status">
+	<script>
+	write_select(
+		'',
+		'','All',
+		'A','Active',
+		'S','Suspended',
+		'C','Closed'
+	)
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Registration Channel</td>
+	<td>
+		<SELECT name="channels">
+				<option value="">Any</option>
+			##TP_LOOP channel_idx {[tpGetVar NumChannels]}##
+				<option value="##TP_ChannelId##">##TP_ChannelName##</option>
+			##TP_ENDLOOP##
+		</SELECT>
+	</td>
+</tr>
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button class="btn_def" value="Show Suspensions" onClick="return fs(this,'CustAcctSusps')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CUST::DoCustAcctSusp">
+</form>
+</table>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_TXN_SEARCH 0]}##
+<!-- Deposit blocks -->
+<br>
+<table cellspacing=0 cellpadding=2 border=0>
+<form name="cust_trans_blocking" action="##TP_CGI_URL##">
+<tr>
+	<th colspan=2 class=title>
+	Customer Transaction Blocking
+	</th>
+</tr>
+<tr>
+	<td class=caption>Date range</td>
+	<td>
+	<input type="text" name="BDate1" value="" size=10>
+	&nbsp;<b>and</b>&nbsp;
+	<input type="text" name="BDate2" value="" size=10>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Username</td>
+	<td>
+	<input type=text name="Username" size=15> case in-sensitive <input type=checkbox name="ignorecase">
+	</td>
+</tr>
+<tr>
+	<td class=caption>Result</td>
+	<td>
+	<select name="Result">
+	<script>
+	write_select(
+		'',
+		'-','Either',
+		'0','Allowed',
+		'1','Blocked'
+	)
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button class="btn_def" value="Show Results" onClick="return fs(this,'CustDepBlocks')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CUSTBLOCK::DoCustDepBlocks">
+</form>
+</table>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_LIMIT_SEARCH 0]}##
+<br>
+<table cellspacing=0 cellpadding=2 border=0>
+<form action="##TP_CGI_URL##">
+<tr>
+	<th colspan=2 class=title>
+	Customer Credit Limit Search
+	</th>
+</tr>
+<tr>
+	<td class=caption>Credit Limit Usage &nbsp;&nbsp;&nbsp;</td>
+    <td>
+	<input type=radio name=UseList value="Y" checked>
+	<select name="cl_limit">
+	<script>
+	write_select(
+        '',
+		'-0.5','<= 50% (with balance < 0)',
+		'0.5-0.6','50% - 60%',
+		'0.6-0.7','60% - 70%',
+        '0.7-0.8','70% - 80%',
+        '0.8-0.9','80% - 90%',
+        '0.9-1.0','90% - 100%',
+        '1.0-','>= 100%'
+	)
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td>
+	<input type=radio name=UseList value="N">
+	<b>Between<b>
+	<input type="text" name="CL_Lower" value="" size=4 maxlength=3>
+	%&nbsp;<b>and</b>&nbsp;
+	<input type="text" name="CL_Upper" value="" size=4 maxlength=3>%
+	</td>
+</tr>
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button class="btn_def" value="##TP_XL {Admin.Cust_Search.BUTTON}##" onClick="return fs(this,'CustCrdLimit')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CUST::DoCustCrdLmtSearch">
+</form>
+</table>
+##TP_ENDIF##
+##TP_IF {[OT_CfgGet FUNC_CUST_CARD_TYPE_SEARCH 0]}##
+<br>
+<table cellspacing=0 cellpadding=2 border=0>
+<form name="cust_card_type_search" action="##TP_CGI_URL##">
+<tr>
+	<th colspan=2 class=title>
+	Customer Card Type Search
+	</th>
+</tr>
+<tr>
+	<td class=caption>Username</td>
+	<td>
+	<input type="text" name="Username" value="" size=32>
+	&nbsp;
+	(exact:
+	<input type="checkbox" name="ExactName" value="Y" checked>
+	&nbsp;&nbsp;case insensitive:
+	<input type="checkbox" name="UpperName" value="Y">
+	&nbsp;)
+	</td>
+</tr>
+<tr>
+	<td class=caption>User registered between</td>
+	<td>
+	<input type="text" name="RegDate1" value="" size=10>
+	&nbsp;and&nbsp;
+	<input type="text" name="RegDate2" value="" size=10>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Card registered between</td>
+	<td>
+	<input type="text" name="CardRegDate1" value="" size=10>
+	&nbsp;and&nbsp;
+	<input type="text" name="CardRegDate2" value="" size=10>
+	</td>
+</tr>
+<tr>
+	<td class=caption>or</td>
+	<td>
+	<select name="DateRange">
+		<option value="">n/a</option>
+		<option value="TD" selected="true">Today</option>
+		<option value="YD">Yesterday</option>
+		<option value="L3">Last 3 days</option>
+		<option value="L7">Last 7 days</option>
+		<option value="CM">Current month</option>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Card Type</td>
+	<td>
+	<select name="CardType">
+		<option value="">Unknown</option>
+		##TP_LOOP cardtype_idx {[tpGetVar NumCardTypes]}##
+		<option value="##TP_CardTypeName##">##TP_CardTypeName##</option>
+		##TP_ENDLOOP##
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Card Status</td>
+	<td>
+	<select name="CardStatus">
+		<option value="">Unknown</option>
+		<option value="A" selected="true">Active</option>
+		<option value="S">Suspended</option>
+		<option value="X">Deleted</option>
+	</select>
+	</td>
+</tr>
+
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button class="btn_def" value="##TP_XL {Admin.Cust_Search.BUTTON}##" onClick="return fs(this,'CustCrdType')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CUST::DoCustCardTypeSearch">
+</form>
+</table>
+##TP_ENDIF##
+<br>
+<table cellspacing=0 cellpadding=2 border=0>
+<form name="cust_activity_search" action="##TP_CGI_URL##">
+<tr>
+	<th colspan=2 class=title>
+	Customer First/Last Activity Search
+	</th>
+</tr>
+<tr>
+	<td class=caption>Username</td>
+	<td>
+	<input type="text" name="Username" value="" size=32>
+	&nbsp;
+	(exact:
+	<input type="checkbox" name="ExactName" value="Y" checked>
+	&nbsp;&nbsp;case insensitive:
+	<input type="checkbox" name="UpperName" value="Y">
+	&nbsp;)
+	</td>
+</tr>
+<tr>
+	<td class=caption>First Activity Date between</td>
+	<td>
+	<input type="text" name="FirstDate1" value="" size=10>
+	&nbsp;and&nbsp;
+	<input type="text" name="FirstDate2" value="" size=10>
+	</td>
+</tr>
+<tr>
+	<td class=caption>or</td>
+	<td>
+	<select name="FirstDateRange">
+		<option value="" selected="true">n/a</option>
+		<option value="TD">Today</option>
+		<option value="YD">Yesterday</option>
+		<option value="L3">Last 3 days</option>
+		<option value="L7">Last 7 days</option>
+		<option value="CM">Current month</option>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Last Activity Date between</td>
+	<td>
+	<input type="text" name="LastDate1" value="" size=10>
+	&nbsp;and&nbsp;
+	<input type="text" name="LastDate2" value="" size=10>
+	</td>
+</tr>
+<tr>
+	<td class=caption>or</td>
+	<td>
+	<select name="LastDateRange">
+		<option value="" selected="true">n/a</option>
+		<option value="TD">Today</option>
+		<option value="YD">Yesterday</option>
+		<option value="L3">Last 3 days</option>
+		<option value="L7">Last 7 days</option>
+		<option value="CM">Current month</option>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Activity</td>
+	<td>
+	<select name="action_id">
+		<option value="">Any</option>
+		##TP_LOOP action_idx {[tpGetVar numActions]}##
+		<option value="##TP_ActionId##">##TP_ActionName##</option>
+		##TP_ENDLOOP##
+	</select>
+	</td>
+</tr>
+
+<tr>
+	<td class=caption>Channel</td>
+	<td>
+	<SELECT name="channel">
+		<option value="">Any</option>
+			##TP_LOOP channel_idx {[tpGetVar NumChannels]}##
+				<option value="##TP_ChannelId##">##TP_ChannelName##</option>
+			##TP_ENDLOOP##
+	</SELECT>
+	</td>
+</tr>
+
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button class="btn_def" value="Find Customer Activity" onClick="return fs(this,'DoCustActivity')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CUST_ACTIVITY::GoActivity">
+</form>
+</table>
+
+##TP_IF {[OT_CfgGetTrue FUNC_MENU_IGF] && [op_allowed IGFExpPtsViewJrnl]}##
+	<br>
+	##TP_PLAY -nocache igf/exp_pts_jrnl_query.html##
+##TP_ENDIF##
+
+##TP_ELSE##
+<font color=orange>
+<b>You do not have permission to view customer details.</b>
+</font>
+##TP_ENDIF##
+</body>
+</html>

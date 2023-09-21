@@ -1,0 +1,86 @@
+<html>
+<!-- $Id: debt_man_arg.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+
+##TP_PLAY header_cal.html##
+
+<script>
+function fs(b,t)
+{
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function displayCalendars() {
+	new Calendar(document.forms.debt_management.ReviewDate,null,false,"lo");
+}
+
+function checkDate() {
+	var dateArray = new Array();
+	dateArray = document.forms.debt_management.ReviewDate.value.split('-');
+	if (dateArray.length != 3) {
+		alert ('Error in date field format (should be yyyy-MM-DD)');
+		document.forms.debt_management.ReviewDate.value = '';
+		return;
+	}
+}
+</script>
+
+</head>
+<body onload="displayCalendars()">
+	##TP_PLAY error_rpt.html##
+	##TP_PLAY msg_rpt.html##
+	<form name="debt_management" method="get" action="##TP_CGI_URL##">
+		<table cellspacing=0 cellpadding=2 border=0 >
+			<tr>
+				<th colspan=19 class=title>
+					Debt Management
+				</th>
+			</tr>
+			<tr>
+				<td class="captionindex">
+					Show
+				</td>
+				<td>
+					<select name="DebtState">
+						##TP_LOOP row_idx {[tpGetVar debt_num_states]}##
+						<option value="##TP_state_id##">##TP_debt_code##</option>
+						##TP_ENDLOOP##
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="captionindex">
+					Status
+				</td>
+				<td>
+					<select name="DiaryStatus">
+						<option value="A" selected="selected">Active</option>
+						<option value="R">Reviewed</option>
+						<option value="S">Suspended</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="captionindex">
+					Review Date
+				</td>
+				<td>
+					<input type="text" size="12" name="ReviewDate" onChange="checkDate()">
+				</td>
+			</tr>
+			<tr>
+				<th class=buttons colspan=2>
+					<input type=button class="btn_def" value="Show" onClick="return fs(this,'ShowDebtDiary')">
+				</th>
+			</tr>
+		</table>
+		<input type="hidden" name="SubmitName" value="DoDebtMan">
+		<input type="hidden" name="action" value="ADMIN::DEBT_MANAGEMENT::GoDebtMan">
+	</form>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<html>
+<!-- $Id: cust_promo_txn_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Customer Manual Adjustments</title>
+</head>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+<body>
+<br>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<table border=0 cellspacing=0 cellpadding=2 colspan="6">
+<tr>
+	<th colspan="8" class="title">
+	Customer Promotion Transaction History
+	</th>
+</tr>
+<tr class=subtitle>
+        <td colspan="8">
+	Username ##TP_Username##, account number ##TP_AcctNo##
+	</td>
+</tr>
+<tr>
+	<th colspan=1 class=colhead>Promo Jrnl ID</th>
+	<th colspan=1 class=colhead>Date</th>
+	<th colspan=1 class=colhead>Stake</th>
+	<th colspan=1 class=colhead>Cumulative Stake</th>
+	<th colspan=1 class=colhead>Points</th>
+	<th colspan=1 class=colhead>Transaction Type</th>
+	<th colspan=1 class=colhead>Total Points (needed to reach target)</th>
+	<th colspan=1 class=colhead>Total Stake (so far)</th>
+</tr>
+##TP_LOOP i {[tpGetVar NumTxns]}##
+<tr>
+	<td>##TP_PROMO_pc_jrnl_id##</td>
+	<td>##TP_PROMO_date##</td>
+	<td>##TP_PROMO_stake##</td>
+	<td>##TP_PROMO_cum_min_stake##</td>
+	<td>##TP_PROMO_points##</td>
+	<td>##TP_PROMO_pc_jrnl_type##</td>
+	<td>##TP_PROMO_total_points##</td>
+	<td>##TP_PROMO_total_stake##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[tpGetVar NumTxns 0]==0}##
+<tr>
+	<td align=left>
+	<b><i>No transaction to display</i></b>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<form action="##TP_CGI_URL##" method=get>
+	<th class=buttons colspan="8">
+		<input type=button value="Previous" onClick="return fs(this,'Prev')">
+		<input type=button value="Next" onClick="return fs(this,'Next')">
+		<input type=button value="Customer" onClick="return fs(this,'Customer')">
+		<input type=button value="Back" onClick="return fs(this,'Back')">
+	</th>
+
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::CUST::PROMOTIONS::DoPromoTxnQuery>
+	<input type=hidden name=CustId value="##TP_CustId##">
+	<input type=hidden name=AcctId value="##TP_AcctId##">
+	<input type=hidden name=PromoId value="##TP_PromoId##">
+	<input type=hidden name=Username value="##TP_Username##">
+	<input type=hidden name=AcctNo value="##TP_AcctNo##">
+	<input type=hidden name=TxnsPerPage value="##TP_TxnsPerPage##">
+	<input type=hidden name=LoCrDate value="##TP_LoCrDate##">
+	<input type=hidden name=HiCrDate value="##TP_HiCrDate##">
+
+	</form>
+</tr>
+</table>
+</body>
+</html>

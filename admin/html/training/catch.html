@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>HTML Page</title>
+	</head>
+	<body>
+		<form action="##TP_CGI_URL##" method="post">
+			<input type="hidden" name="action" value="TRAINING_do_catch" />
+			<input type="text" name="cust_id" size="5" value="" />
+			<input type="submit" value="Get customer" />
+		</form>
+		
+		##TP_IF {[tpGetVar err] == 1}##
+			##TP_err_msg##
+		##TP_ENDIF##
+		
+		##TP_IF {[tpGetVar found_cust] == 1}##
+		Cust ID:  ##TP_CUST_ID##<br />
+		username: <a href="##TP_CGI_URL##?action=TRAINING_do_catch_details&cust_id=##TP_CUST_ID##">##TP_CUST_UNAME##</a><br />
+		password: ##TP_CUST_PWRD##<br /><br />
+		##TP_ENDIF##<br /><br />
+		##TP_IF {[tpGetVar found_details] == 1}##
+		First Name: ##TP_FNAME##<br/>
+		Last Name: ##TP_LNAME##<br/>
+		Bet Count: ##TP_BET_COUNT##<br/>
+		##TP_ENDIF##		
+		
+	</body>
+</html>

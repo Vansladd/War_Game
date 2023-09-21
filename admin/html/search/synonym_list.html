@@ -1,0 +1,102 @@
+ <html>
+<!-- $Id: synonym_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script type="text/javascript">
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+##TP_IF {[tpGetVar ShowExtraInfo 0] != 0}##
+<h3>Synonyms ##TP_KeywordInfo## ##TP_SynonymInfo## ##TP_LangInfo##</h3>
+##TP_ENDIF##
+
+<form method="get" action="##TP_CGI_URL##">
+	<input type="hidden" name="action"       value="ADMIN::SEARCH::DoSynonymList" />
+	<input type="hidden" name="SubmitName"   value="" />
+
+	<input type="hidden" name="crit_keyword" value="##TP_crit_keyword##" />
+	<input type="hidden" name="crit_synonym" value="##TP_crit_synonym##" />
+	<input type="hidden" name="crit_lang"    value="##TP_crit_lang##" />
+
+	<input type="hidden" name="keyword"      value="##TP_keyword##" />
+	<input type="hidden" name="synonym"      value="##TP_synonym##" />
+	<input type="hidden" name="lang"         value="##TP_lang##" />
+
+<table cellspacing="0" cellpadding="2" border="0">
+	<tr>
+		<th class="title" colspan="3">
+		Synonyms
+		</th>
+	</tr>
+
+	<tr>
+		<th class="colhead">
+		Synonym
+		</th>
+
+		<th class="colhead">
+		Language
+		</th>
+
+		<th class="colhead">
+		Display Order
+		</th>
+	</tr>
+	
+##TP_IF {[tpGetVar NumSynonyms 0]==0}##
+	<tr>
+		<td align="center" colspan="3">
+		No keywords match your search criteria
+		</td>
+	</tr>
+##TP_ELSE##
+	##TP_LOOP synonym_idx {[tpGetVar NumSynonyms]}##
+	<tr>
+		<td>
+			<a href="##TP_CGI_URL##?action=ADMIN::SEARCH::GoSynonym&synonym_id=##TP_SynonymID##&crit_keyword=##TP_crit_keyword##&crit_synonym=##TP_crit_synonym##&crit_lang=##TP_crit_lang##">
+			##TP_Synonym##
+			</a>
+		</td>
+
+		<td>
+		##TP_LangName##
+		</td>
+
+		<td>
+		##TP_Disporder##
+		</td>
+	</tr>
+	##TP_ENDLOOP##
+##TP_ENDIF##
+
+	<tr>
+		<th class="buttons" colspan="3">
+##TP_IF {![tpGetVar opAdd 0]}##
+	##TP_IF {[tpGetVar PERM_ViewAudit 0]}##
+			<input type="hidden" name="AuditInfo" value="SearchSynonymKey" />
+			<input type="button" value="View Audit History" onClick="return fs(this,'GoAudit')" />
+	##TP_ENDIF##
+##TP_ENDIF##
+			<input type="button" value="Back" onClick="return fs(this,'BackSynonymKeywords')" />
+		</th>
+	</tr>
+
+</table>
+</form>
+
+</body>
+</html>

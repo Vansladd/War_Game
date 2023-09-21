@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<title>external game</title>
+	</head>
+
+	<script>
+		function do_action(id, action) {
+			document.drawDescForm.mode.value = action;
+			document.drawDescForm.id.value = id;
+			document.drawDescForm.submit();
+		}
+
+		function back(){
+			document.backForm.submit();
+		}
+	</script>
+
+	<body bgcolor=white>
+
+	<table cellspacing=0 cellpadding=2 border="0" bgcolor=#cccccc>
+		<form action="##TP_CGI_URL##" name="drawDescForm">
+			<input type=hidden name="action" value="DoXGameFind">
+			<input type=hidden name="GameName" value="Edit Draw Desc">
+			<input name="sort" type="hidden" value="##TP_sort##"/>
+			<input name="mode" type="hidden" value="##TP_input_mode##"/>
+			<input name="id"   type="hidden" value="" />
+			<tr bgcolor=#10137c>
+				<th colspan=11 class=title>
+					<font color=white size=+1>Draw Descriptions for ##TP_sort##</font>
+				</th>
+			</tr>
+			<tr align="middle">
+				<td><b>desc id</b></td>
+				<td><b>sort</b></td>
+				<td><b>name</b></td>
+				<td><b>desc</b></td>
+				<td><b>day</b></td>
+				<td><b>shut day</b><font size=-2>(if not the same as draw day)</font></td>
+				<td><b>default draw at</b></td>
+				<td><b>default shut at</b></td>
+				<td><b>status</b></td>
+				<td><b>channels</b></td>
+				<td><b>&nbsp;</b></td>
+				<td><b>&nbsp;</b></td></tr>
+    
+				##TP_LOOP row_idx {[tpGetVar rows]}##
+    					<tr>
+						##TP_IF {[tpGetVar row_to_edit -1] == [tpGetVar row_idx]}##
+							<td>##TP_DESC_ID##</td>
+							<td>##TP_DESC_SORT##</td>
+							<td><input name="upd_name" type="text" value ="##TP_DESC_NAME##"/></td>
+							<td><input name="upd_desc" type="text" value ="##TP_DESC_DESC##"/></td>
+							<td><input name="upd_day" type="text" value ="##TP_DESC_DAY##"/></td>
+							<td>&nbsp;</td>	
+							<td><input name="upd_default_draw_at" type="text" value ="##TP_DESC_DRAW_AT##"/></td>
+							<td><input name="upd_default_shut_at" type="text" value ="##TP_DESC_SHUT_AT##"/></td>
+							<td><input name="upd_status" type="text" value ="##TP_DESC_STATUS##"/></td>
+							<td><a href="javascript:do_action(##TP_DESC_ID##, 'edit_channels')">##TP_DESC_CHANNELS##</a></td>
+							<td><a href="javascript:do_action(##TP_DESC_ID##,'do_upd')">Update</td>
+							<td>&nbsp;</td>
+						##TP_ELSE##
+							<td>##TP_DESC_ID##</td>
+							<td>##TP_DESC_SORT##</td>
+							<td>##TP_DESC_NAME##</td>
+							<td>##TP_DESC_DESC##</td>
+							<td>##TP_DESC_DAY##</td>
+							<td>##TP_DESC_SHUT_DAY##</td>
+							<td>##TP_DESC_DRAW_AT##</td>
+							<td>##TP_DESC_SHUT_AT##</td>
+							<td>##TP_DESC_STATUS##</td>
+							<td><a href="javascript:do_action(##TP_DESC_ID##, 'edit_channels')">##TP_DESC_CHANNELS##</a></td>
+							<td><a href="javascript:do_action(##TP_DESC_ID##, 'view')">edit</a></td>
+							<td><a href="javascript:do_action(##TP_DESC_ID##, 'delete')">delete</a></td>
+						##TP_ENDIF##
+    					</tr>
+    				##TP_ENDLOOP row_idx##
+			        
+				<tr>
+					<td>&nbsp;</td>
+					<td>##TP_sort##</td>
+					<td><input name="name" type="text"/></td>
+					<td><input name="desc" type="text"/></td>
+					<td><input name="day" type="text"/></td>
+					<td><input name="shut_day" type="text"/></td>
+					<td><input name="default_draw_at" type="text"/></td>
+					<td><input name="default_shut_at" type="text"/></td>
+					<td><input name="status" type="text"/></td>
+				</tr>
+				<tr bgcolor=#10137c>
+					<th colspan=12 class=title>
+						<input type="Submit" name="Submit" value="Submit"> 
+						<input type=button class="btn_def" VALUE="Back" onClick="back()">
+					</th>
+				</tr>
+			</form>
+		</table>
+
+		<form action="##TP_CGI_URL##" name="backForm">
+			<input type=hidden name=action value="DoXGameFind">
+			<input type=hidden name=GameName value="View Game Def">
+			<input type=hidden name=sort value="##TP_sort##">
+		</form>
+
+	</body>
+</html>

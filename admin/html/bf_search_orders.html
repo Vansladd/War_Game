@@ -1,0 +1,143 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Orders Details</title>
+
+<script language=javascript>
+	function fs(b,t)
+	{
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+
+	function go_bf_order_upd_popup(bf_order_id) {
+		var popup = window.open("##TP_CGI_URL##?action=ADMIN::BETFAIR_ORDER::GoBFOrderUpd&BFOrderId="+bf_order_id,
+								"popup",
+								"toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,height=400,width=800");
+		popup.focus();
+	}
+</script>
+</head>
+
+<body>
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=1>
+<form name="order_search_result" action="##TP_CGI_URL##" method="POST">
+	<br>
+	<br>
+	<tr>
+		<th colspan=16 class=title>
+			Order Details
+		</th>
+	</tr>
+	<tr>
+		<th class=colhead>Order Id</th>
+		<th class=colhead>Betfair bet Id</th>
+		<th class=colhead>Openbet Id</th>
+		<th class=colhead>Creation date</th>
+		<th class=colhead>Order Type</th>
+		<th class=colhead>Size</th>
+		<th class=colhead>Size Matched</th>
+		<th class=colhead>Price</th>
+		<th class=colhead>Average Price Matched</th>
+		<th class=colhead>Betfair Returns</th>
+		<th class=colhead>Status</th>
+		<th class=colhead>Settled Date</th>
+		<th class=colhead>User Name</th>
+		<th class=colhead>Source</th>
+		<th class=colhead>Market</th>
+		<th class=colhead>Selection</th>
+	</tr>
+	##TP_LOOP order_idx {[tpGetVar NumOrder]}##
+		<tr>
+			<td><a href= 'javascript:go_bf_order_upd_popup("##TP_BFOrderId##")'>##TP_BFOrderId##</a></td>
+			<td>##TP_BF_Bet_Id##&nbsp;</td>
+			<td>##TP_IF {[tpBindGet Openbet_Bet_Id] != ""}##<a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_Openbet_Bet_Id##">##TP_Receipt##</a>##TP_ELSE##-##TP_ENDIF##</td>
+			<td>##TP_CrDate##&nbsp;</td>
+			<td>##TP_IF {[tpBindGet Type] == "B"}##
+					Back
+				##TP_ELSEIF {[tpBindGet Type] == "L"}##
+					Lay
+				##TP_ENDIF##&nbsp;
+			</td>
+			<td>##TP_Size##&nbsp;</td>
+			<td>##TP_SizeMatched##&nbsp;</td>
+			<td>##TP_Price##&nbsp;</td>
+			<td>##TP_AvgPrice##&nbsp;</td>
+			<td>##TP_BF_Profit##&nbsp;</td>
+			<td>##TP_IF {[tpBindGet BFStatus]=="U"}##
+					Unmatched
+				##TP_ELSEIF {[tpBindGet BFStatus]=="M"}##
+					Matched
+				##TP_ELSEIF {[tpBindGet BFStatus]=="C"}##
+					Cancelled
+				##TP_ELSEIF {[tpBindGet BFStatus]=="X"}##
+					Unsuccessful
+				##TP_ELSEIF {[tpBindGet BFStatus]=="B"}##
+					Being Placed
+				##TP_ELSEIF {[tpBindGet BFStatus]=="N"}##
+					Sent to Betfair
+				##TP_ELSEIF {[tpBindGet BFStatus]=="P"}##
+					Partially Matched
+				##TP_ELSEIF {[tpBindGet BFStatus]=="S"}##
+					Settled
+				##TP_ELSEIF {[tpBindGet BFStatus]=="L"}##
+					Lapsed
+				##TP_ELSEIF {[tpBindGet BFStatus]=="V"}##
+					Voided
+				##TP_ENDIF##&nbsp;
+			</td>
+			<td>##TP_SettledAt##&nbsp;</td>
+			<td>##TP_UserName##&nbsp;</td>
+			<td>
+				##TP_IF {[tpBindGet Source] == "M"}##
+					Admin
+				##TP_ELSEIF {[tpBindGet Source] == "T"}##
+					Trade
+				##TP_ELSEIF {[tpBindGet Source] == "R"}##
+					Risk
+				##TP_ENDIF##&nbsp;
+			</td>
+			<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::MARKET::GoMkt&MktId=##TP_MktId##">
+				##TP_Class##-->##TP_TypeName##-->##TP_Event##-->##TP_Mkt##</a> &nbsp;
+			</td>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::SELN::GoOc&OcId=##TP_EvOcId##">##TP_OCDesc##&nbsp;</a></td>
+		</tr>
+	##TP_ENDLOOP##
+	<tr>
+		<th class=buttons colspan=16>
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'back')">
+			<input type=button class="btn_def" value="Refresh" onClick="return fs(this,'Refresh')">
+		</th>
+	</tr>
+
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::BETFAIR_ORDER::GoSearchOrders>
+<input type=hidden name=OrderId value="##TP_OrderId##">
+<input type=hidden name=BFBetId value="##TP_BFBetId##">
+<input type=hidden name=Status value="##TP_Status##">
+<input type=hidden name=PlacedDate1 value="##TP_PlacedDate1##">
+<input type=hidden name=PlacedDate2 value="##TP_PlacedDate2##">
+<input type=hidden name=SettledDate1 value="##TP_SettledDate1##">
+<input type=hidden name=SettledDate2 value="##TP_SettledDate2##">
+<input type=hidden name=Price1 value="##TP_Price1##">
+<input type=hidden name=Price2 value="##TP_Price2##">
+<input type=hidden name=AvgPriceMatch1 value="##TP_AvgPriceMatch1##">
+<input type=hidden name=AvgPriceMatch2 value="##TP_AvgPriceMatch2##">
+<input type=hidden name=Size1 value="##TP_Size1##">
+<input type=hidden name=Size2 value="##TP_Size2##">
+<input type=hidden name=SizeMatch1 value="##TP_SizeMatch1##">
+<input type=hidden name=SizeMatch2 value="##TP_SizeMatch2##">
+<input type=hidden name=OrderType value="##TP_OrderType##">
+<input type=hidden name=Username value="##TP_Username##">
+<input type=hidden name=IsSettled value="##TP_IsSettled##">
+<input type=hidden name=OrderSettledAt value="##TP_OrderSettledAt##">
+<input type=hidden name=OrderPlacedFrom value="##TP_OrderPlacedFrom##">
+</form>
+</table>
+</body>
+</html>

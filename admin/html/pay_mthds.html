@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<!--
+ 		$Id: pay_mthds.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $
+		(C)2006 Orbis Technology Ltd. All rights reserved.
+	-->
+	<head>
+		<title>Payment Methods</title>
+		<meta http-equiv="Content-Type"
+			content="text/html; charset=##TP_CHARSET##">
+		<link rel="stylesheet" type="text/css"
+			href="##TP_CGI_URL##?action=stylesheet">
+		##TP_PLAY JS_WriteSelect.html##
+	</head>
+	<body>
+		##TP_PLAY error_rpt.html##
+		##TP_PLAY msg_rpt.html##
+    	<table cellspacing="0" summary="">
+    		<thead>
+    			<tr>
+    				<th colspan="13" class="title">
+						Payment Methods
+					</td>
+				</tr>
+    			<tr>
+					<th>Payment Method</th>
+					<th>Description</th>
+					<th>Blurb</th>
+					<th>Fraud Delay (mins)</th>
+					<th>Batch time</th>
+					<th>WE batch time</th>
+					<th>Defer to</th>
+					<th>Withdrawal Threshold</th>
+					<th>Cheque No.</th>
+					<th>Max. Cheque No.</th>
+					<th>Max. Cheque No. Amount (Default Currency)</th>
+					<th>Cancel Pending</th>
+					<th>Deposit Check</th>
+				</tr>
+			</thead>
+			<tbody>
+				##TP_IF {[tpGetVar nrows] == 0}##
+				<!-- Can't see this ever happening -->
+				<tr>
+					<td colspan="10">No rows found</td>
+				</tr>
+				##TP_ENDIF##
+				##TP_LOOP idx {[tpGetVar nrows]}##
+				<tr>
+					<td><a
+						href="##TP_CGI_URL##?action=ADMIN::PAY_MTHD::go_pay_mthd&pay_mthd=##TP_pay_mthd##"
+						>##TP_pay_mthd##</a></td>
+					<td>##TP_desc##</td>
+					<td>
+						##TP_IF {[string length [tpBindGet blurb]] > 37}##
+						##TP_TCL {string range [tpBindGet blurb] 0 40}##...
+						##TP_ELSE##
+						##TP_blurb##
+						##TP_ENDIF##
+					</td>
+					<td>##TP_wtd_delay_mins##</td>
+					<td>##TP_wtd_batch_time##</td>
+					<td>##TP_wtd_we_batch_time##</td>
+					<td>##TP_wtd_deferred_to##</td>
+					<td>##TP_wtd_delay_threshold##</td>
+					<td>##TP_chq_no##</td>
+					<td>##TP_max_chq_no##</td>
+					<td>##TP_max_chq_no_amt##</td>
+					<td>
+						<script>
+        					write_which("##TP_cancel_pending##","Y","Yes","N","No")
+						</script>
+					</td>
+					<td>
+						<script language="Javascript" type="text/javascript">
+						write_which("##TP_deposit_check##","Y","Yes","N","No");
+						</script>
+					</td>
+				</tr>
+				##TP_ENDLOOP##
+			</tbody>
+    	</table>
+	</body>
+</html>

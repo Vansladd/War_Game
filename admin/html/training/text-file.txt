@@ -1,0 +1,2 @@
+I am a simple text file<br />
+The lazy dog jumped over the brown fox

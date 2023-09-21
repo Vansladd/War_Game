@@ -1,0 +1,80 @@
+<html>
+<!-- $Id: bet_transfer_search.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Bet Transfer Search</title>
+##TP_PLAY header_cal.html##
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function displayCalendars() {
+	new Calendar(document.forms.Bet_Transfer_Search.BetDate1,null,true,"lo")
+	new Calendar(document.forms.Bet_Transfer_Search.BetDate2,null,true,"lo")
+}
+</script>
+##TP_PLAY JS_WriteSelect.html##
+</head>
+<body onload="displayCalendars()">
+##TP_IF {[tpGetVar PERM_ViewCustInfo 0]}##
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<form name=Bet_Transfer_Search method=get action="##TP_CGI_URL##">
+<tr>
+	<th colspan=2 class=title>
+	Bet Transfer Search
+	</th>
+</tr>
+<tr>
+	<td class=caption>Username</td>
+	<td>
+	##TP_Username##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Acct No</td>
+	<td>
+	##TP_AcctNo##
+	</td>
+</tr>
+<tr>
+	<td class=captionindex valign="top">Bet placed between</td>
+	<td>
+		<input type="text" name="BetDate1" value="" size=10>
+		&nbsp;to&nbsp;
+		<input type="text" name="BetDate2" value="" size=10>
+	</td>
+</tr>
+<tr>
+	<th class=buttons colspan=2>
+	<input type=button class="btn_def" value="List Bets" onClick="return fs(this,'Search')">
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=CustId value="##TP_CustId##">
+<input type=hidden name=AcctId value="##TP_AcctId##">
+<input type=hidden name=Username value="##TP_Username##">
+<input type=hidden name=AcctNo value="##TP_AcctNo##">
+<input type=hidden name=Currency value="##TP_Currency##">
+<input type=hidden name=action value="ADMIN::BET_TRANSFER::DoBetTransferSearch">
+</form>
+</table>
+
+<p>All dates must be in following format: yyyy-mm-dd [hh:mm:ss]</p>
+
+
+##TP_ELSE##
+<font color=orange>
+<b>You do not have permission to view customer details.</b>
+</font>
+##TP_ENDIF##
+</body>
+</html>

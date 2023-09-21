@@ -1,0 +1,59 @@
+<html>
+<!-- $Id: blurb.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Blurb Administration</title>
+
+<script language=javascript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+
+<body>
+<form action="##TP_CGI_URL##">
+<input type=hidden name=action value="ADMIN::BLURB::do_blurb">
+<input type=hidden name=SubmitName>
+<input type=hidden name=ref_id value=##TP_ref_id##>
+<input type=hidden name=sort   value=##TP_sort##>
+<table cellspacing=0 cellpadding=3 border=0>
+<tr>
+        <th colspan=3 class=title>
+        Blurbs for ##TP_ITEM_DESC## (##TP_sort##)
+        </th>
+</tr>
+<tr>
+	<td class=caption>Language</td>
+	<td>
+		<select name=lang>
+			##TP_LOOP lang_idx {[tpGetVar num_lang]}##
+			<option ##TP_SELECTED## value=##TP_LANG##>##TP_NAME##</option>
+			##TP_ENDLOOP##
+		</select>
+	</td>
+	<td>
+		<input type=button class="btn_def" value=Retrieve onClick="return fs(this, 'ChangeLang')">
+</tr>
+<tr>
+	<td class=caption>Blurb</td>
+	<td colspan="2">
+	<textarea name='blurb' cols=60 rows=4 wrap=virtual>##TP_blurb##</textarea>
+</tr>
+<tr>
+	<td class=buttons colspan=3>
+	<input type=button class="btn_def" value=##TP_OP## onClick="return fs(this, '##TP_OP##')">
+	<input type=button class="btn_def" value=Delete onClick="return fs(this, 'Delete')">
+	<input type=button class="btn_def" value=Close  onClick="window.close()">
+	</td>
+</form>
+</tr>		
+</table>
+</body>
+</html>

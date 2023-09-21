@@ -1,0 +1,160 @@
+<html>
+<!-- $Id: seo_main.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+	<head>
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+		<title>SEO Title Tags - Main</title>
+		##TP_PLAY JS_WriteSelect.html##
+	
+	<script type="text/javascript">
+
+		function get_selected_channel() {
+			var channel_sel = document.seo_form.channel_select;
+			return channel_sel.options[channel_sel.selectedIndex].value;
+		}
+
+		function global_link() {
+			var id = get_selected_channel();
+			var url = "##TP_CGI_URL##?action=ADMIN::SEO::GoSEOTags&level=Global&level_id=0&from=tags&channel_id=" + id;
+			window.location = url;
+		}
+
+		function home_link() {
+			var id = get_selected_channel();
+			var url = "##TP_CGI_URL##?action=ADMIN::SEO::GoSEOTags&level=Home&from=tags&channel_id=" + id;
+			window.location = url;
+		}
+
+		function static_link() {
+			var id = get_selected_channel();
+			var url = "##TP_CGI_URL##?action=ADMIN::SEO::GoSEOTags&level=Static&from=tags&channel_id=" + id;
+			window.location = url;
+		}
+
+		function fs(b,t) {
+			b.disabled = true;
+			b.value = "Busy...";
+			b.form.SubmitName.value=t;
+			b.form.submit();
+			return true;
+			
+		}
+
+		function setSite() {
+			var channel_sel = document.seo_form.channel_select;
+			document.seo_form.channel_id.value = channel_sel.options[channel_sel.selectedIndex].value;
+		}
+
+
+		function setLevel() {
+			var level_sel = document.seo_form.level_select;
+			document.seo_form.level.value = level_sel.options[level_sel.selectedIndex].value;
+		}
+
+		function checkForm(b,t) {
+
+			setSite();
+			setLevel();
+
+			var error = 0;
+			var msg   = '';
+			var id    = document.seo_form.level_id.value;
+			var level = document.seo_form.level.value;
+
+			if (/^[0-9]+$/.test(id) == false) {
+				error = 1;
+				msg = "Incorrect ID - must be a numeric value\n\n";
+			}
+
+			if (level == '') {
+				error = 1;
+				msg = msg + "Please select a hierarchy level";
+			}
+
+			if (error == 1) {
+				alert (msg);
+				return false;
+			} else {
+				return fs(b,t);
+			}
+		}
+	</script>
+
+	</head>
+	<!--seo_main.html-->
+	<body>
+		<form name="seo_form" method="get" action="##TP_CGI_URL##">
+			<input type="hidden" name="action" value="ADMIN::SEO::GoSEOMain">
+			<input type="hidden" name="SubmitName" value="">
+			<table>
+				<tr>
+					<th class="title">##TP_XL Admin.SEO.TITLE_TAG##</th>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select Site</b></td>
+				</tr>
+				<tr>
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						<select name="channel_select" onChange="setSite()">
+							##TP_LOOP site_idx {[tpGetVar num_sites 0]}##
+							<option value="##TP_channel_id##">##TP_channel_desc##</option>
+							##TP_ENDLOOP##
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td>
+						<ul>
+							<li><a href="##TP_CGI_URL##?action=ADMIN::SEO::GoSEOPKW&from=pkw">##TP_XL Admin.SEO.PKW##</a>##TP_XL Admin.SEO.PKW_DESC##
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##TP_XL Admin.SEO.DEFAULT_TAG##</b></td>
+				</tr>
+				<tr>
+					<td>
+						<ul>
+							<li><a href="javascript:global_link()">##TP_XL Admin.SEO.GLOBAL_DEFAULTS##</a>##TP_XL Admin.SEO.GLOBAL_DEFAULTS_DESC##
+							<li><a href="javascript:home_link()">##TP_XL Admin.SEO.HOME_PAGE##</a>
+							<li><a href="javascript:static_link()">##TP_XL Admin.SEO.STATIC_PAGES##</a>
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<td><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##TP_XL Admin.SEO.GO_SPECIFIC##</b></td>
+				</tr>
+				<tr>
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						<select name="level_select" onChange="setLevel()">
+							<option value="" selected>Select Level</option>
+							##TP_LOOP h_idx {[tpGetVar num_h_Levels]}##
+							<option value="##TP_h_NAME##" ##TP_IF {[tpGetVar SEL_LEVEL] == [tpBindGet h_NAME]}##selected##TP_ENDIF##>##TP_h_NAME##</option>
+							##TP_ENDLOOP##
+						</select>
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						##TP_XL Admin.SEO.ID## <input type="text" size="5" name="level_id" value="">
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						<input type="button" value="##TP_XL Admin.SEO.GO_BUTTON##" onClick="return checkForm(this,'goSpecific')">
+						<input type="hidden" name="level" value="">
+						<input type="hidden" name="channel_id" value="">
+						<input type="hidden" name="from" value="seo">
+					</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+				</tr>
+			</table>
+		</form>
+	</body>
+</html>

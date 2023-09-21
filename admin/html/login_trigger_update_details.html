@@ -1,0 +1,297 @@
+<html>
+<!-- $Id: login_trigger_update_details.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##" />
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet" />
+
+##TP_PLAY JS_WriteSelect.html##
+
+<script language="JavaScript">
+
+function remove_manual_int(b) {
+	b.form.action_code_interval_2.value = "";
+}
+
+function fs(b,t,r)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.submit_name.value=t;
+	b.form.id_name.value=r;
+	b.form.submit();
+	return true;
+}
+
+</script>
+
+</head>
+
+<body>
+
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<!-- Trigger Settings -->
+
+<table border="0" cellspacing="0" cellpadding="3">
+<form action="##TP_CGI_URL##" method="post">
+<input type="hidden" name="submit_name" value="none" />
+<input type="hidden" name="id_name" value="none" />
+<input type="hidden" name="action_id" value="##TP_action_id##" />
+<input type="hidden" name="action" value="ADMIN::LOGINTRIGGERS::DoLoginTriggerUpdateOptions" />
+<tr>
+	<th colspan="2" class="title">Update Details Action Options</th>
+</tr>
+<tr>
+	<td class="caption">Action Code Name</td>
+	<td>
+		<input type="text" name="action_code" size="20" value="##TP_action_code##" readonly/>
+	</td>
+</tr>
+<tr>
+	<td class="caption">Description</td>
+	<td>
+		<input type="text" name="action_code_desc" size="20" value="##TP_action_code_desc##" readonly/>
+	</td>
+</tr>
+<tr>
+	<td class="caption">Maximum Reminders</td>
+	<td>
+		<input type="text" name="action_code_max_r" size="5" value="##TP_action_code_max_r##"/>
+	</td>
+</tr>
+<tr>
+	<td class="caption">Reminders Interval</td>
+	<td>
+		<input type="text" name="action_code_max_r_days" size="5" value="##TP_action_code_max_r_days##"/> (days)
+	</td>
+</tr>
+<tr>
+	<td class="caption">Skip Elite</td>
+	<td>
+		<select name="action_code_skip_elite">
+			<script>
+			write_select('##TP_action_code_skip_elite##','Y','Yes','N','No')
+			</script>
+		</select>
+	</td>
+</tr>
+<tr>
+	<td colspan=2 class=buttons>
+		<input type=button class="btn_def" value="Update" onClick="return fs(this,'Update','')">
+	</td>
+</tr>
+</form>
+</table>
+
+
+
+<!-- Trigger Upload Section -->
+
+<table border="0" cellspacing="0" cellpadding="3">
+<tr>
+	<th colspan="2" class="title">Upload Customers</th>
+</tr>
+<tr>
+	<td colspan="2">
+		There are currently ##TP_total_active_uploads## active entries in the upload list.
+	</td>
+</tr>
+<tr>
+	<td colspan="2">
+		<a href="##TP_CGI_URL##?action=ADMIN::UPLOAD::GoUpload&upload_type=LOGTRIG">Manage</a> upload files. <a href="##TP_CGI_URL##?action=ADMIN::LOGINTRIGGERS::GoViewActiveUploadList&action_id=##TP_action_id##">View</a> active entries.
+	</td>
+</tr>
+</table>
+
+
+
+<!-- Trigger Group Section -->
+
+<table border="0" cellspacing="0" cellpadding="3">
+<form action="##TP_CGI_URL##" method="post">
+<input type="hidden" name="submit_name" value="none" />
+<input type="hidden" name="id_name" value="none" />
+<input type="hidden" name="action_id" value="##TP_action_id##" />
+<input type="hidden" name="action" value="ADMIN::LOGINTRIGGERS::DoLoginTriggerGrp" />
+<tr>
+	<th colspan="6" class="title">Update Trigger Group Options</th>
+</tr>
+##TP_IF {[tpBindGet num_grps] > 0}##
+	<tr>
+		<td class="caption">Group Code</td>
+		<td class="caption">Group Desc</td>
+		<td class="caption">Status</td>
+		<td class="caption">Last Updated</td>
+		<td class="caption">&nbsp;</td>
+		<td class="caption">&nbsp;</td>
+	</tr>
+	##TP_LOOP grp_idx {[tpBindGet num_grps]}##
+	<tr>
+		<td>##TP_grp_code##</td>
+		<td>##TP_grp_desc##</td>
+		<td>
+			<select name="update_status_##TP_grp_code##">
+				<script>
+				write_select('##TP_grp_status##','F','Force','S','Skip','U','Unset')
+				</script>
+			</select>
+		</td>
+		<td>##TP_grp_last_updated##</td>
+		<td>
+			<input type=button class="btn_def" value="Update" onClick="return fs(this,'Update','##TP_grp_code##')">
+		</td>
+		<td>
+			<input type=button class="btn_def" value="View Audit" onClick="return fs(this,'Audit','##TP_grp_code##')">
+			<input type="hidden" name="AuditInfo" value="loginActGrp">
+		</td>
+	</tr>
+	##TP_ENDLOOP##
+##TP_ELSE##
+	<tr>
+		<td colspan="6">No groups have been added</td>
+	</tr>
+##TP_ENDIF##
+##TP_IF {[tpBindGet num_avail_grps] > 0}##
+	<tr>
+		<td colspan="6" class=buttons>Add a group</td>
+	</tr>
+	<tr>
+		<td colspan="6">
+			<select name="new_grp">
+			##TP_LOOP avail_grp_idx {[tpBindGet num_avail_grps]}##
+				<option value='##TP_avail_grp_code##'>##TP_avail_grp_code##, ##TP_avail_grp_desc##</option>
+			##TP_ENDLOOP##
+			</select>
+			<input type=button class="btn_def" value="Add Group to Action" onClick="return fs(this,'Add','')">
+		</td>
+	</tr>
+##TP_ELSE##
+	<tr>
+		<td colspan="6" class=buttons>No available groups to add to this action</td>
+	</tr>
+##TP_ENDIF##
+</form>
+</table>
+
+
+
+<!-- Trigger Status Flag Section -->
+
+<table border="0" cellspacing="0" cellpadding="3">
+<form action="##TP_CGI_URL##" method="post">
+<input type="hidden" name="submit_name" value="none" />
+<input type="hidden" name="id_name" value="none" />
+<input type="hidden" name="action_id" value="##TP_action_id##" />
+<input type="hidden" name="action" value="ADMIN::LOGINTRIGGERS::DoLoginTriggerFlag" />
+<tr>
+	<th colspan="6" class="title">Update Trigger Flag Options</th>
+</tr>
+##TP_IF {[tpBindGet num_flags] > 0}##
+	<tr>
+		<td class="caption">Flag Tag</td>
+		<td class="caption">Flag Name</td>
+		<td class="caption">Status</td>
+		<td class="caption">Once Only</td>
+		<td class="caption">&nbsp;</td>
+		<td class="caption">&nbsp;</td>
+	</tr>
+	##TP_LOOP flag_idx {[tpBindGet num_flags]}##
+	<tr>
+		<td>##TP_flag_tag##</td>
+		<td>##TP_flag_name##</td>
+		<td>
+			<select name="update_status_##TP_flag_tag##">
+				<script>
+				write_select('##TP_flag_status##','F','Force','S','Skip','U','Unset')
+				</script>
+			</select>
+		</td>
+		<td>
+			<select name="once_only_##TP_flag_tag##">
+				<script>
+				write_select('##TP_flag_once_only##','Y','Yes','N','No')
+				</script>
+			</select>
+		</td>
+		<td>
+			<input type=button class="btn_def" value="Update" onClick="return fs(this,'Update','##TP_flag_tag##')">
+		</td>
+		<td>
+			<input type=button class="btn_def" value="View Audit" onClick="return fs(this,'Audit','##TP_flag_tag##')">
+			<input type="hidden" name="AuditInfo" value="loginActFlag">
+		</td>
+	</tr>
+	##TP_ENDLOOP##
+##TP_ELSE##
+	<tr>
+		<td colspan="6">No flags have been added</td>
+	</tr>
+##TP_ENDIF##
+##TP_IF {[tpBindGet num_avail_flags] > 0}##
+	<tr>
+		<td colspan="6" class=buttons>Add a flag</td>
+	</tr>
+	<tr>
+		<td colspan="6">
+			<select name="new_flag">
+			##TP_LOOP avail_flag_idx {[tpBindGet num_avail_flags]}##
+				<option value='##TP_avail_flag_tag##'>##TP_avail_flag_tag##, ##TP_avail_flag_name##</option>
+			##TP_ENDLOOP##
+			</select>
+			<input type=button class="btn_def" value="Add Flag to Action" onClick="return fs(this,'Add','')">
+		</td>
+	</tr>
+##TP_ELSE##
+	<tr>
+		<td colspan="6" class=buttons>No available flag to add to this action</td>
+	</tr>
+##TP_ENDIF##
+</form>
+</table>
+
+
+
+<!-- Trigger Status Interval Section -->
+
+<table border="0" cellspacing="0" cellpadding="3">
+<form action="##TP_CGI_URL##" method="post">
+<input type="hidden" name="submit_name" value="" />
+<input type="hidden" name="id_name" value="none" />
+<input type="hidden" name="action_id" value="##TP_action_id##" />
+<input type="hidden" name="action" value="ADMIN::LOGINTRIGGERS::DoLoginTriggerIntervalUpdate" />
+<tr>
+	<th colspan="2" class="title">Update Trigger Interval Options</th>
+</tr>
+<tr>
+	<td class="caption">Action Code Name</td>
+	<td>
+		<input type="text" name="action_code" size="20" value="##TP_action_code##" readonly/>
+	</td>
+</tr>
+<tr>
+	<td class="caption">Interval Days</td>
+	<td>
+		<select name="action_code_interval_1" onchange="remove_manual_int(this)">
+			<script>
+			write_select('##TP_action_code_interval##','999','--','90','3 Months','180','6 Months','270','9 Months')
+			</script>
+		</select>
+		or
+		<input type="text" id="action_code_interval_2" name="action_code_interval_2" size="5" value="##TP_action_code_interval_alt##"/> (days)
+	</td>
+</tr>
+<tr>
+	<td class="buttons">
+		<input type="button" class="btn_def" value="Update" onClick="return fs(this,'Update','')">
+	</td>
+	<td class="buttons">
+		<input type="button" class="btn_def" value="View Audit History" onClick="return fs(this,'Audit','')">
+		<input type="hidden" name="AuditInfo" value="loginActInt">
+	</td>
+</tr>
+</form>
+</table>
+
+</body>
+</html>

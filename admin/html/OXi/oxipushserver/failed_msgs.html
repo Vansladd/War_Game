@@ -1,0 +1,156 @@
+<html>
+<!-- $Id: failed_msgs.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script type="text/javascript">
+
+	/*
+	 * Check/Uncheck all checkboxes
+	 */
+	function setSelect (new_status) {
+		var ckbox = document.OXiPushForm.ckbox;
+		if (typeof ckbox.length != 'undefined') {
+			// There are >1 checkboxes
+			for (var i = 0; i < ckbox.length; i++) {
+				ckbox[i].checked = new_status;
+				setChecked(ckbox[i].value);
+			}
+		} else {
+			// There is only 1 checkbox
+			ckbox.checked = new_status;
+			setChecked(ckbox.value);
+		}
+	}
+
+	/*
+	 * b - button handle
+	 * t - button label
+	 */
+	function buttonClicked(b, t) {
+		var keyIds = "";
+		var ckbox  = document.OXiPushForm.ckbox;
+		var checksExist = false;
+
+		if (typeof ckbox.length != 'undefined') {
+			// There are >1 checkboxes
+			for (var i = 0; i < ckbox.length; i++) {
+				if (ckbox[i].checked) {
+					checksExist = true;
+					var keyId = ckbox[i].value;
+					keyIds    = keyIds + " " + keyId;
+				}
+			}
+		} else {
+			// There is only one checkbox therefore no array to iterate over
+			if (ckbox.checked) {
+				checksExist = true;
+				var keyId = ckbox.value;
+				keyIds    = keyIds + " " + keyId;
+			}
+		}
+
+		if (checksExist) {
+			if (keyIds == "") {
+				alert("Nothing to do");
+			} else {
+				document.OXiPushForm.keyIdList.value = keyIds;
+				fs(b,t);
+			}
+		} else {
+			alert("None selected");
+		}
+	}
+
+	/* Submit the form */
+	function fs(btn,txt) {
+		btn.disabled = true;
+		btn.value    = "Busy ...";
+		btn.form.action.value = txt;
+		btn.form.submit();
+		return true;
+	}
+
+	/*
+	 * Mark the table row as selected/not selected
+	 */
+	function setChecked(key_id) {
+		var ckbox = document.getElementById("ckbox_" + key_id);
+		if (ckbox.checked) {
+			document.getElementById("tr_" + key_id).style.backgroundColor = "#eef";
+		} else {
+			document.getElementById("tr_" + key_id).style.backgroundColor = "white";
+		}
+	}
+</script>
+</head>
+##TP_PLAY error_rpt.html##
+##TP_IF {[tpGetVar IsBindMsg 0]}##
+<table cellspacing="0" cellpadding="3" border="0">
+	<tr class="active">
+		<td>
+			&nbsp;&nbsp;
+			<b>##TP_BindMsg##</b>
+			&nbsp;&nbsp;
+		</td>
+	</tr>
+</table>
+<br>
+##TP_ENDIF##
+
+<form name="OXiPushForm" method="post" action="##TP_CGI_URL##">
+<input type="hidden" name="action" value="ADMIN::OXiPUSH::GoFailedItems" />
+<input type="hidden" name="keyIdList" value="" />
+<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th colspan=6 class=title>
+		OXi Push failed messages
+		</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>&nbsp;</th>
+		<th nowrap class=colhead>Application</th>
+		<th nowrap class=colhead>Msg ID</th>
+		<th nowrap class=colhead>Base ID</th>
+		<th nowrap class=colhead>Sent date</th>
+		<th nowrap class=colhead>Fail date</th>
+	</tr>
+##TP_IF {[tpGetVar NumFail 0]==0}##
+	<tr>
+		<td colspan=6 align=center>
+		No failed messages found
+		</td>
+	</tr>
+##TP_ELSE##
+	##TP_LOOP fail_idx {[tpGetVar NumFail 0]}##
+	<tr id="tr_##TP_msg_id##">
+		<td nowrap>
+			<input type="checkbox" name="ckbox" id="ckbox_##TP_msg_id##" value="##TP_msg_id##" onClick="setChecked(##TP_msg_id##);" />
+		</td>
+		<td nowrap>##TP_app_name##&nbsp;</td>
+		<td nowrap>##TP_msg_id##&nbsp;</td>
+		<td nowrap>##TP_msg_base_id##&nbsp;</td>
+		<td nowrap>##TP_msg_cr_date##&nbsp;</td>
+		<td nowrap>##TP_msg_fail_date##&nbsp;</td>
+	</tr>
+	##TP_ENDLOOP##
+
+	<tr>
+		<td colspan="6" class="buttons">Select :&nbsp;
+			<a href="javascript:setSelect(true);">All</a>&nbsp;&nbsp;
+			<a href="javascript:setSelect(false);">None</a>&nbsp;&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<td colspan="9" class="buttons">
+			<!-- Left in place in case requested -->
+			<!--<input type="button" value="Remove Selected" class="btn_def" onclick="buttonClicked(this,'ADMIN::OXiPUSH::DoRemoveItems')" />-->
+			<input type="button" value="Re-queue Selected" class="btn_def" onclick="buttonClicked(this,'ADMIN::OXiPUSH::DoReQueueItems')" />
+		</td>
+	</tr>
+##TP_ENDIF##
+</table>
+</form>
+</body>
+</html>

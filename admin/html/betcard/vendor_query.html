@@ -1,0 +1,122 @@
+<html>
+<!-- $Id: vendor_query.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+<script>
+function fs(b,t)
+{
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+##TP_PLAY JS_WriteSelect.html##
+</head>
+<body>
+
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<form method=get action="##TP_CGI_URL##">
+	<tr>
+		<th colspan=2 class=title>Vendor Search Criteria</th>
+	</tr>
+	<tr>
+		<td class=captionindex>Username</td>
+		<td>
+			<input type="text" name="Username" value="" size=32>
+			&nbsp;
+			(exact:
+			<input type="checkbox" name="ExactName" value="Y" checked>
+			&nbsp;)
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Vendor Name</td>
+		<td>
+			<input type="text" name="VendorName" value="" size=32>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Name</td>
+		<td>
+		<input type="text" name="FName" value="" size=16>
+		&nbsp;&nbsp;
+		<input type="text" name="LName" value="" size=16>
+		</td>
+	</tr>
+	<tr>
+	<td class=caption>Address Line 1</td>
+		<td>
+		<input type="text" name="Address1" value="" size=40>
+		</td>
+	</tr>
+	<td class=caption>Address Line 2</td>
+		<td>
+		<input type="text" name="Address2" value="" size=40>
+		</td>
+	</tr>
+	<td class=caption>Address Line 3</td>
+		<td>
+		<input type="text" name="Addres3" value="" size=40>
+		</td>
+	</tr>
+	<td class=caption>Address Line 4</td>
+		<td>
+		<input type="text" name="Address4" value="" size=40>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Postcode</td>
+		<td>
+		<input type="text" name="Postcode" value="" size=40>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Telephone</td>
+		<td>
+		<input type="text" name="Telephone" value="" size=40>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Email</td>
+		<td>
+		<input type="text" name="Email" value="" size=40>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Vendor currency</td>
+		<td>
+		<select name="CCYCode">
+			<option value="">N/A</option>
+		##TP_LOOP ccy_idx {[tpGetVar NumCCYs]}##
+			<option value="##TP_CCYCode##">##TP_CCYName##</option>
+		##TP_ENDLOOP##
+		</select>
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Vendor country</td>
+		<td>
+		<select name="CNTRYCode">
+			<option value="">N/A</option>
+		##TP_LOOP cntry_idx {[tpGetVar NumCNTRYs]}##
+			<option value="##TP_CNTRYCode##">##TP_CNTRYName##</option>
+		##TP_ENDLOOP##
+		</select>
+		</td>
+	</tr>
+	<tr>
+		<th class=buttons colspan=2>
+		<input type=button class="btn_def" value="Find Vendors" onClick="return fs(this,'VendorSearch')">
+		<input type=button class="btn_def" value="Add Vendor" onClick="return fs(this,'AddVendor')">
+		</th>
+	</tr>
+	
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::BETCARD::DoVendorQuery>
+</form>
+</table>
+
+</body>

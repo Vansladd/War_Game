@@ -1,0 +1,220 @@
+<html>
+<!-- $Id: user_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Current Users</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+function write_user(user_id,username,status,desc,login,login_time,login_loc)
+{
+  if (status == 'S') {
+    document.write('<tr class="suspended">');
+  } else {
+    document.write('<tr class="active">');
+  }
+  document.write('<td>');
+##TP_IF {[OT_CfgGet FUNC_ADM_USER_UNSUSP 1]}##
+  document.write('<a href="##TP_CGI_URL##?action=ADMIN::USERS::GoUser&UserId='
+    +user_id+'">'+username+'</a>');
+##TP_ELSE##
+  if (status == 'A') {
+    document.write('<a href="##TP_CGI_URL##?action=ADMIN::USERS::GoUser&UserId='
+      +user_id+'">'+username+'</a>');
+  } else {
+    document.write(username);
+  }
+##TP_ENDIF##
+  document.write('</td>\n');
+  document.write('<td>');
+  if (status == 'A') {
+    document.write('active');
+  } else {
+    document.write('suspended');
+  }
+  document.write('</td>\n');
+  document.write('<td>');
+  document.write(desc+'&'+'nbsp;');
+  document.write('</td>\n');
+  document.write('<td>');
+  document.write(login+'&'+'nbsp;');
+  document.write('</td>\n');
+  document.write('<td>');
+  document.write(login_time+'&'+'nbsp;');
+  document.write('</td>\n');
+  document.write('<td>');
+  document.write(login_loc+'&'+'nbsp;');
+  document.write('</td>\n');
+  document.write('</tr>\n');
+}
+function fs(b,t)
+{	
+	if (b.type != "select-one") {
+		b.disabled = true;
+ 		b.value = "Busy...";
+	}
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY msg_rpt.html##
+##TP_PLAY error_rpt.html##
+
+<!-- admin user search is ##TP_TCL {tpBufWrite [OT_CfgGet FUNC_ADMIN_USER_SEARCH 0]}## -->
+##TP_IF {[OT_CfgGet FUNC_ADMIN_USER_SEARCH 0]}##
+<!-- Admin user search box -->
+##TP_PLAY "user_search_box.html"##
+##TP_ELSE##
+<!-- list of users -->
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+  <th colspan=6 class=title>
+  Administration Users
+  </th>
+</tr>
+##TP_IF {[tpGetVar hasRights 0]==1}##
+  <form method=get action="##TP_CGI_URL##">
+  <tr>
+    <th colspan=6 class=buttons>
+    ##TP_IF {[OT_CfgGet USE_ADMIN_USER_OP 0]==0}##
+    <select name=AdminGroup onChange="return fs(this,'Viewusers')">
+    <script>
+    write_select('##TP_AdminGroup##'
+          ,'','- Any Administration Group -'
+          ##TP_LOOP group_idx {[tpGetVar NumGroups]}##
+            ,'##TP_GroupId##','##TP_GroupName##'
+          ##TP_ENDLOOP##
+    )
+    </script>
+    </select>
+    ##TP_ENDIF##
+    <input type=button class="btn_def" value="Add New Adminstration User" onClick="return fs(this,'Adduser')">
+    </th>
+  </tr>
+  <input type=hidden name="SubmitName" value="">
+  <input type=hidden name="action" value="ADMIN::USERS::GoUser">
+  </form>
+##TP_ENDIF##
+<tr>
+  <th class="colhead">Username</th>
+  <th class="colhead">Status</th>
+  <th class="colhead">Desc</th>
+  <th class="colhead">Logged in</th>
+  <th class="colhead">Login time</th>
+  <th class="colhead">Login loc</th>
+</tr>
+##TP_LOOP user_idx {[tpGetVar NumUsers]}##
+  <script>
+    write_user('##TP_UserId##',"##TP_Username##",
+      "##TP_Status##","##TP_Desc##",
+      "##TP_LoggedIn##","##TP_LoginTime##","##TP_LoginLoc##");
+  </script>
+##TP_ENDLOOP##
+</table>
+<br />
+##TP_ENDIF##
+
+##TP_IF {[OT_CfgGet FUNC_ADMIN_HIERARCHY 0]}##
+<table border="0" cellspacing="0" cellpadding="3">
+  <tr><th colspan="2" class="title">Administration Positions</th></tr>
+  <tr>
+    <th class="colhead">Position Name</th>
+    <th class="colhead">Parent</th>
+  </tr>
+  ##TP_LOOP pos_idx {[tpGetVar NumPositions]}##
+  <tr>
+    <td>
+      <a href="##TP_CGI_URL##?action=ADMIN::USERS::GoPosition&PositionId=##TP_PosId##">##TP_PosName##</a>
+    </td>
+    <td>##TP_PosParent##&nbsp;</td>
+  </tr>
+  ##TP_ENDLOOP##
+  <form method="get" action="##TP_CGI_URL##">
+  <tr>
+    <th colspan="2" class="buttons">
+      <input type="button" class="btn_def" value="Add New Admin Position" onClick="return fs(this,'AddPosition')" />
+      <input type="button" class="btn_def" value="View Position Hierarchy" onClick="window.location='##TP_CGI_URL##?action=ADMIN::USERS::GoPositionHierarchy'" />
+    </th>
+  </tr>
+  <input type="hidden" name=SubmitName value="" />
+  <input type="hidden" name="action" value="ADMIN::USERS::GoPosition" />
+  </form>
+</table>
+<br />
+##TP_ENDIF##
+
+##TP_IF {[OT_CfgGet USE_ADMIN_USER_OP 0]==0}##
+<table border="0" cellspacing="0" cellpadding="3">
+	<tr>
+		<th colspan="2" class="title">
+  			Administration Groups
+		</th>
+	</tr>
+	<tr>
+		<th class="colhead">Group Name</th>
+		<th class="colhead">Owner</th>
+	</tr>
+##TP_LOOP group_idx {[tpGetVar NumGroups]}##
+  <tr>
+    <td>
+   		<a href="##TP_CGI_URL##?action=ADMIN::USERS::GoGroup&GroupId=##TP_GroupId##">##TP_GroupName##</a>
+    </td>
+	<td>
+		<a href="##TP_CGI_URL##?action=ADMIN::USERS::GoUser&UserId=##TP_GroupOwnerId##">##TP_GroupOwner##</a>
+	</td>
+  </tr>
+##TP_ENDLOOP##
+##TP_IF {[tpGetVar hasRights 0]==1}##
+	<form method="get" action="##TP_CGI_URL##">
+  <tr>
+		<th colspan="2" class="buttons">
+			<input type="button" value="Add New Admin Group" onClick="return fs(this,'AddGroup')">
+   		</th>
+  </tr>
+  <input type="hidden" name="SubmitName" value="">
+  <input type="hidden" name="action" value="ADMIN::USERS::GoGroup">
+  </form>
+##TP_ENDIF##
+</table>
+<br>
+##TP_ENDIF##
+<form method="get" action="##TP_CGI_URL##">
+<table border="0" cellspacing="0" cellpadding="2">
+	<tr>
+	<th class="title" colspan=2>
+    Change Password
+    </th>
+  </tr>
+  <tr>
+    <td class=caption>Username</td>
+    <td>
+    <input type=text name=username size=20 value="##TP_Username##">
+    </td>
+  </tr>
+<tr>
+  <td class=caption>Password</td>
+  <td align=right>
+  <input type=password name=password_1 size=20>
+  </td>
+</tr>
+<tr>
+  <td class=caption>(again)</td>
+  <td>
+  <input type=password name=password_2 size=20>
+  </td>
+</tr>
+<tr>
+  <th colspan=2 class=buttons>
+  <input type=button class="btn_def" value="Update User" onClick="return fs(this,'UserModPwd')">
+  </td>
+</tr>
+</table>
+<input type=hidden name=UserId value="##TP_UserId##">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value=ADMIN::USERS::DoUser>
+</form>
+</body>
+</html>

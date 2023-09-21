@@ -1,0 +1,373 @@
+<html>
+<!-- $Id: offer.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>FreeBet Offer</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+<!--
+function fs(b,t)
+{
+	if (t == "OfferDel") {
+		if (confirm ("Are you sure you want to delete this offer?") == false) {
+			return false;
+		}
+	} else {
+		for (i=0; i < ChosenList.options.length ;i++){
+			ChosenList.options[i].selected = "true";
+		} for (i=0; i < NotChosenList.options.length ;i++){
+			NotChosenList.options[i].selected = "true";
+		}
+	}
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+
+function init(){
+	//initialise variables
+	NotChosenList = document.offer.Currencies_not
+	ChosenList    = document.offer.Currencies
+}
+
+function addremove(from,to){
+	var ToLength = to.options.length;
+	var highlighted = from.selectedIndex;
+
+	//check to see that something is highlighted
+	if (!(highlighted < 0)){
+		// new option to be put in the 'to' menu;
+		var newOption = new Option(from.options[highlighted].text, from.options[highlighted].value);
+
+		// remove the old entry
+		from.options[highlighted] = null;
+		to.options[ToLength] = newOption;
+
+		// reset the selected options
+		from.selectedIndex = -1;
+		to.selectedIndex = -1;
+	}
+}
+
+//-->
+</script>
+</head>
+
+<body onLoad="init()">
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+
+<!-- Offer details -->
+<table border=0 cellspacing=0 cellpadding=2>
+	<form name=offer action="##TP_CGI_URL##" method=get>
+	<tr>
+		<th colspan=2 class=title>Offer Details</th>
+	</tr>
+	<tr>
+		<td class=caption>Offer Name</td>
+
+		##TP_IF {[tpGetVar PERM_ModifyFreeBets] !=""}##
+		<td>
+			<input type=text name="Name" value="##TP_OfferName##" size=30 maxlength=30> *&nbsp;
+			<i>(Asterisk indicates mandatory field)</i>
+		</td>
+		##TP_ELSE##
+		<td>##TP_Name##</td>
+		##TP_ENDIF##
+	</tr>
+	<tr>
+		<td class=caption>Offer Start Date</td>
+		<td>
+			##TP_IF {[tpGetVar OffStarted] != 1 && [tpGetVar PERM_ModifyFreeBets] !=""}##
+			<input type=text name="StartDate" value="##TP_StartDate##" size=19 maxlength=19/>&nbsp;
+			<i>(YYYY-MM-DD HH:MM:SS)</i>&nbsp;*
+			##TP_ELSE##
+			##TP_StartDate##
+			##TP_ENDIF##
+		</td>
+	</tr>
+	<tr>
+		<td class=caption>Offer End Date</td>
+		##TP_IF {[tpGetVar PERM_ModifyFreeBets] !=""}##
+		<td>
+			<input type=text name="EndDate" value="##TP_EndDate##" size=19 maxlength=19>&nbsp;
+			<i>(YYYY-MM-DD HH:MM:SS)</i>
+		</td>
+		##TP_ELSE##
+		<td>##TP_EndDate##</td>
+		##TP_ENDIF##
+	</tr>
+	<tr>
+		<td class=caption>Need Qualification</td>
+		<td>
+			##TP_IF {[tpGetVar OffStarted] != 1 && [tpGetVar PERM_ModifyFreeBets] !=""}##
+			<select name=Qualification>
+				<script>write_select('##TP_QUALIFICATION_REQD##','Y','Yes','N','No');</script>
+			</select>
+			##TP_ELSE##
+				<script>write_which('##TP_QUALIFICATION_REQD##','Y','Yes','N','No');</script>
+			##TP_ENDIF##
+		</td>
+	</tr>
+
+	<!-- Token on settle -->
+	<tr>
+		<td class=caption>Token On Settle</td>
+		<td>
+			##TP_IF {[tpGetVar OffStarted] != 1 && [tpGetVar PERM_ModifyFreeBets] !=""}##
+			<select name=OnSettle>
+				<script>write_select('##TP_ON_SETTLE##','N','No','Y','Yes');</script>
+			</select>
+			##TP_ELSE##
+				<script>write_which('##TP_ON_SETTLE##','N','No','Y','Yes');</script>
+			##TP_ENDIF##
+		</td>
+	</tr>
+	<!-- Token on settle -->
+
+	<!-- multiple claims choice -->
+	<tr>
+		<td class=caption>Max Claims</td>
+   		<td>
+			##TP_IF { [tpGetVar PERM_ModifyFreeBets] !="" && [tpGetVar OffStarted] != 1}##
+			<input type=text name="MaxClaims" value="##TP_MaxClaims##" size=4 maxlength=4/>
+			##TP_ELSE##
+			##TP_MaxClaims##
+			##TP_ENDIF##
+		</td>
+	</tr>
+
+	<!-- channels go here -->
+	<tr>
+		<td class=caption>Channel</td>
+		<td>
+			##TP_IF { [tpGetVar PERM_ModifyFreeBets] !="" && [tpGetVar OffStarted] != 1}##
+			<select name="Channel">
+					<script>
+						write_select ('##TP_SelChannel##'
+							##TP_LOOP c_idx {[tpGetVar num_channels]}##
+													,'##TP_ChanId##', '##TP_ChanName##'
+							##TP_ENDLOOP##
+						);
+					</script>
+				</select>
+			##TP_ELSE##
+			    <input type=hidden name="Channel" value="##TP_SelChannel##">
+				##TP_SelChannel##
+			##TP_ENDIF##
+		</td>
+	</tr>
+
+	<!-- Currencies currently in offer -->
+    <!-- can't remove curencies from an offer once it has started -->
+	<tr>
+		<td class=caption>Currencies in Offer</td>
+		<td>
+		##TP_IF { [tpGetVar PERM_ModifyFreeBets] !="" }##
+			<select multiple name="Currencies" size=5 onclick="addremove(ChosenList, NotChosenList)">
+				##TP_LOOP cc_idx {[tpGetVar NUM_SELECTED_CCYS]}##
+				<option ##TP_IF { [tpGetVar OffStarted] == 1}## disabled=true ##TP_ENDIF##
+                	   value ="##TP_SELECTED_CCY_CODE##">##TP_SELECTED_CCY_NAME##</option>
+				##TP_ENDLOOP##
+			</select>
+			*
+			##TP_ELSE##
+				##TP_SelCcys## <!-- must fix -->
+			##TP_ENDIF##
+		</td>
+	</tr>
+
+    <!-- Currencies not currently in offer -->
+	<tr>
+		<td class=caption>Currencies not in offer</td>
+		<td>
+		##TP_IF { [tpGetVar PERM_ModifyFreeBets] !="" }##
+			<select multiple name="Currencies_not" size=5 onclick="addremove(NotChosenList, ChosenList)">
+				##TP_LOOP ncc_idx {[tpGetVar NUM_NOT_SELECTED_CCYS]}##
+				<option value ="##TP_NOT_SELECTED_CCY_CODE##">##TP_NOT_SELECTED_CCY_NAME##</option>
+				##TP_ENDLOOP##
+			</select>
+			##TP_ELSE##
+				##TP_SelCcys## <!-- must fix -->
+			##TP_ENDIF##
+		</td>
+	</tr>
+
+
+	<!--language-->
+	<tr>
+		<td class=caption>Language</td>
+		<td>
+			##TP_IF { [tpGetVar PERM_ModifyFreeBets] !="" && [tpGetVar OffStarted] != 1}##
+				<select name="Language">
+					<option value="">Any</option>
+					<script>
+						write_select('##TP_SelLang##'
+							##TP_LOOP l_idx {[tpGetVar num_langs]}##
+								,'##TP_LangCode##','##TP_LangName##'
+							##TP_ENDLOOP##
+						);
+					</script>
+				</select>
+			##TP_ELSE##
+				##TP_SelLang##
+			##TP_ENDIF##
+		</td>
+	</tr>
+
+	<!--Country-->
+	<tr>
+		<td class=caption>Country</td>
+		<td>
+			##TP_IF { [tpGetVar PERM_ModifyFreeBets] !="" && [tpGetVar OffStarted] != 1}##
+				<select name="Country">
+					<option value="">Any</option>
+					<script>
+						write_select('##TP_SelCountry##'
+							##TP_LOOP cn_idx {[tpGetVar num_countries]}##
+								,'##TP_CountryCode##',"##TP_CountryName##"
+							##TP_ENDLOOP##
+						);
+					</script>
+				</select>
+				##TP_ELSE##
+					##TP_SelCountry##
+				##TP_ENDIF##
+		</td>
+	</tr>
+
+	<!-- Description -->
+	<tr>
+		<td class=caption>Description</td>
+		##TP_IF {[tpGetVar PERM_ModifyFreeBets] !=""}##
+		<td>
+			<textarea cols=60 rows=4 wrap=virtual name="Desc">##TP_Desc##</textarea><br>
+			<i>(Only 255 characters are stored)</i>
+    </td>
+    ##TP_ELSE##
+    <td>##TP_Desc##</td>
+     ##TP_ENDIF##
+	</tr>
+
+	<!-- Buttons -->
+	<tr>
+   	<th colspan=2 class=buttons>
+			##TP_IF {[tpGetVar PERM_ModifyFreeBets]}##
+			##TP_IF {[tpGetVar opAdd] == 1}##
+			<input type=button class="btn_def" value="Add Offer" onClick="return fs(this,'OfferAdd')">
+			##TP_ELSE##
+			<input type=button class="btn_def" value="Modify Offer" onClick="return fs(this,'OfferMod')">
+			<input type=button class="btn_def" value="Delete Offer" onClick="return fs(this, 'OfferDel')">
+			##TP_ENDIF##
+	    ##TP_ENDIF##
+			<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+  </tr>
+  <input type=hidden name=OfferID value="##TP_OfferID##">
+  <input type=hidden name=SubmitName value="">
+  <input type=hidden name=action value=ADMIN::FREEBETS::DoOffer>
+	</form>
+</table>
+
+<br>
+<br>
+
+<!-- Triggers -->
+<table border=0 cellspacing=0 cellpadding=2>
+	<form action="##TP_CGI_URL##" method=get>
+	<input type=hidden name=OffStarted value="##TP_OffStarted##">
+  <tr>
+		<th class=title colspan=6>Triggers</th>
+  </tr>
+  ##TP_IF {[tpGetVar NumTriggers] > 0}##
+  <tr>
+	<th class=colhead>ID</th>
+	<th class=colhead>Type</th>
+    <th class=colhead>Rank</th>
+    <th class=colhead>Char</th>
+    <th class=colhead>Qualification</th>
+  </tr>
+
+  ##TP_LOOP trigger_idx {[tpGetVar NumTriggers]}##
+  <tr>
+    <td>##TP_TrigID##&nbsp;</td>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::FREEBETS::GoTrigger&TriggerID=##TP_TrigID##&OffStarted=##TP_OffStarted##">##TP_TrigType##</a></td>
+    <td>##TP_TrigRank##&nbsp;</td>
+    <td>##TP_TrigChar##&nbsp;</td>
+    <td>##TP_TrigQual##&nbsp;</td>
+  </tr>
+  ##TP_ENDLOOP##
+
+	##TP_ELSE##
+  <tr>
+		<td colspan=6 align=center><i>There are no Triggers associated with this offer</i></td>
+  </tr>
+  ##TP_ENDIF##
+
+	<tr>
+		<th colspan=6 class=buttons>
+			##TP_IF {[tpGetVar PERM_ModifyFreeBets]}##
+			<input type=submit class="btn_def" value="Add New Trigger">
+			##TP_ELSE##
+			&nbsp;
+			##TP_ENDIF##
+    </th>
+  </tr>
+	<input type=hidden name=action value=ADMIN::FREEBETS::GoAddTrigger>
+		<input type=hidden name=OfferID value="##TP_OfferID##">
+		<input type=hidden name=opAdd value="##TP_TCL {tpGetVar opAdd}##">
+		</form>
+</table>
+<br>
+<br>
+
+<!-- Tokens -->
+<table border=0 cellspacing=0 cellpadding=2>
+	<form action="##TP_CGI_URL##" method=get>
+	<input type=hidden name=OffStarted value="##TP_OffStarted##">
+	<tr>
+		<th class=title colspan=5 align=left>Tokens</th>
+	</tr>
+	##TP_IF {[tpGetVar NumTokens] > 0}##
+	<tr>
+		<th class=colhead>ID</th>
+		<th class=colhead>CCY</th>
+		<th class=colhead>Value</th>
+		<th class=colhead>Absolute Expiry</th>
+		<th class=colhead>Relative Expiry</th>
+	</tr>
+	##TP_LOOP token_idx {[tpGetVar NumTokens]}##
+	<tr>
+		<td><a href="##TP_CGI_URL##?action=ADMIN::FREEBETS::GoToken&TokenID=##TP_TokenID##&OfferID=##TP_OfferID##&OffStarted=##TP_OffStarted##">##TP_TokenID##</a></td>
+		<td>##TP_Currency##&nbsp;</td>
+		<td>##TP_Value##&nbsp;</td>
+		<td>##TP_TokenAbsExp##&nbsp;</td>
+		<td>##TP_TokenRelExp##&nbsp;</td>
+	</tr>
+	##TP_ENDLOOP##
+	##TP_ELSE##
+	<tr>
+		<td colspan=5 align=center><i>There are no Tokens associated with this offer</i></td>
+	</tr>
+	##TP_ENDIF##
+	<tr>
+		<th class=buttons colspan=6>
+			##TP_IF {[tpGetVar PERM_ModifyFreeBets]}##
+			<input type=submit class="btn_def" value="Add New Token">
+			##TP_ELSE##
+			&nbsp;
+			##TP_ENDIF##
+		</th>
+	</tr>
+	<input type=hidden name=action value=ADMIN::FREEBETS::GoAddToken>
+	<input type=hidden name=OfferID value="##TP_OfferID##">
+	<input type=hidden name=opAdd value="##TP_TCL {tpGetVar opAdd}##">
+	</form>
+</table>
+
+</body>
+</html>
+

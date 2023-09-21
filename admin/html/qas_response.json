@@ -1,0 +1,27 @@
+{
+	result: "##TP_ESC esc_js####TP_reg_result####TP_ESC##"
+
+##TP_IF {[tpGetVar reg_lookup_full_addr 0]}##
+	,
+	address: {
+			street_1: "##TP_reg_lookup_addr_street_1##",
+			street_2: "##TP_reg_lookup_addr_street_2##",
+			city:     "##TP_reg_lookup_addr_city##",
+			region:   "##TP_reg_lookup_addr_region##",
+			postcode: "##TP_reg_lookup_addr_postcode##"
+	}
+##TP_ENDIF##
+
+##TP_IF {[tpGetVar reg_lookup_picklist_num 0]}##
+	,
+	pick_list: [
+	##TP_LOOP reg_picklist_idx {[tpGetVar reg_lookup_picklist_num]}##
+		{
+			addr_id:        "##TP_reg_lookup_partial_id##",
+			partial_address: "##TP_reg_lookup_partial_address##"
+		}
+		##TP_IF {[tpGetVar reg_picklist_idx] < [tpGetVar reg_lookup_picklist_num] - 1}##,##TP_ENDIF##
+	##TP_ENDLOOP##
+	]
+##TP_ENDIF##
+}

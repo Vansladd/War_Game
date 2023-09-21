@@ -1,0 +1,79 @@
+<html>
+<!-- $Id: aff_grp.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Affiliate</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	Affiliate Group ##TP_AffId## Details
+	</th>
+</tr>
+<form action="##TP_CGI_URL##" method="get" onSubmit="return validate(this);" name=aff_grp_form>
+<tr>
+	<td class=caption>Name</td>
+	<td>
+	<input type=text name="AffGrpName" value="##TP_AffGrpName##" size=40>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Status</td>
+	<td>
+	<select name="AffGrpStatus">
+	<script>
+	write_select('##TP_AffGrpStatus##','A','Active','S','Suspended')
+	</script>
+	</select>
+	</td>
+</tr>
+
+##TP_IF {[tpGetVar opAdd 0]}##
+<tr>
+	<td rowspan=2 class=caption>ID</td>
+	<td><input type=radio name="specify_id" value="N" ##TP_use_next_id##>&nbsp;Use next available ID</td>
+</tr>
+<tr>
+	<td><input type=radio name="specify_id" value="Y" ##TP_specify_id##>&nbsp;Specify ID: <input type=text name=new_id value="##TP_new_id##" size=5 onclick="document.aff_grp_form.specify_id[1].checked=true"></td>
+<tr>
+##TP_ENDIF##
+
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed ManageAff]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=button class="btn_def" value="Add Affiliate Group" onClick="return fs(this,'AffGrpAdd')">
+		##TP_ELSE##
+			<input type=hidden name="AffGrpId" value="##TP_AffGrpId##">
+			<input type=button class="btn_def" value="Modify Affiliate Group" onClick="return fs(this,'AffGrpMod')">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="View Audit History" onClick="return fs(this,'GoAudit')">
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=AuditInfo value="AffGrp">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::AFF::DoAffGrp">
+</form>
+</table>
+</body>
+</html>

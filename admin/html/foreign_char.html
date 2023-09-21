@@ -1,0 +1,86 @@
+<html>
+<!-- $Id: foreign_char.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Foreign Character</title>
+<script language=JavaScript>
+
+function validate(f)
+{
+	return true;
+}
+
+function fs(b,t)
+{
+	var confirmed = true;
+
+	##TP_IF {![tpGetVar opAdd 0]}##
+	if (t != 'Back')
+	{
+		confirmed = confirm("Please Note: tCustIndexedId will not need to be rebuilt before this character is normalised.\nDo you wish to proceed?");
+	}
+	##TP_ENDIF##
+	
+	if (confirmed)
+	{
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	Foreign Character
+	</th>
+</tr>
+<form ACTION="##TP_CGI_URL##" method=get onSubmit="return validate(this);">
+<tr>
+	<td class=caption>Unicode</td>
+	<td>
+	##TP_IF {[tpGetVar opAdd 0]}##
+	<input type=text name="UnicodeChar" value="" size=1>
+	##TP_ELSE##
+	##TP_UnicodeChar##
+	##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Pending</td>
+	<td>
+	<input type=text name="PendingChar" value="##TP_PendingChar##" size=1>
+	</td>
+</tr>
+<tr>
+	<td colspan=2><em>To clear normalisation enter unicode character into pending box</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[op_allowed AllowUnicodeUpdates]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=button value="Add Foreign Character" onClick="return fs(this,'DoCharAdd')">
+		##TP_ELSE##
+			<input type=hidden name=CharacterID value="##TP_CharacterID##">
+			<input type=hidden name=UnicodeChar value="##TP_UnicodeChar##">
+			<input type=hidden name=NormalisedChar value="##TP_NormalisedChar##">
+			<input type=button value="Modify Foreign Character" onClick="return fs(this,'DoCharUpd')">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::FOREIGN_CHARS::DoForeignChar">
+</form>
+</table>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+	<title>Pay method control</title>
+	<script>
+		function fs(b,t)
+		{
+			b.form.SubmitName.value=t;
+			b.form.submit();
+			return true;
+		}
+	</script>
+</head>
+	
+<body>
+
+	##TP_PLAY msg_rpt.html##
+	##TP_PLAY error_rpt.html##
+
+	##TP_IF {![OT_CfgGet ENCRYPT_FROM_CONF 0]}##
+		<form action="##TP_CGI_URL##" method="get">
+		<table border="0" cellspacing="0" cellpadding="2">
+				<tr>
+						<th colspan="4" class="title">Current Data Key Settings</th>
+				</tr>
+				<tr>
+						<td colspan="4">
+						<b>Current Data Key Id : ##TP_keyVersion##</b>
+						</td>
+				</tr>
+				##TP_IF {[op_allowed GenNewDataKey]}##
+				<tr>
+						<th class="buttons" colspan="4">
+								<input type="button" value="Generate Data Key" onClick="return fs(this,'Add')" />
+								<input type="hidden" name="SubmitName" value="" />
+								<input type="hidden" name="action" value="ADMIN::PMT::GenNewDataKey" />
+						</th>
+				</tr>
+				##TP_ENDIF##
+		</table>
+		</form>
+	##TP_ELSE##
+	<br/><br/>
+	<h3><strong>Crypto Server encryption not enabled</strong></h3>
+	##TP_ENDIF##
+
+</body>
+</html>

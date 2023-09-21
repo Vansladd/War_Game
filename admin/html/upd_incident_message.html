@@ -1,0 +1,65 @@
+<html>
+<!-- $Id: upd_incident_message.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Current Users</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+
+	function fs(b,t)
+	{
+		b.disabled = true;
+		b.value = "Busy...";
+		b.form.SubmitName.value=t;
+		b.form.submit();
+		return true;
+	}
+
+</script>
+</head>
+<body>
+##TP_PLAY msg_rpt.html##
+##TP_PLAY error_rpt.html##
+
+<form method="post" action="##TP_CGI_URL##">
+<input type="hidden" name="action" value="ADMIN::INCIDENT_MESSAGE::DoIncidentMessages">
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=id value="##TP_id##">
+<table>
+	<tr>
+		<th colspan=2 class=title>
+			Add Telebet Incidents Sentences
+		</th>
+	</tr>
+	<tr>
+		<td>
+			Name:
+		</td>
+		<td>
+			<input name=name type="text" value="##TP_name##">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Text:
+		</td>
+		<td>
+			<textarea id="text_area" name=text rows=4 cols=50 wrap=virtual>##TP_text##</textarea>
+		</td>
+	</tr>
+	<tr>
+		<th colspan=2 class=buttons>
+			##TP_IF {[tpBindGet id]}##
+			<input type=button value="Update" onClick="return fs(this,'UpdSentence')">
+			##TP_ELSE##
+			<input type=button value="Add" onClick="return fs(this,'UpdSentence')">
+			##TP_ENDIF##
+			<input type=button value="Back" onClick="return fs(this,'Back')">
+		</th>
+	</tr>
+	
+</table>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>HTML Page</title>
+	</head>
+	<body>
+		##TP_IF {[tpGetVar show_username]}##
+		<h2>Hello, you username is: ##TP_username##</h2><br />
+		##TP_ELSE##
+		<h2>Hello, I cannot show your username</h2>
+		##TP_ENDIF##
+		
+		##TP_IF {[tpGetVar display_hrz_line]}##
+		<hr>
+		##TP_ELSE##
+		I cannot display the horizontal line
+		##TP_ENDIF##
+	</body>
+</html>

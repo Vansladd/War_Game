@@ -1,0 +1,173 @@
+<html>
+<!-- $Id: alert.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $-->
+<head>
+	<title>Alert</title>
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+</head>
+<body>
+##TP_PLAY msg_rpt.html##
+##TP_PLAY error_rpt.html##
+<!-- main alert details -->
+<table border=0 cellspacing=0 cellpadding=2>
+	<tr>
+		<th colspan=2 nowrap class=title>Alert</th>
+	</tr>
+	<tr>
+		<td class=caption>Alert Id</td>
+		<td>##TP_AlertId##</td>
+	</tr>
+	<tr>
+		<td class=caption>Date</td>
+		<td>##TP_CrDate##</td>
+	</tr>
+	<tr>
+		<td class=caption>Status</td>
+		<td>##TP_Status##</td>
+	</tr>
+	<tr>
+		<td class=caption>Type</td>
+		<td>##TP_Type##</td>
+	</tr>
+	<tr>
+		<td class=caption>Medium</td>
+		<td>##TP_Medium##</td>
+	</tr>
+	<tr>
+		<td class=caption>Mobile</td>
+		<td>##TP_Mobile##</td>
+	</tr>
+	<tr>
+		<td class=caption>Email</td>
+		<td>##TP_Email##</td>
+	</tr>
+	<tr>
+		<td class=caption>Total</td>
+		<td>##TP_Total##</td>
+	</tr>
+	<tr>
+		<td class=caption>Expiry</td>
+		<td>##TP_Expiry##</td>
+	</tr>
+	<tr>
+		<td class=caption>Source</td>
+		<td>##TP_Source##</td>
+	</tr>
+	<tr>
+		<th class=buttons>
+			<!-- back to the customer -->
+			<form method=get action="##TP_CGI_URL##">
+				<input type=hidden name=action value="ADMIN::CUST::GoCust">
+				<input type=hidden name=CustId value=##TP_CustId##>
+				<input type=submit class="btn_def" value=Back>
+			</form>
+		</th>
+		<th class=buttons align=right>
+			<!-- show the audit info -->
+			<form method=get action="##TP_CGI_URL##">
+				<input type=hidden name=action value="ADMIN::AUDIT::GoAudit">
+				<input type=hidden name=AuditInfo value=Alert>
+				<input type=hidden name=AlertId value=##TP_AlertId##>
+				<input type=submit class="btn_def" value="View Audit History">
+			</form>
+		</th>
+	</tr>
+</table>
+<!-- end main alert -->
+<br>
+<table border=0 cellpadding=2 cellspacing=0>
+<!-- begin selections -->
+	<tr>
+		<th colspan=3 nowrap class=title>
+			Selections
+		</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>Id</th>
+		<th nowrap class=colhead>Condition</th>
+		##TP_IF {[tpGetVar type] == "E"}##
+		<th nowrap class=colhead>Bets</th>
+		##TP_ENDIF##
+	</tr>
+	##TP_IF {[tpGetVar NumSelections]}##
+	##TP_LOOP selection_idx {[tpGetVar NumSelections]}##
+	<tr>
+		<td align=left>
+			##TP_IF {[tpGetVar type] == "B"}##
+			<a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_SelectionId##">##TP_SelectionId##</a>
+			##TP_ELSEIF {[tpGetVar type] == "P"}##
+			<a href="##TP_CGI_URL##?action=ADMIN::BET::GoPoolsReceipt&BetId=##TP_SelectionId##">##TP_SelectionId##</a>
+			##TP_ELSEIF {[tpGetVar type] == "S"}##
+			<a href="##TP_CGI_URL##?action=ADMIN::SELN::GoOc&OcId=##TP_SelectionId##">##TP_SelectionId##</a>
+			##TP_ELSEIF {[tpGetVar type] == "E"}##
+			<a href="##TP_CGI_URL##?action=ADMIN::EVENT::GoEv&EvId=##TP_SelectionId##">##TP_SelectionId##</a>
+			##TP_ELSEIF {[tpGetVar type] == "T"}##
+			##TP_SelectionName##
+			##TP_ENDIF##
+		</td>
+		<td align=left>##TP_SelectionCondition##</td>
+		##TP_IF {[tpGetVar type] == "E"}##
+		<td align=left>
+			##TP_IF {$BET([tpGetVar selection_idx],nrows) + $POOL_BET([tpGetVar selection_idx],nrows)}##
+			##TP_LOOP bet_idx {$BET([tpGetVar selection_idx],nrows)}##
+			<a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_BetId##">##TP_BetReceipt##</a><br>
+			##TP_ENDLOOP##
+			##TP_LOOP pool_bet_idx {$POOL_BET([tpGetVar selection_idx],nrows)}##
+			<a href="##TP_CGI_URL##?action=ADMIN::BET::GoPoolBetReceipt&PoolBetId=##TP_PoolBetId##">##TP_BetReceipt##</a><br>
+			##TP_ENDLOOP##
+			##TP_ELSE##
+			No bets or pool bets found.
+			##TP_ENDIF##
+		</td>
+		##TP_ENDIF##
+	</tr>
+	##TP_ENDLOOP##
+	##TP_ELSE##
+	<tr>
+		<td colspan=3 align=center>No selections found.</td>
+	</tr>
+	##TP_ENDIF##
+	<tr>
+		<th colspan=6 class=buttons></th>
+	</tr>
+</table>
+<br>
+<!-- end selections -->
+<!-- messages -->
+<table border=0 cellspacing=0 cellpadding=2>	
+	<tr>
+		<th colspan=6 nowrap class=title>
+			Messages
+		</th>
+	</tr>
+	<tr>
+		<th nowrap class=colhead>Msg Id</th>
+		<th nowrap class=colhead>Msg Num</th>
+		<th nowrap class=colhead>Cr Date</th>
+		<th nowrap class=colhead>Message</th>
+		<th nowrap class=colhead>Amount</th>
+		<th nowrap class=colhead>Status</th>
+	</tr>
+	##TP_IF {[tpGetVar NumMessages]}##
+	##TP_LOOP message_idx {[tpGetVar NumMessages]}##
+	<tr>
+		<td align=right>##TP_MessageAlertMsgId##</td>
+		<td align=right>##TP_MessageMsgNum##</td>
+		<td align=left>##TP_MessageCrDate##</td>
+		<td align=left style="white-space:pre;">##TP_MessageMsg##</td>
+		<td align=right>##TP_MessageAmount##</td>
+		<td align=left>##TP_MessageStatus##</td>
+	</tr>
+	##TP_ENDLOOP##
+	##TP_ELSE##
+	<tr>
+		<td colspan=6 align=center>No messages sent.</td>
+	</tr>
+	##TP_ENDIF##
+	<tr>
+		<th colspan=6 class=buttons></th>
+	</tr>
+</table>
+<!-- end messages -->
+
+</body>
+</html>

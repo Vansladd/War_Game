@@ -1,0 +1,76 @@
+<html>
+<!-- $Id: cust_sort.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Add/Modify Customer Sort</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=2 class=title>
+	Sort ##TP_Sort## Details
+	</th>
+</tr>
+<form action="##TP_CGI_URL##" method="get" onSubmit="return validate(this);" name=sort_form>
+<tr>
+	<td class=caption>Sort</td>
+	<td>
+	##TP_IF {[tpGetVar opAdd 0]}##
+	<input type=text name="Sort" value="" size=5>
+	##TP_ELSE##
+	<b>##TP_Sort##</b>
+	##TP_ENDIF##
+	</td>
+</tr>
+<tr>
+	<td class=caption>Description</td>
+	<td>
+	<input type=text name="Desc" value="##TP_Desc##" size=40>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Commission Rate</td>
+	<td>
+	<input type=text name="CommissionRate" value="##TP_CommissionRate##" size=6>
+	</td>
+</tr>
+<tr>
+	<td class=caption>Tax Rate</td>
+	<td>
+	<input type=text name="TaxRate" value="##TP_TaxRate##" size=6>
+	</td>
+</tr>
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[tpGetVar opAdd 0]}##
+	<input type=button class="btn_def" value="Add Sort" onClick="return fs(this,'SortAdd')">
+	##TP_ELSE##
+	<input type=hidden name="Sort" value="##TP_Sort##">
+	<input type=button class="btn_def" value="Modify Sort" onClick="return fs(this,'SortMod')">
+	##TP_ENDIF##
+	<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+<input type=hidden name=action value="ADMIN::CUSTSORT::DoCustSort">
+</form>
+</table>
+</body>
+</html>

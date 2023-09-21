@@ -1,0 +1,58 @@
+<html>
+<!-- $Id: call_cancel_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Call Cancel Table</title>
+</head>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=4 class=title>
+	Call Cancel
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>Cancel Code</th>
+	<th nowrap class=colhead>Description</th>
+	<th nowrap class=colhead>Status</th>
+	<th nowrap class=colhead>Disporder</th>
+</tr>
+##TP_LOOP callcancel_idx {[tpGetVar NumCallCancel]}##
+<tr>
+	<td><a href="##TP_CGI_URL##?action=ADMIN::TB_CALL::GoCallCancelDetails&Cancel=##TP_CancelCode##">##TP_CancelCode##</a></td>
+	<td class=ra>##TP_CancelDesc##</td>
+	<td class=ra>##TP_CancelStatus##</td>
+	<td class=ra>##TP_CancelDisporder##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_IF {[tpGetVar NumCallCancel 0]==0}##
+<tr>
+	<td colspan=5>
+	<b><i>There are no call cancel descriptions defined</i></b>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th class=buttons colspan=4>
+	<form action="##TP_CGI_URL##" method=get>
+	<input type=button class="btn_def" value="Add New Call Cancel" onClick="return fs(this,'CallAdd')">
+	</th>
+	<input type=hidden name=SubmitName value="">
+	<input type=hidden name=action value=ADMIN::TB_CALL::GoCallCancelAdd>
+	</form>
+</tr>
+</table>
+</body>
+</html>

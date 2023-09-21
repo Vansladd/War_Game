@@ -1,0 +1,389 @@
+##TP_COMMENT $Id: action.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $##
+##TP_COMMENT Copyright (c) 2005 Orbis Technology Ltd. All rights reserved.##
+
+<!-- Bet Park Action -->
+<tr>
+	<td colspan="2" style="padding-top: 10px"></td>
+</tr>
+<tr>
+	<th class="title" style="padding: 3px 3px 3px 3px" colspan="2">Bet Action</th>
+</tr>
+<tr>
+	<td align="left" width="80%">
+		<table cellspacing="0" cellpadding="6" border="0" align="left">
+
+			<form action="##TP_CGI_URL##" name="bet_action" method="get">
+			<input type="hidden" name="action" value="">
+			<input type="hidden" name="bet_id" value="##TP_bet_id##">
+			<input type="hidden" name="acct_id" value="##TP_acct_id##">
+			<input type="hidden" name="bet_group_id" value="##TP_bet_group_id##">
+			<input type="hidden" name="comment" value="##TP_action_cancel_comment##">
+			<input type="hidden" name="bet_reason" value="">
+			<input type="hidden" name="reason_code" value="##TP_action_decline_reason_code##">
+			<input type="hidden" name="stake_per_line" value="##TP_action_stake_per_line##">
+			<input type="hidden" name="leg_type" value="##TP_action_leg_type##">
+			<input type="hidden" name="group_offer_count" value="##TP_GrpOfferStatus##">
+			<input type="hidden" name="source" value="##TP_source##" id="source">
+			<input type="hidden" name="selected_leg" value="">
+			<input type="hidden" name="selected_dd" value="">
+			<input type="hidden" name="multi_bet" value="0"/>
+			##TP_LOOP leg_idx {$ASYNC(leg,nrows)}##
+				<input type="hidden" name="lp_##TP_leg_leg_no##_##TP_leg_part_no##" value="##TP_leg_action_lp##">
+			##TP_ENDLOOP##
+
+			<tr>
+				##TP_IF {$ASYNC(action,cancel)}##
+					<td id="actionCancelButton">
+						<input type="button" class="btn_def" value="Cancel"
+						  onClick="popupDiv('actionCancelPopup', 'actionCancelButton', 75, 'bet_cancel_action', 'comment')"
+						>
+					</td>
+				##TP_ELSE##
+
+					<td id="actionAcceptButton">
+						<input type="button" class="btn_def" value="Accept"
+						  onClick="processAction('actionAcceptPopup', 'actionAcceptButton', 15, 'bet_accept_action', 'bet_reason')"
+						>
+					</td>
+					<td id="actionDeclineButton">
+						<input type="button" class="btn_def" value="Decline"
+						  onClick="popupDiv('actionDeclinePopup', 'actionDeclineButton', 15, 'bet_decline_action', 'reason_code')"
+						>
+					</td>
+				##TP_IF {$ASYNC(action,allow_cancel)}##
+					<td id="actionCancelButton">
+						<input type="button" class="btn_def" value="Cancel"
+						  onClick="popupDiv('actionCancelPopup', 'actionCancelButton', 75, 'bet_cancel_action', 'comment')"
+						>
+					</td>
+				##TP_ENDIF allow_cancel##
+					<td>
+						<table id="actionButtons" cellspacing="0" cellpadding="6" border="0" align="left">
+							<tr>
+								<td id="actionStakeButton">
+									<input type="button" class="btn_def" value="Limit Stake"
+									  onClick="popupDiv('actionStakePopup', 'actionAcceptButton', 15, 'bet_stake_action', 'stake_per_line')"
+									>
+								</td>
+								<td id="actionLPButton" class="actionButtonInner">
+									<input type="button" class="btn_def" value="Leg Price Offer"
+									  onClick="popupDiv('actionPricePopup_' + selectedLeg, 'actionAcceptButton', 15, 'bet_price_action_' + selectedLeg, 'lp_' + selectedLeg)">
+								</td>
+								<td id="actionLegButton" class="actionButtonInner">
+									<input type="button" class="btn_def" value="Leg Bet Terms"
+									  onClick="popupDiv('actionLegTypePopup', 'actionAcceptButton', 15, 'bet_leg_action', 'leg_type')">
+								</td>
+								<td id="actionStkLPClearButton" class="actionButtonInner">
+									<input type="button" class="btn_def" value="Clear Offers" onClick="popupDiv('actionClearStkLPPopup', 'actionAcceptButton', 15)">
+								</td>
+								<td id="actionStkLPSubmitButton" class="actionButtonInner">
+									<input type="button" class="btn_def" value="Submit Offers" onClick="popupDiv('actionSubmitStkLPPopup', 'actionAcceptButton', 15)">
+								</td>
+							</tr>
+						</table>
+					</td>
+
+				##TP_ENDIF cancel##
+
+			</tr>
+			</form>
+		</table>
+	</td>
+
+	<td align="right" width="20%">
+		<table cellspacing="0" cellpadding="6" border="0" align="left">
+			<tr>
+				<td align="right">
+					<input type="button" class="btn_def" value="Refresh" onClick="betAction(this, 'bet_action', 'ADMIN::ASYNC_BET::GoBet')">
+				</td>
+			</tr>
+		</table>
+	</td>
+</tr>
+<!-- End Bet Park Action -->
+
+<!-- Action Popups -->
+<tr>
+	<td colspan="2">
+
+			<!-- Cancel -->
+			<div id="actionCancelPopup" style="display: none; position: absolute; z-index: 5;" width="100">
+				<table cellspacing="0" cellpadding="3" align="left" width="100" class="bordered_table">
+					<form action="##TP_CGI_URL##" name="bet_cancel_action" method="get">
+
+					<tr>
+						<th class="subtitle" colspan="2">Cancel & Refund Bet</th>
+					</tr>
+					<tr>
+						<td colspan="2">
+							Canceling a bet will immediately refund the customer's stake.
+						</td>
+					</tr>
+					<tr>
+						<td>Comment</td>
+						<td>
+							<textarea cols="40" rows=4 wrap="virtual" name="comment" id="comment">##TP_action_cancel_comment##</textarea>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<input type="button" class="btn_def" value="OK" onClick="betActionCancel(this)">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="button" class="btn_def" value="Back" onClick="betActionCancel(this)">
+						</td>
+					</tr>
+
+					</form>
+				</table>
+			</div>
+			<!-- End of Cancel -->
+
+			<!-- Accept -->
+			<div id="actionAcceptPopup" style="display: none; position: absolute; z-index: 5;" width="100">
+				<table cellspacing="0" cellpadding="3" align="left" width="100" class="bordered_table">
+				<form action="##TP_CGI_URL##" name="bet_accept_action" method="get">
+					<tr>
+						<th class="subtitle" colspan="2">Accept Bet</th>
+					</tr>
+					<tr>
+						<td>Reason</td>
+						<td>
+							<textarea cols="40" rows=4 wrap="virtual" name="bet_reason" id="bet_reason"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<input type="button" class="btn_def" value="OK" onClick="betActionAccept(this)" id="accept_button">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="button" class="btn_def" value="Back" onClick="closePopupDiv('actionAcceptPopup');">
+						</td>
+					</tr>
+				</form>
+				</table>
+			</div>
+			<!-- End of Accept -->
+
+			<!-- Decline -->
+			<div id="actionDeclinePopup" style="display: none; position: absolute; z-index: 5;" width="100">
+				<table cellspacing="0" cellpadding="3" align="left" width="100" class="bordered_table">
+					<form action="##TP_CGI_URL##" name="bet_decline_action" method="get">
+
+					<tr>
+						<th class="subtitle" colspan="2">Decline Bet</th>
+					</tr>
+					<tr>
+						<td colspan="2">
+							Refusing a bet will refund the customer's stake.
+						</td>
+					</tr>
+					<tr>
+						<td>Reason</td>
+						<td>
+							<select name="reason_code" id="reason_code">
+								<option selected></option>
+								<script>
+									write_select('##TP_action_decline_reason_code##'
+										##TP_LOOP xlate_idx {$ASYNC(xlate,nrows)}##
+											,'##TP_xlate_code_id##', '##TP_xlate_reason##'
+										##TP_ENDLOOP##
+									)
+								</script>
+							</select>
+						</td>
+					</tr>
+					<!-- Show reason only for telebet -->
+					##TP_IF {[tpGetVar source] == "P" || [tpGetVar source] == "N" }##
+						<tr><td><td>OR</td></td></tr>
+						<tr>
+							<td></td>
+							<td>
+								<textarea cols="40" rows=4 wrap="virtual" name="bet_reason"></textarea>
+							</td>
+						</tr>
+					##TP_ENDIF##
+					<tr>
+						<td colspan="2">
+							<input type="button" class="btn_def" value="OK" onClick="betActionDecline(this)">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="button" class="btn_def" value="Back" onClick="betActionDecline(this)">
+						</td>
+					</tr>
+
+					</form>
+				</table>
+			</div>
+			<!-- End of Decline -->
+
+			<!-- Change Stake -->
+			<div id="actionStakePopup" style="display: none; position: absolute; z-index: 5;" width="100">
+				<table cellspacing="0" cellpadding="3" align="left" width="100" class="bordered_table">
+					<form action="##TP_CGI_URL##" name="bet_stake_action" method="get">
+
+					<tr>
+						<th class="subtitle" colspan="2">Change Stake-Per-Line</th>
+					</tr>
+					<tr>
+						<td colspan="2">
+							Customer must alter his/her stake-per-line (##TP_ccy_code## ##TP_TCL {tpBufWrite [comma_num_str [tpBindGet stake_per_line_abs]]}##).
+						</td>
+					</tr>
+					<tr>
+						<td>Stake</td>
+						<td>
+							<input type="text" name="stake_per_line" id="action_stake_per_line" class="canonicalMoney" value="##TP_TCL {tpBufWrite [comma_num_str [tpBindGet action_stake_per_line]]}##" onblur="ensureInputElemCanonical(this);">
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</rd>
+						<td><a href="#" name="max_bet_link" onclick="betActionStake(this, '##TP_max_bet##')">Use Max Bet</a></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<input name="button_stake_ok" type="button" class="btn_def" value="OK" onClick="betActionStake(this, '##TP_stake_per_line_abs##')">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<input name="button_stake_clear" type="button" class="btn_def" value="Clear" onClick="betActionStake(this)">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<input name="button_stake_back" type="button" class="btn_def" value="Back" onClick="betActionStake(this)">
+						</td>
+					</tr>
+
+					</form>
+				</table>
+			</div>
+			<!-- End of Change Stake -->
+
+			<!-- Change Leg Type -->
+			<div id="actionLegTypePopup" style="display: none; position: absolute; z-index: 5;" width="100">
+				<table cellspacing="0" cellpadding="3" align="left" width="125" class="bordered_table">
+					<form action="##TP_CGI_URL##" name="bet_leg_action" method="get">
+
+					<tr>
+						<th class="subtitle" colspan="2">Change Terms</th>
+					</tr>
+					<tr>
+						<td colspan="2">
+							Customer must accept new bet terms.. (##TP_leg_type##)
+						</td>
+					</tr>
+					<tr>
+						<td >Leg Type</td>
+						<td>
+							<select name="leg_type">
+								<script>
+									write_select('##TP_action_leg_type##','','','W','Win',
+												'E', 'Each Way', 'P', 'Place (Telebet Only)');
+								</script>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td class="popupButton" colspan="2">
+							<input type="button" class="btn_def" value="OK" onClick="betActionLeg(this, '##TP_leg_type##')">
+							&nbsp;&nbsp;&nbsp;
+							<input type="button" class="btn_def" value="Clear" onClick="clearLegTerms(this);">
+							&nbsp;&nbsp;&nbsp;
+							<input type="button" class="btn_def" value="Back" onClick="betActionLeg(this)">
+						</td>
+					</tr>
+
+					</form>
+				</table>
+			</div>
+			<!-- End of Change Leg Type -->
+
+
+			<!-- Change Price -->
+			##TP_LOOP leg_idx {$ASYNC(leg,nrows)}##
+				<div id="actionPricePopup_##TP_leg_leg_no##_##TP_leg_part_no##" style="display: none; position: absolute; z-index: 5;" width="100">
+					<table cellspacing="0" cellpadding="3" align="left" width="100" class="bordered_table">
+						<form action="##TP_CGI_URL##" name="bet_price_action_##TP_leg_leg_no##_##TP_leg_part_no##" method="get">
+
+						<tr>
+							<th class="subtitle" colspan="2">Change Price</th>
+						</tr>
+						<tr>
+							<td colspan="2">
+								Customer must alter his/her price (##TP_leg_oc_name## @ ##TP_leg_o_lp##).
+							</td>
+						</tr>
+						<tr>
+							<td>Price</td>
+							<td>
+								<input type="text" name="lp_##TP_leg_leg_no##_##TP_leg_part_no##" value="##TP_leg_action_lp##">
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<input type="button" class="btn_def" value="OK" onClick="betActionPrice(this, '##TP_leg_leg_no##_##TP_leg_part_no##', '##TP_leg_o_lp##', '##TP_leg_ep_active##')">
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="button" class="btn_def" value="Clear" onClick="betActionPrice(this, '##TP_leg_leg_no##_##TP_leg_part_no##', '##TP_leg_ep_active##')">
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="button" class="btn_def" value="Back" onClick="betActionPrice(this, '##TP_leg_leg_no##_##TP_leg_part_no##', '##TP_leg_ep_active##')">
+							</td>
+						</tr>
+
+						</form>
+					</table>
+				</div>
+			##TP_ENDLOOP leg_idx##
+			<!-- End of Change Price -->
+
+			<!-- Clear Stk/LP Offers -->
+			<div id="actionClearStkLPPopup" style="display: none; position: absolute; z-index: 5;" width="100">
+				<table cellspacing="0" cellpadding="3" align="left" width="100" class="bordered_table">
+					<tr>
+						<th class="subtitle" colspan="2">Clear Stake/Price Offers</th>
+					</tr>
+					<tr>
+						<td colspan="2">
+							Clear the stake offer and/or all leg price offers?
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<input type="button" class="btn_def" value="OK" onClick="clearStkLPOffers(); closePopupDiv('actionClearStkLPPopup')">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="button" class="btn_def" value="Back" onClick="closePopupDiv('actionClearStkLPPopup')">
+						</td>
+					</tr>
+				</table>
+			</div>
+			<!-- End of Clear Stk/LP Offers -->
+
+			<!-- Submit Stk/LP Offers -->
+			<div id="actionSubmitStkLPPopup" style="display: none; position: absolute; z-index: 5;" width="100">
+				<table cellspacing="0" cellpadding="3" align="left" width="100" class="bordered_table">
+					<form action="##TP_CGI_URL##" name="bet_stakelp_action" method="get">
+
+					<tr>
+						<th class="subtitle" colspan="2">Submit Stake/Price Offers</th>
+					</tr>
+					<tr>
+						<td colspan="2">
+							Submit the stake offer and/or all leg price offers?
+						</td>
+					</tr>
+					<!-- Show reason only for telebet -->
+					##TP_IF {[tpGetVar source] == "P" || [tpGetVar source] == "N" }##
+						<tr>
+							<td>Reason</td>
+							<td>
+								<textarea cols="40" rows=4 wrap="virtual" name="bet_reason"></textarea>
+							</td>
+						</tr>
+					##TP_ENDIF##
+					<tr>
+						<td colspan="2">
+							<input type="button" id="betActionSubmitOffBut" class="btn_def" value="OK" onClick="betActionSubmitOff(this)">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="button" class="btn_def" value="Back" onClick="closePopupDiv('actionSubmitStkLPPopup')">
+						</td>
+					</tr>
+
+					</form>
+				</table>
+			</div>
+			<!-- End of Submit Stk/LP Offers -->
+	</td>
+</tr>
+<!-- End of Action Popups -->

@@ -1,0 +1,165 @@
+<html>
+<!-- $Id: pmt_intercept_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<meta http-equiv="Expires" content="0">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Payment Intercept Setup</title>
+<script>
+function checkFs(b,q,a,s)
+{
+	if(confirm(q)) {
+		return afs(b,a,s);
+	}
+	return false;
+}
+
+function afs(b,a,s)
+{
+	b.form.action.value = a;
+	return fs(b,s);
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+
+<!-- Error handler -->
+##TP_PLAY error_rpt.html##
+
+<!-- Intercept Currencies -->
+
+<form action="##TP_CGI_URL##" method=get>
+	
+	<input type=hidden name=SubmitName>
+	<input type=hidden name=action value="ADMIN::PMTINTCPT::GoPmtInterceptCCY">
+	
+	<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th class=title colspan=7>
+		<font color=white size=+1>Payment Intercept Currencies</font>
+		</th>
+	</tr>
+	<tr>
+		<th class=colhead>Currency Code</th>
+		<th class=colhead>Status</th>
+		<th class=colhead>Intercept Flag</th>
+		<th class=colhead>Process Referred Pmt Email</th>
+		<th class=colhead>Process Declined Pmt Email</th>
+		<th class=colhead>Customer Refused Process Email</th>
+		<th class=colhead>Sender</th>
+	</tr>
+
+	##TP_IF {$CCY(nrows) > 0}##
+		##TP_LOOP ccy_idx {$CCY(nrows)}##
+			<tr>
+				<td>
+						<input type=radio name=ccy_code value="##TP_ccy##" ##TP_IF {[tpGetVar ccy_idx] == 0}##CHECKED##TP_ENDIF##>
+						<a href="##TP_CGI_URL##?action=ADMIN::PMTINTCPT::GoPmtInterceptCCY&SubmitName=Upd&ccy_code=##TP_ccy##">##TP_ccy##</a>
+				</td>
+				<td>##TP_status##</td>
+				<td>##TP_flag##</td>
+				<td>##TP_refer_email##</td>
+				<td>##TP_decline_email##</td>
+				<td>##TP_refuse_email##</td>
+				<td>##TP_sender##</td>
+			</tr>
+		##TP_ENDLOOP##
+	##TP_ELSE##
+		<tr>
+			<td colspan=7>
+			<b><i>There are no payment intercept currencies defined</i></b>
+			</td>
+		</tr>
+	##TP_ENDIF##
+		<tr>
+			<th colspan=7 class=buttons>
+	##TP_IF {[op_allowed ManagePmtIntercepts]}##
+			<input type=button class="btn_def" value="Add CCY" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtInterceptCCY','Add')">
+			<input type=button class="btn_def" value="View / Modify CCY" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtInterceptCCY','Upd')">
+			<input type=button class="btn_def" value="View / Modify Intercepts" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtInterceptDefn','All')">
+			<input type=button class="btn_def" value="Del CCY" onClick="return checkFs(this,'Delete Currency?','ADMIN::PMTINTCPT::DoPmtInterceptCCY','Del')">
+	##TP_ELSE##
+			<input type=button class="btn_def" value="View CCY" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtInterceptCCY','Upd')">
+			<input type=button class="btn_def" value="View Intercepts" onClick="return afs(this,'ADMIN::PMTINTCPT::GoPmtInterceptDefn','All')">
+
+	##TP_ENDIF##
+			</th>
+			</form>
+		</tr>
+	</table>
+</form>
+
+<!-- Intercept Banks  -->
+
+<form action="##TP_CGI_URL##" method=get>
+	
+	<input type=hidden name=SubmitName>
+	<input type=hidden name=action value="ADMIN::PMTINTCPT::GoPmtInterceptBank">
+	
+	<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th class=title colspan=7>
+		<font color=white size=+1>Payment Intercept Banks</font>
+		</th>
+	</tr>
+
+	<tr>
+		<td>Bank Name String</td>
+		<td><input type=text name=bank_name></td>
+	</tr>
+	
+		<tr>
+			<th colspan=7 class=buttons>
+			<input type=button class="btn_def" value="Search Banks" onClick="return fs(this,'Srch')">
+			<input type=button class="btn_def" value="View All" onClick="return fs(this,'All')">
+	##TP_IF {[op_allowed ManagePmtIntercepts]}##
+			<input type=button class="btn_def" value="Add Bank" onClick="return fs(this,'Add')">
+	##TP_ENDIF##
+			</th>
+			</form>
+		</tr>
+	</table>
+</form>
+
+<!-- Intercept Countries  -->
+
+<form action="##TP_CGI_URL##" method=get>
+	
+	<input type=hidden name=SubmitName>
+	<input type=hidden name=action value="ADMIN::PMTINTCPT::GoPmtInterceptCountry">
+	
+	<table cellspacing=0 cellpadding=2 border=0>
+	<tr>
+		<th class=title colspan=7>
+		<font color=white size=+1>Payment Intercept Countries</font>
+		</th>
+	</tr>
+
+	<tr>
+		<td>Country String</td>
+		<td><input type=text name=country_name></td>
+	</tr>
+	
+		<tr>
+			<th colspan=7 class=buttons>
+			<input type=button class="btn_def" value="Search Countries" onClick="return fs(this,'Srch')">
+			<input type=button class="btn_def" value="View All" onClick="return fs(this,'All')">
+	##TP_IF {[op_allowed ManagePmtIntercepts]}##
+			<input type=button class="btn_def" value="Add Country" onClick="return fs(this,'Add')">
+	##TP_ENDIF##
+			</th>
+			</form>
+		</tr>
+	</table>
+</form>
+
+
+

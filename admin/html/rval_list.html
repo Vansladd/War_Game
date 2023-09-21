@@ -1,0 +1,77 @@
+<html>
+<!-- $Id: rval_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Freebet Redemption Values</title>
+<script>
+function add_pb(rval)
+{
+	document.form1.action.value="ADMIN::FREEBETS::GoAddPB";
+	document.form1.RValID.value=rval;
+	document.form1.submit();
+}
+</script>
+</head>
+
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+			
+<table border=0 cellspacing=0 cellpadding=2>
+<form ACTION="##TP_CGI_URL##" name=form1 method=get>
+	<tr>
+		<th class=title colspan=5>
+			##TP_IF {[tpGetVar AddPB] == 1}##
+				Select Redemption Value
+			##TP_ELSE##
+				Redemption Values
+			##TP_ENDIF##
+		</th>
+	</tr>
+
+	<tr>
+		<td class=colhead>Name</td>
+		<td class=colhead>Bet Level</td>
+		<td align=colhead>Bet Type</td>
+		<td class=colhead>Bet Name</td>
+        ##TP_IF {[tpGetVar AddPB] == 1}##
+              <td class=colhead>Add</td>
+        ##TP_ENDIF##
+	</tr>
+	##TP_LOOP rval_idx {[tpGetVar NumRVals]}##
+	<tr class=active>
+		<td>
+			<a href="##TP_CGI_URL##?action=ADMIN::FREEBETS::GoRVal&RValID=##TP_RValID##">##TP_Name##</a>
+		</td>
+		<td>##TP_BetLevel##&nbsp;</td>
+		<td>##TP_BetType##&nbsp;</td>
+        <td>##TP_BetName##</td>
+        ##TP_IF {[tpGetVar AddPB] == 1}##
+              <td><a href="javascript:add_pb(##TP_RValID##);">[add]</a></td>
+        ##TP_ENDIF##
+	</tr>
+	##TP_ENDLOOP##
+
+	##TP_IF {![tpGetVar NumRVals]}##
+	<tr>
+		<td colspan=4 align=center><i>There are no Redemption Values defined</i></td>
+	</tr>
+	##TP_ENDIF##
+	
+	<tr>
+		<th class=buttons colspan=5>
+			##TP_IF {[tpGetVar AddPB] != 1 && [tpGetVar PERM_ModifyFreeBets]}##
+			<input type=submit class="btn_def" value="Add New Redemption Value">
+			##TP_ENDIF##
+			&nbsp;
+		</th>
+	</tr>
+<input type=hidden name=action value=ADMIN::FREEBETS::GoAddRVal>
+<input type=hidden name=OfferID value=##TP_TCL {reqGetArg OfferID}##>
+<input type=hidden name=TokenID value=##TP_TCL {reqGetArg TokenID}##>
+<input type=hidden name=RValID value="">
+</form>
+</table>
+</body>
+</html>

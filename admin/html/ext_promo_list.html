@@ -1,0 +1,65 @@
+<html>
+<!-- $Id: ext_promo_list.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>External Promo Table</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=5 class=title>
+	External Promo Codes
+	</th>
+</tr>
+<tr>
+	<th nowrap class=colhead>System Name</th>
+	<th nowrap class=colhead>Promo Code</th>
+	<th nowrap class=colhead>Status</th>
+	<th nowrap class=colhead>Start Date</th>
+	<th nowrap class=colhead>End Date</th>
+</tr>
+##TP_IF {[tpGetVar NumPromoCodes 0] > 0}##
+	##TP_LOOP ext_promo_idx {[tpGetVar NumPromoCodes]}##
+		<tr>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::EXT_PROMO::GoPromo&SystemId=##TP_SystemId##&SystemName=##TP_SystemName##&PromoCode=##TP_PromoCode##&Status=##TP_Status##&StartDate=##TP_StartDate##&EndDate=##TP_EndDate##">##TP_SystemName##</a></td>
+			<td class=ra>##TP_PromoCode##</td>
+			<td class=ra>##TP_Status##</td>
+			<td class=ra>##TP_StartDate##</td>
+			<td class=ra>##TP_EndDate##</td>
+		</tr>
+	##TP_ENDLOOP##
+##TP_ELSE##
+	<tr>
+		<td colspan=3>
+		<b><i>There are no external promo codes defined</i></b>
+		</td>
+	</tr>
+##TP_ENDIF##
+
+	<form action="##TP_CGI_URL##" method=get>
+	<tr>
+		<th class=buttons colspan=5>
+		<input type=button class="btn_def" value="Add New Promo Code" onClick="return fs(this,'Add')">
+		<input type=hidden name=SubmitName value="">
+		<input type=hidden name=action value=ADMIN::EXT_PROMO::GoPromo>
+		</th>
+	</tr>
+	</form>
+
+</table>
+
+</body>
+</html>

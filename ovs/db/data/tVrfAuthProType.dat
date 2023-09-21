@@ -1,0 +1,22 @@
+AUTH_PRO_DOB|town|C|Town|
+AUTH_PRO_DOB|hr_policy_rule|C|HR Policy Rule|
+AUTH_PRO_DOB|hr_policy_rule_text|C|HR Policy Rule Text|
+AUTH_PRO_DOB|postcode|C|postcode|
+AUTH_PRO_DOB|authentication_index_explanation|C|Authentication Index Explanation|
+AUTH_PRO_DOB|authentication_index|C|Authentication Index|
+AUTH_PRO_DOB|district|C|District|
+AUTH_PRO_DOB|decision|M|Decision Code|
+AUTH_PRO_DOB|street|C|Street|
+AUTH_PRO_DOB|number_hr_policy_rules|C|Number HR Policy rules|
+AUTH_PRO_DOB|number_primary_sources|C|Number Primary Sources|
+AUTH_PRO_DOB|number_secondary_id_and_address_sources|C|Number Secondary ID and address sources|
+AUTH_PRO_DOB|error_msg|C|Error Message|
+AUTH_PRO_DOB|first_name|C|First Name|
+AUTH_PRO_DOB|middle_initials|C|Middle Initial|
+AUTH_PRO_DOB|surname|C|Surname|
+AUTH_PRO_DOB|house_name|C|House Name|
+AUTH_PRO_DOB|house_number|C|House Number|
+AUTH_PRO_DOB|decision_text|C|Decision Text|
+AUTH_PRO_DOB|date_of_birth|C|DOB|
+AUTH_PRO_DOB|county|C|County|
+AUTH_PRO_DOB|experian_customer_reference|C|Experian Reference|

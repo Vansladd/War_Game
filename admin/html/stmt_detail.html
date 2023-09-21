@@ -1,0 +1,379 @@
+<html>
+<!-- $Id: stmt_detail.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=javascript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+<form method=get action="##TP_CGI_URL##" >
+<input type="hidden" name="CustId" value="##TP_CustId##">
+<input type="hidden" name="acct_id" value="##TP_acct_id##">
+<input type="hidden" name="SubmitName" value="">
+<input type=hidden name=action value="ADMIN::CUST::DoStmtDetail">
+
+<table border=1 cellspacing=0 cellpadding=1>
+<tr>
+	<th class=title colspan=2>Customer Statement</th>
+</tr>
+<tr>
+	<td>Account Type</td>
+	<td>&nbsp;<script>write_which('##TP_STMT_acct_type##','DBT','Debit','DEP','Deposit','CDT','Credit');</script></td>
+</tr>
+<tr>
+	<td>Account Number</td>
+	<td>&nbsp;##TP_STMT_acct_no##</td>
+</tr>
+<tr>
+	<td>Username</td>
+	<td>&nbsp;##TP_STMT_username##</td>
+</tr>
+<tr>
+	<td>Title</td>
+	<td>&nbsp;##TP_STMT_title##</td>
+</tr>
+<tr>
+	<td>First Name</td>
+	<td>&nbsp;##TP_STMT_fname##</td>
+</tr>
+<tr>
+	<td>Surname</td>
+	<td>&nbsp;##TP_STMT_lname##</td>
+</tr>
+<tr>
+	<td>Address</td>
+	<td>&nbsp;##TP_STMT_addr_street_1##</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;##TP_STMT_addr_street_2##</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;##TP_STMT_addr_street_3##</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;##TP_STMT_addr_street_4##</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;##TP_STMT_addr_city##</td>
+</tr>
+<tr>
+	<td>Postcode</td>
+	<td>&nbsp;##TP_STMT_addr_postcode##</td>
+</tr>
+<tr>
+	<td>Country</td>
+	<td>&nbsp;##TP_STMT_country_name##</td>
+</tr>
+<tr>
+	<td>Date from</td>
+	<td>&nbsp;##TP_STMT_due_from##</td>
+</tr>
+<tr>
+	<td>Date to</td>
+	<td>&nbsp;##TP_STMT_due_to##</td>
+</tr>
+<tr>
+	<td>Delivery method</td>
+	<td>&nbsp;<script>write_which('##TP_STMT_dlv_method##','E','Email','P','Post');</script></td>
+</tr>
+<tr>
+	<td>Statement Number</td>
+	<td>&nbsp;##TP_STMT_stmt_num##</td>
+</tr>
+<tr>
+	<td>Opening balance</td>
+	<td>&nbsp;##TP_STMT_open_bal##</td>
+</tr>
+<tr>
+	<td>Closing balance</td>
+	<td>&nbsp;##TP_STMT_close_bal##</td>
+</tr>
+<tr>
+	<td>Currency</td>
+	<td>&nbsp;##TP_STMT_ccy_code##</td>
+</tr>
+<tr>
+	<td>Credit Limit</td>
+	<td>&nbsp;##TP_STMT_credit_limit##</td>
+</tr>
+<tr>
+	<td>Outstanding Stakes</td>
+	<td>&nbsp;##TP_STMT_stakes_os##</td>
+</tr>
+<tr>
+	<td nowrap>Customer Message</td>
+	<td>&nbsp;##TP_STMT_cust_msg##</td>
+</tr>
+<tr>
+	<th class=buttons colspan=2>
+		<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+</table>
+<br>
+
+##TP_IF {[tpGetVar acct_type] == "CDT"}##
+<!-- Payment information -->
+<table border=1 cellspacing=0 cellpadding=1>
+<tr>
+	<th class=title colspan=2>Payment Information</th>
+</tr>
+<tr>
+	<td nowrap>Payment</td>
+	<td nowrap><script>write_which('##TP_STMT_pmt_type##','REQ','Requested','SNT','Sent','NON','None');</script>&nbsp;</td>
+</tr>
+<tr>
+	<td nowrap>Amount</td>
+	<td nowrap>##TP_STMT_pmt_amount_abs##&nbsp;</td>
+</tr>
+<tr>
+	<td nowrap>Method</td>
+	<td nowrap>##TP_STMT_pmt_method##&nbsp;</td>
+</tr>
+<tr>
+	<td nowrap>Text</td>
+	<td nowrap>##TP_STMT_pmt_desc##&nbsp;</td>
+</tr>
+<tr>
+	<th class=buttons colspan=2>
+		<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+</table>
+<br>
+
+
+
+<!-- A/P bets -->
+<table border=1 cellspacing=0 cellpadding=1>
+<tr>
+	<th class=title colspan=6>Outstanding A/P Bets</th>
+</tr>
+<tr>
+	<th class=colhead>Date</th>
+	<th class=colhead>Channel</th>
+	<th class=colhead>Bet Type</th>
+	<th class=colhead>Receipt No.</th>
+	<th class=colhead>Description</th>
+	<th class=colhead>Stake</th>
+</tr>
+##TP_IF {[tpGetVar numAP] == 0}##
+<tr>
+	<td align=center colspan=6><i>No outstanding A/P bets</i></td>
+</tr>
+##TP_ELSE##
+##TP_LOOP ln_idx {[tpGetVar numAP]}##
+<tr>
+	<td nowrap>&nbsp;##TP_STMT_ftr_date##</td>
+	<td nowrap>&nbsp;##TP_STMT_ftr_channel##</td>
+	<td nowrap>&nbsp;##TP_STMT_ftr_bet_type##</td>
+	<td nowrap>&nbsp;##TP_STMT_ftr_receipt##</td>
+	##TP_IF {[info exists STMT_DATA([tpGetVar ftr_idx],[tpGetVar ln_idx],0,desc)]}##
+	##TP_LOOP pt_idx {$STMT_DATA([tpGetVar ftr_idx],[tpGetVar ln_idx],nrows)}##
+	<td nowrap>&nbsp;##TP_STMT_ftr_desc##</td>
+	##TP_ENDLOOP##
+	##TP_ELSE##
+	<td nowrap>
+		##TP_LOOP pt_idx {$STMT_DATA([tpGetVar ftr_idx],[tpGetVar ln_idx],nrows)}##
+		&nbsp;##TP_STMT_ftr_ev_name## - ##TP_STMT_ftr_oc_name##<br>
+		##TP_ENDLOOP##
+	</td>
+	##TP_ENDIF##
+	<td nowrap>&nbsp;##TP_STMT_ftr_stake##</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ENDIF##
+<tr>
+	<th class=buttons colspan=6>
+		<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+</table>
+<br>
+##TP_ENDIF##
+
+<!-- transaction list -->
+<table border=1 cellspacing=0 cellpadding=1>
+<tr>
+##TP_IF {[OT_CfgGet ENABLE_FREEBETS2 "FALSE"] == "TRUE"}##
+	<th class=title colspan=17>Transactions</th>
+##TP_ELSE##
+	<th class=title colspan=16>Transactions</th>
+##TP_ENDIF##
+</tr>
+<tr>
+	<th nowrap class=colhead>Date</th>
+	<th nowrap class=colhead>Channel</th>
+	<th nowrap class=colhead>Bet Type</th>
+	<th nowrap class=colhead>Bets</th>
+	<th nowrap class=colhead>A/P</th>
+	<th nowrap class=colhead>Receipt No.</th>
+	<th nowrap class=colhead>W / L / V</th>
+	<th nowrap class=colhead>Bet Sort</th>
+	<th class=colhead>Description</th>
+	<th nowrap class=colhead>Price</th>
+	<th nowrap class=colhead>R4</th>
+	<th nowrap class=colhead>Stake</th>
+##TP_IF {[OT_CfgGet ENABLE_FREEBETS2 "FALSE"] == "TRUE"}##
+	<th nowrap class=colhead>FreeBet</th>
+##TP_ENDIF##
+	<th nowrap class=colhead>Returns</th>
+	<th nowrap class=colhead>Receipts</th>
+	<th nowrap class=colhead>Payments</th>
+	<th nowrap class=colhead>Balance</th>
+</tr>
+<tr>
+	<td nowrap>&nbsp;##TP_STMT_due_from##</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;Balance brought forward</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+##TP_IF {[OT_CfgGet ENABLE_FREEBETS2 "FALSE"] == "TRUE"}##
+	<td nowrap>&nbsp;</td>
+##TP_ENDIF##
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap align=right>&nbsp;##TP_STMT_open_bal##</td>
+</tr>
+##TP_LOOP ln_idx {[tpGetVar NumTxns]}##
+##TP_LOOP pt_idx {$STMT_DATA([tpGetVar bdy_idx],[tpGetVar ln_idx],nrows)}##
+##TP_IF {[tpGetVar pt_idx] == 0}##
+<tr>
+	<td nowrap>&nbsp;##TP_STMT_date##</td>
+	<td nowrap>&nbsp;##TP_STMT_channel##</td>
+	<td nowrap>&nbsp;##TP_STMT_bet_type##</td>
+	<td nowrap>&nbsp;##TP_STMT_num_lines##</td>
+	<td nowrap>&nbsp;##TP_STMT_ap##</td>
+
+##TP_IF {$STMT_DATA([tpGetVar bdy_idx],[tpGetVar ln_idx],receipt) != ""}##
+	##TP_IF {[info exists STMT_DATA([tpGetVar bdy_idx],[tpGetVar ln_idx],ispools)]}##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoPoolsReceipt&BetId=##TP_STMT_bet_id##">##TP_STMT_receipt##</a></td>
+	##TP_ELSEIF {[info exists STMT_DATA([tpGetVar bdy_idx],[tpGetVar ln_idx],isxgame)]}##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoXGameSub&SubId=##TP_STMT_receipt##">##TP_STMT_receipt##</a></td>
+	##TP_ELSE##
+		<td nowrap><a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetReceipt&BetId=##TP_STMT_bet_id##">##TP_STMT_receipt##</a></td>
+	##TP_ENDIF##
+##TP_ELSE##
+        <td nowrap>&nbsp;</td>
+##TP_ENDIF##
+
+	<td nowrap align=center>&nbsp;##TP_STMT_num_lines_win##&nbsp;&nbsp;##TP_STMT_num_lines_lose##&nbsp;&nbsp;##TP_STMT_num_lines_void##</td>
+	<td nowrap>&nbsp;##TP_STMT_leg_sort##</td>
+##TP_IF {$STMT_DATA([tpGetVar bdy_idx],[tpGetVar ln_idx],entry_type) == "BET" || $STMT_DATA([tpGetVar bdy_idx],[tpGetVar ln_idx],entry_type) == "HBET"}##
+	##TP_IF {$STMT_DATA([tpGetVar bdy_idx],[tpGetVar ln_idx],[tpGetVar pt_idx],oc_name) != ""}##
+		<td>&nbsp;##TP_STMT_ev_name## - ##TP_STMT_oc_name##</td>
+	##TP_ELSE##
+		<td>&nbsp;##TP_STMT_ev_name##</td>
+	##TP_ENDIF##
+	<td nowrap>&nbsp;##TP_STMT_price##</td>
+##TP_ELSE##
+	<td>&nbsp;##TP_STMT_desc##</td>
+	<td nowrap>&nbsp;</td>
+##TP_ENDIF##
+	<td nowrap align=right>&nbsp;##TP_STMT_rule4##</td>
+	<td nowrap align=right>&nbsp;##TP_STMT_stake##</td>
+##TP_IF {[OT_CfgGet ENABLE_FREEBETS2 "FALSE"] == "TRUE"}##
+	##TP_IF {$STMT_DATA([tpGetVar bdy_idx],[tpGetVar ln_idx],token_value) != "0.00"}##
+		<td nowrap align=right>&nbsp;##TP_STMT_token_value##</td>
+	##TP_ELSE##
+		<td nowrap>&nbsp;</td>
+	##TP_ENDIF##
+##TP_ENDIF##
+	<td nowrap align=right>&nbsp;##TP_STMT_returns##</td>
+	<td nowrap align=right>&nbsp;##TP_STMT_credit##</td>
+	<td nowrap align=right>&nbsp;##TP_STMT_debit##</td>
+	<td nowrap align=right>&nbsp;##TP_STMT_balance##</td>
+</tr>
+##TP_ELSE##
+<tr>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;##TP_STMT_leg_sort##</td>
+##TP_IF {$STMT_DATA([tpGetVar bdy_idx],[tpGetVar ln_idx],entry_type) == "BET"}##
+	##TP_IF {$STMT_DATA([tpGetVar bdy_idx],[tpGetVar ln_idx],[tpGetVar pt_idx],oc_name) != ""}##
+		<td>&nbsp;##TP_STMT_ev_name## - ##TP_STMT_oc_name##</td>
+	##TP_ELSE##
+		<td>&nbsp;##TP_STMT_ev_name##</td>
+	##TP_ENDIF##
+	<td>&nbsp;##TP_STMT_price##</td>
+##TP_ELSE##
+	<td>&nbsp;##TP_STMT_desc##</td>
+	<td>&nbsp;</td>
+##TP_ENDIF##
+	<td nowrap align=right>&nbsp;##TP_STMT_rule4##</td>
+	<td nowrap>&nbsp;</td>
+##TP_IF {[OT_CfgGet ENABLE_FREEBETS2 "FALSE"] == "TRUE"}##
+	<td nowrap>&nbsp;</td>
+##TP_ENDIF##
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+</tr>
+##TP_ENDIF##
+##TP_ENDLOOP##
+##TP_ENDLOOP##
+<tr>
+	<td nowrap>&nbsp;##TP_STMT_due_to##</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;Balance carried forward</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+##TP_IF {[OT_CfgGet ENABLE_FREEBETS2 "FALSE"] == "TRUE"}##
+	<td nowrap>&nbsp;</td>
+##TP_ENDIF##
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap>&nbsp;</td>
+	<td nowrap align=right>&nbsp;##TP_STMT_close_bal##</td>
+</tr>
+<tr>
+##TP_IF {[OT_CfgGet ENABLE_FREEBETS2 "FALSE"] == "TRUE"}##
+	<th class=buttons colspan=17>
+##TP_ELSE##
+	<th class=buttons colspan=16>
+##TP_ENDIF##
+		<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+</table>
+
+
+
+</form>
+</body>

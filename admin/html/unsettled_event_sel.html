@@ -1,0 +1,516 @@
+<html>
+<!-- $Id: unsettled_event_sel.html,v 1.1.1.1 2011/10/04 10:54:25 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Database Viewer</title>
+##TP_PLAY JS_WriteSelect.html##
+<script>
+var sort = new Object();
+##TP_LOOP sort_idx {[tpGetVar NumSorts]}##
+sort["##TP_SortType##"] = "##TP_TypeSort##";##TP_ENDLOOP##
+
+##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+sort["C:##TP_ClassId##"]="##TP_ClassSort##"; ##TP_ENDLOOP##
+
+var nms = new Array();
+var ids = new Array();
+##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+nms[##TP_ClassId##]=new Array(##TP_LOOP type_idx {[tpBindGet Types]}##"##TP_TypeName##"##TP_IF {[tpGetVar type_idx]!=[expr [tpBindGet Types]-1]}##, ##TP_ENDIF####TP_ENDLOOP##);
+ids[##TP_ClassId##]=new Array(##TP_LOOP type_idx {[tpBindGet Types]}##"##TP_TypeId##"##TP_IF {[tpGetVar type_idx]!=[expr [tpBindGet Types]-1]}##, ##TP_ENDIF####TP_ENDLOOP##);
+
+##TP_ENDLOOP##
+
+
+function fs(b,t)
+{
+
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	if (t=="EvShowCleanupQueue") {
+		b.form.action.value="ADMIN::CLEANUP::GoUnstlEvQueue";
+	}
+
+	b.form.submit();
+	return true;
+}
+
+
+function updateUnsettledTypeList(passed_form) {
+
+	var currentform = passed_form.toString();
+
+	var c = eval('document.' + currentform + '.ClassId');
+	var opt = eval('document.' + currentform + '.TypeId.options');
+
+	var cId = c.options[c.selectedIndex].value;
+	var cName = c.options[c.selectedIndex].text;
+
+	// Delete everything
+	opt.length=0;
+	if (cId != "0") {
+		opt[opt.length] = new Option( "-- all "+cName+" --", "C:"+cId );
+		var nm = nms[cId];
+		var id = ids[cId];
+		for (i=0;i<nm.length;i++) {
+			opt[opt.length] = new Option( nm[i], id[i] );
+		}
+	} else {
+		opt[opt.length] = new Option("<< All selected >>", "0");
+	}
+	opt.selectedIndex = 0;
+}
+
+function checkMutualExclusive() {
+
+	var classes = eval('document.couponcleanupform.coup_cleanup_class');
+	var categories = eval('document.couponcleanupform.coup_cleanup_cat');
+
+	var cl = classes.options[classes.selectedIndex].value;
+	var ct = categories.options[categories.selectedIndex].value;
+
+	if(cl != "0" && ct != "0") {
+		alert("Please select only one of the following: class, category");
+		categories.selectedIndex = 0;
+		classes.selectedIndex = 0;
+	}
+
+}
+
+
+</script>
+</head>
+<body onload="updateUnsettledTypeList('evstlcleanupform'); updateUnsettledTypeList('emptyevcleanupform')">
+
+##TP_PLAY error_rpt.html##
+
+<table border=0 cellspacing=0 cellpadding=2>
+##TP_IF {[op_allowed Settle] && [OT_CfgGet FUNC_AUTO_EVENT_CLEANUP 0]}##
+	<form name="evstlcleanupform" method="get" action="##TP_CGI_URL##">
+		<input type="hidden" name="ClassSort" value="">
+		<input type="hidden" name="SubmitName" value="">
+		<input type="hidden" name="action" value="ADMIN::CLEANUP::GoNoBetSettleCleanup">
+		<input type="hidden" name="BackType" value="X">
+		<table border="0" cellspacing="0" cellpadding="2">
+		<tr>
+			<th colspan=4 class=title>
+			Unsettled Event Cleanup Criteria
+			</th>
+		</tr>
+
+		<tr>
+			<td colspan=4>
+			Please note that only events with <b>NO bets</b> will qualify for automatic settlement.
+		</td>
+		</tr>
+		<tr>
+			<td class=caption colspan=2>Classes</td>
+			<td>
+			<select name="ClassId" size="10" onchange="updateUnsettledTypeList('evstlcleanupform')">
+					<option value="0" selected>-All Classes-</option>
+					##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+							<option value="##TP_ClassId##">##TP_ClassName##</option>
+					##TP_ENDLOOP##
+			</select>
+			</td>
+			<td>
+				<select name=TypeId size=10>
+					<option value="C:0"></option>
+				</select>
+			</td>
+		</tr>
+
+		<tr>
+			<td class=caption colspan=2>Date range</td>
+			<td>
+			##TP_IF {[OT_CfgGet USE_SMALL_DATE_RANGE 0]}##
+			<select name=date_range>
+					<script>write_select('1'
+							,'1', 'Previous Hour'
+							,'2', 'Today'
+							,'3', 'Yesterday'
+							,'4', '1 Week'
+							,'-', '--'
+					);
+					</script>
+			</select>
+			##TP_ELSE##
+			<select name=date_range>
+					<script>write_select('8'
+							,'8', 'Today'
+							,'1', '1 Week'
+							,'2', '2 Weeks'
+							,'3', '1 Month'
+							,'4', '2 Months'
+							,'5', '5 Months'
+							,'6', '1 Year'
+							,'7', 'Older than 1 week'
+							,'-', '--'
+					);
+					</script>
+			</select>
+			##TP_ENDIF##
+			</td>
+			<td>
+			or
+			<input type=text size=10 name=date_lo value="" id="ev_cleanup_stl_date_lo">
+			##TP_IF {[OT_CfgGet CALENDAR 0]}##
+					##TP_TCL {ADMIN::CALENDAR::get_calendar ev_cleanup_stl_date_lo 0 lo}##
+			##TP_ENDIF##
+			&nbsp;to&nbsp;
+			<input type=text size=10 name=date_hi value="" id="ev_cleanup_stl_date_hi">
+			##TP_IF {[OT_CfgGet CALENDAR 0]}##
+					##TP_TCL {ADMIN::CALENDAR::get_calendar ev_cleanup_stl_date_hi 0 hi}##
+			##TP_ENDIF##
+			</td>
+		</tr>
+
+		##TP_IF {[OT_CfgGet FUNC_BIR_SEARCH_UNSTL_EVS 0]}##
+			<tr>
+				<td class=caption colspan=2>Is BIR</td>
+				<td>
+					<select name="is_bir">
+							<script>write_select('-'
+									,'-','Either'
+									,'Y','Yes'
+									,'N','No'
+							);</script>
+					</select>
+				</td>
+			</tr>
+		##TP_ENDIF##
+		<tr>
+			<td class=caption colspan=2>Status</td>
+			<td>
+			Event
+			<select name=EvStatus>
+						<script>write_select('-'
+								,'-','Either'
+								,'A','Active'
+								,'S','Suspended'
+						);</script>
+			</select>
+			</td>
+			<td>
+			Market
+			<select name=MktStatus>
+						<script>write_select('-'
+								,'-','Either'
+								,'A','Active'
+								,'S','Suspended'
+						);</script>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td class=caption colspan=2>Displayed</td>
+			<td>
+			Event
+			<select name=EvDisplayed>
+						<script>write_select('-'
+						,'-', 'Either'
+						,'Y', 'Yes'
+						,'N', 'No'
+						);</script>
+			</select>
+			</td>
+			<td>
+			Market
+			<select name=MktDisplayed>
+						<script>write_select('-'
+						,'-', 'Either'
+						,'Y', 'Yes'
+						,'N', 'No'
+						);</script>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td class=caption colspan=2>Auto Set Results</td>
+			<td>
+				<select name="auto_result" ##TP_IF {![op_allowed AllowVoidAutoStl]}## disabled=true ##TP_ENDIF##>
+						<script>write_select('V'
+								,'L','Lose'
+								,'V','Void'
+						);</script>
+				</select>
+
+			</td>
+		</tr>
+		<tr>
+			<td class=caption colspan=2>Auto Set Display</td>
+			<td>
+				<select name="auto_display" ##TP_IF {![op_allowed AllowAutoUndisplay]}## disabled=true ##TP_ENDIF##>
+						<script>write_select('N'
+								,'Y','Yes'
+								,'N','No'
+						);</script>
+				</select>
+
+			</td>
+		</tr>
+		<tr>
+			<td class=caption colspan="2">Result Level</td>
+			<td colspan="2">
+				<select name="ResultLevel">
+						<script>write_select('M'
+								,'M','Market'
+								,'E','Event'
+						);</script>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td colspan=4>
+				Selections with no results will be automatically set.
+			</td>
+		</tr>
+
+		<tr>
+			<th colspan=4 class=buttons>
+			<input type=button value="Show Events" onClick="return fs(this,'EvShowSettleCleanup')">
+			<input type=button value="Show Queue" onClick="return fs(this,'EvShowCleanupQueue')">
+			</th>
+		</tr>
+	</table>
+	</form>
+##TP_ELSEIF {![op_allowed Settle]}##
+<tr>
+<td>
+You do not have the permission to view this page
+</td>
+</tr>
+##TP_ENDIF##
+</table>
+
+
+<table border=0 cellspacing=0 cellpadding=2>
+##TP_IF {[op_allowed Settle]}##
+	<form name="couponcleanupform" method="get" action="##TP_CGI_URL##">
+		<input type="hidden" name="ClassSort" value="">
+		<input type="hidden" name="SubmitName" value="">
+		<input type="hidden" name="action" value="ADMIN::CLEANUP::GoCouponCleanup">
+		<input type="hidden" name="BackType" value="X">
+		<table border="0" cellspacing="0" cellpadding="2">
+		<tr>
+			<th colspan=4 class=title>
+			Coupon Cleanup Criteria
+			</th>
+		</tr>
+
+		<tr>
+			<td class=caption>Categories</td>
+			<td>
+			##TP_IF {[tpGetVar NumCategories 0]}##
+				<select name="coup_cleanup_cat" size="10" onchange="checkMutualExclusive()">
+					<option value="0" selected>-All Categories-</option>
+					##TP_LOOP cat_idx {[tpGetVar NumCategories]}##
+						<option value="##TP_CategoryCode##">##TP_CategoryName##</option>
+					##TP_ENDLOOP##
+				</select>
+			##TP_ELSE##
+				<b><i>No categories defined</i></b>
+			##TP_ENDIF##
+			</td>
+
+			<td class=caption>
+			Classes</td>
+			<td>
+			<select name="coup_cleanup_class" size="10" onchange="checkMutualExclusive()">
+					<option value="0" selected>-All Classes-</option>
+					##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+							<option value="##TP_ClassId##">##TP_ClassName##</option>
+					##TP_ENDLOOP##
+			</select>
+			</td>
+
+		</tr>
+
+		<tr>
+			<td class=caption>Date range</td>
+			<td>
+			##TP_IF {[OT_CfgGet USE_SMALL_DATE_RANGE 0]}##
+			<select name=coup_cleanup_date_range>
+					<script>write_select('1'
+							,'1', 'Previous Hour'
+							,'2', 'Today'
+							,'3', 'Yesterday'
+							,'4', '1 Week'
+							,'-', '--'
+					);
+					</script>
+			</select>
+			##TP_ELSE##
+			<select name=coup_cleanup_date_range>
+					<script>write_select('2'
+							,'1', 'Today'
+							,'2', '1 week'
+							,'3', '3 Months'
+							,'4', '1 Year'
+							,'5', 'Older than 1 year'
+							,'-', '--'
+					);
+					</script>
+			</select>
+			##TP_ENDIF##
+			</td>
+			<td   colspan=2>
+			or
+			<input type=text size=10 name=coup_cleanup_date_lo value="" id="coup_cleanup_date_lo">
+			##TP_IF {[OT_CfgGet CALENDAR 0]}##
+					##TP_TCL {ADMIN::CALENDAR::get_calendar coup_cleanup_date_lo 0 lo}##
+			##TP_ENDIF##
+			&nbsp;to&nbsp;
+			<input type=text size=10 name=coup_cleanup_date_hi value="" id="coup_cleanup_date_hi">
+			##TP_IF {[OT_CfgGet CALENDAR 0]}##
+					##TP_TCL {ADMIN::CALENDAR::get_calendar coup_cleanup_date_hi 0 hi}##
+			##TP_ENDIF##
+			</td>
+		</tr>
+
+		<tr>
+			<td class=caption>Displayed</td>
+			<td colspan=3>
+			<select name=coup_cleanup_displayed>
+						<script>write_select('-'
+						,'-', 'Either'
+						,'Y', 'Yes'
+						,'N', 'No'
+						);</script>
+			</select>
+			</td>
+		</tr>
+
+		<tr>
+			<th colspan=4 class=buttons>
+			<input type=button value="Show Coupons" onClick="return fs(this,'CoupShowCleanup')">
+			</th>
+		</tr>
+	</table>
+	</form>
+##TP_ENDIF##
+</table>
+
+
+<table border=0 cellspacing=0 cellpadding=2>
+##TP_IF {[op_allowed Settle]}##
+	<form name="emptyevcleanupform" method="get" action="##TP_CGI_URL##">
+		<input type="hidden" name="ClassSort" value="">
+		<input type="hidden" name="SubmitName" value="EmptyEvSubmit">
+		<input type="hidden" name="action" value="ADMIN::CLEANUP::GoEmptyEvCleanup">
+		<input type="hidden" name="BackType" value="X">
+		<table border="0" cellspacing="0" cellpadding="2">
+		<tr>
+			<th colspan=4 class=title>
+			Empty Market/Event Cleanup Criteria
+			</th>
+		</tr>
+
+		<tr>
+			<td class=caption colspan=2>Classes</td>
+			<td>
+			<select name="ClassId" size="10" onchange="updateUnsettledTypeList('emptyevcleanupform')">
+					<option value="0" selected>-All Classes-</option>
+					##TP_LOOP class_idx {[tpGetVar NumClasses]}##
+							<option value="##TP_ClassId##">##TP_ClassName##</option>
+					##TP_ENDLOOP##
+			</select>
+			</td>
+			<td>
+				<select name=TypeId size=10>
+					<option value="C:0"></option>
+				</select>
+			</td>
+		</tr>
+
+		<tr>
+			<td class=caption colspan=2>Date range</td>
+			<td>
+			##TP_IF {[OT_CfgGet USE_SMALL_DATE_RANGE 0]}##
+			<select name=empty_ev_date_range>
+					<script>write_select('1'
+							,'1', 'Previous Hour'
+							,'2', 'Today'
+							,'3', 'Yesterday'
+							,'4', '1 Week'
+							,'-', '--'
+					);
+					</script>
+			</select>
+			##TP_ELSE##
+			<select name=empty_ev_date_range>
+					<script>write_select('2'
+							,'1', 'Today'
+							,'2', '1 week'
+							,'3', '3 Months'
+							,'4', '1 Year'
+							,'5', 'Older than 1 year'
+							,'-', '--'
+							,'6', 'next 1 Month'
+							,'7', 'next 1 Year'
+							,'8', 'More than 1 year ahead'
+					);
+					</script>
+			</select>
+			##TP_ENDIF##
+			</td>
+			<td>
+			or
+			<input type=text size=10 name=empty_ev_date_lo value="" id="empty_ev_date_lo">
+			##TP_IF {[OT_CfgGet CALENDAR 0]}##
+					##TP_TCL {ADMIN::CALENDAR::get_calendar empty_ev_date_lo 0 lo}##
+			##TP_ENDIF##
+			&nbsp;to&nbsp;
+			<input type=text size=10 name=empty_ev_date_hi value="" id="empty_ev_date_hi">
+			##TP_IF {[OT_CfgGet CALENDAR 0]}##
+					##TP_TCL {ADMIN::CALENDAR::get_calendar empty_ev_date_hi 0 hi}##
+			##TP_ENDIF##
+			</td>
+		</tr>
+
+
+		<tr>
+			<td class=caption colspan=2>Event Displayed</td>
+			<td>
+			<select name=empty_ev_displayed>
+						<script>write_select('-'
+						,'-', 'Either'
+						,'Y', 'Yes'
+						,'N', 'No'
+						);</script>
+			</select>
+			</td>
+
+		</tr>
+		<tr>
+			<td class=caption colspan=2>Results</td>
+			<td>
+			<select name=empty_ev_result>
+						<script>write_select('M'
+						,'E', 'Events'
+						,'M', 'Markets'
+						);</script>
+			</select>
+			</td>
+
+		</tr>
+		##TP_IF {[OT_CfgGet HIDE_NEW_EEVS_FOR_HRS 0] > 0}##
+		<tr>
+			<th colspan=4 class=buttons>
+				Events/markets created less than ##TP_TCL {tpBufWrite [OT_CfgGet HIDE_NEW_EEVS_FOR_HRS]}## hour(s) ago will not be included in search results.
+			</th>
+		</tr>
+		##TP_ENDIF##
+		<tr>
+			<th colspan=4 class=buttons>
+			<input type=button value="Show Markets/Events" onClick="return fs(this,'EmptyEvCleanup')">
+			</th>
+		</tr>
+	</table>
+	</form>
+##TP_ENDIF##
+</table>
+
+
+</html>

@@ -1,0 +1,57 @@
+<html>
+<!-- $Id: obj_category.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>##TP_TITLE##</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+
+<form name="catFm" method="post">
+
+<input type="hidden" name="action" value="ADMIN::OBJ_CATEGORY::GoObjCategory" />
+<input type="hidden" name="cat_type" value="##TP_CAT_TYPE##" />
+<input type="hidden" name="cat_id"   value="##TP_CAT_ID##" />
+<input type="hidden" name="SubmitName" value="" />
+
+<table border=0 cellspacing=0 cellpadding=3>
+<tr><th colspan=2 class=title>##TP_TITLE##</th></tr>
+
+<tr>
+<td nowrap class=caption>Name</td>
+<td><input type="text" name="name" value="##TP_NAME##" size=40></td>
+</tr>
+
+<tr>
+<td nowrap class=caption>Description</td>
+<td><input type="text" name="desc" value="##TP_DESC##" size=40></td>
+</tr>
+
+<tr>
+	<th colspan=2 class=buttons>
+	##TP_IF {[tpGetVar CAT_ID] == ""}##
+	<input type=button value="Add New Category" onClick="return fs(this,'ObjCatIns')">
+	##TP_ELSE##
+	<input type=button value="Update Category" onClick="return fs(this,'ObjCatUpd')">
+	<input type=button value="Delete Category" onClick="return fs(this,'ObjCatDel')">
+	##TP_ENDIF##
+	<input type=button value="Back" onClick="return fs(this,'ObjCatBack')">
+	</th>
+</tr>
+</table>
+
+</form>
+
+</body>
+</html>

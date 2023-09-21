@@ -1,0 +1,84 @@
+##TP_COMMENT $Id: dd_cust.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $##
+##TP_COMMENT Copyright (c) 2009 Orbis Technology Ltd. All rights reserved.##
+
+<!-- Drill-Down Customer -->
+
+<tr id="cust_" style="display:none">
+	<td colspan="5" class="bordered_col">
+		<table cellspacing="0" cellpadding="2" class="bordered_table" width="96%">
+
+			<tr id="dd_caption_cust_">
+				<th class="subtitle" colspan="2">
+					##TP_cust_name## Details
+				</td>
+			</tr>	
+			<tr>
+				<td class="caption" width="20%">Customer max stake factor</td>
+				<td>##TP_cust_max_stake_scale##</td>
+			</tr>
+			<tr>
+				<td class="caption" width="20%">Registration date</td>
+				<td>##TP_cust_reg_date##</td>
+			</tr>
+			<tr>
+				<td class="caption" width="20%">Running balance</td>
+				<td>##TP_cust_balance##</td>
+			</tr>
+			<tr>
+				<td class="caption" width="20%">Registration Country</td>
+				<td>##TP_cust_country##</td>
+			</tr>
+			<tr>
+				<td class="caption" width="20%">Trading messages</td>
+				<td>
+					<table cellspacing="0" cellpadding="2" >
+				##TP_LOOP cust_trading_msgs_idx {$CUST_TRADING_MSGS(nrows)}##
+						<tr>
+							<td><b><script>
+								write_which("##TP_cust_msgs_sort##", "O", "Operator", "S", "Supervisor");
+							</script></b></td>
+							<td>##TP_cust_msgs_last_update## (##TP_cust_msgs_admin_username##)</td>
+							<td>##TP_cust_msgs_message##</td>
+						<tr>
+				##TP_ENDLOOP##
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td class="caption" width="20%">Last ##TP_TCL {tpBufWrite [OT_CfgGet ASYNC_CUST_INFO_NUM_BETS 10]}## bet details</td>
+				<td>
+					<table cellspacing="0" cellpadding="2" >
+						<tr>
+							<th>Event</th>
+							<th>Market</th>
+							<th>Selection</th>
+							<th>Price</th>
+							<th>Result</th>
+							<th>Stake</th>
+							<th>Legs</th>
+							<th>Bet</th>
+							<th>Placed at</th>
+							<th>Receipt</th>
+							<th>Returns</th>
+						</tr>
+				##TP_LOOP cust_last_bets_idx {$CUST_LAST_BETS(nrows)}##
+						<tr>
+							<td>##TP_cust_last_bets_event##</td>
+							<td>##TP_cust_last_bets_market##</td>
+							<td>##TP_cust_last_bets_selection##</td>
+							<td>##TP_cust_last_bets_price##</td>
+							<td>##TP_cust_last_bets_result##</td>
+							<td>##TP_cust_last_bets_stake##</td>
+							<td>##TP_cust_last_bets_legs##</td>
+							<td>##TP_cust_last_bets_bet##</td>
+							<td>##TP_cust_last_bets_placed_at##</td>
+							<td><a onclick="goBetReceipt(##TP_cust_last_bets_bet_id##);" >##TP_cust_last_bets_receipt##</a></td>
+							<td>##TP_cust_last_bets_returns##</td>
+						<tr>
+				##TP_ENDLOOP##
+					</table>
+				<td>
+			</tr>
+		</table>
+	</td>
+</tr>

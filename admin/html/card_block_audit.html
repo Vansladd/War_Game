@@ -1,0 +1,64 @@
+<html>
+<!-- $Id: card_block_audit.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Card Block Audit History for ##TP_CardBlockNo##</title>
+<script>
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	history.go(-1)
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table border=0 cellspacing=0 cellpadding=2>
+<tr>
+	<th colspan=6 class=title>
+	Card Block Audit History for ##TP_CardBlockNo##
+	</th>
+</tr>
+<tr>
+	<th class=audhead align=middle>Time</th>
+	<th class=audhead align=middle>Operation</th>
+	<th class=audhead align=middle>Admin User</th>
+	<th class=audhead align=middle>Allowed</th>
+	<th class=audhead align=middle>Status</th>
+	<th class=audhead align=middle>Comment</th>
+</tr>
+##TP_IF {[tpGetVar NumRows 0]>0}##
+##TP_LOOP bin_idx {[tpGetVar NumRows]}##
+	##TP_COMMENT Need JS here as variables are tclbinded##
+	<script language=JavaScript>
+	if ("##TP_CardBlockStatus##" == "S") { document.write('<tr bgcolor="#CE9A9C">'); }
+	else if ("##TP_CardBlockStatus##" == "A") { document.write('<tr bgcolor="#9CCF9C">'); }
+	else { document.write('<tr bgcolor="#9C9ACE">'); }
+	</script>
+	<td nowrap align=middle>##TP_aud_time##</td>
+	<td nowrap align=middle>##TP_aud_op##</td>
+	<td nowrap align=middle>##TP_user_id##&nbsp;</td>
+	<td nowrap align=middle>##TP_CardBlockAllowed##</td>
+	<td nowrap align=middle>##TP_CardBlockStatus##</td>
+	<td nowrap align=middle>##TP_CardBlockComment##&nbsp;</td>
+</tr>
+##TP_ENDLOOP##
+##TP_ELSE##
+<tr>
+	<td colspan=6>
+	<b>No audit history for given card.</b>
+	</td>
+</tr>
+##TP_ENDIF##
+<tr>
+	<th class=buttons colspan=6>
+		<input type=button class="btn_def" value="Back" onClick="return fs(this,'Back')">
+	</th>
+</tr>
+</table>
+</body>
+</html>
+

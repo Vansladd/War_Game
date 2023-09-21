@@ -1,0 +1,164 @@
+<html>
+<!-- $Id: email_details.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>Email Manager</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language=JavaScript>
+function validate(f)
+{
+	return true;
+}
+function fs(b,t)
+{
+	b.disabled = true;
+	b.value = "Busy...";
+	b.form.SubmitName.value=t;
+	b.form.submit();
+	return true;
+}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+##TP_PLAY msg_rpt.html##
+<table border=0 cellspacing=0 cellpadding=3>
+<tr>
+	<th colspan=9 class=title>
+	##TP_name##&nbsp;
+	</th>
+</tr>
+<form action="##TP_CGI_URL##" method="get" onSubmit="return validate(this);" name=email_form>
+<tr>
+	<td class=caption>Type</td>
+	<td>
+	<select name="type">
+		<script>
+		write_select('##TP_type_sel##'
+			##TP_LOOP type_idx {[tpGetVar NumTypes]}##
+			,'##TP_type_id##','##TP_type_name##'
+			##TP_ENDLOOP##
+		);
+		</script>
+	</select>
+	</td>
+	<td class=caption>Name</td>
+	<td><input type=text name="name" value="##TP_name##" size=30 maxlength=30></td>
+</tr>
+<tr>
+	<td class=caption>From</td>
+	<td><input type=text name="from_code" value="##TP_from_code##" size=30 maxlength=30></td>
+
+</tr>
+<tr>
+	<td class=caption>Fixed Destination</td>
+	<td><input type=checkbox name="fixed_dest" ##TP_Check## onClick="email_addr.disabled=!email_addr.disabled" ></td>
+	<td class=caption>To</td>
+	<td><input type=text name="email_addr" size=30 maxlength=60 value="##TP_email_addr##" ##TP_disabled## ></td>
+</tr>
+<tr>
+	<td class=caption>Status</td>
+	<td>
+	<select name="status">
+	<script>
+	write_select('##TP_status##','A','Active','S','Suspended')
+	</script>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td class=caption>System Source</td>
+	<td colspan=3>
+	<select name="system_source">
+	<option value="ALL">-ALL-</option>
+	<script>
+	write_select('##TP_flag_sel##'
+			##TP_LOOP flag_idx {[tpGetVar NumFlags]}##
+			,'##TP_flag_value##','##TP_flag_desc##'
+			##TP_ENDLOOP##
+		);
+	</script>
+	</select>
+</td>
+</tr>
+<tr>
+	<td class=caption>Channels</td>
+	<td colspan=3>
+	##TP_PLAY chan_sel.html##
+	</td>
+</tr>
+
+
+<tr>
+	<th colspan=9 class=buttons>
+	##TP_IF {[op_allowed ManageEmails]}##
+		##TP_IF {[tpGetVar opAdd 0]}##
+			<input type=button value="Add Email" onClick="return fs(this,'EmailAdd')">
+			<input type=hidden name=action value="ADMIN::EMAILS::DoEmail">
+		##TP_ELSE##
+			<input type=hidden name="email_id" value="##TP_email_id##">
+			<input type=button value="Modify Email" onClick="return fs(this,'EmailMod')">
+			<input type=hidden name=action value="ADMIN::EMAILS::DoEmail">
+		##TP_ENDIF##
+	##TP_ENDIF##
+	<input type=button value="Back" onClick="return fs(this,'Back')">
+	Username <input type=text name="test_username" value="##TP_test_username##">
+	<input type=button value="Test Email" onClick="return fs(this,'DoTestEmail')">
+	<input type=hidden name="type_name" value="##TP_typename##">
+	</th>
+</tr>
+<input type=hidden name=SubmitName value="">
+</form>
+</table>
+<br>
+<br>
+
+##TP_IF {[tpBindGet email_id] !=""}##
+
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th class=title colspan=25>
+	<font color=white size=+1>Email Body</font>
+	</th>
+</tr>
+<tr>
+	<th class=colhead>Created</th>
+	<th class=colhead>Format</th>
+	<th class=colhead>Language</th>
+</tr>
+
+##TP_IF {$EMAIL_DETAILS(num)>0}##
+	##TP_LOOP body_idx {$EMAIL_DETAILS(num)}##
+			<tr>
+			<td><a href="##TP_CGI_URL##?action=ADMIN::EMAILS::GoEmailBody&email_id=##TP_email_id##&email_type=##TP_typename##&language=##TP_language##&format=##TP_format##">##TP_cr_date##</td>
+			<td>##TP_format##</td>
+			<td>##TP_language##</td>
+		</tr>
+	##TP_ENDLOOP##
+##TP_ELSE##
+	<tr>
+		<td colspan=4>
+		<b><i>There are no email bodies defined</i></b>
+		</td>
+	</tr>
+##TP_ENDIF##
+
+##TP_IF {[op_allowed ManageEmails]}##
+	<tr>
+		<form action="##TP_CGI_URL##" method=get>
+		<th colspan=25 class=buttons>
+		<input type=button value="Add Email Body" onClick="return fs(this,'AddEmailBody')">
+		</th>
+		<input type=hidden name="email_id" value="##TP_email_id##">
+		<input type=hidden name=action value=ADMIN::EMAILS::GoEmailBody>
+		<input type=hidden name=SubmitName value="">
+		</form>
+	</tr>
+##TP_ENDIF##
+
+</table>
+##TP_ENDIF##
+
+</body>
+</html>

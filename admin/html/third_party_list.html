@@ -1,0 +1,105 @@
+<html>
+<!-- $Id: third_party_list.html,v 1.1.1.1 2011/10/04 10:54:26 xbourgui Exp $ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet">
+<title>OpenBet Administration</title>
+##TP_PLAY JS_WriteSelect.html##
+<script language="JavaScript">
+	function validate(f) {
+		if (f.name == "ThirdPartyAdd") {
+			if (f.ThirdPartyName.value == "") {
+				alert("Third Party Name cannot be blank");
+				return false;
+			}
+
+			if (f.ThirdPartyAbbv.value == "") {
+				alert("Third Party Abbreviation cannot be blank");
+				return false;
+			}
+		}
+		return true;
+	}
+
+	function fs(b,t) {
+		if (validate(b.form)) {
+			b.disabled = true;
+			b.value = "Busy...";
+			b.form.SubmitName.value=t;
+			b.form.submit();
+		return true;
+		} else {
+			return false;
+		}
+	}
+</script>
+</head>
+<body>
+##TP_PLAY error_rpt.html##
+<table cellspacing=0 cellpadding=2 border=0>
+<tr>
+	<th colspan=16 class=title>
+	Third Parties
+	</th>
+</tr>
+<tr>
+	<th class="colhead">Abbv.</th>
+	<th class="colhead">Name</th>
+	<th class="colhead"></th>
+</tr>
+
+##TP_IF {[tpGetVar NumThirdParties 0] == 0}##
+<tr>
+	<td align="center">
+		No third parties.
+	</td>
+</tr>
+##TP_ELSE##
+	##TP_LOOP tp_idx {[tpGetVar NumThirdParties]}##
+		<tr>
+			<td>##TP_ThirdPartyAbbv##</td>
+			<td>##TP_ThirdPartyName##</td>
+			<td>
+				<form method="POST" action="##TP_CgiUrl##">
+					<input type="hidden" name="action" value="ADMIN::THIRDPARTY::GoThirdPartyMod" />
+					<input type="hidden" name="SubmitName" value="ThirdPartyMod" />
+					<input type="hidden" name="ThirdPartyFlag"
+						value="##TP_ESC esc_html####TP_ThirdPartyFlag####TP_ESC##" />
+					<input type="button" value="Update"
+						onClick="this.form.submit();" />
+				</form>
+			</td>
+		</tr>
+	##TP_ENDLOOP##
+##TP_ENDIF##
+
+</table>
+
+<form name="ThirdPartyAdd" action="##TP_CGI_URL##" method="post" onSubmit="return validate(this);">
+<input type="hidden" name="action" value="ADMIN::THIRDPARTY::DoThirdParty" />
+<input type="hidden" name="SubmitName" value="" />
+<table>
+	<tr>
+		<th colspan="2" class="title">Add New Third Party</th>
+	</tr>
+
+	<tr>
+		<td>Abbreviation:</td>
+		<td><input type="text" name="ThirdPartyAbbv" onKeyUp="this.value=this.value.toUpperCase();" />
+	</tr>
+
+	<tr>
+		<td>Name:</td>
+		<td>
+			<input type="text" name="ThirdPartyName" />
+		</td>
+	</tr>
+
+	<tr>
+		<td></td>
+		<td><input type="button" value="Add" onClick="return fs(this,'ThirdPartyAdd');" /></td>
+	</tr>
+</table>
+</form>
+</body>
+</html>
