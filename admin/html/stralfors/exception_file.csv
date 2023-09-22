@@ -1,2 +1,0 @@
-##TP_ESC ADMIN::STRALFORS::stral_esc####TP_LOOP stral_exception_idx $STRALFORS_EXCEPTION(nrows)####TP_ExcStralCode##|##TP_ExcAcctNo##|##TP_ExcCreditLimit##|##TP_ExcTitle##|##TP_ExcFName##|##TP_ExcLName##|##TP_ExcAddr1##|##TP_ExcAddr2##|##TP_ExcAddr3##|##TP_ExcCity##|##TP_ExcCounty##|##TP_ExcPostcode##|##TP_ExcSecNumber##
-##TP_ENDLOOP####TP_ESC##
