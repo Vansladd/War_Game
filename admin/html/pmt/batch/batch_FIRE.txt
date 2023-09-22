@@ -1,2 +1,0 @@
-##TP_LOOP line_idx {[tpGetVar num_lines 0]}####TP_ext_acct_no##,##TP_amount##,##TP_pmt_id##
-##TP_ENDLOOP##
