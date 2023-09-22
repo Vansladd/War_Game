@@ -1,2 +1,0 @@
-##TP_LOOP line_idx {[tpGetVar num_lines 0]}##D##TP_TCL {lpad [tpBindGet pmt_id] 30}####TP_TCL {lpad [tpBindGet ext_email_addr] 30}####TP_TCL {lpad [tpBindGet username] 20}####TP_TCL {lpad [tpBindGet amount] 10 0}##
-##TP_ENDLOOP##

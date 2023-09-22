@@ -1,2 +1,0 @@
-##TP_LOOP l_idx {[tpGetVar line_count]}####TP_line##
-##TP_ENDLOOP##

@@ -1,3 +1,0 @@
-##TP_TCL {OT_CfgGet GWTD_PATM_MID {}}##,##TP_totalAmount##,##TP_totalCount##
-##TP_LOOP line_idx {[tpGetVar num_lines 0]}####TP_ext_email_addr##,R,##TP_amount##,##TP_pmt_id##,,,,,,,,##TP_ext_acct_no##,
-##TP_ENDLOOP##

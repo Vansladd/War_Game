@@ -1,3 +1,0 @@
-,,,,,,,
-##TP_LOOP line_idx {[tpGetVar num_lines 0]}####TP_mid##,##TP_key##,##TP_date##,##TP_email##,##TP_fname## ##TP_surname##,##TP_amount##,##TP_pmt_id##,##TP_ccy_code##
-##TP_ENDLOOP##

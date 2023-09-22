@@ -1,2 +1,0 @@
-##TP_ESC ADMIN::STRALFORS::stral_esc####TP_LOOP stral_extract_idx $STRALFORS_EXTRACT(nrows)####TP_StralCode##|##TP_AcctNo##|##TP_CreditLimit##|##TP_Title##|##TP_FName##|##TP_LName##|##TP_Addr1##|##TP_Addr2##|##TP_Addr3##|##TP_City##|##TP_County##|##TP_Postcode##|##TP_SecNumber##
-##TP_ENDLOOP####TP_ESC##
