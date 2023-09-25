@@ -323,7 +323,7 @@ proc main_init {} {
 	asSetAct stylesheet                 {sb_null_bind admin.css}
 	asSetAct print_stylesheet           {sb_null_bind print.css}
 	asSetAct stylesheet_splash          {sb_null_bind splash.css}
-	asSetAct war_game_stylesheet		{sb_null_bind war_games/styles.css}
+	asSetAct war_game_stylesheet	    {sb_null_bind war_games/styles.css}
 	asSetAct go_popup_calendar          {sb_null_bind calendar.html}
 	asSetAct go_popup_calendar_js       {sb_null_bind calendar.js}
 	asSetAct GoMenubar                  {sb_null_bind menu_bar.html}
