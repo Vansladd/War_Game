@@ -6,7 +6,7 @@
     <body>
         <h1>Room ##TP_roomid##</h1>
         <p>Waiting for player to join</p>
-        <a href="##TP_CGI_URL##?action=war_game_lobby&userid=##TP_userid##">Leave lobby</a>
+        <a href="##TP_CGI_URL##?action=WAR_GAME_lobby&userid=##TP_userid##">Leave lobby</a>
     </body>
 
 </html>
@@ -16,7 +16,7 @@
         //will sent a message to server saying its still waiting and server will return if player has joined or not using ?action=war_game_waiting_room&userid=[user]&roomid=[id]
         json = {"player2": "", "gameid":-1}
         if(json["player2"] != ""){ //if server says a player has joined then go to the game page
-            location.href = "##TP_CGI_URL##?action=war_game&player1id=##TP_userid##&player2id=" + json["player2"] + "&gameid=" + json["gameid"].toString() +"&roomid=##TP_roomid##"
+            location.href = "##TP_CGI_URL##?action=WAR_GAME&player1id=##TP_userid##&player2id=" + json["player2"] + "&gameid=" + json["gameid"].toString() +"&roomid=##TP_roomid##"
         }
     }
 

@@ -22,7 +22,7 @@
 
 </html>
 <script>
-    function update(){
+    async function display_game(){
         var a = 1;
         //will get json file
         var json = {"current_turn": 0, "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_turn": -1, "viewable_location": 1, "specific_card": "d4"}, "user2": {"specific_card": "dk", "viewable_turn": -1, "user2_balance": 50, "user2_card_amount": 5}};
@@ -62,6 +62,13 @@
             document.getElementById("cards").innerHTML+='<p>' + message +'</p>';
         }
     }
-    update();
-    setInterval(update, 100);
+
+    function get_game_position(){
+        fetch('##TP_CGI_URL##?action=WAR_GAME_game_state') //gets json from url
+        .then(response => response.text())
+        .then(text => display_game(JSON.parse(text)))
+    }
+
+    get_game_position();
+    setInterval(get_game_position(), 100); //updates game position every 10th of a second
 </script>
