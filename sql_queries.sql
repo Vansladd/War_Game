@@ -21,3 +21,6 @@ WHERE room_id = ?;
 
 INSERT INTO twargame (game_id,cr_date)
 VALUES (?, ?);
+
+INSERT INTO troomcontrol (game_change_id,game_id, change_type, change_timestamp)
+VALUES (?, ?, ?, ?);
