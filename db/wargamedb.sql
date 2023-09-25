@@ -27,7 +27,7 @@ create table tactivewarroom
     room_id int not null,
     game_id int not null,
     player1_id int not null,
-    player2_id int null,
+    player2_id int null
 );
 
 alter table tactivewarroom add constraint (
