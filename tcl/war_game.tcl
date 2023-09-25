@@ -13,7 +13,6 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
 
     proc get_lobbies_json args {
-        puts "--------------------------------> GETTING JSON LOBBIES"
         global DB
         set sql {
             select
@@ -77,11 +76,8 @@ namespace eval WAR_GAME {
             \{ \"roomid\": $roomid , \"starting_money\": \[50,78\] , \"user\": $user \}
         "
 
-        puts "----------------------------------> $json"
-
         tpBindString JSON $json
         
-        puts "-----------------------------------> Play JSON TEMPLATE"
         asPlayFile -nocache war_games/jsonTemplate.json
         
     }
@@ -92,7 +88,6 @@ namespace eval WAR_GAME {
 
     proc do_login_page args {
         set username [reqGetArg username]
-        puts "================================$username"
 
         global DB
 
@@ -137,9 +132,6 @@ namespace eval WAR_GAME {
         tpBindString user_id $user_id
 
         # If statement to different pages
-        puts "----------------------------------------> FOUND $user_id"
-
-        puts "--------------------------------> GOING TO LOBBY PAGE"
         go_lobby_page 
     }
 
@@ -182,7 +174,6 @@ namespace eval WAR_GAME {
 
     proc create_user {username} {
         global DB
-        puts "---------------------------------> username = $username"
         # SQL Query Code here
         set sql {
             INSERT INTO twaruser (username, acct_bal)
@@ -210,7 +201,6 @@ namespace eval WAR_GAME {
     }
     
     proc go_lobby_page args {
-        puts "------------------> ENTERING LOBBY PAGE"
         asPlayFile -nocache war_games/lobby_page.html
     }
 
