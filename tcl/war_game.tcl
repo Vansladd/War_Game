@@ -14,6 +14,307 @@ namespace eval WAR_GAME {
 
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
+    asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
+
+    proc last_pk {} {
+        global DB
+        set sql {SELECT DBINFO( 'sqlca.sqlerrd1' ) AS pk
+                FROM systables
+                WHERE tabid = 1;
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set last_pk [db_get_col $rs 0 pk]
+
+        db_close $rs
+
+
+        return last_pk
+    }
+
+    proc room_id_to_game_id {room_id} {
+        global DB
+
+        set sql {
+            select 
+                game_id
+            from
+                tactivewarroom
+            where
+                room_id = ?
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $room_id]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+
+        set game_id [db_get_col $rs 0 game_id]
+
+        db_close $rs
+
+        return game_id
+
+    }
+
+    proc get_turn_number {game_id player_id} {
+        global DB
+
+        set sql{
+            SELECT
+                MAX(turn_number) as turn_number
+
+            FROM
+                twargamemoves
+            WHERE
+                game_id = ?,
+                player_id = ?
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $game_id $player_id]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set max [db_get_col $rs 0 turn_number]
+
+        db_close $rs
+
+        if {$max == ""} {
+            return 1
+        } else {
+            return [expr [max + 1]]
+        }
+
+    }
+
+
+    proc get_game_move {game_id player_id turn_number} {
+        global DB
+
+
+        set turn_number [expr [turn_number - 1]]
+
+        set RESULTS {}
+
+        set sql{
+            SELECT
+                move.game_bal as game_bal,
+                bet_move.bet_value as bet_value,
+                action.action as action,
+                card.card_value as card_value,
+                suit.suit_name as suit_name,
+                COUNT(hand_id) as card_amount
+
+            FROM
+                twargamemoves as move,
+                twarbetmove as bet_move,
+                twarbetactions as action,
+                thand as hand,
+                twarcard as card,
+                tsuit as suit
+
+            WHERE
+                move.game_id = ? AND
+                move.player_id = ? AND
+                move.turn_number = ? AND
+                move.bet_id = bet_move.bet_id AND
+                action.action_id = bet_move.action_id AND
+                move.card_id = hand.card_id AND
+                card.card_id = hand.card_id AND
+                card.suit_id = suit.suit_id AND
+
+
+
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $game_id $player_id]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set RESULT(game_bal) [db_get_col $rs 0 game_bal]
+        set RESULT(bet_value) [db_get_col $rs 0 bet_value]
+        set RESULT(action) [db_get_col $rs 0 action]
+        set RESULT(card_value) [db_get_col $rs 0 card_value]
+        set RESULT(suit_name) [db_get_col $rs 0 suit_name]
+
+
+        db_close $rs
+
+        return RESULT
+
+    }
+
+    proc user_2_get_game_move {game_id player_id turn_number} {
+        global DB
+
+
+        set turn_number [expr [turn_number - 1]]
+
+        set RESULTS {}
+
+        set sql{
+            SELECT
+                move.game_bal as game_bal, /
+                bet_move.bet_value as bet_value,
+                action.action as action,
+                card.card_value as card_value, /
+                suit.suit_name as suit_name /
+
+            FROM
+                twargamemoves as move,
+                twarbetmove as bet_move,
+                twarbetactions as action,
+                thand as hand,
+                twarcard as card,
+                tsuit as suit
+
+            WHERE
+                move.game_id = ? AND
+                move.player_id = ? AND
+                move.turn_number = ? AND
+                move.bet_id = bet_move.bet_id AND
+                action.action_id = bet_move.action_id AND
+                move.card_id = hand.card_id AND
+                card.card_id = hand.card_id AND
+                card.suit_id = suit.suit_id
+
+
+
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $game_id $player_id]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set RESULT(game_bal) [db_get_col $rs 0 game_bal]
+        set RESULT(bet_value) [db_get_col $rs 0 bet_value]
+        set RESULT(action) [db_get_col $rs 0 action]
+        set RESULT(card_value) [db_get_col $rs 0 card_value]
+        set RESULT(suit_name) [db_get_col $rs 0 suit_name]
+
+
+        db_close $rs
+
+        return RESULT
+
+    }
+
+    proc game_state_json args {
+        global DB
+        set room_id [reqGetArg room_id]
+
+        set game_id [room_id_to_game_id room_id]
+
+        set current_turn [get_turn_number game_id player_id]
+
+        set current_user [get_game_move game_id player_id turn_number]
+
+        set other_user []
+
+
+        #current turn database
+        #user balance database
+        #user card amount database
+        #condition database database
+        #viewable card database
+            #viewable turn delete
+            #viewable location database [0] do a wait in javascript
+            #specific card database
+        #user2
+            #specfic card
+            #viewable turn delete
+            #user2_balance database
+            #user2_card_amount database
+
+        
+
+
+        set JSON "\{\"current_turn\": 0, \"user_balance\": 50, \"user_card_amount\" : 5, \"condition\": \"playing\", \
+            \"viewable_card\": \{\"viewable_turn\": -1, \"viewable_location\": -1, \"specific_card\": \"d4\"\}, \
+            \"user2\": \{\"specific_card\": \"dk\", \"viewable_turn\": -1, \"user2_balance\": 50, \"user2_card_amount\": 5\}"
+
+    }
 
     proc get_waiting_room_json args {
         global DB
@@ -73,10 +374,15 @@ namespace eval WAR_GAME {
 
         # Done to prevent two queries from loading at once
         if {$user_id == $player2_id} {
+
+
+            #insert game
+
             set sql {
                 INSERT INTO twargame (cr_date)
                 VALUES (CURRENT YEAR TO SECOND);
             }
+            
 
             if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
                 tpBindString err_msg "error occured while preparing statement"
@@ -94,8 +400,41 @@ namespace eval WAR_GAME {
                 asPlayFile -nocache war_games/lobby.html
                 return
             }
+
+            catch {inf_close_stmt $stmt}
+
+            set game_id [last_pk]
+
+
+
+            #update room
+
+            set sql {
+                UPDATE tactivewarroom
+                SET game_id = ?
+                WHERE room_id = ?;
+            }
+
+            if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+                tpBindString err_msg "error occured while preparing statement"
+                ob::log::write ERROR {===>error: $msg}
+                tpSetVar err 1
+                asPlayFile -nocache war_games/lobby.html
+                return
+            }
+            
+            if {[catch {set rs [inf_exec_stmt $stmt $game_id $room_id]} msg]} {
+                tpBindString err_msg "error occured while executing query"
+                ob::log::write ERROR {===>error: $msg}
+                catch {inf_close_stmt $stmt}
+                tpSetVar err 1
+                asPlayFile -nocache war_games/lobby.html
+                return
+            }
+
         }
 
+        tpBindString room_id $room_id
         # Send to HTML page
         asPlayFile -nocache game_page.html
     }
