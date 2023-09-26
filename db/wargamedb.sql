@@ -84,12 +84,12 @@ create table twargamemoves
 (
     moves_id int not null,
     game_id int not null,
-    hand_id int not null, -
+    hand_id int not null,
     player_id int not null,
     turn_number int not null,
-    game_bal decimal(12,2) not null, -
-    card_id int not null, -
-    bet_id int not null -
+    game_bal decimal(12,2) not null,
+    card_id int not null,
+    bet_id int not null
 );
 
 alter table twargamemoves add constraint (
@@ -99,7 +99,7 @@ alter table twargamemoves add constraint (
 
 create table thand
 (
-    moves_id int not null,
+    hand_id int not null,
     card_id int not null
 );
 
