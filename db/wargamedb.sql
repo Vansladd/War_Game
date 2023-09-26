@@ -25,7 +25,7 @@ alter table tactivewaruser add constraint (
 create table tactivewarroom
 (
     room_id int not null,
-    game_id int not null,
+    game_id int null,
     player1_id int not null,
     player2_id int null
 );
@@ -123,10 +123,8 @@ alter table twarcard add constraint (
 
 create table tsuit
 (
-    card_id int not null,
     suit_id int not null,
-    card_name char(16) not null,
-    card_value int not null,
+    suit_name char(16) not null,
 );
 
 alter table twarcard add constraint (
