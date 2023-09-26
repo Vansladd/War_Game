@@ -105,7 +105,8 @@ namespace eval WAR_GAME {
         # change sql select statement
         set sql {
             select
-                *
+                room_id,
+                player1_id
             from 
                 tactivewarroom;
         }
@@ -183,7 +184,7 @@ namespace eval WAR_GAME {
         # SQL Query Code here
         set sql {
             SELECT 
-                COUNT(*) AS username_exists
+                COUNT(username) AS username_exists
             FROM 
                 twaruser
             WHERE 
