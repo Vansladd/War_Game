@@ -106,7 +106,8 @@ namespace eval WAR_GAME {
         set sql {
             select
                 room_id,
-                player1_id
+                player1_id,
+                player2_id
             from 
                 tactivewarroom;
         }
@@ -133,39 +134,34 @@ namespace eval WAR_GAME {
         set num_rooms [db_get_nrows $rs]
 		tpSetVar num_rooms $num_rooms
 	
-        set roomid ""
-        set user ""
 
-		for {set i 0} {$i < $num_rooms} {incr i} {
-            if {$i == 0} {
-            set roomid "$roomid[db_get_col $rs $i room_id]"
-			#set ROOM($i,room_id)   [db_get_col $rs $i room_id]
+        set lobbies ""
 
-            if {[db_get_col $rs $i player1_id] == ""} {
-                set user "$user ''"
-            } else {
-                set user "$user[db_get_col $rs $i player1_id]"
+        # Note - refactor to ensure setplayerid and only change which player gets the thing and return the result
+        for {set i 0} {$i < $num_rooms} {incr i} {
+            set roomid "\"roomid\": [db_get_col $rs $i room_id]"
+
+            if {[set id_1 [db_get_col $rs $i player1_id]] == ""} {
+                set id_1 {"Empty"}
             }
-			#set ROOM($i,player_1)  [db_get_col $rs $i player_1]
-            } else {
 
-                if {[db_get_col $rs $i player1_id] == ""} {
-                    set user "$user,''"
-                } else {
-                    set user "$user,[db_get_col $rs $i player1_id]"
-                }
-                set roomid "$roomid,[db_get_col $rs $i room_id]"
-                #set user "$user,[db_get_col $rs $i player1_id]"
+            if {[set id_2 [db_get_col $rs $i player2_id]] == ""} {
+                set id_2 {"Empty"}
+            }
+
+            set player1_id "\"player1_id\": $id_1"
+            set player2_id "\"player2_id\": $id_2"
+
+            if {$i == 0} {
+                set lobbies "\{$roomid, $player1_id, $player2_id\}"
+            } else {
+                set lobbies "$lobbies, \{$roomid, $player1_id, $player2_id\}"
             }
         }
-        set user "\[$user\]"
-        set roomid "\[$roomid\]"
+
         db_close $rs
 		
-		set json "
-            \{ \"roomid\": $roomid , \"starting_money\": \[50,78\] , \"user\": $user \}
-        "
-
+		set json "\{\"lobbies\": \[$lobbies\]\}"
         tpBindString JSON $json
         
         asPlayFile -nocache war_games/jsonTemplate.json

@@ -14,12 +14,15 @@
     async function display_lobbies(json) {
         //var json = {"roomid": ["3","4"], "starting_money": [50,78], "user": ["Ben","Paul"]}; //this function will get and display all lobbies from a json file
 
+        console.log(json["lobbies"][0]["player1_id"])
+
         document.getElementById("lobbies").innerHTML = ""; //refresh the lobbies
-        for(i = 0; i < json["roomid"].length; i++){
-            document.getElementById("lobbies").innerHTML+= "<p>Room " + json["roomid"][i] + "</p>"; //displays the room number
-            document.getElementById("lobbies").innerHTML+= "<p>User: " + json["user"][i].toString() + "</p>"; //displays the user in the room
-            document.getElementById("lobbies").innerHTML+= "<p>Starting Money: " + json["starting_money"][i].toString() + "</p>"; //adds the starting money in the room
-            document.getElementById("lobbies").innerHTML+= '<a href="##TP_CGI_URL##?action=WAR_GAME_Waiting_Room&user_id=##TP_user_id##&room_id=' + json["roomid"][i] + '">Join<a>'; //creates link to lobby
+        for(i = 0; i < json["lobbies"].length; i++){
+            document.getElementById("lobbies").innerHTML+= "<p>Room " + json["lobbies"][i]["roomid"] + "</p>"; //displays the room number
+            document.getElementById("lobbies").innerHTML+= "<p>Player1_id: " + json["lobbies"][i]["player1_id"].toString() + "</p>"; //displays the user in the room
+            document.getElementById("lobbies").innerHTML+= "<p>Player2_id: " + json["lobbies"][i]["player2_id"].toString() + "</p>"; //displays the user in the room
+            // document.getElementById("lobbies").innerHTML+= "<p>Starting Money: " + json["starting_money"][i].toString() + "</p>"; //adds the starting money in the room
+            document.getElementById("lobbies").innerHTML+= '<a href="##TP_CGI_URL##?action=WAR_GAME_Waiting_Room&user_id=##TP_user_id##&room_id=' + json["lobbies"][i]["roomid"] + '">Join<a>'; //creates link to lobby
             document.getElementById("lobbies").innerHTML+= "<br><br>"
         }
     }
