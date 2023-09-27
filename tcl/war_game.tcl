@@ -244,22 +244,21 @@ namespace eval WAR_GAME {
 
         db_close $rs
 
-        return game_id
+        return $game_id
 
     }
 
     proc get_turn_number {game_id player_id} {
         global DB
 
-        set sql{
+        set sql {
             SELECT
                 MAX(turn_number) as turn_number
 
             FROM
                 twargamemoves
             WHERE
-                game_id = ?,
-                player_id = ?
+                game_id = ?
         }
 
 
@@ -270,7 +269,6 @@ namespace eval WAR_GAME {
 			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
-		
 		if {[catch {set rs [inf_exec_stmt $stmt $game_id $player_id]} msg]} {
 			tpBindString err_msg "error occured while executing query"
 			ob::log::write ERROR {===>error: $msg}
@@ -294,16 +292,76 @@ namespace eval WAR_GAME {
 
     }
 
+                #move.game_bal as game_bal, may not exist
+                #bet_move.bet_value as bet_value, may not exist
+                #action.action as action, may not exist
+                #card.card_value as card_value, may not exist
+                #suit.suit_name as suit_name,   may not exist
+                #COUNT(hand_card.card_id) as card_amount #exist
+
+
+
+
+    proc get_card_amount {game_id player_id turn_number} {
+        global DB
+
+        set turn_number [expr $turn_number - 1]
+
+        set sql {  
+            SELECT
+                COUNT(hand_card.card_id) as card_amount
+            FROM
+                thand as hand,
+                thand_card as hand_card,
+                twargamemoves as moves
+            WHERE
+                hand.hand_id = hand_card.hand_id AND
+                moves.hand_id = hand.hand_id AND
+                hand.player_id = ? AND
+                moves.turn_number = ? AND
+                moves.game_id = ?
+
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby_page.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $player_id $turn_number $game_id]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby_page.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set result [db_get_col $rs 0 card_amount]
+
+        db_close $rs
+
+        puts "========================== isnide count card  result = $result"
+        return $result
+
+
+
+    }
 
     proc get_game_move {game_id player_id turn_number} {
         global DB
 
 
-        set turn_number [expr [turn_number - 1]]
+        set turn_number [expr $turn_number - 1]
 
         set RESULTS {}
 
-        set sql{
+        set sql {
             SELECT
                 move.game_bal as game_bal,
                 bet_move.bet_value as bet_value,
@@ -319,11 +377,12 @@ namespace eval WAR_GAME {
                 thand as hand,
                 thand_card as hand_card,
                 twarcard as card,
-                tsuit as suit
-
+                tsuit as suit,
+                twarbetfinal as betfinal
             WHERE
+                
                 move.game_id = ? AND
-                move.player_id = ? AND
+                hand.player_id = ? AND
                 move.turn_number = ? AND
                 move.bet_id = bet_move.bet_id AND
                 action.action_id = bet_move.action_id AND
@@ -331,7 +390,6 @@ namespace eval WAR_GAME {
                 hand.hand_id = move.hand_id AND
                 hand_card.hand_id = hand.hand_id AND
                 hand_card.turn_number = ? AND
-                hand.player_id = move.player_id AND
                 card.suit_id = suit.suit_id
 
 
@@ -372,15 +430,13 @@ namespace eval WAR_GAME {
 
     }
 
-    proc get_user_id {room_id} {
+    proc get_user_id_in_room {room_id} {
         global DB
 
 
-        set turn_number [expr [turn_number - 1]]
-
         set RESULTS {}
 
-        set sql{
+        set sql {
             SELECT
                 player1_id,
                 player2_id
@@ -415,10 +471,11 @@ namespace eval WAR_GAME {
         set RESULT(player1_id) [db_get_col $rs 0 player1_id]
         set RESULT(player2_id) [db_get_col $rs 0 player2_id]
 
-
         db_close $rs
 
-        return RESULT
+
+
+        return [list $RESULT(player1_id) $RESULT(player2_id)]
 
     }
 
@@ -427,14 +484,19 @@ namespace eval WAR_GAME {
 
         set user_id [reqGetArg user_id]
 
-        set room_id [reqGetArg $room_id]
+
+        set room_id [reqGetArg room_id]
+
 
         set game_id [room_id_to_game_id $room_id]
 
         set current_user_id $user_id
         set other_user_id {}
         
-        set PLAYERS [get_user_id room_id]
+        set ret_players [get_user_id_in_room $room_id]
+
+        set PLAYERS(player1_id) [lindex $ret_players 0]
+        set PLAYERS(player2_id) [lindex $ret_players 1]
 
         if {$PLAYERS(player1_id) == $user_id} {
             set other_user_id $PLAYERS(player2_id)
@@ -444,11 +506,17 @@ namespace eval WAR_GAME {
             return
         }
 
+
+
         set current_turn [get_turn_number $game_id $current_user_id]
 
-        set current_user [get_game_move $game_id $current_user_id $turn_number]
+        set player_1_card_amount [get_card_amount $game_id $PLAYERS(player1_id) $current_turn]
 
-        set other_user [get_game_move $game_id $other_user_id $turn_number]
+        set player_2_card_amount [get_card_amount $game_id $PLAYERS(player2_id) $current_turn]
+
+        #set current_user [get_game_move $game_id $current_user_id $current_turn]
+
+        #set other_user [get_game_move $game_id $other_user_id $current_turn]
 
 
         #current turn database
@@ -468,9 +536,13 @@ namespace eval WAR_GAME {
         
 
 
-        set JSON "\{\"current_turn\": 0, \"user_balance\": 50, \"user_card_amount\" : 5, \"condition\": \"playing\", \
+        set json "\{\"current_turn\": 0, \"user_balance\": 50, \"user_card_amount\" : 5, \"condition\": \"playing\", \
             \"viewable_card\": \{\"viewable_turn\": -1, \"viewable_location\": -1, \"specific_card\": \"d4\"\}, \
             \"user2\": \{\"specific_card\": \"dk\", \"viewable_turn\": -1, \"user2_balance\": 50, \"user2_card_amount\": 5\}"
+        
+        tpBindString JSON $json
+
+        asPlayFile -nocache war_games/jsonTemplate.json
 
     }
 
@@ -597,6 +669,7 @@ namespace eval WAR_GAME {
 
 
         tpBindString room_id $room_id
+        tpBindString user_id $user_id
         # Send to HTML page
         asPlayFile -nocache war_games/game_page.html
     }
