@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Game Page</title>
+	</head>
+	<body>
+        <p id="my_balance"></p>
+        <button>Forfeit Game</button>
+        <p id="user2_balance"></p>
+        <div id="user2_card"></div>
+        <div id="turn"></div>
+        <div id="cards"></div>
+        <input id="bet_amount">
+        <button id="fold">Fold</button>
+        <button id="match">Match</button>
+        <button id="Raise">Raise</button>
+        <div id="log"></div>        
+		
+		
+	</body>
+
+
+</html>
+<script>
+    async function display_game(){
+        var a = 1;
+        //will get json file
+        var json = {"current_turn": 0, "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_turn": -1, "viewable_location": 1, "specific_card": "d4"}, "user2": {"specific_card": "dk", "viewable_turn": -1, "user2_balance": 50, "user2_card_amount": 5}};
+        document.getElementById("cards").innerHTML = ""; //so that the sections can be refreshed
+        document.getElementById("user2_card").innerHTML = "";
+
+
+        if(json["user2"]["specific_card"] != "" && json["user2"]["viewable_turn"] != -1){ //displays user 2 turned card
+                document.getElementById("user2_card").innerHTML = '<p>Opponent has ' + json["user2"]["specific_card"] + ' in turn ' + json["user2"]["viewable_turn"] + '</p>'
+            }else{ //if user 2 has never shown their cards
+                document.getElementById("user2_card").innerHTML = '<p>Opponent has no known cards</p>';
+            }
+
+        if(json["condition"] == "playing"){ //if game is still going on
+            for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
+
+                if(json["current_turn"] == json["viewable_card"]["viewable_turn"] && json["viewable_card"]["viewable_location"] == i){ //shows turned over card
+                    document.getElementById("cards").innerHTML+='<a href="#">Card '+ json["viewable_card"]["specific_card"] + '</a>';
+
+                }else{ //shows the back of each card
+                    document.getElementById("cards").innerHTML+='<a href="#">Card '+ (i + 1).toString() + '</a>';
+
+                }
+            }
+
+        }else{ //if game has finished
+            var message = "The game has finished";
+
+            if(json["user2_balance"] == 0){ //if user definitely wins
+                message = "You have won the game";
+            }else if(json["user_balance"] == 0){ //if user definitely loses
+                message = "You have lost the game";
+            }
+            message+= "\nYou have " + json["user_balance"].toString() + " left"
+            message+= "\nThe opponent has " + json["user2_balance"].toString() + " left"
+
+            document.getElementById("cards").innerHTML+='<p>' + message +'</p>';
+        }
+    }
+
+    function get_game_position(){
+        fetch('##TP_CGI_URL##?action=WAR_GAME_game_state') //gets json from url
+        .then(response => response.text())
+        .then(text => display_game(JSON.parse(text)))
+    }
+
+    get_game_position();
+    setInterval(get_game_position(), 100); //updates game position every 10th of a second
+</script>

@@ -14,7 +14,7 @@ namespace eval WAR_GAME {
 
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
-    asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
+    asSetAct WAR_GAME_Game_State_JSON       [namespace code game_state_json]
 
     proc last_pk {} {
         global DB
@@ -47,7 +47,7 @@ namespace eval WAR_GAME {
         db_close $rs
 
 
-        return last_pk
+        return $last_pk
     }
 
     proc room_id_to_game_id {room_id} {
@@ -286,7 +286,7 @@ namespace eval WAR_GAME {
 
         set room_id [reqGetArg room_id]
 
-        set game_id [room_id_to_game_id room_id]
+        set game_id [room_id_to_game_id $room_id]
 
         set current_turn [get_turn_number game_id player_id]
 
@@ -443,7 +443,7 @@ namespace eval WAR_GAME {
 
         tpBindString room_id $room_id
         # Send to HTML page
-        asPlayFile -nocache game_page.html
+        asPlayFile -nocache war_games/game_page.html
     }
 
     proc get_lobbies_json args {
