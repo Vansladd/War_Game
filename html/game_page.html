@@ -64,7 +64,7 @@
     }
 
     function get_game_position(){
-        fetch('##TP_CGI_URL##?action=WAR_GAME_game_state') //gets json from url
+        fetch('##TP_CGI_URL##?action=WAR_GAME_game_state_JSON&user_id=##TP_user_id##&room_id=##TP_room_id##') //gets json from url
         .then(response => response.text())
         .then(text => display_game(JSON.parse(text)))
     }
