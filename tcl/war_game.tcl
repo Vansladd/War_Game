@@ -27,7 +27,7 @@ namespace eval WAR_GAME {
 			tpBindString err_msg "error occured while preparing statement"
 			ob::log::write ERROR {===>error: $msg}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 		
@@ -36,13 +36,13 @@ namespace eval WAR_GAME {
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 
         catch {inf_close_stmt $stmt}
 
-        set last_pk [db_get_col $rs 0 pk]
+        set pk [db_get_col $rs 0 pk]
 
         db_close $rs
 
@@ -66,7 +66,7 @@ namespace eval WAR_GAME {
 			tpBindString err_msg "error occured while preparing statement"
 			ob::log::write ERROR {===>error: $msg}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 		
@@ -75,7 +75,7 @@ namespace eval WAR_GAME {
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 
@@ -109,7 +109,7 @@ namespace eval WAR_GAME {
 			tpBindString err_msg "error occured while preparing statement"
 			ob::log::write ERROR {===>error: $msg}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 		
@@ -118,7 +118,7 @@ namespace eval WAR_GAME {
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 
@@ -182,7 +182,7 @@ namespace eval WAR_GAME {
 			tpBindString err_msg "error occured while preparing statement"
 			ob::log::write ERROR {===>error: $msg}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 		
@@ -191,7 +191,7 @@ namespace eval WAR_GAME {
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 
@@ -253,7 +253,7 @@ namespace eval WAR_GAME {
 			tpBindString err_msg "error occured while preparing statement"
 			ob::log::write ERROR {===>error: $msg}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 		
@@ -262,7 +262,7 @@ namespace eval WAR_GAME {
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 
@@ -295,7 +295,7 @@ namespace eval WAR_GAME {
         set current_user [get_game_move game_id player_id turn_number]
 
         puts "---------------------> $current_user(bet_value)"
-        
+
 
         set other_user []
 
@@ -342,7 +342,7 @@ namespace eval WAR_GAME {
 			tpBindString err_msg "error occured while preparing statement"
 			ob::log::write ERROR {===>error: $msg}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 		
@@ -351,7 +351,7 @@ namespace eval WAR_GAME {
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 
@@ -395,7 +395,7 @@ namespace eval WAR_GAME {
                 tpBindString err_msg "error occured while preparing statement"
                 ob::log::write ERROR {===>error: $msg}
                 tpSetVar err 1
-                asPlayFile -nocache war_games/lobby.html
+                asPlayFile -nocache war_games/lobby_page.html
                 return
             }
             
@@ -404,7 +404,7 @@ namespace eval WAR_GAME {
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
                 tpSetVar err 1
-                asPlayFile -nocache war_games/lobby.html
+                asPlayFile -nocache war_games/lobby_page.html
                 return
             }
 
@@ -426,7 +426,7 @@ namespace eval WAR_GAME {
                 tpBindString err_msg "error occured while preparing statement"
                 ob::log::write ERROR {===>error: $msg}
                 tpSetVar err 1
-                asPlayFile -nocache war_games/lobby.html
+                asPlayFile -nocache war_games/lobby_page.html
                 return
             }
             
@@ -435,7 +435,7 @@ namespace eval WAR_GAME {
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
                 tpSetVar err 1
-                asPlayFile -nocache war_games/lobby.html
+                asPlayFile -nocache war_games/lobby_page.html
                 return
             }
 
@@ -460,7 +460,7 @@ namespace eval WAR_GAME {
 			tpBindString err_msg "error occured while preparing statement"
 			ob::log::write ERROR {===>error: $msg}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 		
@@ -469,7 +469,7 @@ namespace eval WAR_GAME {
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
+			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
 
