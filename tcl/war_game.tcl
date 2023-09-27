@@ -297,7 +297,6 @@ namespace eval WAR_GAME {
         set user_id [reqGetArg user_id]
         set room_id [reqGetArg room_id]
 
-        # Need to make an if statement to update either player1 or player2 depending on number of players
         set sql {
             select
                 player1_id,
@@ -315,8 +314,6 @@ namespace eval WAR_GAME {
 			asPlayFile -nocache war_games/lobby.html
 			return
 		}
-
-        puts "---------------------------------------------> GO_ROOM_PAGE STMT"
 		
 		if {[catch {set rs [inf_exec_stmt $stmt $room_id]} msg]} {
 			tpBindString err_msg "error occured while executing query"
@@ -327,14 +324,10 @@ namespace eval WAR_GAME {
 			return
 		}
 
-        puts "---------------------------------------------> GO_ROOM_PAGE EXECUTE"
-
         catch {inf_close_stmt $stmt}
 
         set player1_id [db_get_col $rs 0 player1_id]
         set player2_id [db_get_col $rs 0 player2_id]
-
-        puts "---------------------------------------------> GO_ROOM_PAGE SET PLAYER IDS"
 
         catch {db_close $rs}
 
@@ -343,34 +336,6 @@ namespace eval WAR_GAME {
         } elseif {$player2_id == ""} {
             insert_player_to_room player2_id $user_id $room_id
         }
-
-
-        # SQL query to update tactiveroom
-        # set sql {
-        #     update 
-        #         tactivewarroom
-        #     set 
-        #         player2_id = ?
-        #     where 
-        #         room_id = ?
-        # }
-
-        # if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
-		# 	tpBindString err_msg "error occured while preparing statement"
-		# 	ob::log::write ERROR {===>error: $msg}
-		# 	tpSetVar err 1
-		# 	asPlayFile -nocache war_games/lobby.html
-		# 	return
-		# }
-		
-		# if {[catch {inf_exec_stmt $stmt $user_id $room_id} msg]} {
-		# 	tpBindString err_msg "error occured while executing query"
-		# 	ob::log::write ERROR {===>error2: $msg}
-        #     catch {inf_close_stmt $stmt}
-		# 	tpSetVar err 1
-		# 	asPlayFile -nocache war_games/lobby.html
-		# 	return
-		# }
 
         catch {inf_close_stmt $stmt}
 
@@ -382,8 +347,6 @@ namespace eval WAR_GAME {
 
     proc insert_player_to_room {player player_id room_id} {
         global DB
-
-        puts "---------------------------------------------> INSERT PLAYER TO ROOM"
 
         set sql [subst {
             update 
@@ -401,8 +364,6 @@ namespace eval WAR_GAME {
 			asPlayFile -nocache war_games/lobby.html
 			return
 		}
-
-        puts "---------------------------------------------> INSERT PLAYER TO ROOM STMT"
 		
 		if {[catch {inf_exec_stmt $stmt $player_id $room_id} msg]} {
 			tpBindString err_msg "error occured while executing query"
@@ -412,12 +373,6 @@ namespace eval WAR_GAME {
 			asPlayFile -nocache war_games/lobby.html
 			return
 		}
-
-        puts "---------------------------------------------> INSERT PLAYER TO ROOM EXECUTE"
-        puts "----------------------------------------------> $sql"
-        puts "----------------------------------------------> $player"
-        puts "----------------------------------------------> $player_id"
-        puts "----------------------------------------------> $"
 
         catch {inf_close_stmt $stmt}
     }

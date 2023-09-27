@@ -12,9 +12,6 @@
 
 <script>
     async function display_lobbies(json) {
-        //var json = {"roomid": ["3","4"], "starting_money": [50,78], "user": ["Ben","Paul"]}; //this function will get and display all lobbies from a json file
-
-        console.log(json["lobbies"][0]["player1_id"])
 
         document.getElementById("lobbies").innerHTML = ""; //refresh the lobbies
         for(i = 0; i < json["lobbies"].length; i++){
