@@ -11,9 +11,50 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Game                  [namespace code go_game_page]
     asSetAct WAR_GAME_Waiting_Room          [namespace code go_room_page]
     asSetAct WAR_GAME_Join_Game             [namespace code go_join_game]
+    asSetAct WAR_GAME_Leave_Room            [namespace code leave_room]
 
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
+
+    proc leave_room args {
+        global DB
+
+        set user_id     [reqGetArg user_id]
+        set room_id     [reqGetArg room_id]
+        set player_id   [reqGetArg player_num_id]
+
+        set sql [subst {
+            UPDATE 
+                tactivewarroom 
+            SET 
+                $player_id = NULL
+            WHERE 
+                room_id = ?
+        }]
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+		
+		if {[catch {inf_exec_stmt $stmt $room_id} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        tpBindString user_id $user_id
+
+        asPlayFile -nocache war_games/lobby_page.html
+    }
 
     proc get_waiting_room_json args {
         global DB
@@ -333,8 +374,10 @@ namespace eval WAR_GAME {
 
         if {$player1_id == ""} {
             insert_player_to_room player1_id $user_id $room_id
+            tpBindString player_num_id player1_id
         } elseif {$player2_id == ""} {
             insert_player_to_room player2_id $user_id $room_id
+            tpBindString player_num_id player2_id
         }
 
         catch {inf_close_stmt $stmt}
