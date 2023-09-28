@@ -12,10 +12,70 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Waiting_Room          [namespace code go_room_page]
     asSetAct WAR_GAME_Join_Game             [namespace code go_join_game]
     asSetAct WAR_GAME_Leave_Room            [namespace code leave_room]
+    asSetAct WAR_GAME_Flip_card             [namespace code flip_card]
 
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
+
+
+    proc get_specfic_card {user_id room_id card_location} {
+        global DB
+
+        set sql {
+            SELECT 
+                card.card_value,
+                suit.suit_name,
+                card.card_name
+            FROM
+                thand_card,
+                thand,
+                twardcard as card,
+                tsuit as suit,
+                twargamemoves as game_moves
+            WHERE
+                thand.hand_id = thand_card.hand_id AND
+                thand.card_id = twarcard.card_id AND
+                suit.suit_id = twarcard.suit_id AND
+                thand.player_id = ? AND
+                game_moves.hand_id = thand.hand_id AND
+                game_moves.game_id = ?
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby_page.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby_page.html
+			return
+		}
+    }
+
+    proc flip_card args {
+        global DB
+
+        set user_id             [reqGetArg user_id]
+        set room_id             [reqGetArg room_id]
+        set card_location       [reqGetArg card_location]
+        set game_id             [room_id_to_game_id $room_id]
+
+
+        set specfic_card [get_specfic_card $user_id $game_id $card_location]
+
+
+
+
+
+    }
 
     proc random_number {min max} {
         return [expr int((rand() * ($max + 1 - $min)) + $min)]
@@ -509,11 +569,34 @@ namespace eval WAR_GAME {
 
 
 
-        set current_turn [get_turn_number $game_id $current_user_id]
 
-        set player_1_card_amount [get_card_amount $game_id $PLAYERS(player1_id) $current_turn]
+        set current_user_current_turn [get_turn_number $game_id $current_user_id]
 
-        set player_2_card_amount [get_card_amount $game_id $PLAYERS(player2_id) $current_turn]
+        set other_current_turn [get_turn_number $game_id $other_user_id]
+
+        set current_user_card_amount [get_card_amount $game_id $current_user_id $current_user_current_turn]
+
+        set other_card_amount [get_card_amount $game_id $other_user_id $other_current_turn]
+
+        set current_turn ""
+
+        if {$current_user_current_turn > $other_current_turn} {
+            set current_turn $current_user_current_turn
+        } else {
+            set current_turn $other_current_turn
+        }
+
+        set this_balance 50
+
+        set other_balance 50
+
+        set condition "playing"
+
+        set viewable_card ""
+
+        set viewable_location -1
+        
+        set other_specific_card ""
 
         #set current_user [get_game_move $game_id $current_user_id $current_turn]
 
@@ -537,9 +620,9 @@ namespace eval WAR_GAME {
         
 
 
-        set json "\{\"current_turn\": 0, \"user_balance\": 50, \"user_card_amount\" : 5, \"condition\": \"playing\", \
-            \"viewable_card\": \{\"viewable_turn\": -1, \"viewable_location\": -1, \"specific_card\": \"d4\"\}, \
-            \"user2\": \{\"specific_card\": \"dk\", \"viewable_turn\": -1, \"user2_balance\": 50, \"user2_card_amount\": 5\}"
+        set json "\{\"current_turn\": $current_turn, \"user_balance\": $this_balance, \"user_card_amount\" : $current_user_card_amount, \"condition\": \"$condition\", \
+            \"viewable_card\": \{\"viewable_turn\": $current_user_current_turn, \"viewable_location\": $viewable_location, \"specific_card\": \"$viewable_card\"\}, \
+            \"user2\": \{\"specific_card\": \"$other_specific_card\", \"viewable_turn\": $other_current_turn, \"user2_balance\": $other_balance, \"user2_card_amount\": $other_card_amount\}\}"
         
         tpBindString JSON $json
 
