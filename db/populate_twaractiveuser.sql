@@ -15,7 +15,7 @@ INSERT INTO
 VALUES 
 	(8, dbinfo('utc_current') - 200); 
 
- INSERT INTO  
+INSERT INTO  
 	tactivewaruser (user_id, last_active) 
 VALUES 
 	(9, dbinfo('utc_current') - 600); 
