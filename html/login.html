@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Login Page</title>
+		<title>Login</title>
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=war_game_stylesheet"> <!-- Link to an external CSS file -->
 	</head>
 	<body>
-		<h1>Login</h1>
-		<form action="##TP_CGI_URL##" method="post">
-			<input type="hidden" name="action" value="WAR_GAME_Do_Login" />
-			<input type="text" name="username" size="5"/>
-			<button type="Login">Login</button>
-		</form>
+		<div id="login-container">
+			<h1>War Game</h1>
+				<form action="##TP_CGI_URL##" method="post">
+					<div class="form-group">
+						<label for="username">Username:</label>
+						<input type="hidden" name="action" value="WAR_GAME_Do_Login" />
+						<input type="text" id="username-input" name="username" size="20"/> <!-- Increased the input size for better visibility -->
+					</div>	
+					<button type="submit" id="login-button">Login</button> <!-- Changed the button type to "submit" -->
+				</form>
+		</div>
 	</body>
 </html>
+
