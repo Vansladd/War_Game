@@ -784,11 +784,47 @@ namespace eval WAR_GAME {
     }
 
     proc disconnect_timeout_users args {
-        puts "--------------------------------> I WILL POLL"
+
+        puts "---------------------------------------------> RUNNING SQL DELETE ACTIVE STATEMENTS!"
+
+        global DB
+
+        set sql {
+            delete from 
+                tactivewaruser
+            where 
+                sess_id in (
+                select 
+                    sess_id 
+                from 
+                    tactivewaruser 
+                where 
+                    dbinfo('utc_current') - last_active > 600
+            );
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch [inf_exec_stmt $stmt] msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
     }
 
     proc go_login_page args {
-        
+
         # Move this to an initialisation method (which could be referenced in the menu, and then you show the login page)
         # This has nothing to do with logging in after all
         if {![OT_CfgGet APP_IS_PMT 0]} {
@@ -857,6 +893,8 @@ namespace eval WAR_GAME {
         set user_id [get_user_id $username]
         tpBindString user_id $user_id
 
+        set_user_active $user_id
+
         # If statement to different pages
         go_lobby_page 
     }
@@ -896,6 +934,34 @@ namespace eval WAR_GAME {
         catch {db_close $rs}
 
         return $user_id
+    }
+
+    proc set_user_active {user_id} {
+        global DB 
+
+        set sql {
+            INSERT INTO tactivewaruser (user_id, last_active)
+            VALUES (?, dbinfo('utc_current'));
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error1: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+		
+		if {[catch {inf_exec_stmt $stmt $user_id} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error2: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
     }
 
     proc create_user {username} {

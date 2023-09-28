@@ -31,5 +31,5 @@ where
         from 
             tactivewaruser 
         where 
-            dbinfo('utc_current') - last_active > 600;
+            dbinfo('utc_current') - last_active > 600
 );
