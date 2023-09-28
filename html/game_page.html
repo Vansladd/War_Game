@@ -40,10 +40,10 @@
             for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
 
                 if(json["current_turn"] == json["viewable_card"]["viewable_turn"] && json["viewable_card"]["viewable_location"] == i){ //shows turned over card
-                    document.getElementById("cards").innerHTML+='<a href="?action=WAR_GAME_Flip_card&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'>Card '+ json["viewable_card"]["specific_card"] + '</a>';
+                    document.getElementById("cards").innerHTML+='<a href="##TP_CGI_URL##?action=WAR_GAME_Flip_card&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'">Card '+ json["viewable_card"]["specific_card"] + '</a>';
 
                 }else{ //shows the back of each card
-                    document.getElementById("cards").innerHTML+='<a href="#">Card '+ (i + 1).toString() + '</a>';
+                    document.getElementById("cards").innerHTML+='<a href="##TP_CGI_URL##?action=WAR_GAME_Flip_card&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'">Card '+ (i + 1).toString() + '</a>';
 
                 }
             }

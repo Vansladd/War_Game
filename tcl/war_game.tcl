@@ -19,6 +19,60 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
 
 
+    
+    
+    
+    
+    proc get_entire_hand {user_id game_id} {
+       global DB
+
+       global HAND
+
+       set sql {
+            SELECT 
+                card.card_id as card_id,
+                hand_card.hand_card_id as hand_card_id
+            FROM
+                thand_card as hand_card,
+                thand,
+                twarcard as card,
+                twargamemoves as game_moves
+            WHERE
+                thand.hand_id = hand_card.hand_id AND
+                hand_card.card_id = card.card_id AND
+                thand.player_id = ? AND
+                game_moves.hand_id = thand.hand_id AND
+                game_moves.game_id = ?
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby_page.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $user_id $game_id]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby_page.html
+			return
+		} 
+
+
+        for {set i 0} {$i < [db_get_nrows $rs]} {incr i} {
+            set HAND($i,card_id) [db_get_col $rs $i card_id]
+            set HAND($i,hand_card_id) [db_get_col $rs $i hand_card_id]
+        }
+        db_close $rs
+
+        return HAND
+    }
+    
+    
     proc get_specfic_card {user_id room_id card_location} {
         global DB
 
@@ -30,7 +84,7 @@ namespace eval WAR_GAME {
             FROM
                 thand_card,
                 thand,
-                twardcard as card,
+                twarcard as card,
                 tsuit as suit,
                 twargamemoves as game_moves
             WHERE
@@ -67,6 +121,10 @@ namespace eval WAR_GAME {
         set room_id             [reqGetArg room_id]
         set card_location       [reqGetArg card_location]
         set game_id             [room_id_to_game_id $room_id]
+
+        set entire_hand [get_entire_hand $user_id $game_id]
+
+        puts "================================= entire hand = $entire_hand"
 
 
         set specfic_card [get_specfic_card $user_id $game_id $card_location]
