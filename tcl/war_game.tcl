@@ -828,10 +828,10 @@ namespace eval WAR_GAME {
 
         if {[db_get_nrows $rs] > 0} {
             set user_id  [db_get_col $rs 0 user_id]
-            set username [db_get_col $rs 0 username]
+            set username "\"[db_get_col $rs 0 username]\""
         }
 
-        set json "{\"user_id\": $user_id, \"username\": \"$username\"}"
+        set json "{\"user_id\": $user_id, \"username\": $username}"
 
         tpBindString JSON $json
         asPlayFile -nocache war_games/jsonTemplate.json
