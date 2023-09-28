@@ -9,6 +9,8 @@
         <p id="user2_balance"></p>
         <div id="user2_card"></div>
         <div id="turn"></div>
+        <div id="their_card"></div>
+        <div id="my_card"></div>
         <div id="cards"></div>
         <input id="bet_amount">
         <button id="fold">Fold</button>
@@ -38,15 +40,21 @@
 
         if(json["condition"] == "playing"){ //if game is still going on
             for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
-
-                if(json["current_turn"] == json["viewable_card"]["viewable_turn"] && json["viewable_card"]["viewable_location"] == i){ //shows turned over card
-                    document.getElementById("cards").innerHTML+='<a href="##TP_CGI_URL##?action=WAR_GAME_Flip_card&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'">Card '+ json["viewable_card"]["specific_card"] + '</a>';
-
-                }else{ //shows the back of each card
-                    document.getElementById("cards").innerHTML+='<a href="##TP_CGI_URL##?action=WAR_GAME_Flip_card&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'">Card '+ (i + 1).toString() + '</a>';
-
-                }
+                document.getElementById("cards").innerHTML+='<a href="##TP_CGI_URL##?action=WAR_GAME_Flip_card&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'">Card '+ (i + 1).toString() + '</a>';
+            
             }
+            if(json["viewable_card"]["specific_card"] != ""){
+                document.getElementById("my_card").innerHTML = "<p>Your selected card is " + json["viewable_card"]["specific_card"].toString() + "</p>"
+            } else {
+                document.getElementById("my_card").innerHTML = "<p>You haven't selected a card yet</p>"
+            }
+
+            if(json["user2"]["specific_card"] != ""){
+                document.getElementById("my_card").innerHTML = "<p>User 2 selected card " + json["user2"]["specific_card"].toString() + "</p>"
+            } else {
+                document.getElementById("my_card").innerHTML = "<p>User 2 hasn't selected a card yet</p>"
+            }
+
 
         }else{ //if game has finished
             var message = "The game has finished";
