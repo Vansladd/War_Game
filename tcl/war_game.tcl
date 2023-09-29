@@ -18,10 +18,39 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
+    
+    proc do_login {user_id} {
+        global DB
+
+        set sql {
+            INSERT INTO 
+                tactivewaruser (user_id, last_active)
+            VALUES 
+                (?, dbinfo('utc_current'));
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch [inf_exec_stmt $stmt $user_id] msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
 
 
-    
-    
+    }
+
     proc get_turned_card {user_id game_id current_turn} {
         global DB
 
@@ -36,7 +65,6 @@ namespace eval WAR_GAME {
                 hand.hand_id = game_moves.hand_id AND
                 game_moves.game_id = ? AND
                 game_moves.turn_number = ?
-
         }
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
@@ -651,20 +679,18 @@ namespace eval WAR_GAME {
 
     }
 
-    proc get_user_id_in_room {room_id} {
+    proc get_user_id_in_room {room_id} { 
         global DB
 
 
         set RESULTS {}
 
-        set sql {
+        ;#sql query refactor
+        set sql {   
             SELECT
-                player1_id,
-                player2_id
-
+                user_id
             FROM
-                tactivewarroom
-
+                tactivewaruser
             WHERE
                 room_id = ?
         }
@@ -689,8 +715,8 @@ namespace eval WAR_GAME {
 
         catch {inf_close_stmt $stmt}
 
-        set RESULT(player1_id) [db_get_col $rs 0 player1_id]
-        set RESULT(player2_id) [db_get_col $rs 0 player2_id]
+        set RESULT(player1_id) [db_get_col $rs 0 user_id]
+        set RESULT(player2_id) [db_get_col $rs 1 user_id]
 
         db_close $rs
 
@@ -810,16 +836,15 @@ namespace eval WAR_GAME {
         global DB
 
         set user_id     [reqGetArg user_id]
-        set room_id     [reqGetArg room_id]
-        set player_id   [reqGetArg player_num_id]
 
+        ;#sql query refactor
         set sql [subst {
             UPDATE 
-                tactivewarroom 
+                tactivewaruser 
             SET 
-                $player_id = NULL
+                room_id = NULL
             WHERE 
-                room_id = ?
+                user_id = ?
         }]
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
@@ -830,7 +855,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {inf_exec_stmt $stmt $room_id} msg]} {
+		if {[catch {inf_exec_stmt $stmt $user_id} msg]} {
 			tpBindString err_msg "error occured while executing query"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -851,12 +876,12 @@ namespace eval WAR_GAME {
 
         set room_id [reqGetArg room_id]
 
+        ;#sql query refactor
         set sql {
             select 
-                player1_id,
-                player2_id
+                user_id
             from
-                tactivewarroom
+                tactivewaruser
             where
                 room_id = ?
         }
@@ -880,8 +905,16 @@ namespace eval WAR_GAME {
 
         catch {inf_close_stmt $stmt}
 
-        set player1_id [db_get_col $rs 0 player1_id]
-        set player2_id [db_get_col $rs 0 player2_id]
+        set player1_id ""
+        set player2_id ""
+        if {[db_get_nrows $rs] == 1} {
+            set player1_id [db_get_col $rs 0 user_id]
+        }
+
+        if {[db_get_nrows $rs] == 2} {
+            set player2_id [db_get_col $rs 1 user_id]
+        }
+        
 
         db_close $rs
 
@@ -977,13 +1010,26 @@ namespace eval WAR_GAME {
     proc get_lobbies_json args {
         global DB
         # change sql select statement
+        ;#sql query refactor
         set sql {
-            select
-                room_id,
-                player1_id,
-                player2_id
-            from 
-                tactivewarroom;
+            SELECT
+                tr.room_id as room_id,
+                MAX(CASE WHEN ru.user_rank = 1 THEN ru.user_id END) AS player1_id,
+                MAX(CASE WHEN ru.user_rank = 2 THEN ru.user_id END) AS player2_id
+            FROM
+                tactivewarroom tr
+            LEFT JOIN (
+                SELECT
+                    tu.room_id,
+                    tu.user_id,
+                    ROW_NUMBER() OVER (PARTITION BY tu.room_id ORDER BY tu.sess_id) AS user_rank
+                FROM
+                    tactivewaruser tu
+                WHERE
+                    tu.room_id IS NOT NULL
+            ) AS ru ON tr.room_id = ru.room_id
+            GROUP BY
+                tr.room_id;
         }
 
          if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
@@ -1008,7 +1054,6 @@ namespace eval WAR_GAME {
         set num_rooms [db_get_nrows $rs]
 		tpSetVar num_rooms $num_rooms
 	
-
         set lobbies ""
 
         # Note - refactor to ensure setplayerid and only change which player gets the thing and return the result
@@ -1033,13 +1078,12 @@ namespace eval WAR_GAME {
             }
         }
 
-        db_close $rs
+        catch {db_close $rs}
 		
 		set json "\{\"lobbies\": \[$lobbies\]\}"
         tpBindString JSON $json
         
         asPlayFile -nocache war_games/jsonTemplate.json
-        
     }
 
     proc go_login_page args {
@@ -1132,6 +1176,8 @@ namespace eval WAR_GAME {
         return $user_id
     }
 
+
+    # This is called when login successful
     proc create_user args {
         global DB
     
@@ -1162,12 +1208,17 @@ namespace eval WAR_GAME {
         catch {inf_close_stmt $stmt}
 
         set user_id [get_user_id $username]
-        tpBindString user_id $user_id
 
+        do_login $user_id
+
+        tpBindString user_id $user_id
         asPlayFile -nocache war_games/lobby_page.html
     }
     
+    # This is called when login successful
     proc go_lobby_page args {
+        tpBindString [set user_id [reqGetArg user_id]]
+        do_login $user_id
         asPlayFile -nocache war_games/lobby_page.html
     }
 
@@ -1178,49 +1229,7 @@ namespace eval WAR_GAME {
         set user_id [reqGetArg user_id]
         set room_id [reqGetArg room_id]
 
-        set sql {
-            select
-                player1_id,
-                player2_id
-            from 
-                tactivewarroom
-            where 
-                room_id = ?
-        }
-
-        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
-			tpBindString err_msg "error occured while preparing statement"
-			ob::log::write ERROR {===>error: $msg}
-			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
-			return
-		}
-		
-		if {[catch {set rs [inf_exec_stmt $stmt $room_id]} msg]} {
-			tpBindString err_msg "error occured while executing query"
-			ob::log::write ERROR {===>error2: $msg}
-            catch {inf_close_stmt $stmt}
-			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby.html
-			return
-		}
-
-        catch {inf_close_stmt $stmt}
-
-        set player1_id [db_get_col $rs 0 player1_id]
-        set player2_id [db_get_col $rs 0 player2_id]
-
-        catch {db_close $rs}
-
-        if {$player1_id == ""} {
-            insert_player_to_room player1_id $user_id $room_id
-            tpBindString player_num_id player1_id
-        } elseif {$player2_id == ""} {
-            insert_player_to_room player2_id $user_id $room_id
-            tpBindString player_num_id player2_id
-        }
-
-        catch {inf_close_stmt $stmt}
+        insert_user_to_room $user_id $room_id
 
         tpBindString user_id $user_id
         tpBindString room_id $room_id
@@ -1228,17 +1237,18 @@ namespace eval WAR_GAME {
         asPlayFile -nocache war_games/waiting_room.html
     }
 
-    proc insert_player_to_room {player player_id room_id} {
+    # Remove player on front end
+    proc insert_user_to_room {user_id room_id} {
         global DB
-
-        set sql [subst {
+        ;#sql query refactor
+        set sql {
             update 
-                tactivewarroom
+                tactivewaruser
             set 
-                $player = ?
-            where 
                 room_id = ?
-        }]
+            where 
+                user_id = ?
+        }
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
 			tpBindString err_msg "error occured while preparing statement"
@@ -1248,7 +1258,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {inf_exec_stmt $stmt $player_id $room_id} msg]} {
+		if {[catch {inf_exec_stmt $stmt $room_id $user_id} msg]} {
 			tpBindString err_msg "error occured while executing query"
 			ob::log::write ERROR {===>error2: $msg}
             catch {inf_close_stmt $stmt}

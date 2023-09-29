@@ -38,9 +38,8 @@
 				var username = document.getElementById("username-input").value;
 				const response = await fetch('##TP_CGI_URL##?action=WAR_GAME_User_JSON&username=' + username); //gets json from url
 				const json = await response.json(); 
-				
-				console.log("Fetched!")
-
+					
+				// New user if user_id is empty
 				if(json['user_id'] === "") { 
 					window.location.href = "##TP_CGI_URL##?action=WAR_GAME_Create_User&username=" + username; // User does not exist
 					return;
