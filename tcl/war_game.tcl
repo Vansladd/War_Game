@@ -6,13 +6,14 @@
 namespace eval WAR_GAME {
 
 	asSetAct WAR_GAME_Login                 [namespace code go_login_page]
-    asSetAct WAR_GAME_Do_Login              [namespace code do_login_page]
+    asSetAct WAR_GAME_Create_User           [namespace code create_user]
     asSetAct WAR_GAME_Lobby                 [namespace code go_lobby_page]
     asSetAct WAR_GAME_Game                  [namespace code go_game_page]
     asSetAct WAR_GAME_Waiting_Room          [namespace code go_room_page]
     asSetAct WAR_GAME_Join_Game             [namespace code go_join_game]
     asSetAct WAR_GAME_Leave_Room            [namespace code leave_room]
 
+    asSetAct WAR_GAME_User_JSON             [namespace code get_user_json]
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
@@ -784,19 +785,18 @@ namespace eval WAR_GAME {
     }
 
     proc go_login_page args {
-        
         asPlayFile -nocache war_games/login.html
     }
 
-    proc do_login_page args {
-        set username [reqGetArg username]
-
+    # Refactor this and get_user_id - abstract, we are repeating code
+    proc get_user_json args {
         global DB
 
-        # SQL Query Code here
+        set input_username [reqGetArg username]
+
         set sql {
             SELECT 
-                COUNT(username) AS username_exists
+                user_id, username
             FROM 
                 twaruser
             WHERE 
@@ -811,8 +811,8 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt $username]} msg]} {
-			tpBindString err_msg "error occured while executing query"
+		if {[catch {set rs [inf_exec_stmt $stmt $input_username]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
@@ -822,19 +822,19 @@ namespace eval WAR_GAME {
 
         catch {inf_close_stmt $stmt}
 
-        set user_exists [db_get_col $rs 0 username_exists]
+        set json ""
+        set user_id {""}
+        set username {""}
 
-        catch {db_close $rs}
+        if {[db_get_nrows $rs] > 0} {
+            set user_id  [db_get_col $rs 0 user_id]
+            set username "\"[db_get_col $rs 0 username]\""
+        }
 
-        if {$user_exists == 0} {
-            create_user $username
-        } 
+        set json "{\"user_id\": $user_id, \"username\": $username}"
 
-        set user_id [get_user_id $username]
-        tpBindString user_id $user_id
-
-        # If statement to different pages
-        go_lobby_page 
+        tpBindString JSON $json
+        asPlayFile -nocache war_games/jsonTemplate.json
     }
 
     proc get_user_id {username} {
@@ -858,7 +858,7 @@ namespace eval WAR_GAME {
 		}
 		
 		if {[catch {set rs [inf_exec_stmt $stmt $username]} msg]} {
-			tpBindString err_msg "error occured while executing query"
+			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
@@ -874,9 +874,11 @@ namespace eval WAR_GAME {
         return $user_id
     }
 
-    proc create_user {username} {
+    proc create_user args {
         global DB
-        # SQL Query Code here
+    
+        set username [reqGetArg username]
+
         set sql {
             INSERT INTO twaruser (username, acct_bal)
             VALUES (?, 1000);
@@ -891,7 +893,7 @@ namespace eval WAR_GAME {
 		}
 		
 		if {[catch {inf_exec_stmt $stmt $username} msg]} {
-			tpBindString err_msg "error occured while executing query"
+			tpBindString err_msg "Cannot enter an empty username!"
 			ob::log::write ERROR {===>error2: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
@@ -900,6 +902,11 @@ namespace eval WAR_GAME {
 		}
 
         catch {inf_close_stmt $stmt}
+
+        set user_id [get_user_id $username]
+        tpBindString user_id $user_id
+
+        asPlayFile -nocache war_games/lobby_page.html
     }
     
     proc go_lobby_page args {
