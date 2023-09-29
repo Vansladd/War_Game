@@ -66,3 +66,11 @@ label {
 #login-button:hover {
     background-color: #0056b3; /* Change to a darker shade for hover effect */
 }
+
+.error-message {
+    background-color: rgba(255, 0, 0, 0.8); /* Red color with 80% opacity */
+    color: white; /* Text color */
+    padding: 10px; /* Padding around the error message */
+    margin: 10px;
+    border-radius: 5px; /* Optional: Adds rounded corners */
+}

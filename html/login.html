@@ -12,7 +12,12 @@
 					<div class="form-group">
 						<label for="username">Username:</label>
 						<input type="text" id="username-input" name="username" size="20"/> <!-- Increased the input size for better visibility -->
-					</div>	
+					</div>
+					##TP_IF {[tpGetVar err] == 1}##
+						<div class="error-message">
+							##TP_err_msg##
+						</div>
+					##TP_ENDIF##
 					<button type="submit" onclick="handle_login();" id="login-button">Login</button> <!-- Changed the button type to "submit" -->
 				</form>
 			</div>

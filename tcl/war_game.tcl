@@ -812,7 +812,7 @@ namespace eval WAR_GAME {
 		}
 		
 		if {[catch {set rs [inf_exec_stmt $stmt $input_username]} msg]} {
-			tpBindString err_msg "error occured while executing query"
+			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
@@ -858,7 +858,7 @@ namespace eval WAR_GAME {
 		}
 		
 		if {[catch {set rs [inf_exec_stmt $stmt $username]} msg]} {
-			tpBindString err_msg "error occured while executing query"
+			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
@@ -893,7 +893,7 @@ namespace eval WAR_GAME {
 		}
 		
 		if {[catch {inf_exec_stmt $stmt $username} msg]} {
-			tpBindString err_msg "error occured while executing query"
+			tpBindString err_msg "Cannot enter an empty username!"
 			ob::log::write ERROR {===>error2: $msg}
             catch {inf_close_stmt $stmt}
 			tpSetVar err 1
