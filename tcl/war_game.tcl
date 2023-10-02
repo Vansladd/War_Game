@@ -1290,18 +1290,21 @@ namespace eval WAR_GAME {
         ;#sql query refactor
         set sql {
             SELECT
-                tr.room_id as room_id,
-                MAX(CASE WHEN ru.user_rank = 1 THEN ru.user_id END) AS player1_id,
-                MAX(CASE WHEN ru.user_rank = 2 THEN ru.user_id END) AS player2_id
+                tr.room_id,
+                MAX(CASE WHEN ru.user_rank = 1 THEN ru.username END) AS player1_username,
+                MAX(CASE WHEN ru.user_rank = 2 THEN ru.username END) AS player2_username
             FROM
                 tactivewarroom tr
             LEFT JOIN (
                 SELECT
                     tu.room_id,
                     tu.user_id,
+                    u.username,
                     ROW_NUMBER() OVER (PARTITION BY tu.room_id ORDER BY tu.sess_id) AS user_rank
                 FROM
                     tactivewaruser tu
+                LEFT JOIN
+                    twaruser u ON tu.user_id = u.user_id
                 WHERE
                     tu.room_id IS NOT NULL
             ) AS ru ON tr.room_id = ru.room_id
@@ -1337,21 +1340,21 @@ namespace eval WAR_GAME {
         for {set i 0} {$i < $num_rooms} {incr i} {
             set roomid "\"roomid\": [db_get_col $rs $i room_id]"
 
-            if {[set id_1 [db_get_col $rs $i player1_id]] == ""} {
-                set id_1 {"Empty"}
+            if {[set username_1 [db_get_col $rs $i player1_username]] == ""} {
+                set username_1 {None}
             }
 
-            if {[set id_2 [db_get_col $rs $i player2_id]] == ""} {
-                set id_2 {"Empty"}
+            if {[set username_2 [db_get_col $rs $i player2_username]] == ""} {
+                set username_2 {None}
             }
 
-            set player1_id "\"player1_id\": $id_1"
-            set player2_id "\"player2_id\": $id_2"
+            set player1_username "\"player1_username\": \"$username_1\""
+            set player2_username "\"player2_username\": \"$username_2\""
 
             if {$i == 0} {
-                set lobbies "\{$roomid, $player1_id, $player2_id\}"
+                set lobbies "\{$roomid, $player1_username, $player2_username\}"
             } else {
-                set lobbies "$lobbies, \{$roomid, $player1_id, $player2_id\}"
+                set lobbies "$lobbies, \{$roomid, $player1_username, $player2_username\}"
             }
         }
 
