@@ -20,6 +20,39 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
+
+    # This method here is not used anywhere
+    proc update_last_active {user_id} {
+        global DB
+
+        set sql {
+            UPDATE
+                tactivewaruser
+            SET
+                last_active = dbinfo('utc_current')
+            WHERE
+                user_id = ?
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch [inf_exec_stmt $stmt $user_id] msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+    }
     
 
     proc create_final_bet {game_id turn_number user_id} {
@@ -1419,56 +1452,13 @@ namespace eval WAR_GAME {
 
     # NOTE: NOT DONE YET AS WE HAVE YET TO COMPLETE GAMES
     proc disconnect_users_in_games {num_users} {
-        # Insert disconnect user from game logic here
+        # Insert disconnect user from game logic here (To be completed later)
         global DB
         global SESSION
         if {$num_users <= 0} {return}
-    }
-
-    proc disconnect_users_in_rooms {num_users} {
-        global DB
-        global SESSION
-
-        if {$num_users <= 0} {return}
-
-        # set where "player1_id = $SESSION(0,user_id) OR player2_id = $SESSION(0,user_id)"
-
-        # for {set i 1} {$i < $num_users} {incr i} {
-        #     set where "$where OR player1_id = $SESSION($i,user_id) OR player2_id = $SESSION($i,user_id)"            
-        # }
-
-        # set sql [subst {
-        #     delete from 
-        #         tactivewarroom
-        #     where 
-        #         $where  
-        # }]
-
-        # if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
-		# 	tpBindString err_msg "error occured while preparing statement"
-		# 	ob::log::write ERROR {===>error: $msg}
-		# 	tpSetVar err 1
-		# 	asPlayFile -nocache war_games/login.html
-		# 	return
-		# }
-		
-		# if {[catch [inf_exec_stmt $stmt] msg]} {
-		# 	tpBindString err_msg "error occured while executing query"
-		# 	ob::log::write ERROR {===>error: $msg}
-        #     catch {inf_close_stmt $stmt}
-		# 	tpSetVar err 1
-		# 	asPlayFile -nocache war_games/login.html
-		# 	return
-		# }
-
-        # puts "-------------------------> EXECUTE DISCONNECT FROM ROOMS!"
-
-        # catch {inf_close_stmt $stmt}
     }
 
     proc go_login_page args {
-
-
         asPlayFile -nocache war_games/login.html
     }
 
@@ -1610,8 +1600,6 @@ namespace eval WAR_GAME {
         set user_id [reqGetArg user_id]
         set room_id [reqGetArg room_id]
 
-        
-
         insert_user_to_room $user_id $room_id
 
 
@@ -1654,6 +1642,7 @@ namespace eval WAR_GAME {
         catch {inf_close_stmt $stmt}
     }
 
+    # Update user activity
     proc go_game_page args {
         asPlayFile -nocache war_games/game_page.html
     }
