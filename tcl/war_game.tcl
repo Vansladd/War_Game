@@ -22,12 +22,164 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
     
 
-    proc create_final_bet {game_id turn_number user_id} {
+    proc create_final_bet2 {} {
+        global DB
+
+
+        set sql {
+            INSERT INTO twarbetfinal("final_bet_value")
+            VALUES(0)
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        return [last_pk]
+    }
+    
+    proc create_user_bet {bet_value game_id action_id final_bet_id} {
+        global DB
+
+
+        set sql {
+            INSERT INTO twarbetmove(bet_value,game_id,action_id,final_bet_id)
+            VALUES(?,?,?,?)
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $bet_value $game_id $action_id $final_bet_id]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+
+    }
+    
+    
+    proc get_user_bet {move_id} {
+        set bet_id [get_bet_id $move_id]
+        return [get_bet_value $bet_id]
+    }
+
+    proc get_bet_value {bet_id} {
+        global DB
+
+
+        set sql {
+            SELECT
+                bet_value
+            FROM
+                twarbetmove
+            WHERE
+                bet_id = ?
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $bet_id]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        
+        set bet_value [db_get_col $rs 0 bet_value]
+
+        catch {db_close $rs}
+        return $bet_value
+    }
+
+    proc get_bet_id {move_id} {
+        global DB
+
+
+        set sql {
+            SELECT
+                twarbetmove.bet_id as bet_id
+            FROM
+                twarbetmove,
+                twargamemoves
+            WHERE
+                twarbetmove.move_id = ? AND
+                twarbetmove.move_id = twargamemoves.move_id
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $move_id]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        
+        set move_id [db_get_col $rs 0 move_id]
+
+        catch {db_close $rs}
+        return $move_id
+    }
+
+    proc create_final_bet {move_id} {
         global DB
 
         set sql {
-            INSERT INTO twarbetfinal(game_id, turn_number)
-            VALUES (?,?)
+            INSERT INTO twarbetfinal(final_bet_value)
+            VALUES (0)
         }
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
@@ -38,7 +190,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt $game_id $turn_number]} msg]} {
+		if {[catch {set rs [inf_exec_stmt $stmt]} msg]} {
 			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -51,57 +203,10 @@ namespace eval WAR_GAME {
 
         set final_bet_id [last_pk]
 
+        #set bet_id [get_bet_id $game_id $turn_number $user_id]
 
         set sql {
-            SELECT
-                twarbetmoves.moves_id as moves_id
-            FROM
-                twarbetmoves,
-                twaruser,
-                tactivewaruser,
-                tactivewarroom
-            WHERE
-                twarbetmoves.game_id = ? AND
-                twarbetmoves.turn_number = ? AND
-                twaruser.user_id = ? AND
-                twaruser.user_id = tactivewaruser.user_id AND
-                tactivewaruser.room_id = tactivewarroom.room_id AND
-                tactivewarroom.game_id = twardbetmoves.game_id
-        }
-
-
-        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
-			tpBindString err_msg "error occured while preparing statement"
-			ob::log::write ERROR {===>error: $msg}
-			tpSetVar err 1
-			asPlayFile -nocache war_games/login.html
-			return
-		}
-		
-		if {[catch {set rs [inf_exec_stmt $stmt $game_id $turn_number $user_id]} msg]} {
-			tpBindString err_msg "Please enter a non-empty username!"
-			ob::log::write ERROR {===>error: $msg}
-            catch {inf_close_stmt $stmt}
-			tpSetVar err 1
-			asPlayFile -nocache war_games/login.html
-			return
-		}
-
-        catch {inf_close_stmt $stmt}
-
-        
-        set moves_id [db_get_col $rs 0 moves_id]
-
-        catch {db_close $rs}
-
-        set sql {
-            UPDATE twarbetmoves
-                
-            SET final_bet_id = ?
-            FROM 
-                twarbetmoves
-            WHERE
-                moves_id = ?
+            INSERT twarbetmove (move_id, final_bet_id) VALUES (?, ?)
 
         }
 
@@ -113,7 +218,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt $final_bet_id $moves_id]} msg]} {
+		if {[catch {set rs [inf_exec_stmt $stmt $move_id $final_bet_id]} msg]} {
 			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -177,6 +282,8 @@ namespace eval WAR_GAME {
 
         set bet [reqGetArg bet_value]
         set action [reqGetArg bet_action]
+        set room_id [reqGetArg room_id]
+        set game_id [room_id_to_game_id $room_id]
 
         set action_id [to_action_id $action]
 
@@ -438,7 +545,7 @@ namespace eval WAR_GAME {
         #getting users entire hand
         array set entire_hand [get_entire_hand $user_id $game_id]
 
-        
+        #set final_bet_id [create_user_bet bet_value game_id action_id final_bet_id]
 
         #get users chosen card
         set specific_card_id $entire_hand($card_location,card_id)
@@ -535,6 +642,8 @@ namespace eval WAR_GAME {
 
 
             catch {inf_close_stmt $stmt}
+
+            return [last_pk]
     }
 
     proc insert_hand {player_id game_id cards card_number turn_number} {
@@ -646,8 +755,12 @@ namespace eval WAR_GAME {
         set p1_bal 100
         set p2_bal 100
 
-        insert_game_moves $game_id $pl1_hand_id 0 $p1_bal "" ""
-        insert_game_moves $game_id $pl2_hand_id 0 $p2_bal "" ""
+        set MOVE_ID(0) ""
+        
+        set MOVE_ID(1) [insert_game_moves $game_id $pl1_hand_id 0 $p1_bal "" ""]
+        set MOVE_ID(2) [insert_game_moves $game_id $pl2_hand_id 0 $p2_bal "" ""]
+
+        return [array get MOVE_ID]
 
 
     }
@@ -828,83 +941,6 @@ namespace eval WAR_GAME {
 
     }
 
-    proc get_game_move {game_id player_id turn_number} {
-        global DB
-
-
-        set turn_number [expr $turn_number - 1]
-
-        set RESULTS {}
-
-        set sql {
-            SELECT
-                move.game_bal as game_bal,
-                bet_move.bet_value as bet_value,
-                action.action as action,
-                card.card_value as card_value,
-                suit.suit_name as suit_name,
-                COUNT(hand_card.card_id) as card_amount
-
-            FROM
-                twargamemoves as move,
-                twarbetmove as bet_move,
-                twarbetactions as action,
-                thand as hand,
-                thand_card as hand_card,
-                twarcard as card,
-                tsuit as suit,
-                twarbetfinal as betfinal
-            WHERE
-                
-                move.game_id = ? AND
-                hand.player_id = ? AND
-                move.turn_number = ? AND
-                move.bet_id = bet_move.bet_id AND
-                action.action_id = bet_move.action_id AND
-                move.card_id = card.card_id AND
-                hand.hand_id = move.hand_id AND
-                hand_card.hand_id = hand.hand_id AND
-                hand_card.turn_number = ? AND
-                card.suit_id = suit.suit_id
-
-
-
-        }
-
-
-        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
-			tpBindString err_msg "error occured while preparing statement"
-			ob::log::write ERROR {===>error: $msg}
-			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby_page.html
-			return
-		}
-		
-		if {[catch {set rs [inf_exec_stmt $stmt $game_id $player_id $turn_number]} msg]} {
-			tpBindString err_msg "error occured while executing query"
-			ob::log::write ERROR {===>error: $msg}
-            catch {inf_close_stmt $stmt}
-			tpSetVar err 1
-			asPlayFile -nocache war_games/lobby_page.html
-			return
-		}
-
-        catch {inf_close_stmt $stmt}
-
-        set RESULT(game_bal) [db_get_col $rs 0 game_bal]
-        set RESULT(bet_value) [db_get_col $rs 0 bet_value]
-        set RESULT(action) [db_get_col $rs 0 action]
-        set RESULT(card_value) [db_get_col $rs 0 card_value]
-        set RESULT(suit_name) [db_get_col $rs 0 suit_name]
-        set RESULT(card_amount) [db_get_col $rs 0 card_amount]
-
-
-        db_close $rs
-
-        return RESULT
-
-    }
-
     proc get_user_id_in_room {room_id} { 
         global DB
 
@@ -1029,9 +1065,8 @@ namespace eval WAR_GAME {
             set other_specific_card ""
         }
 
-        #set current_user [get_game_move $game_id $current_user_id $current_turn]
-
-        #set other_user [get_game_move $game_id $other_user_id $current_turn]
+        #set bet_value [get_user_bet $game_id]
+        #set user2_bet_value [get_user_bet]
 
 
         #current turn database
@@ -1051,9 +1086,9 @@ namespace eval WAR_GAME {
         
 
 
-        set json "\{\"current_turn\": $current_turn, \"user_balance\": $this_balance, \"user_card_amount\" : $current_user_card_amount, \"condition\": \"$condition\", \
+        set json "\{ \"bet_value\": $bet_value, \"current_turn\": $current_turn, \"user_balance\": $this_balance, \"user_card_amount\" : $current_user_card_amount, \"condition\": \"$condition\", \
             \"viewable_card\": \{\"viewable_turn\": $current_user_current_turn, \"viewable_location\": $viewable_location, \"specific_card\": \"$viewable_card\"\}, \
-            \"user2\": \{\"specific_card\": \"$other_specific_card\", \"viewable_turn\": $other_current_turn, \"user2_balance\": $other_balance, \"user2_card_amount\": $other_card_amount\}\}"
+            \"user2\": \{\"bet_value\": $user2_bet_value, \"specific_card\": \"$other_specific_card\", \"viewable_turn\": $other_current_turn, \"user2_balance\": $other_balance, \"user2_card_amount\": $other_card_amount\}\}"
         
         puts $json
 
@@ -1201,7 +1236,6 @@ namespace eval WAR_GAME {
             set game_id [last_pk]
 
 
-
             #update room
 
             set sql {
@@ -1228,10 +1262,12 @@ namespace eval WAR_GAME {
             }
 
             #assigns the cards to each user
-            initial_card_assigner $player1_id $player2_id $game_id
+            set MOVE_ID [array set [initial_card_assigner $player1_id $player2_id $game_id]]
+            set player_1_move_id MOVE_ID(1)
+            set player_2_move_id MOVE_ID(2)
 
-            create_final_bet $game_id 0 $player1_id
-            create_final_bet $game_id 0 $player2_id
+            create_final_bet $player_1_move_id
+            create_final_bet $player_2_move_id
         }
 
         tpBindString room_id $room_id
@@ -1320,7 +1356,7 @@ namespace eval WAR_GAME {
     }
 
     proc go_login_page args {
-        clear_lobbies
+        #clear_lobbies
         asPlayFile -nocache war_games/login.html
     }
 

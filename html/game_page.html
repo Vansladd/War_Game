@@ -35,6 +35,7 @@
 </html>
 <script>
     async function display_game(json){
+        console.log(json["viewable_card"]["specific_card"])
         var a = 1;
         //will get json file
         //var json = {"current_turn": 0, "bet_value": 0 "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_location": 1, "specific_card": "d4"}, "user2": {"specific_card": "dk", "user2_balance": 50, "user2_card_amount": 5, "bet_value": 0}};
@@ -45,7 +46,7 @@
         document.getElementById("console").innerHTML = "";
 
         document.getElementById("console").innerHTML += "<p>Your bet is " + json["bet_value"].toString() + "</p><br>"
-        document.getElementById("console").innerHTML += "<p>Your bet is " + json["user2"]["bet_value"].toString() + "</p><br>"
+        document.getElementById("console").innerHTML += "<p>User 2 bet is " + json["user2"]["bet_value"].toString() + "</p><br>"
 
         if(json["condition"] == "playing"){ //if game is still going on
             for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
@@ -79,6 +80,7 @@
 
             document.getElementById("cards").innerHTML+='<p>' + message +'</p>';
         }
+
     }
 
     function get_game_position(){
