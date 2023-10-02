@@ -12,11 +12,21 @@
         <div id="their_card"></div>
         <div id="my_card"></div>
         <div id="cards"></div>
-        <input id="bet_amount">
+        <form action="##TP_CGI_URL##" method="post">
+            <input type="hidden" name="action" value="WAR_GAME_Inital_bet"/> <!-- Increased the input size for better visibility -->
+            <input type="text" name="bet_value" size="20"/>
+            <input type="radio" id="bet" name="bet_action" value="BET">
+            <label for="bet">Bet</label><br>    
+            <input type="radio" id="fold" name="bet_action" value="FOLD">
+            <label for="fold">Fold</label><br>
+            <input type="radio" id="match" name="bet_action" value="MATCH">
+            <label for="fold">Match</label><br>
+            <button value >submit</button>
+        </form>
         <button id="fold">Fold</button>
         <button id="match">Match</button>
         <button id="Raise">Raise</button>
-        <div id="log"></div>        
+        <div id="console"></div>        
 		
 		
 	</body>
@@ -27,22 +37,22 @@
     async function display_game(json){
         var a = 1;
         //will get json file
-        //var json = {"current_turn": 0, "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_turn": -1, "viewable_location": 1, "specific_card": "d4"}, "user2": {"specific_card": "dk", "viewable_turn": -1, "user2_balance": 50, "user2_card_amount": 5}};
+        //var json = {"current_turn": 0, "bet_value": 0 "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_location": 1, "specific_card": "d4"}, "user2": {"specific_card": "dk", "user2_balance": 50, "user2_card_amount": 5, "bet_value": 0}};
         document.getElementById("cards").innerHTML = ""; //so that the sections can be refreshed
         document.getElementById("user2_card").innerHTML = "";
+        document.getElementById("their_card").innerHTML = "";
+        document.getElementById("my_card").innerHTML = "";
+        document.getElementById("console").innerHTML = "";
 
-
-        if(json["user2"]["specific_card"] != "" && json["user2"]["viewable_turn"] != -1){ //displays user 2 turned card
-                document.getElementById("user2_card").innerHTML = '<p>Opponent has ' + json["user2"]["specific_card"] + ' in turn ' + json["user2"]["viewable_turn"] + '</p>'
-            }else{ //if user 2 has never shown their cards
-                document.getElementById("user2_card").innerHTML = '<p>Opponent has no known cards</p>';
-            }
+        document.getElementById("console").innerHTML += "<p>Your bet is " + json["bet_value"].toString() + "</p><br>"
+        document.getElementById("console").innerHTML += "<p>Your bet is " + json["user2"]["bet_value"].toString() + "</p><br>"
 
         if(json["condition"] == "playing"){ //if game is still going on
             for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
                 document.getElementById("cards").innerHTML+='<a href="##TP_CGI_URL##?action=WAR_GAME_Flip_card&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'">Card '+ (i + 1).toString() + '</a>';
             
             }
+            console.log(json["viewable_card"]["specific_card"])
             if(json["viewable_card"]["specific_card"] != ""){
                 document.getElementById("my_card").innerHTML = "<p>Your selected card is " + json["viewable_card"]["specific_card"].toString() + "</p>"
             } else {
@@ -50,9 +60,9 @@
             }
 
             if(json["user2"]["specific_card"] != ""){
-                document.getElementById("my_card").innerHTML = "<p>User 2 selected card " + json["user2"]["specific_card"].toString() + "</p>"
+                document.getElementById("their_card").innerHTML = "<p>User 2 selected card " + json["user2"]["specific_card"].toString() + "</p>"
             } else {
-                document.getElementById("my_card").innerHTML = "<p>User 2 hasn't selected a card yet</p>"
+                document.getElementById("their_card").innerHTML = "<p>User 2 hasn't selected a card yet</p>"
             }
 
 

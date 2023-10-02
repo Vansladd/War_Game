@@ -461,6 +461,11 @@ proc main_init {} {
 	core::request::init \
     -strict_mode    [OT_CfgGet CONTROLLER_STRICT_MODE 0]
 
+	#
+	# Clear any ongoing sessions in war games
+	#
+	war_game_gc
+
 	set MAIN_INIT_COMPLETE 1
 
 }
@@ -1120,6 +1125,48 @@ proc init_mcs {} {
 		OT_LogWrite 15 "MCS update disabled"
 	}
 }
+
+#
+# ----------------------------------------------------------------------------
+# Clean up server packages for War Game
+# ----------------------------------------------------------------------------
+#
+proc war_game_gc {} {
+	global DB
+
+	ob::log::write 1 {************ WAR GAME GARBAGE COLLECTION START **************}
+
+	set sql {
+		DELETE FROM 
+			tactivewaruser
+	}
+
+	if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+		tpBindString err_msg "error occured while preparing statement"
+		ob::log::write ERROR {===>error: $msg}
+		tpSetVar err 1
+		asPlayFile -nocache war_games/login.html
+		return
+	}
+		
+	if {[catch [inf_exec_stmt $stmt] msg]} {
+		tpBindString err_msg "error occured while executing query"
+		ob::log::write ERROR {===>error: $msg}
+		catch {inf_close_stmt $stmt}
+		tpSetVar err 1
+		asPlayFile -nocache war_games/login.html
+		return
+	}
+
+	catch {inf_close_stmt $stmt}
+
+	ob::log::write info {ALL SESSIONS HAVE BEEN CLEARED}
+
+	ob::log::write 1 {************ WAR GAME GARBAGE COLLECTION END **************}
+
+
+}
+
 
 
 
