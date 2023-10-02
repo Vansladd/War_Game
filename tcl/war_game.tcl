@@ -1339,22 +1339,26 @@ namespace eval WAR_GAME {
         # Note - refactor to ensure setplayerid and only change which player gets the thing and return the result
         for {set i 0} {$i < $num_rooms} {incr i} {
             set roomid "\"roomid\": [db_get_col $rs $i room_id]"
+            set status {"closed"}
 
             if {[set username_1 [db_get_col $rs $i player1_username]] == ""} {
                 set username_1 {None}
+                set status {"open"}
             }
 
             if {[set username_2 [db_get_col $rs $i player2_username]] == ""} {
                 set username_2 {None}
+                set status {"open"}
             }
 
+            set status "\"status\": $status"
             set player1_username "\"player1_username\": \"$username_1\""
             set player2_username "\"player2_username\": \"$username_2\""
 
             if {$i == 0} {
-                set lobbies "\{$roomid, $player1_username, $player2_username\}"
+                set lobbies "\{$roomid, $player1_username, $player2_username, $status\}"
             } else {
-                set lobbies "$lobbies, \{$roomid, $player1_username, $player2_username\}"
+                set lobbies "$lobbies, \{$roomid, $player1_username, $player2_username, $status\}"
             }
         }
 
@@ -1493,22 +1497,65 @@ namespace eval WAR_GAME {
         asPlayFile -nocache war_games/lobby_page.html
     }
 
-    # Rename for similar naming
+        # Rename for similar naming
     proc go_room_page args {
         global DB
 
         set user_id [reqGetArg user_id]
         set room_id [reqGetArg room_id]
 
-        
+        tpBindString user_id $user_id
+
+        if {[check_room_status $room_id] == "closed"} {
+            asPlayFile -nocache war_games/lobby_page.html
+            return
+        }
 
         insert_user_to_room $user_id $room_id
 
-
-        tpBindString user_id $user_id
         tpBindString room_id $room_id
-
         asPlayFile -nocache war_games/waiting_room.html
+    }
+
+    proc check_room_status {room_id} {
+        global DB 
+
+        set sql {
+            select 
+                user_id
+            from 
+                tactivewaruser
+            where 
+                room_id = ?
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $room_id]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error2: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set status "open"
+
+        if {[db_get_nrows $rs] >= 2} {
+            set status "closed"
+        } 
+
+        catch {db_close $rs}
+        return $status
     }
 
     # Remove player on front end
