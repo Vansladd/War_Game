@@ -218,34 +218,6 @@ namespace eval WAR_GAME {
 
     }
 
-
-    proc clear_lobbies {} {
-
-        set sql {
-            DELETE FROM 
-                tactivewaruser
-        }
-
-        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
-			tpBindString err_msg "error occured while preparing statement"
-			ob::log::write ERROR {===>error: $msg}
-			tpSetVar err 1
-			asPlayFile -nocache war_games/login.html
-			return
-		}
-		
-		if {[catch [inf_exec_stmt $stmt] msg]} {
-			tpBindString err_msg "error occured while executing query"
-			ob::log::write ERROR {===>error: $msg}
-            catch {inf_close_stmt $stmt}
-			tpSetVar err 1
-			asPlayFile -nocache war_games/login.html
-			return
-		}
-
-        catch {inf_close_stmt $stmt}
-    }
-
     proc do_login {user_id} {
         global DB
 
@@ -1320,7 +1292,6 @@ namespace eval WAR_GAME {
     }
 
     proc go_login_page args {
-        clear_lobbies
         asPlayFile -nocache war_games/login.html
     }
 
