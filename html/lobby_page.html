@@ -21,7 +21,8 @@
             document.getElementById("lobbies").innerHTML+= "<p>Starting Money: £" + json["lobbies"][i]["starting_money"].toString() + "</p>"; //displays the user in the room
             // document.getElementById("lobbies").innerHTML+= "<p>Starting Money: " + json["starting_money"][i].toString() + "</p>"; //adds the starting money in the room
             if (json["lobbies"][i]["status"] == "open") {
-                document.getElementById("lobbies").innerHTML+= '<a href="##TP_CGI_URL##?action=WAR_GAME_Waiting_Room&user_id=##TP_user_id##&room_id=' + json["lobbies"][i]["roomid"] + '">Join<a>';
+                if (json["lobbies"][i]["can_afford"] === true) {document.getElementById("lobbies").innerHTML+= '<a href="##TP_CGI_URL##?action=WAR_GAME_Waiting_Room&user_id=##TP_user_id##&room_id=' + json["lobbies"][i]["roomid"] + '">Join<a>';}
+                else {document.getElementById("lobbies").innerHTML+= '<a href="#">Not enough money!<a>';}
             } else if (json["lobbies"][i]["status"] == "closed") {
                 document.getElementById("lobbies").innerHTML+= '<a href="#">Full<a>';
             }
@@ -31,7 +32,7 @@
     }
     
     function get_lobbies() {
-        fetch('##TP_CGI_URL##?action=WAR_GAME_Lobbies_JSON') //gets json from url
+        fetch('##TP_CGI_URL##?action=WAR_GAME_Lobbies_JSON&user_id=##TP_user_id##') //gets json from url
         .then(response => response.text())
         .then(text => display_lobbies(JSON.parse(text)))
     }
