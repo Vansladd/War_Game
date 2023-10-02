@@ -41,7 +41,7 @@
 					
 				// New user if user_id is empty
 				if(json['user_id'] === "") { 
-					window.location.href = "##TP_CGI_URL##?action=WAR_GAME_Create_User&username=" + username; // User does not exist
+					window.location.href = "##TP_CGI_URL##?action=WAR_GAME_Do_Signup&username=" + username; // User does not exist
 					return;
 				}
 				
@@ -109,7 +109,7 @@
 			}
 
 			function enter_lobby(json) {
-				window.location.href = "##TP_CGI_URL##?action=WAR_GAME_Lobby&user_id=" + json["user_id"]
+				window.location.href = "##TP_CGI_URL##?action=WAR_GAME_Do_Login&user_id=" + json["user_id"]
 			}
 		</script>
 	</body>

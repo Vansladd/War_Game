@@ -6,7 +6,8 @@
 namespace eval WAR_GAME {
 
 	asSetAct WAR_GAME_Login                 [namespace code go_login_page]
-    asSetAct WAR_GAME_Create_User           [namespace code create_user]
+    asSetAct WAR_GAME_Do_Login              [namespace code do_login]
+    asSetAct WAR_GAME_Do_Signup             [namespace code do_signup]
     asSetAct WAR_GAME_Lobby                 [namespace code go_lobby_page]
     asSetAct WAR_GAME_Game                  [namespace code go_game_page]
     asSetAct WAR_GAME_Waiting_Room          [namespace code go_room_page]
@@ -20,7 +21,17 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
-    
+
+    proc do_signup args {
+        set username [reqGetArg username]
+        create_user $username
+        set user_id [get_user_id $username]
+
+        set_active_session $user_id
+
+        tpBindString user_id $user_id
+        asPlayFile -nocache war_games/lobby_page.html
+    }
 
     proc create_final_bet {game_id turn_number user_id} {
         global DB
@@ -218,7 +229,49 @@ namespace eval WAR_GAME {
 
     }
 
-    proc do_login {user_id} {
+    proc search_active_session {user_id} {
+        global DB
+
+        set sql {
+            SELECT 
+                sess_id
+            FROM
+                tactivewaruser
+            WHERE 
+                user_id = ?
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        if {[catch {set rs [inf_exec_stmt $stmt $user_id]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set sess_id ""
+
+        if {[db_get_nrows $rs] > 0} {
+            set sess_id [db_get_col $rs 0 sess_id]
+        }
+
+        catch {db_close $rs}
+
+        return $sess_id
+    }
+
+    proc set_active_session {user_id} {
         global DB
 
         set sql {
@@ -246,8 +299,27 @@ namespace eval WAR_GAME {
 		}
 
         catch {inf_close_stmt $stmt}
+    }
 
+    proc do_login args {
+        global DB
 
+        set user_id [reqGetArg user_id]
+        set sess_id [search_active_session $user_id]
+
+        if {$sess_id != ""} {
+            tpBindString err_msg "Cannot login to currently logged in user!"
+			ob::log::write ERROR {===>error: $user_id already exists!}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+            return
+        }
+
+        set_active_session $user_id 
+
+        tpBindString user_id $user_id 
+        asPlayFile -nocache war_games/lobby_page.html
     }
 
     proc get_turned_card {user_id game_id current_turn} {
@@ -1041,14 +1113,14 @@ namespace eval WAR_GAME {
         set user_id     [reqGetArg user_id]
 
         ;#sql query refactor
-        set sql [subst {
+        set sql {
             UPDATE 
                 tactivewaruser 
             SET 
                 room_id = NULL
             WHERE 
                 user_id = ?
-        }]
+        }
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
 			tpBindString err_msg "error occured while preparing statement"
@@ -1383,10 +1455,8 @@ namespace eval WAR_GAME {
 
 
     # This is called when login successful
-    proc create_user args {
+    proc create_user {username} {
         global DB
-    
-        set username [reqGetArg username]
 
         set sql {
             INSERT INTO twaruser (username, acct_bal)
@@ -1411,19 +1481,11 @@ namespace eval WAR_GAME {
 		}
 
         catch {inf_close_stmt $stmt}
-
-        set user_id [get_user_id $username]
-
-        do_login $user_id
-
-        tpBindString user_id $user_id
-        asPlayFile -nocache war_games/lobby_page.html
     }
     
     # This is called when login successful
     proc go_lobby_page args {
         set user_id [reqGetArg user_id]
-        do_login $user_id
         tpBindString user_id $user_id
         asPlayFile -nocache war_games/lobby_page.html
     }
