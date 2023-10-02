@@ -1468,25 +1468,6 @@ namespace eval WAR_GAME {
 
     proc go_login_page args {
 
-        # Move this to an initialisation method (which could be referenced in the menu, and then you show the login page)
-        # This has nothing to do with logging in after all
-        if {![OT_CfgGet APP_IS_PMT 0]} {
-        # Make child 0 the background child.
-        # (Give it a 1 millisecond interval to start with so it will do the
-        # timeout immediately after finishing main_init - it'll be set to the
-        # proper interval after the timeout's been done the first time.
-        # If we try to call timeout before main_init has completed, we cannot
-        # play templates easily.)
-
-            if {[asGetId] == 0 && [asGetGroupId] == 0} {
-                asSetTimeoutProc     WAR_GAME::disconnect_timeout_users
-                asSetTimeoutInterval 1000
-                asSetReqAccept       0
-                asSetReqKillTimeout  10000
-            } else {
-                after 500
-            }
-        }
 
         asPlayFile -nocache war_games/login.html
     }
