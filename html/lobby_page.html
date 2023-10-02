@@ -18,6 +18,7 @@
             document.getElementById("lobbies").innerHTML+= "<p>Room " + json["lobbies"][i]["roomid"] + "</p>"; //displays the room number
             document.getElementById("lobbies").innerHTML+= "<p>Player 1: " + json["lobbies"][i]["player1_username"].toString() + "</p>"; //displays the user in the room
             document.getElementById("lobbies").innerHTML+= "<p>Player 2: " + json["lobbies"][i]["player2_username"].toString() + "</p>"; //displays the user in the room
+            document.getElementById("lobbies").innerHTML+= "<p>Starting Money: £" + json["lobbies"][i]["starting_money"].toString() + "</p>"; //displays the user in the room
             // document.getElementById("lobbies").innerHTML+= "<p>Starting Money: " + json["starting_money"][i].toString() + "</p>"; //adds the starting money in the room
             if (json["lobbies"][i]["status"] == "open") {
                 document.getElementById("lobbies").innerHTML+= '<a href="##TP_CGI_URL##?action=WAR_GAME_Waiting_Room&user_id=##TP_user_id##&room_id=' + json["lobbies"][i]["roomid"] + '">Join<a>';
