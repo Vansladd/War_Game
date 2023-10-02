@@ -1288,27 +1288,42 @@ namespace eval WAR_GAME {
         global DB
         # change sql select statement
         ;#sql query refactor
+
+        set user_id [reqGetArg user_id]
+
         set sql {
             SELECT
                 tr.room_id,
+                tr.starting_money,
                 MAX(CASE WHEN ru.user_rank = 1 THEN ru.username END) AS player1_username,
-                MAX(CASE WHEN ru.user_rank = 2 THEN ru.username END) AS player2_username
+                MAX(CASE WHEN ru.user_rank = 2 THEN ru.username END) AS player2_username,
+                CASE 
+                    WHEN tr.starting_money <= twu.acct_bal THEN 'true'
+                    ELSE 'false'
+                END AS can_afford
             FROM
                 tactivewarroom tr
-            LEFT JOIN (
-                SELECT
-                    tu.room_id,
-                    tu.user_id,
-                    u.username,
-                    ROW_NUMBER() OVER (PARTITION BY tu.room_id ORDER BY tu.sess_id) AS user_rank
-                FROM
-                    tactivewaruser tu
-                LEFT JOIN
-                    twaruser u ON tu.user_id = u.user_id
-                WHERE
-                    tu.room_id IS NOT NULL
-            ) AS ru ON tr.room_id = ru.room_id
+            LEFT JOIN
+                (
+                    SELECT
+                        tu.room_id,
+                        tu.user_id,
+                        u.username,
+                        ROW_NUMBER() OVER (PARTITION BY tu.room_id ORDER BY tu.sess_id) AS user_rank
+                    FROM
+                        tactivewaruser tu
+                    LEFT JOIN
+                        twaruser u ON tu.user_id = u.user_id
+                    WHERE
+                        tu.room_id IS NOT NULL
+                ) AS ru ON tr.room_id = ru.room_id
+            LEFT JOIN
+                twaruser twu ON twu.user_id = ?
             GROUP BY
+                tr.room_id,
+                tr.starting_money,
+                can_afford
+            ORDER BY
                 tr.room_id;
         }
 
@@ -1320,7 +1335,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt]} msg]} {
+		if {[catch {set rs [inf_exec_stmt $stmt $user_id]} msg]} {
 			tpBindString err_msg "error occured while executing query"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -1339,6 +1354,8 @@ namespace eval WAR_GAME {
         # Note - refactor to ensure setplayerid and only change which player gets the thing and return the result
         for {set i 0} {$i < $num_rooms} {incr i} {
             set roomid "\"roomid\": [db_get_col $rs $i room_id]"
+            set starting_money "\"starting_money\": [db_get_col $rs $i starting_money]"
+            set can_afford "\"can_afford\": [db_get_col $rs $i can_afford]"
             set status {"closed"}
 
             if {[set username_1 [db_get_col $rs $i player1_username]] == ""} {
@@ -1356,9 +1373,9 @@ namespace eval WAR_GAME {
             set player2_username "\"player2_username\": \"$username_2\""
 
             if {$i == 0} {
-                set lobbies "\{$roomid, $player1_username, $player2_username, $status\}"
+                set lobbies "\{$roomid, $player1_username, $player2_username, $status, $starting_money, $can_afford\}"
             } else {
-                set lobbies "$lobbies, \{$roomid, $player1_username, $player2_username, $status\}"
+                set lobbies "$lobbies, \{$roomid, $player1_username, $player2_username, $status, $starting_money, $can_afford\}"
             }
         }
 
