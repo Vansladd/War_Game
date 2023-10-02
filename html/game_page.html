@@ -13,7 +13,9 @@
         <div id="my_card"></div>
         <div id="cards"></div>
         <form action="##TP_CGI_URL##" method="post">
-            <input type="hidden" name="action" value="WAR_GAME_Inital_bet"/> <!-- Increased the input size for better visibility -->
+            <input type="hidden" name="action" value="WAR_GAME_Inital_bet"/> 
+            <input type="hidden" name="room_id" value="##TP_room_id##"/>
+            <input type="hidden" name="user_id" value="##TP_user_id##"/>
             <input type="text" name="bet_value" size="20"/>
             <input type="radio" id="bet" name="bet_action" value="BET">
             <label for="bet">Bet</label><br>    
@@ -23,9 +25,6 @@
             <label for="fold">Match</label><br>
             <button value >submit</button>
         </form>
-        <button id="fold">Fold</button>
-        <button id="match">Match</button>
-        <button id="Raise">Raise</button>
         <div id="console"></div>        
 		
 		
@@ -65,6 +64,9 @@
             } else {
                 document.getElementById("their_card").innerHTML = "<p>User 2 hasn't selected a card yet</p>"
             }
+
+            document.getElementById("my_balance").innerHTML = "<p>Your balance is " + json["user_balance"].toString() + "</p>"
+            document.getElementById("user2_balance").innerHTML = "<p>User 2 balance is " + json["user2"]["user2_balance"].toString() + "</p>"
 
 
         }else{ //if game has finished
