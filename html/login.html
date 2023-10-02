@@ -1,14 +1,117 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Login Page</title>
+		<title>Login</title>
+		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=war_game_stylesheet"> <!-- Link to an external CSS file -->
 	</head>
 	<body>
-		<h1>Login</h1>
-		<form action="##TP_CGI_URL##" method="post">
-			<input type="hidden" name="action" value="WAR_GAME_Do_Login" />
-			<input type="text" name="username" size="5"/>
-			<button type="Login">Login</button>
-		</form>
+		<div id="login-container">
+			<h1>War Game</h1>
+			<div id="login-body">
+				<form action="##TP_CGI_URL##" method="post">
+					<div class="form-group">
+						<label for="username">Username:</label>
+						<input type="text" id="username-input" name="username" size="20"/> <!-- Increased the input size for better visibility -->
+					</div>
+					##TP_IF {[tpGetVar err] == 1}##
+						<div class="error-message">
+							##TP_err_msg##
+						</div>
+					##TP_ENDIF##
+					<button type="submit" onclick="handle_login();" id="login-button">Login</button> <!-- Changed the button type to "submit" -->
+				</form>
+			</div>
+		</div>
+
+		<script>
+			var input = document.getElementById("username-input");
+			input.addEventListener("keypress", function(event) {
+			  if (event.key === "Enter") {
+				event.preventDefault();
+				document.getElementById("login-button").click();
+			  }
+			});
+
+			async function handle_login () {
+				event.preventDefault();
+
+				var username = document.getElementById("username-input").value;
+				const response = await fetch('##TP_CGI_URL##?action=WAR_GAME_User_JSON&username=' + username); //gets json from url
+				const json = await response.json(); 
+					
+				// New user if user_id is empty
+				if(json['user_id'] === "") { 
+					window.location.href = "##TP_CGI_URL##?action=WAR_GAME_Create_User&username=" + username; // User does not exist
+					return;
+				}
+				
+				display_existing_user(json);
+			}
+			
+			// User does exist
+			function display_existing_user(json) {
+				document.getElementById("login-body").innerHTML = ""; // Clear the form
+				const username = json["username"];
+				
+				const message = document.createElement("p");
+				message.textContent = "Is this the first time you are logging in? If so, the username " + username + " has already been taken!";
+
+				const yesButton = document.createElement("button");
+				yesButton.type = "button";
+				yesButton.textContent = "Yes, this is me!";
+				yesButton.addEventListener("click", function() {
+					enter_lobby(json); // Pass the JSON object when the button is clicked
+				}, false);
+				
+				const noButton = document.createElement("button");
+				noButton.type = "button";
+				noButton.textContent = "No, take me back!";
+				noButton.addEventListener("click", display_login_form);
+				
+				const loginBody = document.getElementById("login-body");
+				loginBody.appendChild(message);
+				loginBody.appendChild(yesButton);
+				loginBody.appendChild(noButton);
+			}
+
+			function display_login_form() {
+				// Create the form elements
+				const formContainer = document.createElement("div");
+				formContainer.classList.add("form-group");
+
+				const label = document.createElement("label");
+				label.textContent = "Username:";
+				label.setAttribute("for", "username");
+
+				const input = document.createElement("input");
+				input.type = "text";
+				input.id = "username-input";
+				input.name = "username";
+				input.size = "20";
+
+				const submitButton = document.createElement("button");
+				submitButton.type = "submit";
+				submitButton.textContent = "Login";
+				submitButton.id = "login-button"
+				submitButton.addEventListener("click", handle_login);
+
+				// Clear the existing content
+				const loginBody = document.getElementById("login-body");
+				loginBody.innerHTML = "";
+
+				// Append the form elements to the form container
+				formContainer.appendChild(label);
+				formContainer.appendChild(input);
+
+				// Append the form container to the login body
+				loginBody.appendChild(formContainer);
+				loginBody.appendChild(submitButton);
+			}
+
+			function enter_lobby(json) {
+				window.location.href = "##TP_CGI_URL##?action=WAR_GAME_Lobby&user_id=" + json["user_id"]
+			}
+		</script>
 	</body>
 </html>
+
