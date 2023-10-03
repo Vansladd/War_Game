@@ -6,7 +6,8 @@
 namespace eval WAR_GAME {
 
 	asSetAct WAR_GAME_Login                 [namespace code go_login_page]
-    asSetAct WAR_GAME_Create_User           [namespace code create_user]
+    asSetAct WAR_GAME_Do_Login              [namespace code do_login]
+    asSetAct WAR_GAME_Do_Signup             [namespace code do_signup]
     asSetAct WAR_GAME_Lobby                 [namespace code go_lobby_page]
     asSetAct WAR_GAME_Game                  [namespace code go_game_page]
     asSetAct WAR_GAME_Waiting_Room          [namespace code go_room_page]
@@ -20,6 +21,17 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
+
+    proc do_signup args {
+        set username [reqGetArg username]
+        create_user $username
+        set user_id [get_user_id $username]
+
+        set_active_session $user_id
+
+        tpBindString user_id $user_id
+        asPlayFile -nocache war_games/lobby_page.html
+    }
 
     proc game_balance {user_id room_id} {
         global DB
@@ -643,12 +655,16 @@ namespace eval WAR_GAME {
 
     }
 
-
-    proc clear_lobbies {} {
+    proc search_active_session {user_id} {
+        global DB
 
         set sql {
-            DELETE FROM 
+            SELECT 
+                sess_id
+            FROM
                 tactivewaruser
+            WHERE 
+                user_id = ?
         }
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
@@ -658,8 +674,8 @@ namespace eval WAR_GAME {
 			asPlayFile -nocache war_games/login.html
 			return
 		}
-		
-		if {[catch [inf_exec_stmt $stmt] msg]} {
+
+        if {[catch {set rs [inf_exec_stmt $stmt $user_id]} msg]} {
 			tpBindString err_msg "error occured while executing query"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -669,9 +685,19 @@ namespace eval WAR_GAME {
 		}
 
         catch {inf_close_stmt $stmt}
+
+        set sess_id ""
+
+        if {[db_get_nrows $rs] > 0} {
+            set sess_id [db_get_col $rs 0 sess_id]
+        }
+
+        catch {db_close $rs}
+
+        return $sess_id
     }
 
-    proc do_login {user_id} {
+    proc set_active_session {user_id} {
         global DB
 
         set sql {
@@ -699,8 +725,27 @@ namespace eval WAR_GAME {
 		}
 
         catch {inf_close_stmt $stmt}
+    }
 
+    proc do_login args {
+        global DB
 
+        set user_id [reqGetArg user_id]
+        set sess_id [search_active_session $user_id]
+
+        if {$sess_id != ""} {
+            tpBindString err_msg "Cannot login to currently logged in user!"
+			ob::log::write ERROR {===>error: $user_id already exists!}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+            return
+        }
+
+        set_active_session $user_id 
+
+        tpBindString user_id $user_id 
+        asPlayFile -nocache war_games/lobby_page.html
     }
 
     proc get_turned_card {user_id game_id current_turn} {
@@ -1432,14 +1477,14 @@ namespace eval WAR_GAME {
         set user_id     [reqGetArg user_id]
 
         ;#sql query refactor
-        set sql [subst {
+        set sql {
             UPDATE 
                 tactivewaruser 
             SET 
                 room_id = NULL
             WHERE 
                 user_id = ?
-        }]
+        }
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
 			tpBindString err_msg "error occured while preparing statement"
@@ -1608,24 +1653,42 @@ namespace eval WAR_GAME {
         global DB
         # change sql select statement
         ;#sql query refactor
+
+        set user_id [reqGetArg user_id]
+
         set sql {
             SELECT
-                tr.room_id as room_id,
-                MAX(CASE WHEN ru.user_rank = 1 THEN ru.user_id END) AS player1_id,
-                MAX(CASE WHEN ru.user_rank = 2 THEN ru.user_id END) AS player2_id
+                tr.room_id,
+                tr.starting_money,
+                MAX(CASE WHEN ru.user_rank = 1 THEN ru.username END) AS player1_username,
+                MAX(CASE WHEN ru.user_rank = 2 THEN ru.username END) AS player2_username,
+                CASE 
+                    WHEN tr.starting_money <= twu.acct_bal THEN 'true'
+                    ELSE 'false'
+                END AS can_afford
             FROM
                 tactivewarroom tr
-            LEFT JOIN (
-                SELECT
-                    tu.room_id,
-                    tu.user_id,
-                    ROW_NUMBER() OVER (PARTITION BY tu.room_id ORDER BY tu.sess_id) AS user_rank
-                FROM
-                    tactivewaruser tu
-                WHERE
-                    tu.room_id IS NOT NULL
-            ) AS ru ON tr.room_id = ru.room_id
+            LEFT JOIN
+                (
+                    SELECT
+                        tu.room_id,
+                        tu.user_id,
+                        u.username,
+                        ROW_NUMBER() OVER (PARTITION BY tu.room_id ORDER BY tu.sess_id) AS user_rank
+                    FROM
+                        tactivewaruser tu
+                    LEFT JOIN
+                        twaruser u ON tu.user_id = u.user_id
+                    WHERE
+                        tu.room_id IS NOT NULL
+                ) AS ru ON tr.room_id = ru.room_id
+            LEFT JOIN
+                twaruser twu ON twu.user_id = ?
             GROUP BY
+                tr.room_id,
+                tr.starting_money,
+                can_afford
+            ORDER BY
                 tr.room_id;
         }
 
@@ -1637,7 +1700,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt]} msg]} {
+		if {[catch {set rs [inf_exec_stmt $stmt $user_id]} msg]} {
 			tpBindString err_msg "error occured while executing query"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -1656,22 +1719,28 @@ namespace eval WAR_GAME {
         # Note - refactor to ensure setplayerid and only change which player gets the thing and return the result
         for {set i 0} {$i < $num_rooms} {incr i} {
             set roomid "\"roomid\": [db_get_col $rs $i room_id]"
+            set starting_money "\"starting_money\": [db_get_col $rs $i starting_money]"
+            set can_afford "\"can_afford\": [db_get_col $rs $i can_afford]"
+            set status {"closed"}
 
-            if {[set id_1 [db_get_col $rs $i player1_id]] == ""} {
-                set id_1 {"Empty"}
+            if {[set username_1 [db_get_col $rs $i player1_username]] == ""} {
+                set username_1 {None}
+                set status {"open"}
             }
 
-            if {[set id_2 [db_get_col $rs $i player2_id]] == ""} {
-                set id_2 {"Empty"}
+            if {[set username_2 [db_get_col $rs $i player2_username]] == ""} {
+                set username_2 {None}
+                set status {"open"}
             }
 
-            set player1_id "\"player1_id\": $id_1"
-            set player2_id "\"player2_id\": $id_2"
+            set status "\"status\": $status"
+            set player1_username "\"player1_username\": \"$username_1\""
+            set player2_username "\"player2_username\": \"$username_2\""
 
             if {$i == 0} {
-                set lobbies "\{$roomid, $player1_id, $player2_id\}"
+                set lobbies "\{$roomid, $player1_username, $player2_username, $status, $starting_money, $can_afford\}"
             } else {
-                set lobbies "$lobbies, \{$roomid, $player1_id, $player2_id\}"
+                set lobbies "$lobbies, \{$roomid, $player1_username, $player2_username, $status, $starting_money, $can_afford\}"
             }
         }
 
@@ -1684,7 +1753,6 @@ namespace eval WAR_GAME {
     }
 
     proc go_login_page args {
-        #clear_lobbies
         asPlayFile -nocache war_games/login.html
     }
 
@@ -1776,10 +1844,8 @@ namespace eval WAR_GAME {
 
 
     # This is called when login successful
-    proc create_user args {
+    proc create_user {username} {
         global DB
-    
-        set username [reqGetArg username]
 
         set sql {
             INSERT INTO twaruser (username, acct_bal)
@@ -1804,39 +1870,74 @@ namespace eval WAR_GAME {
 		}
 
         catch {inf_close_stmt $stmt}
-
-        set user_id [get_user_id $username]
-
-        do_login $user_id
-
-        tpBindString user_id $user_id
-        asPlayFile -nocache war_games/lobby_page.html
     }
     
     # This is called when login successful
     proc go_lobby_page args {
         set user_id [reqGetArg user_id]
-        do_login $user_id
         tpBindString user_id $user_id
         asPlayFile -nocache war_games/lobby_page.html
     }
 
-    # Rename for similar naming
+        # Rename for similar naming
     proc go_room_page args {
         global DB
 
         set user_id [reqGetArg user_id]
         set room_id [reqGetArg room_id]
 
-        
+        tpBindString user_id $user_id
+
+        if {[check_room_status $room_id] == "closed"} {
+            asPlayFile -nocache war_games/lobby_page.html
+            return
+        }
 
         insert_user_to_room $user_id $room_id
 
-
-        tpBindString user_id $user_id
         tpBindString room_id $room_id
-
         asPlayFile -nocache war_games/waiting_room.html
+    }
+
+    proc check_room_status {room_id} {
+        global DB 
+
+        set sql {
+            select 
+                user_id
+            from 
+                tactivewaruser
+            where 
+                room_id = ?
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $room_id]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error2: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set status "open"
+
+        if {[db_get_nrows $rs] >= 2} {
+            set status "closed"
+        } 
+
+        catch {db_close $rs}
+        return $status
     }
 
     # Remove player on front end
