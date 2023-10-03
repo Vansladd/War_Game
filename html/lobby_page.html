@@ -2,9 +2,10 @@
 <html>
 	<head>
 		<title>Lobby Page</title>
+        <link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=war_game_stylesheet">
 	</head>
     <body>
-        <p>Lobby Room</p>
+        <h1 id="lobby-header">Lobby Room</h1>
         <div id="lobbies"></div>
     </body>
 
@@ -13,22 +14,73 @@
 <script>
     async function display_lobbies(json) {
 
-        document.getElementById("lobbies").innerHTML = ""; //refresh the lobbies
-        for(i = 0; i < json["lobbies"].length; i++){
-            document.getElementById("lobbies").innerHTML+= "<p>Room " + json["lobbies"][i]["roomid"] + "</p>"; //displays the room number
-            document.getElementById("lobbies").innerHTML+= "<p>Player 1: " + json["lobbies"][i]["player1_username"].toString() + "</p>"; //displays the user in the room
-            document.getElementById("lobbies").innerHTML+= "<p>Player 2: " + json["lobbies"][i]["player2_username"].toString() + "</p>"; //displays the user in the room
-            document.getElementById("lobbies").innerHTML+= "<p>Starting Money: £" + json["lobbies"][i]["starting_money"].toString() + "</p>"; //displays the user in the room
-            // document.getElementById("lobbies").innerHTML+= "<p>Starting Money: " + json["starting_money"][i].toString() + "</p>"; //adds the starting money in the room
-            if (json["lobbies"][i]["status"] == "open") {
-                if (json["lobbies"][i]["can_afford"] === true) {document.getElementById("lobbies").innerHTML+= '<a href="##TP_CGI_URL##?action=WAR_GAME_Waiting_Room&user_id=##TP_user_id##&room_id=' + json["lobbies"][i]["roomid"] + '">Join<a>';}
-                else {document.getElementById("lobbies").innerHTML+= '<a href="#">Not enough money!<a>';}
-            } else if (json["lobbies"][i]["status"] == "closed") {
-                document.getElementById("lobbies").innerHTML+= '<a href="#">Full<a>';
+        const lobbiesContainer = document.getElementById('lobbies')
+        lobbiesContainer.innerHTML = '';
+
+        json.lobbies.forEach(lobby => {
+            const lobbyDiv = document.createElement('div');
+            lobbyDiv.classList.add('lobby');
+
+            const roomNumberDiv = document.createElement('div');
+            roomNumberDiv.classList.add('room-number');
+            roomNumberDiv.textContent = `Room ${lobby.roomid}`;
+            lobbyDiv.appendChild(roomNumberDiv);
+
+            const playersDiv = document.createElement('div');
+            playersDiv.classList.add('players');
+
+            const player1Div = document.createElement('div');
+            player1Div.classList.add('player');
+            player1Div.innerHTML = `<span class="label">Player 1</span><br><span class="name">${lobby.player1_username}</span>`;
+            playersDiv.appendChild(player1Div);
+
+            const player2Div = document.createElement('div');
+            player2Div.classList.add('player');
+            player2Div.innerHTML = `<span class="label">Player 2</span><br><span class="name">${lobby.player2_username}</span>`;
+            playersDiv.appendChild(player2Div);
+
+            lobbyDiv.appendChild(playersDiv);
+
+            const startingMoneyDiv = document.createElement('div');
+            startingMoneyDiv.classList.add('starting-money');
+            startingMoneyDiv.textContent = `Starting Money: £${lobby.starting_money}`;
+            lobbyDiv.appendChild(startingMoneyDiv);
+
+            const joinButton = document.createElement('a');
+
+            if (lobby.status === "open" && lobby.can_afford) {
+                joinButton.href = `##TP_CGI_URL##?action=WAR_GAME_Waiting_Room&user_id=##TP_user_id##&room_id=${lobby.roomid}`;
+                joinButton.textContent = 'Join';
+                joinButton.classList.add('join-button');
+            } else if (lobby.status === "open" && !(lobby.can_afford)) {
+                joinButton.textContent = 'Not Enough Money!';
+                joinButton.classList.add('no-money-button');
+            } else if (lobby.status === "closed") {
+                joinButton.textContent = 'Full';
+                joinButton.classList.add('full-button');
             }
-             //creates link to lobby
-            document.getElementById("lobbies").innerHTML+= "<br><br>"
-        }
+
+            lobbyDiv.appendChild(joinButton);
+
+            lobbiesContainer.appendChild(lobbyDiv);
+        });
+
+        // document.getElementById("lobbies").innerHTML = ""; //refresh the lobbies
+        // for(i = 0; i < json["lobbies"].length; i++){
+        //     document.getElementById("lobbies").innerHTML+= "<p>Room " + json["lobbies"][i]["roomid"] + "</p>"; //displays the room number
+        //     document.getElementById("lobbies").innerHTML+= "<p>Player 1: " + json["lobbies"][i]["player1_username"].toString() + "</p>"; //displays the user in the room
+        //     document.getElementById("lobbies").innerHTML+= "<p>Player 2: " + json["lobbies"][i]["player2_username"].toString() + "</p>"; //displays the user in the room
+        //     document.getElementById("lobbies").innerHTML+= "<p>Starting Money: £" + json["lobbies"][i]["starting_money"].toString() + "</p>"; //displays the user in the room
+        //     // document.getElementById("lobbies").innerHTML+= "<p>Starting Money: " + json["starting_money"][i].toString() + "</p>"; //adds the starting money in the room
+        //     if (json["lobbies"][i]["status"] == "open") {
+        //         if (json["lobbies"][i]["can_afford"] === true) {document.getElementById("lobbies").innerHTML+= '<a href="##TP_CGI_URL##?action=WAR_GAME_Waiting_Room&user_id=##TP_user_id##&room_id=' + json["lobbies"][i]["roomid"] + '">Join<a>';}
+        //         else {document.getElementById("lobbies").innerHTML+= '<a href="#">Not enough money!<a>';}
+        //     } else if (json["lobbies"][i]["status"] == "closed") {
+        //         document.getElementById("lobbies").innerHTML+= '<a href="#">Full<a>';
+        //     }
+        //      //creates link to lobby
+        //     document.getElementById("lobbies").innerHTML+= "<br><br>"
+        // }
     }
     
     function get_lobbies() {
