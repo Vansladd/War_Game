@@ -5,21 +5,23 @@
 		<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=war_game_stylesheet"> <!-- Link to an external CSS file -->
 	</head>
 	<body>
-		<div id="login-container">
-			<h1>War Game</h1>
-			<div id="login-body">
-				<form action="##TP_CGI_URL##" method="post">
-					<div class="form-group">
-						<label for="username">Username:</label>
-						<input type="text" id="username-input" name="username" size="20"/> <!-- Increased the input size for better visibility -->
-					</div>
-					##TP_IF {[tpGetVar err] == 1}##
-						<div class="error-message">
-							##TP_err_msg##
+		<div class="login-body">
+			<div id="login-container">
+				<h1>War Game</h1>
+				<div id="login-body">
+					<form action="##TP_CGI_URL##" method="post">
+						<div class="form-group">
+							<label for="username">Username:</label>
+							<input type="text" id="username-input" name="username" size="20"/> <!-- Increased the input size for better visibility -->
 						</div>
-					##TP_ENDIF##
-					<button type="submit" onclick="handle_login();" id="login-button">Login</button> <!-- Changed the button type to "submit" -->
-				</form>
+						##TP_IF {[tpGetVar err] == 1}##
+							<div class="error-message">
+								##TP_err_msg##
+							</div>
+						##TP_ENDIF##
+						<button type="submit" onclick="handle_login();" id="login-button">Login</button> <!-- Changed the button type to "submit" -->
+					</form>
+				</div>
 			</div>
 		</div>
 
