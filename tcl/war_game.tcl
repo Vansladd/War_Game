@@ -430,30 +430,34 @@ namespace eval WAR_GAME {
 
             set loser_current_turn [get_turn_number $game_id $loser_id]
 
+            puts " -------------------turn number: $loser_current_turn "
+
             set winner_current_turn [get_turn_number $game_id $winner_id]
 
-            set user_move_id [get_moves_id $game_id $loser_id $loser_current_turn]
-            set winner_user_move_id [get_moves_id $game_id $winner_id $winner_current_turn]
+            set loser_move_id [get_moves_id $game_id $loser_id $loser_current_turn]
+            set winner_move_id [get_moves_id $game_id $winner_id $winner_current_turn]
 
-            set last_bet_value [get_latest_bet $user_move_id]
+            set last_bet_value [get_latest_bet $loser_move_id]
             if {$last_bet_value == ""} {
                 set last_bet_value 0
             }
-            set user2_bet_value [get_latest_bet $winner_user_move_id]
-
+            set user2_bet_value [get_latest_bet $winner_move_id]
 
             set winner_balance [game_balance $winner_id $room_id]
             set user_balance [game_balance $loser_id $room_id]
 
-            
+            set loser_move_id [get_moves_id $game_id $loser_id $loser_current_turn]
 
-            array set entire_hand [get_entire_hand $loser_id $game_id]
+            array set loser_hand [get_entire_hand $loser_id $loser_move_id]
 
+            set winner_move_id [get_moves_id $game_id $winner_id $winner_current_turn]
 
-            array set winner_hand [get_entire_hand $winner_id $game_id]
+            array set winner_hand [get_entire_hand $winner_id $winner_move_id]
+
             set winner_hand_length [expr [array size winner_hand] / 3]
 
             set loser_card_id [get_turned_card $loser_id $game_id $loser_current_turn]
+
 
             
 
@@ -465,25 +469,25 @@ namespace eval WAR_GAME {
             set loc_found 0
 
 
-            for {set i 0} {$i < [expr [expr [array size entire_hand] / 3] - 1]} {incr i} {
-                if {$entire_hand($i,card_id) == $loser_card_id} {
+            for {set i 0} {$i < [expr [expr [array size loser_hand] / 3] - 1]} {incr i} {
+                if {$loser_hand($i,card_id) == $loser_card_id} {
                     set loc_found 1
                 }
                 if {$loc_found == 1} {
-                    set entire_hand($i,card_id) $entire_hand([expr $i + 1],card_id) 
+                    set loser_hand($i,card_id) $loser_hand([expr $i + 1],card_id) 
                 }
             }
 
 
-            array set user_hand {}
+            array set loser_hand_compatible {}
             array set winner_hand_compatible {}
 
             #randomises the deck of cards for current user (-1 because card was removed)
-            for {set i 0} {$i < [expr [expr [array size entire_hand] / 3] - 1]} {incr i} {
-                set temp $entire_hand($i,card_id)
-                set rand [random_number 0 [expr [expr [array size entire_hand] / 3] - 2]]
-                set user_hand($i) $entire_hand($rand,card_id)
-                set user_hand($rand) $temp
+            for {set i 0} {$i < [expr [expr [array size loser_hand] / 3] - 1]} {incr i} {
+                set temp $loser_hand($i,card_id)
+                set rand [random_number 0 [expr [expr [array size loser_hand] / 3] - 2]]
+                set loser_hand_compatible($i) $loser_hand($rand,card_id)
+                set loser_hand_compatible($rand) $temp
             }
 
             #randomises the deck of cards for the winner user
@@ -494,7 +498,10 @@ namespace eval WAR_GAME {
                 set winner_hand_compatible($rand) $temp
             }
 
-            set pl1_hand_id [insert_hand $loser_id $game_id [array get user_hand] [array size user_hand] [expr $loser_current_turn + 1]]
+            puts "-------------------------> loser_id: $loser_id loser_hand_length: [array size loser_hand_compatible]"
+            puts "-------------------------> winner_id: $winner_id winner_hand_length: [array size winner_hand_compatible]"
+
+            set pl1_hand_id [insert_hand $loser_id $game_id [array get loser_hand_compatible] [array size loser_hand_compatible] [expr $loser_current_turn + 1]]
             set pl2_hand_id [insert_hand $winner_id $game_id [array get winner_hand_compatible] [array size winner_hand_compatible] [expr $winner_current_turn + 1]]
 
             #game_id hand_id turn_number game_bal card_id Final_bet_id
@@ -540,7 +547,7 @@ namespace eval WAR_GAME {
             } else {
                 return
             }
-
+            puts " ============================flag"
             new_turn $game_id $current_user_id $other_user_id $room_id
             set bet [get_latest_bet $move_id]
             if {$bet == ""} {
@@ -592,7 +599,7 @@ namespace eval WAR_GAME {
                 #does stuff
                 # get loser and winner from tie but with 10 cards 
             }
-
+            puts " ==============================reached "
             new_turn $game_id $loser_id $winner_id $room_id
             set bet [get_latest_bet $other_user_move_id]
         }
@@ -767,7 +774,7 @@ namespace eval WAR_GAME {
 
     }
     
-    proc get_entire_hand {user_id game_id} {
+    proc get_entire_hand {user_id move_id} {
        global DB
 
        global HAND
@@ -787,7 +794,7 @@ namespace eval WAR_GAME {
                 hand_card.card_id = card.card_id AND
                 thand.player_id = ? AND
                 game_moves.hand_id = thand.hand_id AND
-                game_moves.game_id = ?
+                game_moves.move_id = ?
             ORDER BY
                 hand_card_id ASC
         }
@@ -800,7 +807,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt $user_id $game_id]} msg]} {
+		if {[catch {set rs [inf_exec_stmt $stmt $user_id $move_id]} msg]} {
 			tpBindString err_msg "error occured while executing query"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -813,6 +820,7 @@ namespace eval WAR_GAME {
 
 
         for {set i 0} {$i < [db_get_nrows $rs]} {incr i} {
+            puts "--------------------------------> [db_get_col $rs $i card_id]"
             set HAND($i,card_id) [db_get_col $rs $i card_id]
             set HAND($i,hand_card_id) [db_get_col $rs $i hand_card_id]
             set HAND($i,hand_id) [db_get_col $rs $i hand_id]
@@ -878,10 +886,13 @@ namespace eval WAR_GAME {
         set room_id             [reqGetArg room_id]
         set card_location       [reqGetArg card_location]
         set game_id             [room_id_to_game_id $room_id]
-
+        set turn_number         [get_turn_number $game_id $user_id]
+        set move_id             [get_moves_id $game_id $user_id $turn_number]
 
         #getting users entire hand
-        array set entire_hand [get_entire_hand $user_id $game_id]
+        array set entire_hand [get_entire_hand $user_id $move_id]
+
+
 
         #set final_bet_id [create_user_bet bet_value game_id action_id final_bet_id]
 
@@ -893,9 +904,9 @@ namespace eval WAR_GAME {
         array set specific_card [get_specific_card $specific_card_id]
 
         #getting the number of turns the user did
-        set turn_number [get_turn_number $game_id $user_id]
+        
 
-        set turn_number [expr $turn_number + 0]
+        set turn_number $turn_number
 
         set game_bal 50
         set final_bet_id -1
