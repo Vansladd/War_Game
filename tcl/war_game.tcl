@@ -495,7 +495,9 @@ namespace eval WAR_GAME {
 
         set action_id [to_action_id $action]
 
-        if {$action == BET} {
+        puts " =======================$action"
+
+        if {$action == "BET"} {
             # set initial bet value
             # set user_id (which player made the bet)
             # set bet action (fold, raise, match)
@@ -532,7 +534,10 @@ namespace eval WAR_GAME {
 
             catch {inf_close_stmt $stmt}
 
-        } elseif {$action == FOLD} {
+
+        
+
+        } elseif {$action == "FOLD"} {
           
             set current_user_id $user_id
             set other_user_id {}
@@ -557,22 +562,78 @@ namespace eval WAR_GAME {
             set user_move_id [get_moves_id $game_id $current_user_id $current_user_current_turn]
             set other_user_move_id [get_moves_id $game_id $other_user_id $other_current_turn]
 
-            set bet_value [get_latest_bet $user_move_id]
+            set last_bet_value [get_latest_bet $user_move_id]
+            if {$last_bet_value == ""} {
+                set last_bet_value 0
+            }
             set user2_bet_value [get_latest_bet $other_user_move_id]
 
-            set other_user_balance_addition [expr $bet_value + $user2_bet_value]
 
             set other_balance [game_balance $other_user_id $room_id]
+            set user_balance [game_balance $current_user_id $room_id]
 
             
 
-            array set entire_hand [get_entire_hand $user_id $game_id]
+            array set entire_hand [get_entire_hand $current_user_id $game_id]
 
-            insert_game_moves $game_id hand_id $other_current_turn [expr $other_balance + $other_user_balance_addition] "" 0}
+            puts "array size entire hand"
+
+            array set other_hand [get_entire_hand $other_user_id $game_id]
+            set other_hand_length [expr [array size other_hand] / 3]
+
+            set current_user_card_id [get_turned_card $current_user_id $game_id $current_user_current_turn]
+
+            set other_hand($other_hand_length) $current_user_card_id
+
+            set loc_found 0
+
+
+            for {set i 0} {$i < [expr [expr [array size entire_hand] / 3] - 1]} {incr i} {
+                if {$entire_hand($i,card_id) == $current_user_card_id} {
+                    set loc_found 1
+                }
+                if {$loc_found == 1} {
+                    set entire_hand($i,card_id) $entire_hand([expr $i + 1],card_id) 
+                }
+            }
+
+
+            array set user_hand {}
+            array set other_hand_compatible {}
+
+            #randomises the deck of cards for current user (-1 because card was removed)
+            for {set i 0} {$i < [expr [expr [array size entire_hand] / 3] - 1]} {incr i} {
+                set temp $entire_hand($i,card_id)
+                set rand [random_number 0 [expr [expr [array size entire_hand] / 3] - 2]]
+                set user_hand($i) $entire_hand($rand,card_id)
+                set user_hand($rand) $temp
+            }
+
+            #randomises the deck of cards for the other user
+            puts "=======================================[expr [expr [array size other_hand] / 3] - 1]"
+            for {set i 0} {$i < [expr [array size other_hand] / 3]} {incr i} {
+                set temp $other_hand($i,card_id)
+                set rand [random_number 0 [expr [expr [array size other_hand] / 3] - 1]]
+                set other_hand_compatible($i) $other_hand($rand,card_id)
+                set other_hand_compatible($rand) $temp
+            }
+
+            set pl1_hand_id [insert_hand $current_user_id $game_id [array get user_hand] [array size user_hand] $current_user_current_turn]
+            set pl2_hand_id [insert_hand $other_user_id $game_id [array get other_hand_compatible] [array size other_hand_compatible] $other_current_turn]
+
+            puts "==================== parray enitre_hand"
+
+            puts " =================== parray other_hand"
+
+
+            #game_id hand_id turn_number game_bal card_id Final_bet_id
+        
+            insert_game_moves $game_id $pl1_hand_id $current_user_current_turn [expr $user_balance - $last_bet_value] "" 0
+            insert_game_moves $game_id $pl2_hand_id $other_current_turn [expr $other_balance + $last_bet_value] "" 0
 
 
 
-        } elseif {$action == MATCH} {
+        } elseif {$action == "MATCH"} {
             match $user_id $room_id $game_id $action
         }
         tpBindString room_id $room_id
@@ -833,6 +894,7 @@ namespace eval WAR_GAME {
 
     proc random_number {min max} {
         #generates random number between max and min
+        puts "=====================>$max"
         return [expr int((rand() * ($max + 1 - $min)) + $min)]
     }
 
