@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>Game Page</title>
+        <link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=war_game_stylesheet">
 	</head>
 	<body>
         <p id="my_balance"></p>
@@ -15,6 +16,7 @@
         <form action="##TP_CGI_URL##" method="post">
             <input type="hidden" name="action" value="WAR_GAME_Inital_bet"/> 
             <input type="hidden" name="room_id" value="##TP_room_id##"/>
+            <input type="hidden" name="game_id" value="##TP_game_id##"/>
             <input type="hidden" name="user_id" value="##TP_user_id##"/>
             <input type="text" name="bet_value" size="20"/>
             <input type="radio" id="bet" name="bet_action" value="BET">
@@ -34,7 +36,6 @@
 </html>
 <script>
     async function display_game(json){
-        console.log(json["viewable_card"]["specific_card"])
         var a = 1;
         //will get json file
         //var json = {"current_turn": 0, "bet_value": 0 "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_location": 1, "specific_card": "d4"}, "user2": {"specific_card": "dk", "user2_balance": 50, "user2_card_amount": 5, "bet_value": 0}};
@@ -49,10 +50,9 @@
 
         if(json["condition"] == "playing"){ //if game is still going on
             for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
-                document.getElementById("cards").innerHTML+='<a href="##TP_CGI_URL##?action=WAR_GAME_Flip_card&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'">Card '+ (i + 1).toString() + '</a>';
+                document.getElementById("cards").innerHTML+='<a href="##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'">Card '+ (i + 1).toString() + '</a>';
             
             }
-            console.log(json["viewable_card"]["specific_card"])
             if(json["viewable_card"]["specific_card"] != ""){
                 document.getElementById("my_card").innerHTML = "<p>Your selected card is " + json["viewable_card"]["specific_card"].toString() + "</p>"
             } else {
@@ -70,15 +70,20 @@
 
 
         }else{ //if game has finished
+            document.getElementById("cards").innerHTML = ""; //blank all other sections
+            document.getElementById("user2_card").innerHTML = "";
+            document.getElementById("their_card").innerHTML = "";
+            document.getElementById("my_card").innerHTML = "";
+            document.getElementById("console").innerHTML = "";
             var message = "The game has finished";
 
-            if(json["user2_balance"] == 0){ //if user definitely wins
+            if(json["user2"]["user2_balance"] == 0 || json["user2"]["user2_card_amount"] == 0){ //if user definitely wins
                 message = "You have won the game";
-            }else if(json["user_balance"] == 0){ //if user definitely loses
+            }else if(json["user_balance"] == 0 || json["user_card_amount"] == 0){ //if user definitely loses
                 message = "You have lost the game";
             }
             message+= "\nYou have " + json["user_balance"].toString() + " left"
-            message+= "\nThe opponent has " + json["user2_balance"].toString() + " left"
+            message+= "\nThe opponent has " + json["user2"]["user2_balance"].toString() + " left"
 
             document.getElementById("cards").innerHTML+='<p>' + message +'</p>';
         }
@@ -86,7 +91,7 @@
     }
 
     function get_game_position(){
-        fetch('##TP_CGI_URL##?action=WAR_GAME_game_state_JSON&user_id=##TP_user_id##&room_id=##TP_room_id##') //gets json from url
+        fetch('##TP_CGI_URL##?action=WAR_GAME_game_state_JSON&game_id=##TP_game_id##&user_id=##TP_user_id##&room_id=##TP_room_id##') //gets json from url
         .then(response => response.text())
         .then(text => display_game(JSON.parse(text)))
     }
