@@ -37,7 +37,7 @@ namespace eval WAR_GAME {
         global DB
 
         set game_id [room_id_to_game_id $room_id]
-        set current_turn [get_turn_number $game_id $user_id]
+        set current_turn [get_turn_number $game_id]
         set move_id [get_moves_id $game_id $user_id $current_turn]
 
 
@@ -427,9 +427,9 @@ namespace eval WAR_GAME {
 
 
     proc new_turn {game_id loser_id winner_id room_id loser_bet_value winner_bet_value} {
-        set loser_current_turn [get_turn_number $game_id $loser_id]
+        set loser_current_turn [get_turn_number $game_id]
 
-        set winner_current_turn [get_turn_number $game_id $winner_id]
+        set winner_current_turn [get_turn_number $game_id]
 
         set loser_move_id [get_moves_id $game_id $loser_id $loser_current_turn]
 
@@ -520,88 +520,73 @@ namespace eval WAR_GAME {
     proc initial_bet args {
         global DB
 
-        set bet [reqGetArg bet_value]
-        set action [reqGetArg bet_action]
-        set room_id [reqGetArg room_id]
-        set user_id [reqGetArg user_id]
-        set game_id [room_id_to_game_id $room_id]
-        set turn_number [get_turn_number $game_id $user_id]
-        set move_id [get_moves_id $game_id $user_id $turn_number]
+        set bet             [reqGetArg bet_value]
+        set action          [reqGetArg bet_action]
+        set room_id         [reqGetArg room_id]
+        set user_id         [reqGetArg user_id]
+        set game_id         [room_id_to_game_id $room_id]
+        set turn_number     [get_turn_number $game_id]
+        set move_id         [get_moves_id $game_id $user_id $turn_number]
 
-        set action_id [to_action_id $action]
-
-
-
+        set action_id       [to_action_id $action]
         set do_database 0
 
+        set ret_players     [get_user_id_in_room $room_id]
+
+        set PLAYERS(player1_id)     [lindex $ret_players 0]
+        set PLAYERS(player2_id)     [lindex $ret_players 1]
+
+        set other_user_id {}
+        set player_turn 0
+        
+        if {$PLAYERS(player1_id) == $user_id} {
+            set player_turn 0
+            set other_user_id $PLAYERS(player2_id)
+        } elseif {$PLAYERS(player2_id) == $user_id} {
+            set player_turn 1
+            set other_user_id $PLAYERS(player1_id)
+        } else {
+            return
+        }        
+
+        set user_move_id [get_moves_id $game_id $user_id $turn_number]
+        set current_user_card_id [get_turned_card $user_id $game_id $turn_number]
+
+        tpBindString room_id $room_id
+        tpBindString user_id $user_id
+
+        if {$current_user_card_id == ""} {
+            tpBindString err_msg "You need to select your card first!"
+            ob::log::write ERROR {===>User has not selected a card!}
+            tpSetVar err 1
+            asPlayFile -nocache war_games/game_page.html
+            return
+        }
+
         if {$action == "FOLD"} {
-          
             set current_user_id $user_id
-            set other_user_id {}
-            
-            set ret_players [get_user_id_in_room $room_id]
 
-            set PLAYERS(player1_id) [lindex $ret_players 0]
-            set PLAYERS(player2_id) [lindex $ret_players 1]
-
-            if {$PLAYERS(player1_id) == $user_id} {
-                set other_user_id $PLAYERS(player2_id)
-            } elseif {$PLAYERS(player2_id) == $user_id} {
-                set other_user_id $PLAYERS(player1_id)
-            } else {
-                return
-            }
-            
-            set current_turn [get_turn_number $game_id $current_user_id]
-
-            set current_move_id [get_moves_id $game_id $current_user_id $current_turn]
-            set other_move_id [get_moves_id $game_id $other_user_id $current_turn]
-
-            set other_bet_value [get_latest_bet $other_move_id]
-            if {$other_bet_value == ""} {
-                set other_bet_value 0
-            }
+            set current_move_id [get_moves_id $game_id $current_user_id $turn_number]
+            set other_move_id [get_moves_id $game_id $other_user_id $turn_number]
 
             set current_bet_value [get_latest_bet $current_move_id]
             if {$current_bet_value == ""} {
                 set current_bet_value 0
             }
-
             
             new_turn $game_id $current_user_id $other_user_id $room_id $current_bet_value $current_bet_value
             set bet [get_latest_bet $move_id]
             if {$bet == ""} {
                 set bet 0
             }
-
         } elseif {$action == "MATCH"} {
-            
             set current_user_id $user_id
-            set other_user_id {}
-            
-            set ret_players [get_user_id_in_room $room_id]
 
-            set PLAYERS(player1_id) [lindex $ret_players 0]
-            set PLAYERS(player2_id) [lindex $ret_players 1]
+            set user_move_id [get_moves_id $game_id $current_user_id $turn_number]
+            set other_user_move_id [get_moves_id $game_id $other_user_id $turn_number]
 
-            if {$PLAYERS(player1_id) == $user_id} {
-                set other_user_id $PLAYERS(player2_id)
-            } elseif {$PLAYERS(player2_id) == $user_id} {
-                set other_user_id $PLAYERS(player1_id)
-            } else {
-                return
-            }
-
-            set current_user_current_turn [get_turn_number $game_id $current_user_id]
-
-            set other_current_turn [get_turn_number $game_id $other_user_id]
-
-            set user_move_id [get_moves_id $game_id $current_user_id $current_user_current_turn]
-            set other_user_move_id [get_moves_id $game_id $other_user_id $other_current_turn]
-
-
-            set current_user_card_id [get_turned_card $current_user_id $game_id $current_user_current_turn]
-            set other_user_card_id [get_turned_card $other_user_id $game_id $other_current_turn]
+            set current_user_card_id [get_turned_card $current_user_id $game_id $turn_number]
+            set other_user_card_id [get_turned_card $other_user_id $game_id $turn_number]
 
             array set current_user_card_attributes [get_specific_card $current_user_card_id]
             array set other_user_card_attributes [get_specific_card $other_user_card_id]
@@ -620,9 +605,8 @@ namespace eval WAR_GAME {
                 # get loser and winner from tie but with 10 cards 
             }
 
-
-            set loser_move_id [get_moves_id $game_id $loser_id $current_user_current_turn]
-            set winner_move_id [get_moves_id $game_id $winner_id $other_current_turn]
+            set loser_move_id [get_moves_id $game_id $loser_id $turn_number]
+            set winner_move_id [get_moves_id $game_id $winner_id $turn_number]
 
             set winner_bet_value [get_latest_bet $winner_move_id]
             if {$winner_bet_value == ""} {
@@ -653,33 +637,15 @@ namespace eval WAR_GAME {
         } elseif {$action == "BET"} {
 
             set current_user_id $user_id
-            set other_user_id {}
-            
-            set ret_players [get_user_id_in_room $room_id]
 
-            set PLAYERS(player1_id) [lindex $ret_players 0]
-            set PLAYERS(player2_id) [lindex $ret_players 1]
-
-            if {$PLAYERS(player1_id) == $user_id} {
-                set other_user_id $PLAYERS(player2_id)
-            } elseif {$PLAYERS(player2_id) == $user_id} {
-                set other_user_id $PLAYERS(player1_id)
-            } else {
-                return
-            }
-
-            set current_user_current_turn [get_turn_number $game_id $current_user_id]
-
-            set user_move_id [get_moves_id $game_id $current_user_id $current_user_current_turn]
+            set user_move_id [get_moves_id $game_id $current_user_id $turn_number]
 
             set last_user_bet [get_latest_bet $user_move_id]
             if {$last_user_bet == ""} {
                 set last_user_bet 0
             }
 
-            set other_user_current_turn [get_turn_number $game_id $other_user_id]
-
-            set other_move_id [get_moves_id $game_id $other_user_id $other_user_current_turn]
+            set other_move_id [get_moves_id $game_id $other_user_id $turn_number]
 
             set last_other_user_bet [get_latest_bet $other_move_id]
 
@@ -730,9 +696,6 @@ namespace eval WAR_GAME {
             catch {inf_close_stmt $stmt}
 
         }
-        tpBindString room_id $room_id
-        tpBindString user_id $user_id
-
         go_game_page
 
     }
@@ -984,7 +947,7 @@ namespace eval WAR_GAME {
         set room_id             [reqGetArg room_id]
         set card_location       [reqGetArg card_location]
         set game_id             [room_id_to_game_id $room_id]
-        set turn_number         [get_turn_number $game_id $user_id]
+        set turn_number         [get_turn_number $game_id]
         set move_id             [get_moves_id $game_id $user_id $turn_number]
 
         #getting users entire hand
@@ -1287,13 +1250,12 @@ namespace eval WAR_GAME {
 
     }
 
-    proc get_turn_number {game_id player_id} {
+    proc get_turn_number {game_id} {
         global DB
 
         set sql {
             SELECT
                 MAX(turn_number) as turn_number
-
             FROM
                 twargamemoves
             WHERE
@@ -1308,7 +1270,7 @@ namespace eval WAR_GAME {
 			asPlayFile -nocache war_games/lobby_page.html
 			return
 		}
-		if {[catch {set rs [inf_exec_stmt $stmt $game_id $player_id]} msg]} {
+		if {[catch {set rs [inf_exec_stmt $stmt $game_id]} msg]} {
 			tpBindString err_msg "error occured while executing query"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -1323,11 +1285,6 @@ namespace eval WAR_GAME {
 
         db_close $rs
 
-        #if {$max == ""} {
-       #     return 0
-       # } else {
-       #     return max
-        #}
         return $max
     }
 
@@ -1466,9 +1423,9 @@ namespace eval WAR_GAME {
 
 
 
-        set current_user_current_turn [get_turn_number $game_id $current_user_id]
+        set current_user_current_turn [get_turn_number $game_id]
 
-        set other_current_turn [get_turn_number $game_id $other_user_id]
+        set other_current_turn [get_turn_number $game_id]
 
         set current_user_card_amount [get_card_amount $game_id $current_user_id $current_user_current_turn]
 
