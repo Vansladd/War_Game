@@ -546,8 +546,10 @@ namespace eval WAR_GAME {
             return
         }
 
-        puts "------------------------------------------> bet_turn: $bet_turn"
-        puts "------------------------------------------> player_bet_turn: $player_bet_turn"
+        # Alternate turns so players take turn taking the first bet
+        if {[expr $turn_number % 2] == 1} {
+            set player_bet_turn [expr 1 - $player_bet_turn]
+        } 
 
         if {[expr $bet_turn % 2] == $player_bet_turn} {
             tpBindString err_msg "It is the opponent's turn to make a bet!"
