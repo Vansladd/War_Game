@@ -12,6 +12,9 @@
         <div id="their_card"></div>
         <div id="my_card"></div>
         <div id="cards"></div>
+        ##TP_IF {[tpGetVar err] == 1}##
+            <div class="error-message">##TP_err_msg##</div>
+        ##TP_ENDIF##
         <form action="##TP_CGI_URL##" method="post">
             <input type="hidden" name="action" value="WAR_GAME_Inital_bet"/> 
             <input type="hidden" name="room_id" value="##TP_room_id##"/>
