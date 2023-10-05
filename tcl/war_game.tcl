@@ -25,17 +25,15 @@ namespace eval WAR_GAME {
     proc forfeit args {
         global DB
 
-        set game_id [reqGetArg game_id]
         set user_id [reqGetArg user_id]
         set room_id [reqGetArg room_id]
+        set game_id [room_id_to_game_id $room_id]
 
         # Check if someone has forfeited by hacking into link?
-        set PLAYERS [get_user_id_in_room $room_id]
+        set ret_players [get_user_id_in_room $room_id]
 
         set PLAYERS(player1_id)     [lindex $ret_players 0]
         set PLAYERS(player2_id)     [lindex $ret_players 1]
-
-        set winner {}
         
         if {$PLAYERS(player1_id) == $user_id} {
             set winner $PLAYERS(player2_id)
@@ -45,7 +43,13 @@ namespace eval WAR_GAME {
             # Error message (user isn't in the room, which means they are not actively playing)
         }
 
-        set sql {
+        update_win_game $game_id $winner FORFEIT
+    }
+
+    proc update_win_game {game_id winner_id win_condition} {
+        global DB
+
+        set sql [subst {
             UPDATE 
                 twargame
             SET 
@@ -56,10 +60,11 @@ namespace eval WAR_GAME {
                     FROM 
                         twarwincondition
                     WHERE 
-                        win_condition = 'FORFEIT'
+                        win_condition = '$win_condition'
                 )
-            WHERE game_id = ?;
-        }
+            WHERE 
+                game_id = ?;
+        }]
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
 			tpBindString err_msg "error occured while preparing statement"
@@ -69,7 +74,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {inf_exec_stmt $stmt $game_id} msg]} {
+		if {[catch {inf_exec_stmt $stmt $winner_id $game_id} msg]} {
 			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -107,8 +112,6 @@ namespace eval WAR_GAME {
                 twargamemoves
             where
                 move_id = ?
-
-
         }
 
 
@@ -838,10 +841,10 @@ namespace eval WAR_GAME {
                 twargamemoves as game_moves,
                 thand as hand
             WHERE
-                hand.player_id = ? AND
+                hand.player_id = 106 AND
                 hand.hand_id = game_moves.hand_id AND
-                game_moves.game_id = ? AND
-                game_moves.turn_number = ?
+                game_moves.game_id = 19 AND
+                game_moves.turn_number = 0;
         }
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
@@ -863,6 +866,8 @@ namespace eval WAR_GAME {
 
 
         catch {inf_close_stmt $stmt}
+
+        puts "-----------------> $user_id $game_id $current_turn"
 
         set card_id [db_get_col $rs 0 card_id]
 
@@ -1402,8 +1407,6 @@ namespace eval WAR_GAME {
 
         db_close $rs
 
-
-
         return [list $RESULT(player1_id) $RESULT(player2_id)]
 
     }
@@ -1465,6 +1468,8 @@ namespace eval WAR_GAME {
             set other_specific_card ""
         }
 
+        puts "=================> game_id $game_id"
+
         set user_move_id [get_moves_id $game_id $current_user_id $current_user_current_turn]
         set other_user_move_id [get_moves_id $game_id $other_user_id $other_current_turn]
 
@@ -1474,19 +1479,22 @@ namespace eval WAR_GAME {
         set this_balance [game_balance $current_user_id $room_id]
         set other_balance [game_balance $other_user_id $room_id]
 
+        # Lose if first condition win if second condition
         if {$this_balance == 0 || $current_user_card_amount == 0} {
-            # Do SQL and input lose/win
+            update_win_game $game_id $other_user_id STANDARD
         } elseif {$other_balance == 0 || $other_card_amount == 0} {
-            # Do SQL and input lose/win
+            update_win_game $game_id $user_id STANDARD
         }
+
+        set condition "finished"
 
         # Check whether the player has won or lost
         set winner_details [get_winner $game_id]
-        set WINNER(winner_id) [lindex $ret_players 0]
-        set WINNER(winner_username) [lindex $ret_players 1]
-        set WINNER(win_condition) [lindex $ret_players 2]
+        set WINNER(winner_id) [lindex $winner_details 0]
+        set WINNER(winner_username) [lindex $winner_details 1]
+        set WINNER(win_condition) [lindex $winner_details 2]
 
-        set winner $WINNER(username)
+        set winner $WINNER(winner_username)
         set win_condition $WINNER(win_condition)
 
         if {$WINNER(winner_id) == $user_id} {
@@ -1494,19 +1502,22 @@ namespace eval WAR_GAME {
         } elseif {$WINNER(winner_id) == $other_user_id} {
             set loser $other_user_id
         } else {
-            set loser {""}
-            set winner {""}
-            set win_condition {""}
+            set loser ""
+            set winner ""
+            set win_condition ""
+            set condition "playing"
         }
 
         set winner_json $winner
         set loser_json $loser
         set win_condition_json $win_condition
 
-        set json "\{ \"bet_value\": \"$bet_value\", \"current_turn\": $current_turn, \"user_balance\": $this_balance, \"user_card_amount\" : $current_user_card_amount, \"condition\": \"$condition\", \
+        set json "\{ \"bet_value\": \"$bet_value\", \"current_turn\": $current_turn, \"user_balance\": $this_balance, \"user_card_amount\" : $current_user_card_amount, \
             \"viewable_card\": \{\"viewable_turn\": $current_user_current_turn, \"viewable_location\": $viewable_location, \"specific_card\": \"$viewable_card\"\}, \
             \"user2\": \{\"bet_value\": \"$user2_bet_value\", \"specific_card\": \"$other_specific_card\", \"viewable_turn\": $other_current_turn, \"user2_balance\": $other_balance, \"user2_card_amount\": $other_card_amount\},
-            \"winner\": \"$winner_json\", \"loser\": \"$loser_json\", \"win_condition_json\": \"$win_condition_json\"\}"
+            \"condition\": \"$condition\", \"winner\": \"$winner_json\", \"loser\": \"$loser_json\", \"win_condition_json\": \"$win_condition_json\"\}"
+
+        puts "------------------> json: $json"
 
         tpBindString JSON $json
 
@@ -1528,7 +1539,7 @@ namespace eval WAR_GAME {
             WHERE
                 g.game_id = ? AND
                 u.user_id = g.winner_id AND
-                wc.win_condition_id = g.win_condition_id
+                wc.win_condition_id = g.win_condition_id;
         }
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
@@ -1561,6 +1572,10 @@ namespace eval WAR_GAME {
         }
 
         catch {db_close $rs}
+
+        puts "----------------------------> user_id $user_id"
+        puts "----------------------------> username $username"
+        puts "----------------------------> win_condition $win_condition"
 
         return [list $user_id $username $win_condition]
     }

@@ -3,7 +3,7 @@
 	<head>
 		<title>Game Page</title>
 		<style>
-			.forfeit-overlay {
+			.win-lose-overlay {
 				position: fixed;
 				top: 0;
 				left: 0;
@@ -45,8 +45,9 @@
         <div id="console"></div>  
         
         <!-- Forfeit overlay, initially hidden -->
-        <div id="forfeitOverlay" class="forfeit-overlay" style="display: none;">
-            <p>Player has forfeited!</p><br>
+        <div id="winLoseOverlay" class="win-lose-overlay" style="display: none;">
+            <p id="message1"></p><br>
+            <p id="message2"></p><br>
             <a href="##TP_CGI_URL##?action=WAR_GAME_Leave_Room&user_id=##TP_user_id##">Go to lobby</a>
         </div>
 	</body>
@@ -54,12 +55,6 @@
 
 <script>
     async function display_game(json){
-
-        if (json.winner != "") {
-            display_win_lose_screen(json);
-            return
-        } 
-
         console.log(json["viewable_card"]["specific_card"])
         var a = 1;
         //will get json file
@@ -72,6 +67,8 @@
 
         document.getElementById("console").innerHTML += "<p>Your bet is " + json["bet_value"].toString() + "</p><br>"
         document.getElementById("console").innerHTML += "<p>User 2 bet is " + json["user2"]["bet_value"].toString() + "</p><br>"
+
+        console.log(json["condition"])
 
         if(json["condition"] == "playing"){ //if game is still going on
             for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
@@ -96,24 +93,32 @@
 
 
         }else{ //if game has finished
-            var message = "The game has finished";
-
-            if(json["user2_balance"] == 0){ //if user definitely wins
-                message = "You have won the game";
-            }else if(json["user_balance"] == 0){ //if user definitely loses
-                message = "You have lost the game";
-            }
-            message+= "\nYou have " + json["user_balance"].toString() + " left"
-            message+= "\nThe opponent has " + json["user2_balance"].toString() + " left"
-
-            document.getElementById("cards").innerHTML+='<p>' + message +'</p>';
+            display_win_lose_screen(json);
+            return
         }
 
     }
 
-    function display_win_lose_screen() {
-        var forfeitOverlay = document.getElementById("forfeitOverlay");
-        forfeitOverlay.style.display = "flex";
+    function display_win_lose_screen(json) {
+        var winner = json.winner
+        var loser = json.loser
+        const win_condition = json.win_condition
+        const victory_message = "The winner is: " + winner
+        var message = ""
+
+        if (win_condition === "FORFEIT") {
+            message = "The opponent has forfeited!"
+        } else if (win_condition === "STANDARD") {
+            message = loser + " has lost the game!"
+        }
+
+        var winLoseOverlay = document.getElementById("winLoseOverlay");
+        var messageElement = winLoseOverlay.querySelector("#message1");
+        messageElement.textContent = message;
+
+        var victoryMessageElement = winLoseOverlay.querySelector("#message2");
+        victoryMessageElement.textContent = victory_message;
+        winLoseOverlay.style.display = "flex";
     }
 
     function get_game_position(){
@@ -124,8 +129,8 @@
 
     async function handle_forfeit(){
         await fetch('##TP_CGI_URL##?action=WAR_GAME_Forfeit&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##')
-        var forfeitOverlay = document.getElementById("forfeitOverlay");
-        forfeitOverlay.style.display = "flex";
+        // var forfeitOverlay = document.getElementById("forfeitOverlay");
+        // forfeitOverlay.style.display = "flex";
     }
 
     get_game_position();
