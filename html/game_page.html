@@ -54,6 +54,12 @@
 
 <script>
     async function display_game(json){
+
+        if (json.winner != "") {
+            display_win_lose_screen(json);
+            return
+        } 
+
         console.log(json["viewable_card"]["specific_card"])
         var a = 1;
         //will get json file
@@ -103,6 +109,11 @@
             document.getElementById("cards").innerHTML+='<p>' + message +'</p>';
         }
 
+    }
+
+    function display_win_lose_screen() {
+        var forfeitOverlay = document.getElementById("forfeitOverlay");
+        forfeitOverlay.style.display = "flex";
     }
 
     function get_game_position(){
