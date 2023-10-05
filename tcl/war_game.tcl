@@ -67,7 +67,7 @@ namespace eval WAR_GAME {
         global DB
 
         set game_id [room_id_to_game_id $room_id]
-        set current_turn [get_turn_number $game_id $user_id]
+        set current_turn [get_turn_number $game_id]
         set move_id [get_moves_id $game_id $user_id $current_turn]
 
         set acct_bal [get_user_balance $user_id]
@@ -1169,7 +1169,7 @@ namespace eval WAR_GAME {
         set room_id             [reqGetArg room_id]
         set card_location       [reqGetArg card_location]
         set game_id             [reqGetArg game_id]
-        set turn_number         [get_turn_number $game_id $user_id]
+        set turn_number         [get_turn_number $game_id]
         set move_id             [get_moves_id $game_id $user_id $turn_number]
 
         #getting users entire hand
