@@ -14,13 +14,72 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Join_Game             [namespace code go_join_game]
     asSetAct WAR_GAME_Leave_Room            [namespace code leave_room]
     asSetAct WAR_GAME_Flip_card             [namespace code flip_card]
-
     asSetAct WAR_GAME_Inital_bet            [namespace code initial_bet]
+    asSetAct WAR_GAME_Forfeit               [namespace code forfeit]
 
     asSetAct WAR_GAME_User_JSON             [namespace code get_user_json]
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
+
+    proc forfeit args {
+        global DB
+
+        set game_id [reqGetArg game_id]
+        set user_id [reqGetArg user_id]
+        set room_id [reqGetArg room_id]
+
+        # Check if someone has forfeited by hacking into link?
+        set PLAYERS [get_user_id_in_room $room_id]
+
+        set PLAYERS(player1_id)     [lindex $ret_players 0]
+        set PLAYERS(player2_id)     [lindex $ret_players 1]
+
+        set winner {}
+        
+        if {$PLAYERS(player1_id) == $user_id} {
+            set winner $PLAYERS(player2_id)
+        } elseif {$PLAYERS(player2_id) == $user_id} {
+            set winner $PLAYERS(player1_id)
+        } else {
+            # Error message (user isn't in the room, which means they are not actively playing)
+        }
+
+        set sql {
+            UPDATE 
+                twargame
+            SET 
+                winner_id = ?,
+                win_condition_id = (
+                    SELECT 
+                        win_condition_id
+                    FROM 
+                        twarwincondition
+                    WHERE 
+                        win_condition = 'FORFEIT'
+                )
+            WHERE game_id = ?;
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {inf_exec_stmt $stmt $game_id} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+    }
 
     proc do_signup args {
         set username [reqGetArg username]
