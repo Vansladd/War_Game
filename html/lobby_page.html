@@ -3,8 +3,38 @@
 	<head>
 		<title>Lobby Page</title>
         <link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=war_game_stylesheet">
+        <style>
+            /* Add CSS styles for white text */
+            nav {
+                background-color: #333; /* Dark background color */
+                color: white; /* White text color */
+            }
+    
+            .navbar {
+                padding: 10px;
+            }
+    
+            .user-info {
+                display: flex;
+                align-items: center;
+            }
+    
+            .username,
+            .balance {
+                margin-right: 20px;
+                color: white; /* White text color */
+            }
+        </style>
 	</head>
     <body>
+        <nav>
+            <div class="navbar">
+                <div class="user-info">
+                    <span class="username">##TP_username##</span>
+                    <span class="balance">Balance: £##TP_user_balance##</span>
+                </div>
+            </div>
+        </nav>
         <h1 id="lobby-header">Lobby Room</h1>
         <div id="lobbies"></div>
     </body>

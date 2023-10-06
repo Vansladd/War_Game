@@ -22,6 +22,50 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
 
+
+    proc get_username {user_id} {
+        global DB
+
+        set sql {
+            select
+                username
+            From
+                twaruser
+            where
+                user_id = ?
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $user_id]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        
+        set user_name [db_get_col $rs 0 username]
+
+        catch {db_close $rs}
+
+        return $user_name
+
+    }
+
+
+
     proc get_user_balance {user_id} {
         global DB
 
@@ -81,7 +125,7 @@ namespace eval WAR_GAME {
         set sql {
             update twaruser
             SET
-                acct_bal
+                acct_bal = ?
             where
                 user_id = ?
         }
@@ -95,7 +139,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt $user_id]} msg]} {
+		if {[catch {set rs [inf_exec_stmt $stmt $new_balance $user_id]} msg]} {
 			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -219,6 +263,14 @@ namespace eval WAR_GAME {
         set_active_session $user_id
 
         tpBindString user_id $user_id
+        set user_balance [get_user_balance $user_id]
+        set username [get_username $user_id]
+
+        puts " ==================================$user_balance"
+        puts " ==================================$username"
+
+        tpBindString user_balance $user_balance
+        tpBindString username $username
         asPlayFile -nocache war_games/lobby_page.html
     }
 
@@ -822,10 +874,12 @@ namespace eval WAR_GAME {
 
         set other_balance [game_balance $other_user_id $room_id]
 
-        if {(($other_balance == 0 || $other_card_amount == 0) && ($this_balance == 0 || $current_user_card_amount == 0)) && $room == 1} {
-            end_game_update_user_balance $current_user_id $room_id
-            end_game_update_user_balance $other_user_id $room_id
-            wipe_room room_id
+        puts " ============================================ entering"
+        puts "============================================= $room_id"
+        end_game_update_user_balance $current_user_id $room_id
+        end_game_update_user_balance $other_user_id $room_id
+        if {$room == 1} {
+            wipe_room $room_id
         }
     }
 
@@ -1221,6 +1275,8 @@ namespace eval WAR_GAME {
         set user_id [reqGetArg user_id]
         set sess_id [search_active_session $user_id]
 
+
+
         if {$sess_id != ""} {
             tpBindString err_msg "Cannot login to currently logged in user!"
 			ob::log::write ERROR {===>error: $user_id already exists!}
@@ -1233,6 +1289,14 @@ namespace eval WAR_GAME {
         set_active_session $user_id 
 
         tpBindString user_id $user_id 
+        set user_balance [get_user_balance $user_id]
+        set username [get_username $user_id]
+
+        puts " ==================================$user_balance"
+        puts " ==================================$username"
+
+        tpBindString user_balance $user_balance
+        tpBindString username $username
         asPlayFile -nocache war_games/lobby_page.html
     }
 
@@ -1607,7 +1671,7 @@ namespace eval WAR_GAME {
         global DB
 
         global MOVE_ID
-        set each_player_card_number 3
+        set each_player_card_number 26
 
         set card_number [expr $each_player_card_number * 2]
 
@@ -2042,6 +2106,41 @@ namespace eval WAR_GAME {
         global DB
 
         set user_id     [reqGetArg user_id]
+        set room_id     [reqGetArg room_id]
+        set game_id     [reqGetArg game_id]
+
+
+        set game_exists [is_room $room_id $game_id]
+
+
+        if { $game_exists == 1} {
+
+            set ret_players     [get_user_id_in_room $room_id]
+
+            set PLAYERS(player1_id)     [lindex $ret_players 0]
+            set PLAYERS(player2_id)     [lindex $ret_players 1]
+
+            set other_user_id {}
+            set current_user_id $user_id
+            
+            if {$PLAYERS(player1_id) == $user_id} {
+                set other_user_id $PLAYERS(player2_id)
+                set player_bet_turn 0
+            } elseif {$PLAYERS(player2_id) == $user_id} {
+                set player_bet_turn 1
+                set other_user_id $PLAYERS(player1_id)
+            } else {
+                return
+            } 
+
+
+            set current_turn [get_turn_number $game_id ]
+
+
+            end_game $current_user_id $other_user_id $room_id $game_id $current_turn
+
+
+        }
 
         ;#sql query refactor
         set sql {
@@ -2073,6 +2172,14 @@ namespace eval WAR_GAME {
         catch {inf_close_stmt $stmt}
 
         tpBindString user_id $user_id
+
+        set user_balance [get_user_balance $user_id]
+        set username [get_username $user_id]
+
+        tpBindString user_balance $user_balance
+        tpBindString username $username
+
+        
 
         asPlayFile -nocache war_games/lobby_page.html
     }
@@ -2430,6 +2537,15 @@ namespace eval WAR_GAME {
     proc go_lobby_page args {
         set user_id [reqGetArg user_id]
         tpBindString user_id $user_id
+        set user_balance [get_user_balance $user_id]
+        set username [get_username $user_id]
+
+        puts " ==================================$user_balance"
+        puts " ==================================$username"
+
+        tpBindString user_balance $user_balance
+        tpBindString username $username
+
         asPlayFile -nocache war_games/lobby_page.html
     }
 
