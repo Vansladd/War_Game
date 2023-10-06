@@ -1434,6 +1434,9 @@ namespace eval WAR_GAME {
             return
         }
 
+        set user_username [get_username $user_id]
+        set other_user_username [get_username $other_user_id]
+
         set current_user_current_turn [get_turn_number $game_id]
         set other_current_turn [get_turn_number $game_id]
         set current_user_card_amount [get_card_amount $game_id $current_user_id $current_user_current_turn]
@@ -1496,9 +1499,9 @@ namespace eval WAR_GAME {
         set win_condition $WINNER(win_condition)
 
         if {$WINNER(winner_id) == $user_id} {
-            set loser $user_id
+            set loser $other_user_username
         } elseif {$WINNER(winner_id) == $other_user_id} {
-            set loser $other_user_id
+            set loser $user_username
         } else {
             set loser ""
             set winner ""
@@ -1859,6 +1862,44 @@ namespace eval WAR_GAME {
         asPlayFile -nocache war_games/login.html
     }
 
+    proc get_username {user_id} {
+        global DB
+
+        set sql {
+            SELECT 
+                username
+            FROM 
+                twaruser
+            WHERE
+                user_id = ?
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $user_id]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set username [db_get_col $rs 0 username]
+
+        catch {db_close $rs}
+
+        return $username
+    }
+
     # Refactor this and get_user_id - abstract, we are repeating code
     proc get_user_json args {
         global DB
@@ -1902,9 +1943,11 @@ namespace eval WAR_GAME {
             set username "\"[db_get_col $rs 0 username]\""
         }
 
-        set json "{\"user_id\": $user_id, \"username\": $username}"
+        catch {db_close $rs}
 
+        set json "{\"user_id\": $user_id, \"username\": $username}"
         tpBindString JSON $json
+
         asPlayFile -nocache war_games/jsonTemplate.json
     }
 
