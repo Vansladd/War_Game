@@ -16,6 +16,11 @@ VALUES
 	(8, dbinfo('utc_current') - 200); 
 
 INSERT INTO  
-	tactivewaruser (user_id, last_active) 
+	tactivewaruser (user_id, last_active, room_id) 
 VALUES 
-	(9, dbinfo('utc_current') - 600); 
+	(89, dbinfo('utc_current') - 550, 3); 
+
+INSERT INTO  
+	tactivewaruser (user_id, last_active, room_id) 
+VALUES 
+	(91, dbinfo('utc_current') - 550, 3); 

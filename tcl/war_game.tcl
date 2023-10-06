@@ -205,8 +205,59 @@ namespace eval WAR_GAME {
         update_win_game $game_id $winner FORFEIT
     }
 
+    proc check_game_win {game_id} {
+        global DB
+
+        set sql {
+            SELECT 
+                winner_id 
+            FROM 
+                twargame
+            WHERE 
+                game_id = ?
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $game_id]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set winner_id [db_get_col $rs 0 winner_id]
+
+        catch {db_close $rs}
+
+        if {$winner_id == ""} {
+            return "No win"
+        }
+
+        return "Win"
+    }
+
     proc update_win_game {game_id winner_id win_condition} {
         global DB
+
+        puts "-----------------------> game_id: $game_id"
+        puts "-----------------------> winner_id: $winner_id"
+
+        if {[check_game_win $game_id] == "Win"} {
+            return
+        }
+
+        puts "--------------------------> UPDATING WIN GAME!"
 
         set sql [subst {
             UPDATE 
@@ -1971,6 +2022,10 @@ namespace eval WAR_GAME {
         set viewable_location -1
         set other_specific_card ""
 
+        puts "-------------> current_turn: $current_user_current_turn"
+        puts "-------------> user_id: $user_id"
+        puts "-------------> game_id: $game_id"
+
         set card_id [get_turned_card $current_user_id $game_id $current_user_current_turn]
         if {$card_id != ""} {
             #array set entire_hand [get_entire_hand $user_id $game_id]
@@ -1984,19 +2039,6 @@ namespace eval WAR_GAME {
             array set specific_card [get_specific_card $card_id_2]
             set other_specific_card $specific_card(0,card_name)
         }
-
-        puts "-----------------------------------> turned_card_1: $card_id"
-        puts "-----------------------------------> turned_card_2: $card_id_2"
-        
-
-        #if {$card_id_2 != ""} {
-            #array set specific_card [get_specific_card $card_id_2]
-            #set other_specific_card $specific_card(0,card_name)
-        #}
-
-        #if {$viewable_card == ""} {
-            #set other_specific_card ""
-        #}
 
         set user_move_id [get_moves_id $game_id $current_user_id $current_user_current_turn]
         set other_user_move_id [get_moves_id $game_id $other_user_id $other_current_turn]
@@ -2379,7 +2421,6 @@ namespace eval WAR_GAME {
             set SESSION($i,user_id) [db_get_col $rs $i user_id]
         }
 
-        disconnect_users_in_rooms $num_users
         disconnect_users_in_games $num_users
         disconnect_active_users   $num_users
         
@@ -2433,11 +2474,91 @@ namespace eval WAR_GAME {
         # Insert disconnect user from game logic here (To be completed later)
         global DB
         global SESSION
+        
         if {$num_users <= 0} {return}
+
+        puts "---------------------------------> EXECUTING DISCONNECT USERS FROM GAME"
+
+        set user_id_list $SESSION(0,user_id)
+
+        for {set i 1} {$i < $num_users} {incr i} {
+            set user_id_list "$user_id_list, $SESSION($i,user_id)"
+        }
+
+        set sql [subst {
+            SELECT DISTINCT
+                tu.room_id,
+                tr.game_id,
+                tu.user_id AS other_player_user_id
+            FROM
+                tactivewaruser tu
+            INNER JOIN
+                tactivewarroom tr
+                ON tu.room_id = tr.room_id
+            INNER JOIN
+                tactivewaruser tu2
+                ON tu.room_id = tu2.room_id
+                AND tu2.user_id IN ($user_id_list)
+            WHERE
+                tu.user_id IN ($user_id_list)
+                AND tu.user_id != tu2.user_id;
+        }]
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        puts "---------------------------> $sql"
+
+        for {set i 0} {$i < [db_get_nrows $rs]} {incr i} {
+            update_win_game [db_get_col $rs $i game_id] [db_get_col $rs $i other_player_user_id] DISCONNECT 
+        }
+
+        catch {db_close $rs}
     }
 
     proc go_login_page args {
         asPlayFile -nocache war_games/login.html
+    }
+
+    proc get_other_player {user_id} { 
+        global DB
+
+        set sql {
+            SELECT DISTINCT
+                tu.room_id,
+                tr.game_id,
+                u.username AS other_player_username
+            FROM
+                tactivewaruser tu
+            INNER JOIN
+                tactivewarroom tr 
+                ON tu.room_id = tr.room_id
+            INNER JOIN
+                (
+                    SELECT user_id, username
+                    FROM twaruser
+                    WHERE user_id NOT IN (?)
+                ) u 
+                ON tu.user_id = u.user_id
+            WHERE
+                tu.room_id IN (SELECT room_id FROM tactivewaruser WHERE user_id IN (?));
+        }
     }
 
     proc get_username {user_id} {
@@ -2607,8 +2728,6 @@ namespace eval WAR_GAME {
 
         set user_id [reqGetArg user_id]
         set room_id [reqGetArg room_id]
-
-        insert_user_to_room $user_id $room_id
 
         tpBindString user_id $user_id
 
