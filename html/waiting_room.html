@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Waiting Page</title>
+	</head>
+    <body>
+        <h1>Room ##TP_roomid##</h1>
+        <p>Waiting for player to join</p>
+        <a href="##TP_CGI_URL##?action=WAR_GAME_Leave_Room&user_id=##TP_user_id##">Leave lobby</a>
+    </body>
+
+</html>
+
+<script>
+    async function handle_waiting(json){
+        //will sent a message to server saying its still waiting and server will return if player has joined or not using ?action=war_game_waiting_room&userid=[user]&roomid=[id]
+        if(json["player2_id"] != ""){ //if server says a player has joined then go to the game page
+            location.href = "##TP_CGI_URL##?action=WAR_GAME_Join_Game&player1_id=" + json["player1_id"] + "&player2_id=" + json["player2_id"] + "&room_id=" + json["room_id"].toString() +"&roomid=##TP_roomid##&user_id=##TP_user_id##"
+        }
+    }
+
+    function get_waiting_json() {
+        fetch('##TP_CGI_URL##?action=WAR_GAME_Waiting_Room_JSON&room_id=##TP_room_id##') //gets json from url
+        .then(response => response.text())
+        .then(text => handle_waiting(JSON.parse(text)))
+    }
+
+    get_waiting_json();
+    setInterval(get_waiting_json, 1000);
+
+</script>

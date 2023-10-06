@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Lobby Page</title>
+        <link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=war_game_stylesheet">
+	</head>
+    <body>
+        <h1 id="lobby-header">Lobby Room</h1>
+        <div id="lobbies"></div>
+    </body>
+
+</html>
+
+<script>
+    async function display_lobbies(json) {
+
+        const lobbiesContainer = document.getElementById('lobbies')
+        lobbiesContainer.innerHTML = '';
+
+        json.lobbies.forEach(lobby => {
+            const lobbyDiv = document.createElement('div');
+            lobbyDiv.classList.add('lobby');
+
+            const roomNumberDiv = document.createElement('div');
+            roomNumberDiv.classList.add('room-number');
+            roomNumberDiv.textContent = `Room ${lobby.roomid}`;
+            lobbyDiv.appendChild(roomNumberDiv);
+
+            const playersDiv = document.createElement('div');
+            playersDiv.classList.add('players');
+
+            const player1Div = document.createElement('div');
+            player1Div.classList.add('player');
+            player1Div.innerHTML = `<span class="label">Player 1</span><br><span class="name">${lobby.player1_username}</span>`;
+            playersDiv.appendChild(player1Div);
+
+            const player2Div = document.createElement('div');
+            player2Div.classList.add('player');
+            player2Div.innerHTML = `<span class="label">Player 2</span><br><span class="name">${lobby.player2_username}</span>`;
+            playersDiv.appendChild(player2Div);
+
+            lobbyDiv.appendChild(playersDiv);
+
+            const startingMoneyDiv = document.createElement('div');
+            startingMoneyDiv.classList.add('starting-money');
+            startingMoneyDiv.textContent = `Starting Money: £${lobby.starting_money}`;
+            lobbyDiv.appendChild(startingMoneyDiv);
+
+            const joinButton = document.createElement('a');
+
+            if (lobby.status === "open" && lobby.can_afford) {
+                joinButton.href = `##TP_CGI_URL##?action=WAR_GAME_Waiting_Room&user_id=##TP_user_id##&room_id=${lobby.roomid}`;
+                joinButton.textContent = 'Join';
+                joinButton.classList.add('join-button');
+            } else if (lobby.status === "open" && !(lobby.can_afford)) {
+                joinButton.textContent = 'Not Enough Money!';
+                joinButton.classList.add('no-money-button');
+            } else if (lobby.status === "closed") {
+                joinButton.textContent = 'Full';
+                joinButton.classList.add('full-button');
+            }
+
+            lobbyDiv.appendChild(joinButton);
+
+            lobbiesContainer.appendChild(lobbyDiv);
+        });
+    }
+    
+    function get_lobbies() {
+        fetch('##TP_CGI_URL##?action=WAR_GAME_Lobbies_JSON&user_id=##TP_user_id##') //gets json from url
+        .then(response => response.text())
+        .then(text => display_lobbies(JSON.parse(text)))
+    }
+
+    get_lobbies();
+    setInterval(get_lobbies, 1000); //updates data every one second
+
+</script>

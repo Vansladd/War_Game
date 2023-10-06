@@ -1,0 +1,819 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<!-- $Id: menu_bar.html,v 1.1.1.1.2.6 2013/02/26 10:00:10 xbourgui Exp $ -->
+	<meta http-equiv="Content-Type" content="text/html; charset=##TP_CHARSET##">
+	<link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=stylesheet_splash">
+	##TP_IF {[tpGetVar FuncOffice 0]}##
+		##TP_TCL -quiet {tpSetVar OFFICE_APP_MENU 1}##
+		##TP_TCL -quiet {ob_office::action::H_header}##
+
+		<script type="text/javascript" language="javascript">
+
+			function bodyInit() {
+
+				vclickMenuInit('vclickMenu');
+				officePaneTarget('logoutMenuItem');
+			}
+
+		</script>
+	##TP_ENDIF##
+	<title>Top Navigation Bar</title>
+</head>
+<body ##TP_IF {[tpGetVar FuncOffice 0]}##onload="bodyInit()"##TP_ENDIF##>
+
+<div id="adminMenuDiv">
+
+##TP_IF {[tpGetVar FuncOffice 0]}##
+	<div class="logo">Administration</div>
+##TP_ENDIF##
+
+<ul id="vclickMenu">
+
+	##TP_IF {[OT_CfgGet FUNC_MENU_TRAINING 0]}##
+	<li id="first"><span>Training</span>
+		<ul>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_PlayPage"        target=MainArea><b>001 - Play Page</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_PlayPageIncl"    target=MainArea><b>002 - Page Include</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_tpBindString"    target=MainArea><b>003 - tpBindString</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_tpSetVar"        target=MainArea><b>004 - tpSetVar</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_ifelse"          target=MainArea><b>005 - if else</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_loop"            target=MainArea><b>006 - loop</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_dbvalues"        target=MainArea><b>007 - dbvalues</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_dbcriteria"      target=MainArea><b>008 - dbcriteria</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_go_reqGetArg"    target=MainArea><b>009 - reqGetArg</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_go_catch"        target=MainArea><b>010 - catch</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_PlayPageNew"     target=MainArea><b>011 - Play Page New</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_drilldown"     	 target=MainArea><b>011 - drilldown</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_tpBindStringNew" target=MainArea><b>012 - tpBindString New</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=TRAINING_go_reqGetArgNew" target=MainArea><b>013 - reqGetArg New</b></a></li>
+		</ul>
+	</li>
+	##TP_ENDIF##
+
+	<li><span>Miscellaneous</span>
+		<ul>
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_MISCELLANEOUS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::CONTROL::GoControl" target="MainArea">Settings</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_ALARMS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::ALARM::GoAlarms" target="MainArea">Alarms</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_USERS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::USERS::GoUsers" target="MainArea">Users</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_ADMIN_USER_THIRDPARTIES]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::THIRDPARTY::GoThirdParties" target="MainArea">Third Parties</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_CURRENCIES]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::CCY::GoCCYList" target="MainArea">Currencies</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_CHANNELS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::CHANNEL::GoChannelList" target="MainArea">Channels</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_COUNTRIES]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::COUNTRY::GoCountryList" target="MainArea">Countries</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_LANGUAGES]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::LANGUAGE::GoLanguageList" target="MainArea">Languages</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_LANGUAGE_MENU]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::LANGMENU::GoLocaleList" target="MainArea">Locales</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_VIEWS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::VIEWS::GoViewList" target="MainArea">Views</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_AFFILIATES]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::AFF::GoAffList" target="MainArea">Affiliates</a></li>
+				##TP_IF {[OT_CfgGetTrue FUNC_BEFREE_AFF_PROGRAM]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::UPLOAD::GoUpload&amp;upload_type=AFF" target="MainArea">Affiliates Upload</a></li>
+				##TP_ENDIF##
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_VIRTUAL_WORLD]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::VIRTUALWORLD::GoVirtualWorldControl" target="MainArea">Virtual World Control</a></li>
+			##TP_ENDIF##
+            ##TP_IF {[OT_CfgGetTrue FUNC_MENU_BUSINESS_PERIOD]}##
+                <li><a href="##TP_CGI_URL##?action=ADMIN::BUSINESSPERIOD::GoBusinessPeriodSetup" target="MainArea">Business Periods</a></li>
+            ##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_INTRO_SOURCES]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::HEARABOUT::GoHearAboutList" target="MainArea">Intro Sources</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_PARTNERSHIPS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::PARTNER::GoPartnerList" target="MainArea">Partnerships</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_CYBERSOURCE]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::CYBERSOURCE::GoParams" target="MainArea">CyberSource</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_CUST_GROUPS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::CUST_GROUP::GoCustGroupSetup" target="MainArea">Customer Groups</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_CUSTOMER_SORT]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::CUSTSORT::GoCustSortList" target="MainArea">Customer Types</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGet FUNC_CUST_CATEGORIES 0]}##
+				<li type="square"><a href="##TP_CGI_URL##?action=ADMIN::OBJ_CATEGORY::GoObjCategories&cat_type=C" target="MainArea">Customer Categories</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_MULTI_LANG_MSG] && [op_allowed ManageMessages]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::MSG::go_ml_msg" target="MainArea">Messages</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_MISSING_XLATIONS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::MISSING_TRANSLATION_TOOL::GoMissingXlations" target="MainArea">Missing Translations</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_PASSWORD]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::USERS::GoPassword" target="MainArea">Password</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_NEW_FUNCTIONALITY]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::NEW_FUNC::go_new_func_list" target="MainArea">New Functionality</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_MANUAL_FREEBETS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::MAN_FREEBETS::go_manual_freebets" target="MainArea">Manual FreeBets</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_MEMO]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::MEMO::GoMemoList" target="MainArea">Memo Requests</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MISC_UPLOAD]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::UPLOAD::GoUpload&amp;upload_type=MISC" target="MainArea">Misc Uploads</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_CNTRY_CHK_SCH]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::COUNTRY::GoCountryCheckSearch" target="MainArea">Country Check</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_IP_BLOCKING]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::IP_BLOCK::ViewBlockList" target="MainArea">IP Blocking</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_IP2LOCATION]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::IP2LOCATION::Go" target="MainArea">IP2Location</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_BETSPY]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BETSPY::GoBetspy" target="MainArea">BetSpy</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_TV_CHANNEL]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::TV::GoTVChannelList" target="MainArea">TV Channels</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_STATIONS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::STATION::GoStationList" target=MainArea>TV Stations</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_OVS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::VERIFICATION::GoProfileDefList" target="MainArea">OVS</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_NEWS_HIGHLIGHTS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::NEWS::go_news_highlight_list" target="MainArea">News Highlights</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_SITE_CUSTOMISATION]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::SITECUSTOM::GoSiteCustom" target="MainArea">Site Customise</a></li>
+			##TP_ENDIF##
+		    ##TP_IF {[OT_CfgGetTrue FUNC_SITE_MONITOR]}##
+		        <li><a href="##TP_CGI_URL##?action=ADMIN::SITE_MONITOR::GoHome" target="MainArea">Site Monitors</a></li>
+		    ##TP_ENDIF##
+		    ##TP_IF {[OT_CfgGetTrue FUNC_MENU_ADMIN_CUSTOMER_FLAG] }##
+			<li><a href="##TP_CGI_URL##?action=ADMIN::CUSTFLAG::GoAdminCustFlagsDescList" target="MainArea">Customer Flag Definitions</a> </li>
+		    ##TP_ENDIF##
+		    ##TP_IF {[OT_CfgGetTrue FUNC_MENU_TNC] && [op_allowed TermsAndConditions]}##
+		    	<li><a href="##TP_CGI_URL##?action=ADMIN::TERMS_AND_CONDITIONS::go_tnc_controls" target="MainArea">Terms and Conditions</a></li>
+		    ##TP_ENDIF##
+		    ##TP_IF {[OT_CfgGetTrue FUNC_MENU_NONBAGSX] && [op_allowed ManageNonBagsX]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::NONBAGSX::GoNonBAGSX" target="MainArea">PA Feed Non-BAGS Exceptions</a></li>
+		    ##TP_ENDIF##
+		    ##TP_IF {[OT_CfgGetTrue FUNC_MENU_LANG_CFG]}##
+		    	<li><a href="##TP_CGI_URL##?action=ADMIN::LANG_CFG::GoLangCfg" target="MainArea">Website Language Config</a></li>
+		    ##TP_ENDIF##
+		    ##TP_IF {[OT_CfgGetTrue FUNC_MENU_CCY_CFG]}##
+		    	<li><a href="##TP_CGI_URL##?action=ADMIN::CCY_CFG::GoCcyCfg" target="MainArea">Currency Config</a></li>
+		    ##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_REGIONS]}##
+		    	<li><a href="##TP_CGI_URL##?action=ADMIN::REGION::GoRegions" target="MainArea">Regions</a></li>
+		    ##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_AML_CONTROL]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::ANTI_LAUNDERING::GoAntiLaundering" target="MainArea">Anti-Money Laundering</a></li>
+			##TP_ENDIF##
+		    ##TP_IF {[OT_CfgGetTrue FUNC_MENU_MACHINE_ID_CONTROL] && [op_allowed ManageStmtControl]}##
+		    	<li><a href="##TP_CGI_URL##?action=ADMIN::MACHINE_ID::Home" target="MainArea">Machine IDs</a></li>
+		    ##TP_ENDIF##
+		    ##TP_IF {[OT_CfgGetTrue FUNC_MENU_SHOP_DISTRICT] && [op_allowed ShopsAndDistricts]}##
+		    <li><a href="##TP_CGI_URL##?action=ADMIN::RETAIL::GoRetailSearch" target="MainArea">Shops / Districts</a></li>
+		    ##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_KYC] && [op_allowed ManageKYCLimits]}##
+ 				<li><a href="##TP_CGI_URL##?action=ADMIN::KYC::GoCfg" target="MainArea">KYC Config</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_EXTERNAL_PROMO_CODES] && [op_allowed ExtPromoCodes]}##
+			<li><a href="##TP_CGI_URL##?action=ADMIN::EXT_PROMO::GoPromoList" target="MainArea">External Promo Codes</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_FOREIGN_MAP]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::FOREIGN_CHARS::GoForeignCharList" target="MainArea">Foreign Characters</a></li>
+				##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_RESTRICT_EMAIL] && [op_allowed ManageEmailRestrict]}##
+ 				<li><a href="##TP_CGI_URL##?action=ADMIN::EMAIL_RESTR::Go" target="MainArea">Email Restrictions</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_GAMES_ACTIVE]}##
+			<li><a href="##TP_CGI_URL##?action=ADMIN::GAMEURLS::GoGameURLList" target="MainArea">Game URLs</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_PRODUCT_CODE]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::PRODUCTCODE::GoProductSourceList" target="MainArea">Product Codes</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_UPD_DETAIL_TRIGGERS] && [op_allowed ManageLoginTriggers]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::LOGINTRIGGERS::GoLoginTriggerUpdateDetails" target="MainArea">Update Details Triggers</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_IOVATION] && ([op_allowed IovManageGlobal] || [op_allowed IovManageSystem] || [op_allowed IovManageAccount])}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::IOVATION::GoControl" target="MainArea">Iovation</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_ADMIN_MULTI_LINGUAL]}##
+			<li><a href="##TP_CGI_URL##?action=ADMIN::LOGIN::GoChangeLang" target="MainArea">Change Language</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_SEO_CONTROL] && [op_allowed SeoTags]}##
+                       <li><a href="##TP_CGI_URL##?action=ADMIN::SEO::GoSEOMain" target="MainArea">SEO Control</a></li>
+                        ##TP_ENDIF##
+
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_LOGOUT]}##
+				<li><a id="logoutMenuItem" target=_top href="##TP_CGI_URL##?action=ADMIN::LOGIN::GoLogout">Logout</a></li>
+			##TP_ENDIF##
+		</ul>
+	</li>
+
+	##TP_IF {[OT_CfgGet BF_ACTIVE 0] && [OT_CfgGetTrue FUNC_MENU_BETFAIR]}##
+	<li><span>Betfair</span>
+		<ul>
+			##TP_IF {[op_allowed BFControlInfo]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BETFAIR::GoBFControl" target=MainArea><b>Betfair Control</b></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_BF_MATCH_SEARCH] && [op_allowed BFAutoMatch]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BETFAIR_MATCH::GoBFMatch" target=MainArea><b>Betfair Match</b></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_BF_SYNONYMS] && [op_allowed BFAutoMatch]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BETFAIR_SYN::GoBFSynonym" target=MainArea><b>Synonyms</b></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_BETFAIR_ORDER]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BETFAIR_ORDER::GoSearchOrders" target=MainArea><b>Betfair Orders</b></a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BETFAIR::ShowMonitored" target=MainArea><b>Betfair Monitors</b></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_BETFAIR_PASSTHRU_BET]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BETFAIR_PASSBET::GoSearchPassThruBets" target=MainArea><b>Pass Through Bets</b></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_BETFAIR_VIEW_DD]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BF_DD_TOOLS::GoBFEventTypes" target=MainArea><b>Show Betfair Hierarchy</b></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_BETFAIR_AUTO_MATCH_STATUS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BF_DD_TOOLS::GoBFUnmatchedSelns" target=MainArea><b>Auto-match Status</b></a></li>
+			##TP_ENDIF##
+		</ul>
+	</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_BETTING_SETUP]}##
+	<li><span>Betting Setup</span>
+		<ul>
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_EVENT_CLASSES]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::CLASS::GoClassList" target="MainArea">Event Classes</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_EVENTS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::EV_SEL::GoEvSel" target="MainArea">Events</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_COUPONS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::COUPON::GoCouponSelect" target=MainArea><b>Coupons</b></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_TOPX] && [op_allowed TopXModify]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::TOPX::GoTopx" target=MainArea><b>How Much Do You Want To Win</b></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGet FUNC_MENU_EVENTS_CLEANUP 1]==1}##
+			<li><a href="##TP_CGI_URL##?action=ADMIN::CLEANUP::GoUnstlEvSel" target=MainArea><b>Unsettled Events Cleanup</b></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_EVENT_UPLOAD]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::UPLOAD::GoUpload&amp;upload_type=EVT" target="MainArea">Event Upload</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_IMAGE_LIBRARY]}##
+			<li><a href="##TP_CGI_URL##?action=ADMIN::IMGLIB::GoImages" target=MainArea><b>Image Library</b></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_BET_HIGHLIGHTS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BESTBETS::go_bbets" target="MainArea">Bet Highlights</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_NEWS_STORIES]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::STORIES::go_story_list" target="MainArea">News Stories</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_XGAME]}##
+				<li><a href="##TP_CGI_URL##?action=GoXGameFind" target="MainArea">Lottery Setup</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_XGAME_CHARITY]}##
+				<li><a href="##TP_CGI_URL##?action=GoXGameCharityLst" target="MainArea">Lottery<br>Charity Setup</a>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_BALLS_SETUP]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BALLS::GoBallsSetup" target="MainArea">Balls Setup</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_GAMES_SETUP]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::GAMES::GoGameSetup" target="MainArea">Games Setup</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_PM]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::POOLS::GoPools" target="MainArea">Pools<!-- formerly "PM Games" and then "Pools Selection Criteria" --></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_STL_CHK] && [op_allowed SettleCheck]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::SETTLE::GoSettleCheck" target="MainArea">Settlement Check</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGet FUNC_MENU_UNSETTLEMENT 0]}##
+			<li><a href="##TP_CGI_URL##?action=ADMIN::UNSTL::ShowUnsettleDateRange" target=MainArea><b>Unsettlement</b></a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_BET_TYPES]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BET_TYPE::GoBetTypes" target="MainArea">Bet Types</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_TEAM_PLAYER]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::TEAMPLAYER::doTeamPlayer" target="MainArea">Team Players</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGet FUNC_MENU_RISK_LIMITS 0] && [OT_CfgGetTrue FUNC_ASYNC_BET] && ![OT_CfgGetTrue FUNC_NIGHT_MODE]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::RISK_LIMIT::GoRiskLimits" target=MainArea>Risk Limits</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_JOCKEY_TRAINER]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::JOCKEYTRAINER::goJockeyTrainer" target="MainArea">Jockey/Trainer</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGet FUNC_RACING_FOCUS 0]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::RACING_FOCUS::GoRacingFocus" target=MainArea>Racing Focus</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGet FUNC_SF_PROFILES 0] && [op_allowed ManageSFProfiles]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::SFPROFILE::GoProfileList" target="MainArea">Stake Factor Profiles</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_RAMP_MONITORING]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::EV_SEL::GoRampMonitoring" target="MainArea">Ramp monitoring</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_OPTA_EV_LINKING]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::FEED_MAPPING::GoOpta" target="MainArea">Opta Event Matching</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_LEQUIPE_EV_LINKING]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::FEED_MAPPING::GoLequipe" target="MainArea">L'equipe.fr Event Matching</a></li>
+			##TP_ENDIF##
+		</ul>
+	</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_DISPLAY_CONF]}##
+		<li><span>Display Config</span>
+			<ul>
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_SPORTS]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::SPORT::GoSportList" target="MainArea">Sports</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_COLLECTIONS]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::COLLECTION::GoCollectionList" target="MainArea">Collections</a></li>
+				##TP_ENDIF##
+				 ##TP_IF {[OT_CfgGetTrue FUNC_MENU_DISP_SORTS]}##
+				 	<li><a href="##TP_CGI_URL##?action=ADMIN::DISPLAYSORT::GoDisplaySortList" target="MainArea">Display Sorts</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_TEMPLATES]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::MKT_TEMPLATE::GoMktTemplatesList" target="MainArea">Market Templates</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_EVENTLIST]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::EVENTLISTS::GoEventLists" target="MainArea">Event Lists</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_NEXTEVENT]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::NEXT_EVENTS::GoNextEvents" target="MainArea">Next Event</a></li>
+				##TP_ENDIF##
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_QUICK_CHANGE]}##
+		<li><span>Quick Change</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::QUICKMOD::GoSelEvent" target="MainArea">Event</a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::QUICKMOD::GoSelSeln"  target="MainArea">Selection</a></li>
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	<li><span>Queries</span>
+		<ul>
+			##TP_IF {[OT_CfgGetTrue FUNC_ASYNC_BET_DETAILS] && [op_allowed ViewAsyncBets]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::ASYNC_BET::GoBetInterceptor" target=MainArea>Auto-referral Bet Details</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_VIEW_ASYNC_HIST] && [op_allowed ViewAsyncBetsHist]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::ASYNC_BET::GoHist" target=MainArea>Auto-referral Bet History</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_LATE_BETS] && [OT_CfgGet FUNC_MENU_LATE_BETS_TRAINING 0]}##
+				<li type="square"><a href="##TP_CGI_URL##?action=ADMIN::LATEBET::VoidLateBets" target=MainArea>Late Bets</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_FAILED_BIR_BETS]&& [OT_CfgGet FUNC_MENU_FAILED_BIR_BETS_TRAINING 0]}##
+			<li type="square"><a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetQuery&amp;type=birfail" target="MainArea">Failed BIR Bets</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_XGAMES_QUERY]&& [OT_CfgGet FUNC_MENU_XGAMES_QUERY_TRAINING 0]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetQuery&amp;type=xgame" target="MainArea">Lottery bet</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_CGAMES_QUERY] && [OT_CfgGet FUNC_MENU_CGAMES_QUERY_TRAINING 0]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::IGF::GoBetQuery" target="MainArea">##TP_TCL {tpBufWrite [OT_CfgGet IGF_HTML_SHORT_TITLE "FOG"]}## bet</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGet FUNC_UG 0]}##
+				<li><a href="##TP_CGI_URL##?action=ug::admin::go_bet_query" target="MainArea">##TP_TCL {tpBufWrite [OT_CfgGet UG_MENU_TEXT "SNG"]}## bet</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_PM] && [OT_CfgGet FUNC_MENU_PM_TRAINING 0]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BET::GoBetQuery&amp;type=pools" target="MainArea">Pools bet</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_BALLS_QUERY] && [OT_CfgGet FUNC_MENU_BALLS_QUERY_TRAINING 0]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BALLS::GoBallsQuery" target="MainArea">Balls bet</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_SESSION_SEARCH]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::SESSION::GoSessionSearch" target="MainArea">Sessions</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_CUSTOMER]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::CUST::GoCustQuery" target="MainArea">Customers</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_QAS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::QAS::GoQASLookup" target="MainArea">Address look-up</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_PAY_METHODS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoPmtQry" target="MainArea">Payments</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_PAY_METHODS]}##
+			<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoPmtAuthQry" target="MainArea">Pay Methods</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_MAN_ADJUSTMENTS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::ADJ::GoAdjQry" target="MainArea">Manual Adjustments</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_ORDER_QUERY]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::ORDER::GoOrderQuery" target="MainArea">Orders</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_CALL_QUERY]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::CALL::GoCallQry" target="MainArea">Calls</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_MENU_SLIP_QUERY]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::SLIP::GoSlipQuery" target="MainArea">Shop Bets</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_FRAUD_SCREEN]}##
+				##TP_IF {[op_allowed ViewFraudStatus]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::FRAUD::GoFraudQuery" target="MainArea">Fraud Screen</a></li>
+				##TP_ENDIF##
+			##TP_ENDIF##
+
+			##TP_IF {[OT_CfgGetTrue FUNC_WTD_LIMITS]}##
+				##TP_IF {[op_allowed ViewWtdLimits] || [op_allowed ViewLargeReturns]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoFraudLimits" target="MainArea">Withdrawal Limits</a></li>
+				##TP_ENDIF##
+			##TP_ENDIF##
+
+			##TP_IF {[OT_CfgGetTrue FUNC_CUST_STATUS_FLAGS]}##
+				##TP_IF {[op_allowed ViewCustStatusFlags]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::CUST::QueryCustStatusFlags" target="MainArea">Customer Status Flags</a></li>
+				##TP_ENDIF##
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGetTrue FUNC_CASINO_QUEUE]}##
+				##TP_IF {[op_allowed ViewCasinoQueue]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::CASINOQUEUE::Query" target="MainArea">External System Queue</a></li>
+				##TP_ENDIF##
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGet FUNC_MENU_EXT_SYS_SUB_QUERY 0]}##
+				##TP_IF {[op_allowed ViewXSysSubInfo]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::XSYSSUB::GoSubQuery" target="MainArea"><b>External System Subscriptions</b></a></li>
+				##TP_ENDIF##
+			##TP_ENDIF##
+
+			##TP_IF {[OT_CfgGet FUNC_STMT_RECORD_QUERY 0]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::STMT_RCD::GoStmtRcdQuery" target="MainArea">Statement Record</a></li>
+			##TP_ENDIF##
+			##TP_IF {[OT_CfgGet FUNC_PT_IPOINTS 0]}##
+				##TP_IF {[op_allowed ViewIPoints]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::IPOINTS::GoQuery" target="MainArea">iPoints Conversion</a></li>
+				##TP_ENDIF##
+			##TP_ENDIF##
+		</ul>
+	</li>
+
+	##TP_IF {[OT_CfgGetTrue FUNC_INDEX_TRADE]}##
+		<li><span>Index Trading</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::IXCLEAROUT::GoOrderClearout" target="MainArea">Order Clearout</a></li>
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_PAY_METHODS]}##
+		<li><span>Payments</span>
+			<ul>
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_PMT_SCHEME]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoPmtScheme" target="MainArea">Schemes</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_PMT_METHODS] && [op_allowed ManagePayMthd]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PAY_MTHD::go_pay_mthds" target="MainArea">Payment Methods</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_PAY_MTHD_CTRL] && [op_allowed EditPayMthdControl]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoPayMthdCtrlList" target="MainArea">Pay Method Control</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_PAYMENT_CONTROL]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMT_CONTROL::GoControl" target="MainArea">Payment Settings</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_PMT_MULTIPLE]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMT_MULTIPLE::GoPMTMultiple" target="MainArea">Multiple Methods</a></li>
+				##TP_ENDIF##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::UPLOAD::GoUpload&amp;upload_type=PMT" target="MainArea">Upload</a></li>
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_PMT_GATEWAYS] && [op_allowed UpdatePmtGateway]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoPmtGateHost" target="MainArea">Payment Gateways</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_CARD_RANGES]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::CARD::GoCardQuery" target="MainArea">Card Ranges</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_PMT_CHECKING]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoPmtChecking" target="MainArea">Payment Checking</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_PMT_RULES]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoPmtRules" target="MainArea">Payment Gateway Rules</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_PMT_INTERCEPT] && [op_allowed ViewPmtIntercepts]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMTINTCPT::GoPmtIntercept" target="MainArea">Payment Intercepts</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_AUTO_DBT_RETURN]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::AUTODBT::GoGroupClearDown" target="MainArea">Group ClearDown</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_CPM_RULES] && [op_allowed ViewCPMRules]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::CPM_RULES::GoCPMRules&amp;showDeleted=0" target="MainArea">CPM Rules</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_PMT_BATCH] && [op_allowed ViewPmtBatches]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoBatchQry" target="MainArea">Payment Batches</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_ACT_PRPROFILE] && [op_allowed ActivatePRProfile]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoSwitchPRProfile" target="MainArea">Switch Payment Gateway Profile</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_EDIT_PRPROFILE] && [op_allowed EditPRProfile]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoListPRProfiles" target="MainArea">Payment Gateway Profile</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_PAY_MTHD_VIEW_ORDER] }##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMT_MTHD_ORDER::GoPayMthdViewSettings" target="MainArea">Payment Methods Order</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue ENABLE_RISKGUARDIAN] && ([op_allowed RGModStatus] || [op_allowed RGModCondition])}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::RISKGUARDIAN::GoRGChoose" target="MainArea">Risk Guardian</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_DEBT_MANAGEMENT] && [op_allowed DebtManage] }##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::DEBT_MANAGEMENT::GoDebtMan" target="MainArea">Debt Management</a></li>
+				##TP_ENDIF##
+				##TP_IF {![OT_CfgGet RIGHTNOW_DEBT_MAN_ENABLED 1] && [OT_CfgGetTrue FUNC_MENU_DEBT_MANAGEMENT] && [op_allowed DebtManage] }##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::DEBT_MANAGEMENT::GoDebtManSelArg" target="MainArea">Debt Chase</a></li>
+				##TP_ENDIF##
+				##TP_IF {![OT_CfgGet RIGHTNOW_DEBT_MAN_ENABLED 1] && [OT_CfgGetTrue FUNC_MENU_DEBT_MANAGEMENT] && [op_allowed DebtManage] }##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::DEBT_MANAGEMENT::GoDebtManCfg" target="MainArea">Debt Letters Config</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_PMT_UKASH_BLOCKS] && [op_allowed UkashBlock] }##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::PMT::GoUkashBlocks" target="MainArea">Ukash Blocks</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_DEP_DECL_RULES] && [op_allowed ViewDepDeclRules]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::CPM_RULES::GoCPMRules&amp;showDeleted=0&amp;CPMRuleType=M" target="MainArea">Deposit-Decline Messages</a></li>
+				##TP_ENDIF##
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_PM]}##
+		<li><span>Pools</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::POOLS::GoPoolTypes" target="MainArea">PM Types</a></li>
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_POOLS_PM_BETS]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::POOLS::GoBets" target="MainArea">PM Bets</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_POOLS_SETUP]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::POOLS::SETUP::go_pools" target="MainArea">Pools Sources <!-- formerly "Pools Setup" --></a></li>
+				##TP_ENDIF##
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_BIR]}##
+		<li><span>BIR</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::BIR::go_bir" target="MainArea">BIR Setup</a></li>
+				##TP_IF {[OT_CfgGetTrue FUNC_BIR_COMMENTARY]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::COMM::GoCommentaryList" target="MainArea">Commentary</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_BIR_EXTRA_CONTENT]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::EXTRACONT::go_extra_content_list" target="MainArea">Extra Content</a></li>
+				##TP_ENDIF##
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_TOTE]}##
+		<li><span>Tote</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::TOTE::GoTypeLinks" target="MainArea">Type Linking</a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::TOTE::GoEvLinks&amp;today_only=on" target="MainArea">Event Linking</a></li>
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_TEAMTALK]}##
+		<li><span>Teamtalk</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::TEAMTALK::GoTTLinks" target="MainArea">Type Linking</a></li>
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_FORM_FEEDS]}##
+		<li><span>Form Feeds</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::FORM::GoFormLinks" target="MainArea">Type Linking</a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::FORM::GoManualLinks" target="MainArea">Manual Linking</a></li>
+			</ul>
+
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_FANTASY_BET]}##
+		<li><span>Games</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=GoFBetGameSearch" target="MainArea">Games</a></li>
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_FREEBETS]}##
+		<li><span>FreeBets</span>
+			<ul>
+				##TP_IF { ([OT_CfgGet FUNC_MENU_FREEBET_UPLOAD 0] ) && ([tpGetVar PERM_ViewFreeBets 0] || [tpGetVar PERM_ModifyFreeBets 0]) }##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::UPLOAD::GoUpload&amp;upload_type=FBT" target="MainArea">Freebet Upload</a></li>
+					##TP_IF {[OT_CfgGetTrue FUNC_MENU_FREEBET_TRIGGERTYPES]}##
+						<li><a href="##TP_CGI_URL##?action=ADMIN::FREEBETS::GoTriggerTypesList" target="MainArea">Trigger Types</a></li>
+					##TP_ENDIF##
+					##TP_IF {[OT_CfgGet FUNC_MENU_FREEBET_OFFERS 1]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::FREEBETS::GoOffersList" target="MainArea">Offers</a></li>
+					##TP_ENDIF##
+					##TP_IF {[OT_CfgGet FUNC_MENU_FREEBET_REDEM_VALS 1]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::FREEBETS::GoRValList" target="MainArea">Redemption Values</a></li>
+					##TP_ENDIF##
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_FREEBET_GENERATEVOUCHERS] &&
+						([tpGetVar PERM_ViewFreeBets 0] || [tpGetVar PERM_ModifyFreeBets 0])}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::FREEBETS::GoGenerateVouchers" target="MainArea">Generate Vouchers</a></li>
+				##TP_ENDIF##
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_TELEBETTING]}##
+		<li><span>Telebetting</span>
+			<ul>
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_TERMINALS]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::LDT::GoLocDeptTerm" target="MainArea">Terminals</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_CALL_CANCEL]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::TB_CALL::GoCallCancel" target="MainArea">Cancel Call</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_DAILY_MSG]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::TB_DMSG::GoDailyMsg" target="MainArea">Daily Msg</a></li>
+					<li><a href="##TP_CGI_URL##?action=ADMIN::TB_DMSG::GoDailyMsgList" target="MainArea">Daily Msg Report</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_INCIDENT_MESSAGES] && [op_allowed IncidentMessageUpd]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::INCIDENT_MESSAGE::GoIncidentMessages" target="MainArea">Incident Messages</a></li>
+				##TP_ENDIF##
+
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_POKER]}##
+		<li><span>Poker</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::POKER::SETTING::GoPokSetting" target="MainArea">Settings</a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::POKER::PRIZE::GoGrps" target="MainArea">Prize Groups</a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::POKER::EV::GoPokEvs" target="MainArea">Events</a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::POKER::HAND::GoPokHandQry" target="MainArea">Hands</a></li>
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	
+	##TP_IF {[OT_CfgGet FUNC_MENU_AUTOSETTLER 0]}##
+	<li><span>Auto Settler</span>
+		<ul>
+			<li><a href="##TP_CGI_URL##?action=ADMIN::AUTO_SETTLE::GoAutoSettler" target="MainArea"><b>Settlement Queue</b></a></li>
+			<li><a href="##TP_CGI_URL##?action=ADMIN::AUTO_SETTLE::GoAutoSettlerBlocks" target="MainArea"><b>Blocks</b></a></li>
+			<!--<li><a href="##TP_CGI_URL##?action=ADMIN::AUTO_SETTLE::GoAutoSettlerDelays" target="MainArea"><b>Delays</b></a></li>-->
+		</ul>
+	</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGet FUNC_MENU_EXT_ID 0] && [op_allowed ExtIdFunc]}##
+	<li><span>External Ids</span>
+		<ul>
+			<li><a href="##TP_CGI_URL##?action=ADMIN::UPLOAD::GoUpload&upload_type=EXTID" target=MainArea><b>External Ids</b></a></li>
+		</ul>
+	</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_BETCARD]}##
+		##TP_IF {[op_allowed BetcardFunc]}##
+			<li><span>Betcard</span>
+				<ul>
+					<li><a href="##TP_CGI_URL##?action=ADMIN::BETCARD::GoVendorQuery" target="MainArea">Vendor Details</a></li>
+				</ul>
+			</li>
+		##TP_ENDIF##
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_IGF]}##
+		##TP_PLAY igf/menu_bar.html##
+	##TP_ENDIF##
+	##TP_IF {[OT_CfgGetTrue FUNC_MENU_CHAT]}##
+		##TP_PLAY chat/menu_bar.html##
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGet FUNC_UG 0]}##
+		<li>
+			<span>
+				##TP_TCL {tpBufWrite [OT_CfgGet UG_MENU_TEXT "SNG"]}## Admin
+			</span>
+			##TP_PLAY ug/menu.html##
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_AUTO_LETTERS]}##
+		##TP_IF {[op_allowed AutoLettersFunc]}##
+			<li><span>Customer Letters</span>
+				<ul>
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_STMT_CONTROL] }##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::STMT_CONTROL::go_stmt_controls" target="MainArea">Statements</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_STMT_RUN] && [op_allowed ViewStmtRun]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::STMTRUN::GoStmtRunList" target="MainArea">Stmt Runs</a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGetTrue FUNC_MENU_STMT_RE_RUN] && [op_allowed ViewStmtRun]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::STMTRUN::GoStmtReRunList" target="MainArea">Stmt ReRuns</a></li>
+				##TP_ENDIF##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::AUTO_LETTERS::DoField" target="MainArea">Templates & Fields</a></li>
+					<li><a href="##TP_CGI_URL##?action=ADMIN::AUTO_LETTERS::GoLetter" target="MainArea">Letters</a></li>
+				##TP_IF {[OT_CfgGet FUNC_MENU_EMAILS 1] && [op_allowed ManageEmails]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::EMAILS::GoEmailList" target=MainArea><b>Emails</b></a></li>
+				##TP_ENDIF##
+				##TP_IF {[OT_CfgGet ENABLE_STRALFORS 0]}##
+					<li><a href="##TP_CGI_URL##?action=ADMIN::STRALFORS::GoStralfors" target="MainArea">Stralfors</a></li>
+				##TP_ENDIF##
+
+				</ul>
+			</li>
+		##TP_ENDIF##
+	##TP_ENDIF##
+
+
+
+
+
+	##TP_IF {[OT_CfgGet FUNC_OVS 0]
+					&& [OT_CfgGet FUNC_OVS_DISPLAY_VRF_MENU 0]
+					&& ([op_allowed VrfProfileDef]
+					|| [op_allowed VrfSearch]
+					|| [op_allowed VrfManCheck]) }##
+		##TP_PLAY ovs/ovs_menu.html##
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_EXT_MENU]}##
+	##TP_COMMENT This section is for any non openbet - operator specific implementation.
+			Must create the below file but this file shouldnt be part
+			of the main openbet code ##
+		##TP_PLAY "ext/ext_menu.html"##
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_ALERTS]}##
+		<li><span>Alerts</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::ALERTS::GoSettingList" target="MainArea">Settings</a></li>
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_ONCOURSE]}##
+		<li><span>On-Course</span>
+			<ul>
+				##TP_IF {[op_allowed OnCourseCustomers]}##
+				<li><a href="##TP_CGI_URL##?action=ADMIN::ONCOURSE::GoOnCourseCust" target="MainArea"><b>Punters</b></a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::ONCOURSE::GoOnCourseTrans" target="MainArea"><b>Transactions</b></a></li>
+				##TP_ENDIF##
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	##TP_IF {[OT_CfgGetTrue FUNC_MEDIA_CONTENT] && [op_allowed VideoStreamControl]}##
+		<li><span>Media Content</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::VIDEO::GoVideoProvidersList" target=MainArea><b>Video Providers</b></a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::PERFORM::GoMapPerformStreams" target=MainArea><b>Map Perform Streams</b></a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::PERFORM::GoVSQualifyBets" target=MainArea><b>Streaming Qualification Groups</b></a></li>
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+
+	##TP_IF {[OT_CfgGetTrue FUNC_SEARCH]}##
+		<li><span>Search</span>
+			<ul>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::SEARCH::GoSynonymSearch" target="MainArea"><b>Synonyms</b></a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::SEARCH::GoPredefinedSearch" target="MainArea"><b>Predefine</b></a></li>
+				<li><a href="##TP_CGI_URL##?action=ADMIN::UPLOAD::GoUpload&upload_type=SEARCH" target="MainArea"><b>Upload</b></a></li>
+			</ul>
+		</li>
+	##TP_ENDIF##
+
+	<li><span>Game</span>
+		<ul>
+			<li><a href="##TP_CGI_URL##?action=WAR_GAME_Login" target="MainArea">War Game</a></li>
+			
+		</ul>
+	</li>
+
+	##TP_IF {[OT_CfgGetTrue FUNC_OXI_PUSH_SERVER]}##
+		##TP_PLAY OXi/oxipushserver/menu_bar.html##
+	##TP_ENDIF##
+
+</ul>
+
+</div>
+
+</body>
+
+</html>
