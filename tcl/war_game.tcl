@@ -510,6 +510,7 @@ namespace eval WAR_GAME {
             set prev_total_hand_length ""
 
             set back_step 1
+            puts "=============================== before $winner_current_turn"
             while {1 == 1} {
                 set prev_winner_move_id [get_moves_id $game_id $winner_id [expr $winner_current_turn - $back_step]]
                 set prev_loser_move_id [get_moves_id $game_id $loser_id [expr $loser_current_turn - $back_step]]
@@ -522,14 +523,17 @@ namespace eval WAR_GAME {
 
                 set prev_total_hand_length [expr $prev_loser_hand_length + $prev_winner_hand_length]
 
-                if {$prev_total_hand_length == 5} {
+                if {$prev_total_hand_length == 10} {
                     set back_step [expr $back_step + 1]
                 } else {
                     break
                 }
             }
 
+            puts "=============================== after [expr $winner_current_turn -  $back_step]"
             set bet_val [get_latest_bet $prev_winner_move_id]
+
+            puts "------------------> $bet_val"
 
             #reshuffling the winner
             set winner_hand_compatible(0) ""
@@ -551,10 +555,7 @@ namespace eval WAR_GAME {
 
             #reshuffling the loser
             set deleted_card 0
-            for {set i 0} {$i < $prev_loser_hand_length} {incr i} {
-                if {[expr $prev_loser_hand_length - $deleted_card] == $i} {
-                    break
-                }
+            for {set i 0} {$i < [expr $prev_loser_hand_length - 6]} {incr i} {
                 for {set j 0} {$j < 5} {incr j} {
                     if {$prev_loser_hand($i,card_id) == $loser_hand($j,card_id)} {
                         set deleted_card [expr $deleted_card + 1]
@@ -1017,6 +1018,8 @@ namespace eval WAR_GAME {
 
                 set loser_id [sub_round_create $game_id $other_user_id $current_user_id $turn_number $room_id]
 
+                set bet_val [get_latest_bet $other_user_move_id]
+
                 if {$loser_id != -1} {
                     if {$loser_id == $current_user_id} {
                         set winner_id $other_user_id
@@ -1024,13 +1027,13 @@ namespace eval WAR_GAME {
                         set loser_id $other_user_id
                     }
 
-                    set bet_val [get_latest_bet $other_move_id]
 
                     new_turn $game_id $loser_id $winner_id $room_id $bet_val
 
 
                 }
                 set draw 1
+                set do_database 1
 
                 #5 cards from user deck in a sub round
                 #do that on its own (might not be difficult just inefficient)
@@ -1605,12 +1608,12 @@ namespace eval WAR_GAME {
         set player2_cards(0) ""
 
         #assigns each player their own card
-        for {set i 0} {$i < [expr $card_number]} {incr i} {
+        for {set i 0} {$i < $card_number} {incr i} {
             if {$i < $each_player_card_number} {
                 set player1_cards($i) $CARDS($i)
             } else {
                 set offset [expr $i - $each_player_card_number]
-                set player2_cards($offset) $CARDS($offset)
+                set player2_cards($offset) $CARDS($i)
             }
         }
 
@@ -2293,8 +2296,6 @@ namespace eval WAR_GAME {
         } elseif {$room_status == "empty"} {
             # Done to prevent two queries from loading at once (move to waiting room so that both users can obtain game_id)
             #insert game
-
-            puts "===================> doing code"
             set sql {
                 INSERT INTO twargame (cr_date)
                 VALUES (CURRENT YEAR TO SECOND);
