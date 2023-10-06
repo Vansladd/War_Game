@@ -74,7 +74,11 @@ namespace eval WAR_GAME {
 
         set game_bal [game_balance $user_id $room_id]
 
-        set new_balance [expr $acct_bal + $game_bal]
+        set starting_bal [get_starting_money $room_id]
+
+        set difference_bal [expr $game_bal - $starting_bal]
+
+        set new_balance [expr $acct_bal + $difference_bal]
 
         set sql {
             update twaruser
@@ -1886,15 +1890,22 @@ namespace eval WAR_GAME {
             set viewable_card $specific_card(0,card_name)
         }
 
-        set card_id_2 [get_turned_card $other_user_id $game_id $other_current_turn]
-        if {$card_id_2 != ""} {
+
+        if {$current_turn > 0} {
+            set card_id_2 [get_turned_card $other_user_id $game_id [expr $other_current_turn - 1]]
             array set specific_card [get_specific_card $card_id_2]
             set other_specific_card $specific_card(0,card_name)
         }
+        
 
-        if {$viewable_card == ""} {
-            set other_specific_card ""
-        }
+        #if {$card_id_2 != ""} {
+            #array set specific_card [get_specific_card $card_id_2]
+            #set other_specific_card $specific_card(0,card_name)
+        #}
+
+        #if {$viewable_card == ""} {
+            #set other_specific_card ""
+        #}
 
         set user_move_id [get_moves_id $game_id $current_user_id $current_user_current_turn]
         set other_user_move_id [get_moves_id $game_id $other_user_id $other_current_turn]
@@ -2029,14 +2040,18 @@ namespace eval WAR_GAME {
 
         # Done to prevent two queries from loading at once (move to waiting room so that both users can obtain game_id)
         if {$user_id == $player2_id} {
-            create_final_bet $game_id 0
-            #assigns the cards to each user
-            array set MOVE_ID [initial_card_assigner $player1_id $player2_id $game_id $room_id]
-            set player_1_move_id $MOVE_ID(0,move_id)
-            set player_2_move_id $MOVE_ID(1,move_id)
+            set p2_card_amount [get_card_amount $game_id $player2_id 0]
+            #so that player can't hack many cards
+            if {$p2_card_amount == 0} {
+                create_final_bet $game_id 0
+                #assigns the cards to each user
+                array set MOVE_ID [initial_card_assigner $player1_id $player2_id $game_id $room_id]
+                set player_1_move_id $MOVE_ID(0,move_id)
+                set player_2_move_id $MOVE_ID(1,move_id)
+            }
         }
 
-        start_game_update_user_balance $user_id $room_id
+        #start_game_update_user_balance $user_id $room_id
 
         tpBindString room_id $room_id
         tpBindString user_id $user_id
