@@ -147,29 +147,6 @@ namespace eval WAR_GAME {
         return $starting_money
     }
 
-
-
-    proc start_game_update_user_balance {user_id room_id} {
-        global DB
-
-        set game_id [room_id_to_game_id $room_id]
-
-        set acct_bal [get_user_balance $user_id]
-
-        set game_bal [get_starting_money $room_id]
-
-        set new_balance [expr $acct_bal - $game_bal]
-
-        set sql {
-            update twaruser
-            SET
-                acct_bal = ?
-            where
-                user_id = ?
-
-
-        }
-
     proc forfeit args {
         global DB
 
@@ -1269,10 +1246,10 @@ namespace eval WAR_GAME {
                 twargamemoves as game_moves,
                 thand as hand
             WHERE
-                hand.player_id = 106 AND
+                hand.player_id = ? AND
                 hand.hand_id = game_moves.hand_id AND
-                game_moves.game_id = 19 AND
-                game_moves.turn_number = 0;
+                game_moves.game_id = ? AND
+                game_moves.turn_number = ?;
         }
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
@@ -1491,6 +1468,12 @@ namespace eval WAR_GAME {
         global DB
 
         #inserts the moves that the player makes
+        puts "-----------------> game_id: $game_id"
+        puts "-----------------> hand_id: $hand_id"
+        puts "-----------------> turn_number: $turn_number"
+        puts "-----------------> game_bal: $game_bal"
+        puts "-----------------> card_id: $card_id"
+        puts "-----------------> Final_bet_id: $Final_bet_id"
 
         set insert ""
         set values ""
@@ -1511,7 +1494,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $game_id $hand_id $turn_number $game_bal $card_id $Final_bet_id]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $game_id $hand_id $turn_number $game_bal $card_id $Final_bet_id} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -1519,6 +1502,8 @@ namespace eval WAR_GAME {
                 asPlayFile -nocache war_games/lobby_page.html
                 return
             }
+
+
         } else {
             set sql "
                     Update twargamemoves
@@ -1538,7 +1523,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $card_id $Final_bet_id $game_id $hand_id $turn_number]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $card_id $Final_bet_id $game_id $hand_id $turn_number} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -1548,10 +1533,8 @@ namespace eval WAR_GAME {
             }
         }
 
-
-            catch {inf_close_stmt $stmt}
-
-            return [last_pk]
+        catch {inf_close_stmt $stmt}
+        return [last_pk]
     }
 
     proc insert_hand {player_id game_id cards card_number turn_number} {
@@ -1624,7 +1607,7 @@ namespace eval WAR_GAME {
         global DB
 
         global MOVE_ID
-        set each_player_card_number 26
+        set each_player_card_number 3
 
         set card_number [expr $each_player_card_number * 2]
 
@@ -1927,12 +1910,15 @@ namespace eval WAR_GAME {
             set viewable_card $specific_card(0,card_name)
         }
 
-
+        set card_id_2 ""
         if {$current_turn > 0} {
             set card_id_2 [get_turned_card $other_user_id $game_id [expr $other_current_turn - 1]]
             array set specific_card [get_specific_card $card_id_2]
             set other_specific_card $specific_card(0,card_name)
         }
+
+        puts "-----------------------------------> turned_card_1: $card_id"
+        puts "-----------------------------------> turned_card_2: $card_id_2"
         
 
         #if {$card_id_2 != ""} {
@@ -2169,8 +2155,6 @@ namespace eval WAR_GAME {
                 set player_2_move_id $MOVE_ID(1,move_id)
             }
         }
-
-        #start_game_update_user_balance $user_id $room_id
 
         tpBindString room_id $room_id
         tpBindString user_id $user_id
