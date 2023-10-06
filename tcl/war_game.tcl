@@ -1,4 +1,4 @@
-# ==============================================================
+# ==============================================================vewaruser
 # File path
 # ~/git_src/induction/training/admin/tcl/war_games/war_game.tcl
 # ==============================================================
@@ -21,6 +21,131 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
+
+    proc get_user_balance {user_id} {
+        global DB
+
+        set sql {
+            select
+                acct_bal
+            From
+                twaruser
+            where
+                user_id = ?
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $user_id]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        
+        set user_bal [db_get_col $rs 0 acct_bal]
+
+        catch {db_close $rs}
+        return $user_bal
+    }
+
+    proc end_game_update_user_balance {user_id room_id} {
+        global DB
+
+        set game_id [room_id_to_game_id $room_id]
+        set current_turn [get_turn_number $game_id ]
+        set move_id [get_moves_id $game_id $user_id $current_turn]
+
+        set acct_bal [get_user_balance $user_id]
+
+        set game_bal [game_balance $user_id $room_id]
+
+        set starting_bal [get_starting_money $room_id]
+
+        set difference_bal [expr $game_bal - $starting_bal]
+
+        set new_balance [expr $acct_bal + $difference_bal]
+
+        set sql {
+            update twaruser
+            SET
+                acct_bal
+            where
+                user_id = ?
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $user_id]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+    }
+
+    proc get_starting_money {room_id} {
+        global DB
+
+        set sql {
+            select
+                starting_money
+            From
+                tactivewarroom
+            where
+                room_id = ?
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $room_id]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        
+        set starting_money [db_get_col $rs 0 starting_money]
+
+        catch {db_close $rs}
+        return $starting_money
+    }
 
     proc forfeit args {
         global DB
@@ -359,7 +484,7 @@ namespace eval WAR_GAME {
         return $action_id
     }
 
-    proc new_turn {game_id loser_id winner_id room_id loser_bet_value winner_bet_value} {
+    proc new_turn {game_id loser_id winner_id room_id bet_val} {
         set loser_current_turn [get_turn_number $game_id]
 
         set winner_current_turn [get_turn_number $game_id]
@@ -369,6 +494,8 @@ namespace eval WAR_GAME {
         set loser_balance [game_balance $loser_id $room_id]
 
         array set loser_hand [get_entire_hand $loser_id $loser_move_id]
+
+        set loser_hand_length [expr [array size loser_hand] / 3]
 
 
         set winner_move_id [get_moves_id $game_id $winner_id $winner_current_turn]
@@ -381,64 +508,149 @@ namespace eval WAR_GAME {
 
         set loser_card_id [get_turned_card $loser_id $game_id $loser_current_turn]
 
+        #determine if this is a sub_round
 
-        
-        #winner gains losers chosen card
-        set winner_hand($winner_hand_length,card_id) $loser_card_id
-        set winner_hand($winner_hand_length,hand_card_id) ""
-        set winner_hand($winner_hand_length,hand_id) ""
+        set total_hand_length [expr $loser_hand_length + $winner_hand_length]
 
+        if {$total_hand_length == 10} {
+            set prev_winner_move_id ""
+            set prev_loser_move_id ""
 
-        set loc_found 0
-        #takes a card away from loser (has duplicate at the end)
-        for {set i 0} {$i < [expr [expr [array size loser_hand] / 3] - 1]} {incr i} {
-            if {$loser_hand($i,card_id) == $loser_card_id} {
-                set loc_found 1
-            }
-            if {$loc_found == 1} {
-                if {$loser_hand($i,card_id) == $loser_card_id} {
+            set prev_loser_hand(0,card_id) ""
+            set prev_winner_hand(0,card_id) ""
+
+            set prev_winner_hand_length ""
+            set prev_loser_hand_length ""
+
+            set prev_total_hand_length ""
+
+            set back_step 1
+            puts "=============================== before $winner_current_turn"
+            while {1 == 1} {
+                set prev_winner_move_id [get_moves_id $game_id $winner_id [expr $winner_current_turn - $back_step]]
+                set prev_loser_move_id [get_moves_id $game_id $loser_id [expr $loser_current_turn - $back_step]]
+
+                array set prev_loser_hand [get_entire_hand $loser_id $prev_loser_move_id]
+                array set prev_winner_hand [get_entire_hand $winner_id $prev_winner_move_id]
+
+                set prev_loser_hand_length [expr [array size prev_loser_hand] / 3]
+                set prev_winner_hand_length [expr [array size prev_winner_hand] / 3]
+
+                set prev_total_hand_length [expr $prev_loser_hand_length + $prev_winner_hand_length]
+
+                if {$prev_total_hand_length == 10} {
+                    set back_step [expr $back_step + 1]
+                } else {
+                    break
                 }
-                set loser_hand($i,card_id) $loser_hand([expr $i + 1],card_id) 
             }
+
+            puts "=============================== after [expr $winner_current_turn -  $back_step]"
+            set bet_val [get_latest_bet $prev_winner_move_id]
+
+            puts "------------------> $bet_val"
+
+            #reshuffling the winner
+            set winner_hand_compatible(0) ""
+            for {set i 0} {$i < $prev_winner_hand_length} {incr i} {
+                set winner_hand_compatible($i) $prev_winner_hand($i,card_id)
+            }
+
+            for {set i 0} {$i < 5} {incr i} {
+                set winner_hand_compatible([expr $prev_winner_hand_length + $i]) $loser_hand($i,card_id)
+            }
+
+            #randomises the deck
+            for {set i 0} {$i < [array size winner_hand_compatible]} {incr i} {
+                set temp $winner_hand_compatible($i)
+                set rand [random_number 0 [expr [array size winner_hand_compatible] - 1]]
+                set winner_hand_compatible($i) $winner_hand_compatible($rand)
+                set winner_hand_compatible($rand) $temp
+            }
+
+            #reshuffling the loser
+            set deleted_card 0
+            for {set i 0} {$i < [expr $prev_loser_hand_length - 6]} {incr i} {
+                for {set j 0} {$j < 5} {incr j} {
+                    if {$prev_loser_hand($i,card_id) == $loser_hand($j,card_id)} {
+                        set deleted_card [expr $deleted_card + 1]
+                    }
+                }
+                set $prev_loser_hand($i,card_id) $prev_loser_hand([expr $i + $deleted_card],card_id)
+            }
+
+            set loser_hand_compatible(0) ""
+
+            for {set i 0} {$i < [expr $prev_loser_hand_length - 5]} {incr i} {
+                set loser_hand_compatible($i) $prev_loser_hand($i,card_id)
+            }
+
+            #randomises the deck
+            for {set i 0} {$i < [array size loser_hand_compatible]} {incr i} {
+                set temp $loser_hand_compatible($i)
+                set rand [random_number 0 [expr [array size loser_hand_compatible] - 1]]
+                set loser_hand_compatible($i) $loser_hand_compatible($rand)
+                set loser_hand_compatible($rand) $temp
+            }
+
+        } else {
+            #winner gains losers chosen card
+            set winner_hand($winner_hand_length,card_id) $loser_card_id
+            set winner_hand($winner_hand_length,hand_card_id) ""
+            set winner_hand($winner_hand_length,hand_id) ""
+
+
+            set loc_found 0
+            #takes a card away from loser (has duplicate at the end)
+            for {set i 0} {$i < [expr [expr [array size loser_hand] / 3] - 1]} {incr i} {
+                if {$loser_hand($i,card_id) == $loser_card_id} {
+                    set loc_found 1
+                }
+                if {$loc_found == 1} {
+                    if {$loser_hand($i,card_id) == $loser_card_id} {
+                    }
+                    set loser_hand($i,card_id) $loser_hand([expr $i + 1],card_id) 
+                }
+            }
+
+            array set loser_hand_compatible {}
+            array set winner_hand_compatible {}
+
+            #makes hand compatible with function
+            for {set i 0} {$i < [expr [expr [array size loser_hand] / 3] - 1]} {incr i} {
+                set loser_hand_compatible($i) $loser_hand($i,card_id)
+            }
+
+
+            #randomises the deck of cards for current user
+            for {set i 0} {$i < [array size loser_hand_compatible]} {incr i} {
+                set temp $loser_hand_compatible($i)
+                set rand [random_number 0 [expr [array size loser_hand_compatible] - 1]]
+                set loser_hand_compatible($i) $loser_hand_compatible($rand)
+                set loser_hand_compatible($rand) $temp
+            }
+
+            #makes hand compatible with function
+            for {set i 0} {$i < [expr [array size winner_hand] / 3]} {incr i} {
+                set winner_hand_compatible($i) $winner_hand($i,card_id)
+            }
+
+            #randomises the deck of cards for the winner user
+            for {set i 0} {$i < [array size winner_hand_compatible]} {incr i} {
+                set temp $winner_hand_compatible($i)
+                set rand [random_number 0 [expr [array size winner_hand_compatible] - 1]]
+                set winner_hand_compatible($i) $winner_hand_compatible($rand)
+                set winner_hand_compatible($rand) $temp
+            }
+
         }
-
-        array set loser_hand_compatible {}
-        array set winner_hand_compatible {}
-
-        #makes hand compatible with function
-        for {set i 0} {$i < [expr [expr [array size loser_hand] / 3] - 1]} {incr i} {
-            set loser_hand_compatible($i) $loser_hand($i,card_id)
-        }
-
-
-        #randomises the deck of cards for current user (-1 because card was removed)
-        for {set i 0} {$i < [array size loser_hand_compatible]} {incr i} {
-            set temp $loser_hand_compatible($i)
-            set rand [random_number 0 [expr [array size loser_hand_compatible] - 1]]
-            set loser_hand_compatible($i) $loser_hand_compatible($rand)
-            set loser_hand_compatible($rand) $temp
-        }
-
-        #makes hand compatible with function
-        for {set i 0} {$i < [expr [array size winner_hand] / 3]} {incr i} {
-            set winner_hand_compatible($i) $winner_hand($i,card_id)
-        }
-
-        #randomises the deck of cards for the winner user
-        for {set i 0} {$i < [array size winner_hand_compatible]} {incr i} {
-            set temp $winner_hand_compatible($i)
-            set rand [random_number 0 [expr [array size winner_hand_compatible] - 1]]
-            set winner_hand_compatible($i) $winner_hand_compatible($rand)
-            set winner_hand_compatible($rand) $temp
-        }
-
         set loser_hand_id [insert_hand $loser_id $game_id [array get loser_hand_compatible] [array size loser_hand_compatible] [expr $loser_current_turn + 1]]
         set winner_hand_id [insert_hand $winner_id $game_id [array get winner_hand_compatible] [array size winner_hand_compatible] [expr $winner_current_turn + 1]]
 
         #game_id hand_id turn_number game_bal card_id Final_bet_id
 
-        set loser_move_id [insert_game_moves $game_id $loser_hand_id [expr $loser_current_turn + 1] [expr $loser_balance - $loser_bet_value] "" 0]
-        set winner_move_id [insert_game_moves $game_id $winner_hand_id [expr $winner_current_turn + 1] [expr $winner_balance + $winner_bet_value] "" 0]
+        set loser_move_id [insert_game_moves $game_id $loser_hand_id [expr $loser_current_turn + 1] [expr $loser_balance - $bet_val] "" 0]
+        set winner_move_id [insert_game_moves $game_id $winner_hand_id [expr $winner_current_turn + 1] [expr $winner_balance + $bet_val] "" 0]
 
         create_final_bet $game_id [expr $winner_current_turn + 1]
     }
@@ -550,6 +762,163 @@ namespace eval WAR_GAME {
         return $bet_turn
     }
 
+    proc is_room {room_id game_id} {
+        #return 0 for game_id no longer in room
+        #return 1 for game_id still in room
+
+        set test_game_id [room_id_to_game_id $room_id]
+
+        if {$test_game_id == $game_id} {
+            return 1
+        } else {
+            return 0
+        }
+    }
+
+
+    proc wipe_room {room_id} {
+        global DB
+
+        global DB
+
+        set sql {
+            UPDATE tactivewarroom
+            SET game_id = ""
+            where
+                room_id = ?
+
+
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $room_id]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+    }
+
+    proc end_game {current_user_id other_user_id room_id game_id current_turn} {
+    
+        set room [is_room $room_id $game_id]
+
+        set user_card_amount [get_card_amount $game_id $other_user_id $current_turn]
+
+        set other_card_amount [get_card_amount $game_id $other_user_id $current_turn]
+        set this_balance [game_balance $current_user_id $room_id]
+
+        set other_balance [game_balance $other_user_id $room_id]
+
+        if {(($other_balance == 0 || $other_card_amount == 0) && ($this_balance == 0 || $current_user_card_amount == 0)) && $room == 1} {
+            end_game_update_user_balance $current_user_id $room_id
+            end_game_update_user_balance $other_user_id $room_id
+            wipe_room room_id
+        }
+    }
+
+    proc sub_round_create {game_id other_user_id current_user_id turn_number room_id} {
+
+        set move_id [get_moves_id $game_id $current_user_id $turn_number]
+        array set user_hand [get_entire_hand $current_user_id $move_id]
+        set card_amount [get_card_amount $game_id $current_user_id $turn_number]
+        set balance [game_balance $current_user_id $room_id]
+
+        set other_move_id [get_moves_id $game_id $other_user_id $turn_number]
+        array set other_user_hand [get_entire_hand $other_user_id $other_move_id]
+        set other_card_amount [get_card_amount $game_id $other_user_id $turn_number]
+        set other_balance [game_balance $other_user_id $room_id]
+
+        set cards(0) ""
+
+        if {$card_amount < 5} {
+            return $current_user_id
+        } elseif {$other_card_amount < 5} {
+            return $other_user_id
+        } else {
+
+            #doing cards for current user            
+            set new_cards_amount 0
+
+            #getting deck of 5 cards
+            while {1 == 1} {
+                if {$new_cards_amount >= 5} {
+                    break
+                }
+                set random_number [random_number 0 [expr $card_amount - 1]]
+                if {$new_cards_amount == 0} {
+                    set cards($new_cards_amount) $user_hand($random_number,card_id)
+                    set new_cards_amount [expr $new_cards_amount + 1]
+                } else {
+                    set is_in_array 0
+                    for {set i 0} {$i < $new_cards_amount} {incr i} {
+                        if {$user_hand($random_number,card_id) == $cards($i)} {
+                            set is_in_array 1
+                            break
+                        }
+                    }
+                    if {$is_in_array == 0} {
+                        set cards($new_cards_amount) $user_hand($random_number,card_id)
+                        set new_cards_amount [expr $new_cards_amount + 1]
+                    }
+                }
+            }
+
+            set new_hand_id [insert_hand $current_user_id $game_id [array get cards] [array size cards] [expr $turn_number + 1]]
+
+            set new_move_id [insert_game_moves $game_id $new_hand_id [expr $turn_number + 1] $balance "" 0]
+
+
+
+            #doing cards for other user
+            set new_cards_amount 0
+            set other_cards(0) ""
+
+            #getting deck of 5 cards
+            while {1 == 1} {
+                if {$new_cards_amount >= 5} {
+                    break
+                }
+                set random_number [random_number 0 [expr $other_card_amount - 1]]
+                if {$new_cards_amount == 0} {
+                    set other_cards($new_cards_amount) $other_user_hand($random_number,card_id)
+                    set new_cards_amount [expr $new_cards_amount + 1]
+                } else {
+                    set is_in_array 0
+                    for {set i 0} {$i < $new_cards_amount} {incr i} {
+                        if {$other_user_hand($random_number,card_id) == $other_cards($i)} {
+                            set is_in_array 1
+                            break
+                        }
+                    }
+                    if {$is_in_array == 0} {
+                        set other_cards($new_cards_amount) $other_user_hand($random_number,card_id)
+                        set new_cards_amount [expr $new_cards_amount + 1]
+                    }
+                }
+            }
+
+            set new_hand_id [insert_hand $other_user_id $game_id [array get other_cards] [array size other_cards] [expr $turn_number + 1]]
+
+            set new_move_id [insert_game_moves $game_id $new_hand_id [expr $turn_number + 1] $other_balance "" 0]
+
+        }
+        create_final_bet $game_id [expr $turn_number + 1]
+        return -1
+    }
+
     proc initial_bet args {
         global DB
 
@@ -557,7 +926,7 @@ namespace eval WAR_GAME {
         set action          [reqGetArg bet_action]
         set room_id         [reqGetArg room_id]
         set user_id         [reqGetArg user_id]
-        set game_id         [room_id_to_game_id $room_id]
+        set game_id         [reqGetArg game_id]
         set turn_number     [get_turn_number $game_id]
         set move_id         [get_moves_id $game_id $user_id $turn_number]
         set final_bet_id    [get_final_bet_id $game_id $turn_number]
@@ -572,6 +941,7 @@ namespace eval WAR_GAME {
         set PLAYERS(player2_id)     [lindex $ret_players 1]
 
         set other_user_id {}
+        set current_user_id $user_id
         
         if {$PLAYERS(player1_id) == $user_id} {
             set other_user_id $PLAYERS(player2_id)
@@ -589,8 +959,13 @@ namespace eval WAR_GAME {
         set other_user_move_id [get_moves_id $game_id $other_user_id $turn_number]
         set other_user_card_id [get_turned_card $other_user_id $game_id $turn_number]
 
+        set other_card_amount [get_card_amount $game_id $other_user_id $turn_number]
+        set current_card_amount [get_card_amount $game_id $current_user_id $turn_number]
+        set total_cards [expr $other_card_amount + $current_card_amount]
+
         tpBindString room_id $room_id
         tpBindString user_id $user_id
+        tpBindString game_id $game_id
 
         if {$current_user_card_id == ""} {
             tpBindString err_msg "You need to select your card first!"
@@ -621,7 +996,8 @@ namespace eval WAR_GAME {
             return
         }
 
-        if {$action == "FOLD"} {
+
+        if {$action == "FOLD" && $total_cards != 5} {
             set current_user_id $user_id
 
             set current_bet_value [get_latest_bet $user_move_id]
@@ -634,7 +1010,7 @@ namespace eval WAR_GAME {
             set bet $current_bet_value
             set do_database 1
 
-        } elseif {$action == "MATCH"} {
+        } elseif {$action == "MATCH" && $total_cards != 5} {
             set current_user_id $user_id
 
             array set current_user_card_attributes [get_specific_card $current_user_card_id]
@@ -642,6 +1018,8 @@ namespace eval WAR_GAME {
 
             set loser_id ""
             set winner_id ""
+
+            set draw 0
 
             if {$current_user_card_attributes(0,card_value) > $other_user_card_attributes(0,card_value)} {
                 set winner_id $current_user_id
@@ -652,37 +1030,64 @@ namespace eval WAR_GAME {
             } else {
                 #does stuff
                 # get loser and winner from tie but with 10 cards 
-            }
 
-            set loser_move_id [get_moves_id $game_id $loser_id $turn_number]
-            set winner_move_id [get_moves_id $game_id $winner_id $turn_number]
+                set loser_id [sub_round_create $game_id $other_user_id $current_user_id $turn_number $room_id]
 
-            set winner_bet_value [get_latest_bet $winner_move_id]
-            if {$winner_bet_value == ""} {
-                set winner_bet_value 0
-            }
+                set bet_val [get_latest_bet $other_user_move_id]
 
-            set loser_bet_value [get_latest_bet $loser_move_id]
-            if {$loser_bet_value == ""} {
-                set loser_bet_value 0
-            }
+                if {$loser_id != -1} {
+                    if {$loser_id == $current_user_id} {
+                        set winner_id $other_user_id
+                    } else {
+                        set loser_id $other_user_id
+                    }
 
-            set bet_val $loser_bet_value
 
-            if {$loser_bet_value < $winner_bet_value} {
-                set bet_val $winner_bet_value
-            }
+                    new_turn $game_id $loser_id $winner_id $room_id $bet_val
 
-            set winner_balance [game_balance $winner_id $room_id]
-            set loser_balance [game_balance $loser_id $room_id]
 
-            if {$bet_val <= $loser_balance && $bet_val <= $winner_balance} {
+                }
+                set draw 1
                 set do_database 1
-                new_turn $game_id $loser_id $winner_id $room_id $bet_val $bet_val
-                set bet $bet_val
+
+                #5 cards from user deck in a sub round
+                #do that on its own (might not be difficult just inefficient)
+
+                #sub round (some indication that its a sub round) probably be the total cards in play being 10
+                #with that indicated to get back original hand turn_number - 1
             }
 
-        } elseif {$action == "BET"} {
+            if {$draw == 0} {
+                set loser_move_id [get_moves_id $game_id $loser_id $turn_number]
+                set winner_move_id [get_moves_id $game_id $winner_id $turn_number]
+
+                set winner_bet_value [get_latest_bet $winner_move_id]
+                if {$winner_bet_value == ""} {
+                    set winner_bet_value 0
+                }
+
+                set loser_bet_value [get_latest_bet $loser_move_id]
+                if {$loser_bet_value == ""} {
+                    set loser_bet_value 0
+                }
+
+                set bet_val $loser_bet_value
+
+                if {$loser_bet_value < $winner_bet_value} {
+                    set bet_val $winner_bet_value
+                }
+
+                set winner_balance [game_balance $winner_id $room_id]
+                set loser_balance [game_balance $loser_id $room_id]
+
+                if {$bet_val <= $loser_balance && $bet_val <= $winner_balance} {
+                    set do_database 1
+                    new_turn $game_id $loser_id $winner_id $room_id $bet_val
+                    set bet $bet_val
+                }
+            }
+
+        } elseif {$action == "BET" && $total_cards != 5} {
 
             set current_user_id $user_id
 
@@ -841,10 +1246,10 @@ namespace eval WAR_GAME {
                 twargamemoves as game_moves,
                 thand as hand
             WHERE
-                hand.player_id = 106 AND
+                hand.player_id = ? AND
                 hand.hand_id = game_moves.hand_id AND
-                game_moves.game_id = 19 AND
-                game_moves.turn_number = 0;
+                game_moves.game_id = ? AND
+                game_moves.turn_number = ?;
         }
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
@@ -986,7 +1391,7 @@ namespace eval WAR_GAME {
         set user_id             [reqGetArg user_id]
         set room_id             [reqGetArg room_id]
         set card_location       [reqGetArg card_location]
-        set game_id             [room_id_to_game_id $room_id]
+        set game_id             [reqGetArg game_id]
         set turn_number         [get_turn_number $game_id]
         set move_id             [get_moves_id $game_id $user_id $turn_number]
 
@@ -1008,8 +1413,46 @@ namespace eval WAR_GAME {
         #inserting change in database
         insert_game_moves $game_id $entire_hand(0,hand_id) $turn_number $game_bal $specific_card_id $final_bet_id
 
+        #where mini turn ends
+
+        set current_user_id $user_id
+        set other_user_id {}
+        set ret_players [get_user_id_in_room $room_id]
+
+        set PLAYERS(player1_id) [lindex $ret_players 0]
+        set PLAYERS(player2_id) [lindex $ret_players 1]
+
+        if {$PLAYERS(player1_id) == $user_id} {
+            set other_user_id $PLAYERS(player2_id)
+        } elseif {$PLAYERS(player2_id) == $user_id} {
+            set other_user_id $PLAYERS(player1_id)
+        } else {
+            return
+        }
+
+        #incase in sub game
+        set other_card_id [get_turned_card $other_user_id $game_id $turn_number]
+
+        set other_card_amount [get_card_amount $game_id $other_user_id $turn_number]
+        set current_card_amount [get_card_amount $game_id $current_user_id $turn_number]
+        if {$other_card_id != "" && [expr $other_card_amount + $current_card_amount] == 10} {
+            array set other_specific_card [get_specific_card $other_card_id]
+
+            if {$other_specific_card(0,card_value) > $specific_card(0,card_value)} {
+                new_turn $game_id $current_user_id $other_user_id $room_id 0
+            } elseif {$other_specific_card(0,card_value) < $specific_card(0,card_value)} {
+                new_turn $game_id $other_user_id $current_user_id $room_id 0
+            } else {
+                sub_round_create $current_user_id $other_user_id $room_id $game_id $turn_number
+                #do
+            }
+
+        }
+
+        #go to game page again
         tpBindString room_id $room_id
         tpBindString user_id $user_id
+        tpBindString game_id $game_id
 
         go_game_page
 
@@ -1025,6 +1468,12 @@ namespace eval WAR_GAME {
         global DB
 
         #inserts the moves that the player makes
+        puts "-----------------> game_id: $game_id"
+        puts "-----------------> hand_id: $hand_id"
+        puts "-----------------> turn_number: $turn_number"
+        puts "-----------------> game_bal: $game_bal"
+        puts "-----------------> card_id: $card_id"
+        puts "-----------------> Final_bet_id: $Final_bet_id"
 
         set insert ""
         set values ""
@@ -1045,7 +1494,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $game_id $hand_id $turn_number $game_bal $card_id $Final_bet_id]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $game_id $hand_id $turn_number $game_bal $card_id $Final_bet_id} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -1053,6 +1502,8 @@ namespace eval WAR_GAME {
                 asPlayFile -nocache war_games/lobby_page.html
                 return
             }
+
+
         } else {
             set sql "
                     Update twargamemoves
@@ -1072,7 +1523,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $card_id $Final_bet_id $game_id $hand_id $turn_number]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $card_id $Final_bet_id $game_id $hand_id $turn_number} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -1082,10 +1533,8 @@ namespace eval WAR_GAME {
             }
         }
 
-
-            catch {inf_close_stmt $stmt}
-
-            return [last_pk]
+        catch {inf_close_stmt $stmt}
+        return [last_pk]
     }
 
     proc insert_hand {player_id game_id cards card_number turn_number} {
@@ -1154,11 +1603,11 @@ namespace eval WAR_GAME {
 
     }
 
-    proc initial_card_assigner {player1_id player2_id game_id} {
+    proc initial_card_assigner {player1_id player2_id game_id room_id} {
         global DB
 
         global MOVE_ID
-        set each_player_card_number 26
+        set each_player_card_number 3
 
         set card_number [expr $each_player_card_number * 2]
 
@@ -1182,12 +1631,12 @@ namespace eval WAR_GAME {
         set player2_cards(0) ""
 
         #assigns each player their own card
-        for {set i 0} {$i < [expr $card_number]} {incr i} {
+        for {set i 0} {$i < $card_number} {incr i} {
             if {$i < $each_player_card_number} {
                 set player1_cards($i) $CARDS($i)
             } else {
                 set offset [expr $i - $each_player_card_number]
-                set player2_cards($offset) $CARDS($offset)
+                set player2_cards($offset) $CARDS($i)
             }
         }
 
@@ -1195,8 +1644,8 @@ namespace eval WAR_GAME {
         set pl1_hand_id [insert_hand $player1_id $game_id [array get player1_cards] $each_player_card_number 0]
         set pl2_hand_id [insert_hand $player2_id $game_id [array get player2_cards] $each_player_card_number 0]
 
-        set p1_bal 100
-        set p2_bal 100
+        set p1_bal [get_starting_money $room_id]
+        set p2_bal [get_starting_money $room_id]
 
         set MOVE_ID(0) ""
         
@@ -1416,7 +1865,7 @@ namespace eval WAR_GAME {
 
         set user_id [reqGetArg user_id]
         set room_id [reqGetArg room_id]
-        set game_id [room_id_to_game_id $room_id]
+        set game_id [reqGetArg game_id]
 
         set current_user_id $user_id
         set other_user_id {}
@@ -1461,15 +1910,25 @@ namespace eval WAR_GAME {
             set viewable_card $specific_card(0,card_name)
         }
 
-        set card_id_2 [get_turned_card $other_user_id $game_id $other_current_turn]
-        if {$card_id_2 != ""} {
+        set card_id_2 ""
+        if {$current_turn > 0} {
+            set card_id_2 [get_turned_card $other_user_id $game_id [expr $other_current_turn - 1]]
             array set specific_card [get_specific_card $card_id_2]
             set other_specific_card $specific_card(0,card_name)
         }
 
-        if {$viewable_card == ""} {
-            set other_specific_card ""
-        }
+        puts "-----------------------------------> turned_card_1: $card_id"
+        puts "-----------------------------------> turned_card_2: $card_id_2"
+        
+
+        #if {$card_id_2 != ""} {
+            #array set specific_card [get_specific_card $card_id_2]
+            #set other_specific_card $specific_card(0,card_name)
+        #}
+
+        #if {$viewable_card == ""} {
+            #set other_specific_card ""
+        #}
 
         set user_move_id [get_moves_id $game_id $current_user_id $current_user_current_turn]
         set other_user_move_id [get_moves_id $game_id $other_user_id $other_current_turn]
@@ -1682,75 +2141,24 @@ namespace eval WAR_GAME {
         set player2_id [reqGetArg player2_id]
         set room_id    [reqGetArg room_id]
         set user_id    [reqGetArg user_id]
+        set game_id    [room_id_to_game_id $room_id]
 
-        # Done to prevent two queries from loading at once
+        # Done to prevent two queries from loading at once (move to waiting room so that both users can obtain game_id)
         if {$user_id == $player2_id} {
-
-
-            #insert game
-
-            set sql {
-                INSERT INTO twargame (cr_date)
-                VALUES (CURRENT YEAR TO SECOND);
+            set p2_card_amount [get_card_amount $game_id $player2_id 0]
+            #so that player can't hack many cards
+            if {$p2_card_amount == 0} {
+                create_final_bet $game_id 0
+                #assigns the cards to each user
+                array set MOVE_ID [initial_card_assigner $player1_id $player2_id $game_id $room_id]
+                set player_1_move_id $MOVE_ID(0,move_id)
+                set player_2_move_id $MOVE_ID(1,move_id)
             }
-            
-
-            if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
-                tpBindString err_msg "error occured while preparing statement"
-                ob::log::write ERROR {===>error: $msg}
-                tpSetVar err 1
-                asPlayFile -nocache war_games/lobby_page.html
-                return
-            }
-            
-            if {[catch {set rs [inf_exec_stmt $stmt]} msg]} {
-                tpBindString err_msg "error occured while executing query"
-                ob::log::write ERROR {===>error: $msg}
-                catch {inf_close_stmt $stmt}
-                tpSetVar err 1
-                asPlayFile -nocache war_games/lobby_page.html
-                return
-            }
-
-            catch {inf_close_stmt $stmt}
-
-            set game_id [last_pk]
-
-            create_final_bet $game_id 0
-
-            #update room
-
-            set sql {
-                UPDATE tactivewarroom
-                SET game_id = ?
-                WHERE room_id = ?;
-            }
-
-            if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
-                tpBindString err_msg "error occured while preparing statement"
-                ob::log::write ERROR {===>error: $msg}
-                tpSetVar err 1
-                asPlayFile -nocache war_games/lobby_page.html
-                return
-            }
-            
-            if {[catch {set rs [inf_exec_stmt $stmt $game_id $room_id]} msg]} {
-                tpBindString err_msg "error occured while executing query"
-                ob::log::write ERROR {===>error: $msg}
-                catch {inf_close_stmt $stmt}
-                tpSetVar err 1
-                asPlayFile -nocache war_games/lobby_page.html
-                return
-            }
-
-            #assigns the cards to each user
-            array set MOVE_ID [initial_card_assigner $player1_id $player2_id $game_id]
-            set player_1_move_id $MOVE_ID(0,move_id)
-            set player_2_move_id $MOVE_ID(1,move_id)
         }
 
         tpBindString room_id $room_id
         tpBindString user_id $user_id
+        tpBindString game_id $game_id
         # Send to HTML page
         asPlayFile -nocache war_games/game_page.html
     }
@@ -2032,14 +2440,74 @@ namespace eval WAR_GAME {
         set user_id [reqGetArg user_id]
         set room_id [reqGetArg room_id]
 
+
         tpBindString user_id $user_id
 
-        if {[check_room_status $room_id] == "closed"} {
+        set room_status [check_room_status $room_id]
+
+        if {$room_status != "closed"} {
+             insert_user_to_room $user_id $room_id
+        }
+        if {$room_status == "closed"} {
             asPlayFile -nocache war_games/lobby_page.html
             return
+        } elseif {$room_status == "empty"} {
+            # Done to prevent two queries from loading at once (move to waiting room so that both users can obtain game_id)
+            #insert game
+            set sql {
+                INSERT INTO twargame (cr_date)
+                VALUES (CURRENT YEAR TO SECOND);
+            }
+                
+
+            if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+                tpBindString err_msg "error occured while preparing statement"
+                ob::log::write ERROR {===>error: $msg}
+                tpSetVar err 1
+                asPlayFile -nocache war_games/lobby_page.html
+                return
+            }
+                
+            if {[catch {set rs [inf_exec_stmt $stmt]} msg]} {
+                tpBindString err_msg "error occured while executing query"
+                ob::log::write ERROR {===>error: $msg}
+                catch {inf_close_stmt $stmt}
+                tpSetVar err 1
+                asPlayFile -nocache war_games/lobby_page.html
+                return
+            }
+
+            catch {inf_close_stmt $stmt}
+
+            set game_id [last_pk]
+
+
+            #update room
+
+            set sql {
+                UPDATE tactivewarroom
+                SET game_id = ?
+                WHERE room_id = ?;
+            }
+
+            if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+                tpBindString err_msg "error occured while preparing statement"
+                ob::log::write ERROR {===>error: $msg}
+                tpSetVar err 1
+                asPlayFile -nocache war_games/lobby_page.html
+                return
+            }
+                
+            if {[catch {set rs [inf_exec_stmt $stmt $game_id $room_id]} msg]} {
+                tpBindString err_msg "error occured while executing query"
+                ob::log::write ERROR {===>error: $msg}
+                catch {inf_close_stmt $stmt}
+                tpSetVar err 1
+                asPlayFile -nocache war_games/lobby_page.html
+                return
+            }
         }
 
-        insert_user_to_room $user_id $room_id
 
         tpBindString room_id $room_id
         asPlayFile -nocache war_games/waiting_room.html
@@ -2080,7 +2548,9 @@ namespace eval WAR_GAME {
 
         if {[db_get_nrows $rs] >= 2} {
             set status "closed"
-        } 
+        } elseif {[db_get_nrows $rs] == 0} {
+            set status "empty"
+        }
 
         catch {db_close $rs}
         return $status
