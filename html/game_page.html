@@ -2,18 +2,38 @@
 <html>
 	<head>
 		<title>Game Page</title>
+		<style>
+			.win-lose-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				z-index: 9999;
+			}
+		</style>
 	</head>
 	<body>
         <p id="my_balance"></p>
-        <button>Forfeit Game</button>
+        <button onclick="handle_forfeit()">Forfeit Game</button>
         <p id="user2_balance"></p>
         <div id="user2_card"></div>
         <div id="turn"></div>
         <div id="their_card"></div>
         <div id="my_card"></div>
         <div id="cards"></div>
+        ##TP_IF {[tpGetVar err] == 1}##
+            <div class="error-message">##TP_err_msg##</div>
+        ##TP_ENDIF##
         <form action="##TP_CGI_URL##" method="post">
-            <input type="hidden" name="action" value="WAR_GAME_Inital_bet"/> <!-- Increased the input size for better visibility -->
+            <input type="hidden" name="action" value="WAR_GAME_Inital_bet"/> 
+            <input type="hidden" name="room_id" value="##TP_room_id##"/>
+            <input type="hidden" name="game_id" value="##TP_game_id##"/>
+            <input type="hidden" name="user_id" value="##TP_user_id##"/>
             <input type="text" name="bet_value" size="20"/>
             <input type="radio" id="bet" name="bet_action" value="BET">
             <label for="bet">Bet</label><br>    
@@ -23,16 +43,16 @@
             <label for="fold">Match</label><br>
             <button value >submit</button>
         </form>
-        <button id="fold">Fold</button>
-        <button id="match">Match</button>
-        <button id="Raise">Raise</button>
-        <div id="console"></div>        
-		
-		
+        <div id="console"></div>  
+        
+        <!-- Forfeit overlay, initially hidden -->
+        <div id="winLoseOverlay" class="win-lose-overlay" style="display: none;">
+            <div id="overlayContent"></div>     
+            <a href="##TP_CGI_URL##?action=WAR_GAME_Leave_Room&user_id=##TP_user_id##">Go to lobby</a>
+        </div>
 	</body>
-
-
 </html>
+
 <script>
     async function display_game(json){
         var a = 1;
@@ -45,14 +65,13 @@
         document.getElementById("console").innerHTML = "";
 
         document.getElementById("console").innerHTML += "<p>Your bet is " + json["bet_value"].toString() + "</p><br>"
-        document.getElementById("console").innerHTML += "<p>Your bet is " + json["user2"]["bet_value"].toString() + "</p><br>"
+        document.getElementById("console").innerHTML += "<p>User 2 bet is " + json["user2"]["bet_value"].toString() + "</p><br>"
 
         if(json["condition"] == "playing"){ //if game is still going on
             for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
-                document.getElementById("cards").innerHTML+='<a href="##TP_CGI_URL##?action=WAR_GAME_Flip_card&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'">Card '+ (i + 1).toString() + '</a>';
+                document.getElementById("cards").innerHTML+='<a href="##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'">Card '+ (i + 1).toString() + '</a>';
             
             }
-            console.log(json["viewable_card"]["specific_card"])
             if(json["viewable_card"]["specific_card"] != ""){
                 document.getElementById("my_card").innerHTML = "<p>Your selected card is " + json["viewable_card"]["specific_card"].toString() + "</p>"
             } else {
@@ -65,28 +84,54 @@
                 document.getElementById("their_card").innerHTML = "<p>User 2 hasn't selected a card yet</p>"
             }
 
+            document.getElementById("my_balance").innerHTML = "<p>Your balance is " + json["user_balance"].toString() + "</p>"
+            document.getElementById("user2_balance").innerHTML = "<p>User 2 balance is " + json["user2"]["user2_balance"].toString() + "</p>"
+
 
         }else{ //if game has finished
-            var message = "The game has finished";
-
-            if(json["user2_balance"] == 0){ //if user definitely wins
-                message = "You have won the game";
-            }else if(json["user_balance"] == 0){ //if user definitely loses
-                message = "You have lost the game";
-            }
-            message+= "\nYou have " + json["user_balance"].toString() + " left"
-            message+= "\nThe opponent has " + json["user2_balance"].toString() + " left"
-
-            document.getElementById("cards").innerHTML+='<p>' + message +'</p>';
+            display_win_lose_screen(json);
+            return
         }
+
+    }
+
+    function display_win_lose_screen(json) {
+        var winner = json.winner
+        var loser = json.loser
+        const win_condition = json.win_condition
+        const victory_message = "The winner is: " + winner
+        var message = ""
+
+        console.log("win condition: " + win_condition)
+
+        if (win_condition === "FORFEIT") {
+            message = loser + " has forfeited!"
+        } else if (win_condition === "STANDARD") {
+            message = loser + " has lost the game!"
+        }
+
+        var winLoseOverlay = document.getElementById("winLoseOverlay");
+        var overlayContent = winLoseOverlay.querySelector("#overlayContent");
+
+        var messageHTML = "<p>" + message;
+        var victoryMessageHTML = victory_message + "</p><br>";
+
+        overlayContent.innerHTML = messageHTML + victoryMessageHTML;
+        winLoseOverlay.style.display = "flex";
     }
 
     function get_game_position(){
-        fetch('##TP_CGI_URL##?action=WAR_GAME_game_state_JSON&user_id=##TP_user_id##&room_id=##TP_room_id##') //gets json from url
+        fetch('##TP_CGI_URL##?action=WAR_GAME_game_state_JSON&game_id=##TP_game_id##&user_id=##TP_user_id##&room_id=##TP_room_id##') //gets json from url
         .then(response => response.text())
         .then(text => display_game(JSON.parse(text)))
     }
 
+    async function handle_forfeit(){
+        await fetch('##TP_CGI_URL##?action=WAR_GAME_Forfeit&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##')
+        // var forfeitOverlay = document.getElementById("forfeitOverlay");
+        // forfeitOverlay.style.display = "flex";
+    }
+
     get_game_position();
-    setInterval(get_game_position(), 100); //updates game position every 10th of a second
+    setInterval(get_game_position, 1000); //updates game position every 10th of a second
 </script>

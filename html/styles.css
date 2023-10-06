@@ -1,10 +1,11 @@
 body {
-    background: linear-gradient(to bottom right, #03052e, #080d73); /* Dark blue to navy blue */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Center the container vertically */
-    margin: 0;
+    background: linear-gradient(to bottom right, #03052e, #020ccc); /* Dark blue to navy blue */
+    height: 100vh; 
+}
+
+.login-body {
+    position: relative;
+    min-height: 100vh;
 }
 
 /* Style the login container */
@@ -12,12 +13,15 @@ body {
     text-align: center;
     background-color: rgba(245, 245, 245, 0.9); /* Slightly transparent background color */
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
     padding: 20px;
     width: 300px; /* Set a fixed width for the container */
     margin: 0 auto; /* Center the container horizontally */
-    font-family: Arial, sans-serif; /* Specify a generic font family */
-    position: relative; /* Add this for positioning the circle */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Style the circle around the login box */
@@ -73,4 +77,105 @@ label {
     padding: 10px; /* Padding around the error message */
     margin: 10px;
     border-radius: 5px; /* Optional: Adds rounded corners */
+}
+
+#lobby-header {
+    text-align: center;
+    color: white;
+    margin-top: 20px; /* Adjust the margin-top value based on your design preference */
+}
+
+.lobby {
+    width: 25%;
+    margin: 10px auto;
+    background-color: rgba(50, 50, 50, 1); /* Translucent white background */
+    padding: 10px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.room-number {
+    background-color: rgba(75, 75, 75, 0.7); /* Dark grey background with 70% opacity */
+    color: white; /* Text color */
+    font-weight: bold; /* Make the text bold */
+    padding: 10px; /* Add padding to the box */
+    border-radius: 5px; /* Optional: Adds rounded corners */
+    font-size: 24px;
+    margin-bottom: 10px;
+    width: 90%;
+    text-align: center; /* Center the text horizontally */
+}
+
+.players {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    background-color: rgba(75, 75, 75, 0.7); /* Dark grey background with 70% opacity */
+    color: white; /* Text color */
+    padding: 10px; /* Add padding to the box */
+    border-radius: 5px; /* Optional: Adds rounded corners */
+    width: 90%;
+    text-align: center; /* Center the text horizontally */
+}
+
+.player {
+    flex: 1;
+    padding: 25px;
+}
+
+.label {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.starting-money {
+    margin-bottom: 10px;
+    background-color: rgba(75, 75, 75, 0.7); /* Dark grey background with 70% opacity */
+    color: white; /* Text color */
+    padding: 10px; /* Add padding to the box */
+    border-radius: 5px; /* Optional: Adds rounded corners */
+    width: 90%;
+    text-align: center; /* Center the text horizontally */
+}
+
+.join-button {
+    background-color: #008805;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 5px;
+    width: 90%; /* Make the button take 100% width inside the lobby box */
+}
+
+.full-button {
+    background-color: #db0000;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 5px;
+    width: 90%; /* Make the button take 100% width inside the lobby box */
+    cursor: default;
+    pointer-events: none;        
+    text-decoration: none;
+    color: rgb(175, 175, 175);
+}
+
+.no-money-button {
+    background-color: #a3a3a3;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 5px;
+    width: 90%; /* Make the button take 100% width inside the lobby box */
+    cursor: default;
+    pointer-events: none;        
+    text-decoration: none;
+    color: rgb(75, 75, 75);
 }

@@ -464,8 +464,8 @@ proc main_init {} {
 	#
 	# Clear any ongoing sessions in war games
 	#
-	#war_game_gc
 	war_game_init
+	war_game_gc
 
 	set MAIN_INIT_COMPLETE 1
 
