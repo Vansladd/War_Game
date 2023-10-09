@@ -706,7 +706,11 @@ namespace eval WAR_GAME {
 
         catch {inf_close_stmt $stmt}
 
-        set final_bet_id [db_get_col $rs 0 final_bet_id]
+        set final_bet_id ""
+
+        if {[db_get_nrows $rs]} {
+            set final_bet_id [db_get_col $rs 0 final_bet_id]
+        }
 
         catch {db_close $rs}
 
@@ -994,7 +998,7 @@ namespace eval WAR_GAME {
                 set current_bet_value 0
             }
             
-            new_turn $game_id $current_user_id $other_user_id $room_id $current_bet_value $current_bet_value
+            new_turn $game_id $current_user_id $other_user_id $room_id $current_bet_value
 
             set bet $current_bet_value
             set do_database 1
