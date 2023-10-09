@@ -2,7 +2,7 @@
 # File path
 # ~/git_src/induction/training/admin/tcl/war_games/war_game.tcl
 # ==============================================================
-
+            
 namespace eval WAR_GAME {
 
 	asSetAct WAR_GAME_Login                 [namespace code go_login_page]
@@ -11,6 +11,7 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Lobby                 [namespace code go_lobby_page]
     asSetAct WAR_GAME_Game                  [namespace code go_game_page]
     asSetAct WAR_GAME_Waiting_Room          [namespace code go_room_page]
+    asSetAct WAR_GAME_LOGOUT                [namespace code do_logout]
     asSetAct WAR_GAME_Join_Game             [namespace code go_join_game]
     asSetAct WAR_GAME_Leave_Room            [namespace code leave_room]
     asSetAct WAR_GAME_Flip_card             [namespace code flip_card]
@@ -22,6 +23,42 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
 
+
+    proc do_logout args {
+        global DB
+
+        set user_id [reqGetArg user_id]
+
+        set sql {
+            DELETE FROM tactivewaruser
+            where user_id = ?
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $user_id]} msg]} {
+			tpBindString err_msg "Please enter a non-empty username!"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        catch {db_close $rs}
+
+        go_login_page
+
+    }
 
     proc get_username {user_id} {
         global DB
@@ -2109,9 +2146,11 @@ namespace eval WAR_GAME {
         set room_id     [reqGetArg room_id]
         set game_id     [reqGetArg game_id]
 
-
-        set game_exists [is_room $room_id $game_id]
-
+        if { $game_id == "" } {
+            set game_exists 0 
+        } else {
+            set game_exists [is_room $room_id $game_id]
+        }
 
         if { $game_exists == 1} {
 
@@ -2626,6 +2665,7 @@ namespace eval WAR_GAME {
 
 
         tpBindString room_id $room_id
+        puts " ================================== $room_id"
         asPlayFile -nocache war_games/waiting_room.html
     }
 

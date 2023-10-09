@@ -179,3 +179,48 @@ label {
     text-decoration: none;
     color: rgb(75, 75, 75);
 }
+
+/* Add this to your stylesheet */
+#logout-button {
+    background-color: #ff3333; /* Red background color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Padding around the button */
+    border-radius: 5px; /* Rounded corners */
+    text-decoration: none; /* Remove underline from link */
+    margin-left: 10px; /* Adjust spacing from other elements */
+}
+
+#logout-button:hover {
+    background-color: #cc0000; /* Darker red on hover */
+}
+
+#navbar {
+    display: flex;
+    justify-content: space-between; /* Pushes items to the opposite ends */
+    align-items: center; /* Vertically centers items */
+    background-color: #333; /* Background color for the navbar */
+    padding: 10px;
+}
+
+#logout-button {
+    background-color: white; /* Red background color */
+    color: black; /* Text color */
+    padding: 10px 20px; /* Padding around the button */
+    border-radius: 5px; /* Rounded corners */
+    text-decoration: none; /* Remove underline from link */
+    margin-right: 10px; /* Adjust spacing from other elements */
+}
+
+#logout-button:hover {
+    background-color: #cc0000; /* Darker red on hover */
+}
+
+#user-info {
+    display: flex;
+    flex-direction: column; /* Stack username and balance vertically */
+    color: white; /* Text color */
+}
+
+#username, #balance {
+    margin: 5px 0; /* Adjust spacing between username and balance */
+}
