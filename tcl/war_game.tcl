@@ -16,6 +16,7 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Flip_card             [namespace code flip_card]
     asSetAct WAR_GAME_Inital_bet            [namespace code initial_bet]
     asSetAct WAR_GAME_Forfeit               [namespace code forfeit]
+    asSetAct WAR_GAME_Update_User_Active    [namespace code update_last_active]
 
     asSetAct WAR_GAME_User_JSON             [namespace code get_user_json]
     asSetAct WAR_GAME_Lobbies_JSON          [namespace code get_lobbies_json]
@@ -187,6 +188,8 @@ namespace eval WAR_GAME {
         set user_id [reqGetArg user_id]
         set room_id [reqGetArg room_id]
         set game_id [room_id_to_game_id $room_id]
+
+        update_last_active $user_id
 
         # Check if someone has forfeited by hacking into link?
         set ret_players [get_user_id_in_room $room_id]
@@ -1017,6 +1020,8 @@ namespace eval WAR_GAME {
         set final_bet_id    [get_final_bet_id $game_id $turn_number]
         set bet_turn        [get_bet_turn $final_bet_id]
 
+        update_last_active $user_id
+
         set action_id       [to_action_id $action]
         set do_database 0
 
@@ -1090,7 +1095,7 @@ namespace eval WAR_GAME {
                 set current_bet_value 0
             }
             
-            new_turn $game_id $current_user_id $other_user_id $room_id $current_bet_value $current_bet_value
+            new_turn $game_id $current_user_id $other_user_id $room_id $current_bet_value
 
             set bet $current_bet_value
             set do_database 1
@@ -1480,6 +1485,8 @@ namespace eval WAR_GAME {
         set turn_number         [get_turn_number $game_id]
         set move_id             [get_moves_id $game_id $user_id $turn_number]
 
+        update_last_active $user_id
+
         #getting users entire hand
         array set entire_hand [get_entire_hand $user_id $move_id]
 
@@ -1544,40 +1551,6 @@ namespace eval WAR_GAME {
 
     }
 
-    # UPDATE LAST ACTIVE USER!!!! Use when user makes a new action
-    # Not sure whether to call this directly from the front-end or call this with back-end methods that are called when the user navigates to them
-    proc update_last_active_user {user_id} {
-        global DB
-
-        set sql {
-            update
-                tactivewaruser
-            set 
-                last_active = dbinfo('current_utc')
-            where 
-                user_id = ?
-        }
-
-        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
-            tpBindString err_msg "error occured while preparing statement"
-            ob::log::write ERROR {===>error: $msg}
-            tpSetVar err 1
-            asPlayFile -nocache war_games/lobby_page.html
-            return
-        }
-            
-        if {[catch [inf_exec_stmt $stmt $user_id] msg]} {
-            tpBindString err_msg "error occured while executing query"
-            ob::log::write ERROR {===>error: $msg}
-            catch {inf_close_stmt $stmt}
-            tpSetVar err 1
-            asPlayFile -nocache war_games/lobby_page.html
-            return
-        }
-
-        catch {inf_close_stmt $stmt}
-    }
-
     proc random_number {min max} {
         #generates random number between max and min
         return [expr int((rand() * ($max + 1 - $min)) + $min)]
@@ -1585,14 +1558,6 @@ namespace eval WAR_GAME {
 
     proc insert_game_moves {game_id hand_id turn_number game_bal card_id Final_bet_id} {
         global DB
-
-        #inserts the moves that the player makes
-        puts "-----------------> game_id: $game_id"
-        puts "-----------------> hand_id: $hand_id"
-        puts "-----------------> turn_number: $turn_number"
-        puts "-----------------> game_bal: $game_bal"
-        puts "-----------------> card_id: $card_id"
-        puts "-----------------> Final_bet_id: $Final_bet_id"
 
         set insert ""
         set values ""
@@ -2141,10 +2106,6 @@ namespace eval WAR_GAME {
 
         catch {db_close $rs}
 
-        puts "----------------------------> user_id $user_id"
-        puts "----------------------------> username $username"
-        puts "----------------------------> win_condition $win_condition"
-
         return [list $user_id $username $win_condition]
     }
 
@@ -2153,7 +2114,8 @@ namespace eval WAR_GAME {
 
         set user_id     [reqGetArg user_id]
 
-        ;#sql query refactor
+        update_last_active $user_id
+
         set sql {
             UPDATE 
                 tactivewaruser 
@@ -2254,6 +2216,8 @@ namespace eval WAR_GAME {
         set room_id    [reqGetArg room_id]
         set user_id    [reqGetArg user_id]
         set game_id    [room_id_to_game_id $room_id]
+
+        update_last_active $user_id
 
         # Done to prevent two queries from loading at once (move to waiting room so that both users can obtain game_id)
         if {$user_id == $player2_id} {
@@ -2728,6 +2692,8 @@ namespace eval WAR_GAME {
 
         set user_id [reqGetArg user_id]
         set room_id [reqGetArg room_id]
+
+        update_last_active $user_id
 
         tpBindString user_id $user_id
 
