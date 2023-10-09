@@ -1571,6 +1571,11 @@ namespace eval WAR_GAME {
         set turn_number         [get_turn_number $game_id]
         set move_id             [get_moves_id $game_id $user_id $turn_number]
 
+        # Don't flip card if already chosen
+        if {[get_turned_card $user_id $game_id $turn_number] != ""} {
+            return
+        }
+
         #getting users entire hand
         array set entire_hand [get_entire_hand $user_id $move_id]
 
