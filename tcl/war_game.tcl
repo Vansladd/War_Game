@@ -2722,7 +2722,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt]} msg]} {
+            if {[catch {inf_exec_stmt $stmt} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -2734,7 +2734,6 @@ namespace eval WAR_GAME {
             catch {inf_close_stmt $stmt}
 
             set game_id [last_pk]
-
 
             #update room
 
@@ -2752,7 +2751,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $game_id $room_id]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $game_id $room_id} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -2760,6 +2759,8 @@ namespace eval WAR_GAME {
                 asPlayFile -nocache war_games/lobby_page.html
                 return
             }
+
+            catch {inf_close_stmt $stmt}
         }
 
 
