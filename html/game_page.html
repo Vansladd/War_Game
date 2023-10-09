@@ -99,13 +99,23 @@
 	<body>
         <div class="game-navbar">
             <div style="color: white" id="my_balance"></div>
-            <div><button id="login-button">Forfeit Game</button></div>
+            <div><button id="login-button" onclick="handle_forfeit()">Forfeit Game</button></div>
             <div style="color: white" id="user2_balance"></div>
         </div>
-        <div id="user2_card"></div>
         <div id="turn"></div>
+        
+        <!-- Forfeit overlay, initially hidden -->
+        <div id="winLoseOverlay" class="win-lose-overlay" style="display: none;">
+            <div id="overlayContent"></div>     
+            <a href="##TP_CGI_URL##?action=WAR_GAME_Leave_Room&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##">Go to lobby</a>
+        </div>
+
         <div class="other-card" id="their_card"></div>
         <div class="grid-container" id="cards"></div>
+
+        ##TP_IF {[tpGetVar err] == 1}##
+            <div class="error-message">##TP_err_msg##</div>
+        ##TP_ENDIF##
 
         <div id="form-container">
             <form action="##TP_CGI_URL##" id="bet-form" method="post">
@@ -130,17 +140,14 @@
         <p class= "right" id="other_bet" style="color: white"></p>
 		
 		
-	</body>
-
-
+    </body>
 </html>
 <script>
     async function display_game(json){
         var a = 1;
         //will get json file
         //var json = {"current_turn": 0, "bet_value": 0 "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_location": 1, "specific_card": "king", "suit_name": hearts}, "user2": {"specific_card": "dk", "user2_balance": 50, "user2_card_amount": 5, "bet_value": 0}};
-        document.getElementById("cards").innerHTML = ""; //so that the sections can be refreshed
-        document.getElementById("user2_card").innerHTML = "";
+        document.getElementById("cards").innerHTML = "";
         document.getElementById("their_card").innerHTML = "";
         document.getElementById("this_bet").innerHTML = "";
         document.getElementById("other_bet").innerHTML = "";
@@ -183,22 +190,24 @@
 
 
         }else{ //if game has finished
-            document.getElementById("cards").innerHTML = ""; //blank all other sections
-            document.getElementById("user2_card").innerHTML = "";
-            document.getElementById("their_card").innerHTML = "";
-            document.getElementById("my_card").innerHTML = "";
-            document.getElementById("console").innerHTML = "";
-            var message = "The game has finished";
+            // document.getElementById("cards").innerHTML = ""; //blank all other sections
+            // document.getElementById("user2_card").innerHTML = "";
+            // document.getElementById("their_card").innerHTML = "";
+            // document.getElementById("my_card").innerHTML = "";
+            // document.getElementById("console").innerHTML = "";
+            // var message = "The game has finished";
 
-            if(json["user2"]["user2_balance"] == 0 || json["user2"]["user2_card_amount"] == 0){ //if user definitely wins
-                message = "You have won the game";
-            }else if(json["user_balance"] == 0 || json["user_card_amount"] == 0){ //if user definitely loses
-                message = "You have lost the game";
-            }
-            message+= "\nYou have " + json["user_balance"].toString() + " left"
-            message+= "\nThe opponent has " + json["user2"]["user2_balance"].toString() + " left"
+            // if(json["user2"]["user2_balance"] == 0 || json["user2"]["user2_card_amount"] == 0){ //if user definitely wins
+            //     message = "You have won the game";
+            // }else if(json["user_balance"] == 0 || json["user_card_amount"] == 0){ //if user definitely loses
+            //     message = "You have lost the game";
+            // }
+            // message+= "\nYou have " + json["user_balance"].toString() + " left"
+            // message+= "\nThe opponent has " + json["user2"]["user2_balance"].toString() + " left"
 
-            document.getElementById("cards").innerHTML+='<p>' + message +'</p>';
+            // document.getElementById("cards").innerHTML+='<p>' + message +'</p>';
+            display_win_lose_screen(json)
+            return
         }
 
     }
@@ -215,6 +224,37 @@
 
     function click_card(location) {
         fetch('##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + location) //posts which card was flipped
+    }
+
+    function display_win_lose_screen(json) {
+        var winner = json.winner
+        var loser = json.loser
+        const win_condition = json.win_condition
+        const victory_message = "The winner is: " + winner
+        var message = ""
+
+        console.log("win condition: " + win_condition)
+
+        if (win_condition === "FORFEIT") {
+            message = loser + " has forfeited!"
+        } else if (win_condition === "STANDARD") {
+            message = loser + " has lost the game!"
+        }
+
+        var winLoseOverlay = document.getElementById("winLoseOverlay");
+        var overlayContent = winLoseOverlay.querySelector("#overlayContent");
+
+        var messageHTML = "<p>" + message;
+        var victoryMessageHTML = victory_message + "</p><br>";
+
+        overlayContent.innerHTML = messageHTML + victoryMessageHTML;
+        winLoseOverlay.style.display = "flex";
+    }
+
+    async function handle_forfeit(){
+        await fetch('##TP_CGI_URL##?action=WAR_GAME_Forfeit&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##')
+        // var forfeitOverlay = document.getElementById("forfeitOverlay");
+        // forfeitOverlay.style.display = "flex";
     }
 
 	function card_image (suit, value) { //"spades" "clubs" "hearts" "diamonds"
@@ -263,4 +303,6 @@
 
     get_game_position();
     setInterval(get_game_position, 1000); //updates game position every 10th of a second
+
+
 </script>
