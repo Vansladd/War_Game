@@ -117,6 +117,8 @@
             <div class="error-message">##TP_err_msg##</div>
         ##TP_ENDIF##
 
+        <div id="player_turn" style="color: white; text-align-last: center; font-size: 20px;" ></div>
+
         <div id="form-container">
             <form action="##TP_CGI_URL##" id="bet-form" method="post">
                 <input type="hidden" name="action" value="WAR_GAME_Inital_bet"/> 
@@ -129,7 +131,7 @@
                 <input type="radio" id="fold" name="bet_action" value="FOLD">
                 <label for="fold">Fold</label><br>
                 <input type="radio" id="match" name="bet_action" value="MATCH">
-                <label for="fold">Match</label><br>
+                <label for="match">Match</label><br>
             </form>
             <button onClick="handle_bet()" id="login-button" >submit</button>
             ##TP_IF {[tpGetVar err] == 1}##
@@ -151,9 +153,16 @@
         document.getElementById("their_card").innerHTML = "";
         document.getElementById("this_bet").innerHTML = "";
         document.getElementById("other_bet").innerHTML = "";
+        document.getElementById("player_turn").innerHTML = "";
 
         document.getElementById("this_bet").innerHTML += "<p>Your bet is " + json["bet_value"].toString() + "</p>"
         document.getElementById("other_bet").innerHTML += "<p>User 2 bet is " + json["user2"]["bet_value"].toString() + "</p>"
+
+        if(json["player_turn"] == "##TP_user_id##") {
+            document.getElementById("player_turn").innerHTML+= "<b>It is your turn to bet</b>"
+        } else {
+            document.getElementById("player_turn").innerHTML+= "<b>It is not your turn to bet</b>"
+        }
 
         if(json["user2"]["specific_card"] != "") {
             var suit = json["user2"]["suit_name"];
@@ -187,7 +196,7 @@
 
             document.getElementById("my_balance").innerHTML = "<p>Your balance is " + json["user_balance"].toString() + "</p>"
             document.getElementById("user2_balance").innerHTML = "<p>User 2 balance is " + json["user2"]["user2_balance"].toString() + "</p>"
-
+            
 
         }else{ //if game has finished
             // document.getElementById("cards").innerHTML = ""; //blank all other sections

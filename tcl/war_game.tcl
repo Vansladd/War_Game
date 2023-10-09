@@ -1080,7 +1080,21 @@ namespace eval WAR_GAME {
         set final_bet_id    [get_final_bet_id $game_id $turn_number]
         set bet_turn        [get_bet_turn $final_bet_id]
 
-        set action_id       [to_action_id $action]
+        tpBindString room_id $room_id
+        tpBindString user_id $user_id
+        tpBindString game_id $game_id
+
+        set action_id ""
+
+        if {$action == ""} {
+            tpBindString err_msg "You need to select your action first for bet!"
+            ob::log::write ERROR {===>User has not selected a card!}
+            tpSetVar err 1
+            asPlayFile -nocache war_games/game_page.html
+            return
+        } else {
+            set action_id       [to_action_id $action]
+        }
         set do_database 0
 
         set ret_players     [get_user_id_in_room $room_id]
@@ -1111,9 +1125,6 @@ namespace eval WAR_GAME {
         set current_card_amount [get_card_amount $game_id $current_user_id $turn_number]
         set total_cards [expr $other_card_amount + $current_card_amount]
 
-        tpBindString room_id $room_id
-        tpBindString user_id $user_id
-        tpBindString game_id $game_id
 
         if {$current_user_card_id == ""} {
             tpBindString err_msg "You need to select your card first!"
@@ -1123,13 +1134,22 @@ namespace eval WAR_GAME {
             return
         }
 
-        if {$other_user_card_id == ""} {
+        
+        set other_bet_value [get_latest_bet $other_user_move_id]
+
+        if {$other_bet_value == "" && ($action == "FOLD" || $action == "MATCH")} {
             tpBindString err_msg "The opponent needs to select your card first!"
             ob::log::write ERROR {===>User2 has not selected a card!}
             tpSetVar err 1
             asPlayFile -nocache war_games/game_page.html
             return
         }
+
+        #get_first_user {$current_move_id $other_move_id} "current" or "other"
+
+        #set first_bet_user [get_first_user $user_move_id $other_user_move_id]
+
+
 
         # Alternate turns so players take turn taking the first bet
         if {[expr $turn_number % 2] == 1} {
@@ -1879,6 +1899,64 @@ namespace eval WAR_GAME {
 
     }
 
+    proc get_first_user_bet_id {move_id} {
+        global DB
+
+        set sql {
+            SELECT
+                MIN(twarbetmove.bet_id) as bet_id
+            FROM
+                twarbetmove,
+                twargamemoves
+            WHERE
+                twargamemoves.move_id = ?
+                twargamemoves.move_id = twarbetmove.move_id
+            
+        }
+
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby_page.html
+			return
+		}
+		if {[catch {set rs [inf_exec_stmt $stmt $move_id]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/lobby_page.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set bet_id ""
+
+        if {[db_get_nrows $rs] != 0} {
+            set bet_id [db_get_col $rs 0 bet_id]
+        }
+
+        db_close $rs
+
+        return $bet_id
+    }
+
+    proc get_first_user {$current_move_id $other_move_id} {
+        set current_first_bet_id [get_first_user_bet_id $current_move_id]
+        set other_first_bet_id [get_first_user_bet_id $other_move_id]
+
+        if {$other_first_bet_id == ""} {
+            return "current"
+        } elseif {$current_first_bet_id < $other_first_bet_id} {
+            return "current"
+        } else {
+            return "other"
+        }
+    }
+
     proc get_turn_number {game_id} {
         global DB
 
@@ -2053,6 +2131,9 @@ namespace eval WAR_GAME {
             set current_turn $other_current_turn
         }
 
+        set final_bet_id    [get_final_bet_id $game_id $current_turn]
+        set bet_turn        [get_bet_turn $final_bet_id]
+
         set viewable_card ""
         set viewable_location -1
         set other_specific_card ""
@@ -2133,6 +2214,28 @@ namespace eval WAR_GAME {
             set condition "playing"
         }
 
+        if {$PLAYERS(player1_id) == $user_id} {
+            set other_user_id $PLAYERS(player2_id)
+            set player_bet_turn 0
+        } elseif {$PLAYERS(player2_id) == $user_id} {
+            set player_bet_turn 1
+            set other_user_id $PLAYERS(player1_id)
+        } else {
+            return
+        }      
+
+        if {[expr $current_turn % 2] == 1} {
+            set player_bet_turn [expr 1 - $player_bet_turn]
+        } 
+
+        set player_turn ""
+
+        if {[expr $bet_turn % 2] == $player_bet_turn} {
+            set player_turn $other_user_id
+        } else {
+            set player_turn $user_id
+        }
+
         set winner_json $winner
         set loser_json $loser
         set win_condition_json $win_condition
@@ -2140,7 +2243,7 @@ namespace eval WAR_GAME {
         set json "\{ \"bet_value\": \"$bet_value\", \"current_turn\": $current_turn, \"user_balance\": $this_balance, \"user_card_amount\" : $current_user_card_amount, \
             \"viewable_card\": \{\"viewable_turn\": $current_user_current_turn, \"viewable_location\": $viewable_location, \"specific_card\": \"$viewable_card\", \"suit_name\": \"$suit\"\}, \
             \"user2\": \{\"bet_value\": \"$user2_bet_value\", \"specific_card\": \"$other_specific_card\", \"suit_name\": \"$other_suit\", \"viewable_turn\": $other_current_turn, \"user2_balance\": $other_balance, \"user2_card_amount\": $other_card_amount\},
-            \"condition\": \"$condition\", \"winner\": \"$winner_json\", \"loser\": \"$loser_json\", \"win_condition\": \"$win_condition_json\"\}"
+            \"condition\": \"$condition\", \"winner\": \"$winner_json\", \"loser\": \"$loser_json\", \"win_condition\": \"$win_condition_json\", \"player_turn\": \"$player_turn\"\}"
 
         tpBindString JSON $json
 
