@@ -1906,10 +1906,12 @@ namespace eval WAR_GAME {
         }
 
 
+        set other_suit ""
         if {$current_turn > 0} {
             set card_id_2 [get_turned_card $other_user_id $game_id [expr $other_current_turn - 1]]
             array set specific_card [get_specific_card $card_id_2]
             set other_specific_card $specific_card(0,card_name)
+            set other_suit $specific_card(0,suit_name)
         }
         
 
@@ -1941,7 +1943,7 @@ namespace eval WAR_GAME {
 
         set json "\{ \"bet_value\": \"$bet_value\", \"current_turn\": $current_turn, \"user_balance\": $this_balance, \"user_card_amount\" : $current_user_card_amount, \"condition\": \"$condition\", \
             \"viewable_card\": \{\"viewable_turn\": $current_user_current_turn, \"viewable_location\": $viewable_location, \"specific_card\": \"$viewable_card\", \"suit_name\": \"$suit\"\}, \
-            \"user2\": \{\"bet_value\": \"$user2_bet_value\", \"specific_card\": \"$other_specific_card\", \"viewable_turn\": $other_current_turn, \"user2_balance\": $other_balance, \"user2_card_amount\": $other_card_amount\}\}"
+            \"user2\": \{\"bet_value\": \"$user2_bet_value\", \"specific_card\": \"$other_specific_card\", \"suit_name\": \"$other_suit\", \"viewable_turn\": $other_current_turn, \"user2_balance\": $other_balance, \"user2_card_amount\": $other_card_amount\}\}"
 
         tpBindString JSON $json
 
