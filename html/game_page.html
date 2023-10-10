@@ -171,6 +171,7 @@
         if(json["user_card_amount"] + json["user2"]["user2_card_amount"] != 52) {
             document.getElementById("bet-form").style.display = "none";
             document.getElementById("form-container").style.display = "none";
+            document.getElementById("player_turn").innerHTML+= "<b>There was a tie!</b>"
         } else {
             document.getElementById("bet-form").style.display = "block";
             document.getElementById("form-container").style.display = "block";
@@ -256,7 +257,7 @@
         var winLoseOverlay = document.getElementById("winLoseOverlay");
         var overlayContent = winLoseOverlay.querySelector("#overlayContent");
 
-        var messageHTML = "<p>" + message;
+        var messageHTML = '<p style="color: white; font-size: 36px;">' + message;
         var victoryMessageHTML = victory_message + "</p><br>";
 
         overlayContent.innerHTML = messageHTML + victoryMessageHTML;
@@ -270,7 +271,7 @@
     }
 
 	function card_image (suit, value) { //"spades" "clubs" "hearts" "diamonds"
-		start = "https://github.com/Vansladd/War_Game/blob/main/images/"
+		start = "https://github.com/Vansladd/War_Game/blob/development/images/"
         if (value == "Ace") {
             start+= "ace"
         } else if(value == "Two") {
