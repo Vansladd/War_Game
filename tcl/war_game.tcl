@@ -437,7 +437,7 @@ namespace eval WAR_GAME {
 
         catch {inf_close_stmt $stmt}
 
-        set bet_value 0
+        set bet_value ""
 
         if {[db_get_nrows $rs] > 0} {
             set bet_value [db_get_col $rs 0 bet_value]
@@ -1125,9 +1125,25 @@ namespace eval WAR_GAME {
         
         set other_bet_value [get_latest_bet $other_user_move_id]
 
-        if {$other_bet_value == "" && ($action == "FOLD" || $action == "MATCH")} {
-            tpBindString err_msg "The opponent needs to select your card first!"
-            ob::log::write ERROR {===>User2 has not selected a card!}
+        if {$other_bet_value == "" && $action == "MATCH"} {
+            tpBindString err_msg "You need to place a bet first!"
+            ob::log::write ERROR {===>User has not placed a bet before matching}
+            tpSetVar err 1
+            asPlayFile -nocache war_games/game_page.html
+            return
+        }
+
+        if {$bet == "" && $action == "BET"} {
+            tpBindString err_msg "You need to place a bet first!"
+            ob::log::write ERROR {===>User has not placed a bet before betting}
+            tpSetVar err 1
+            asPlayFile -nocache war_games/game_page.html
+            return
+        }
+
+        if {$bet != "" && $action == "BET" && $bet <= $other_bet_value} {
+            tpBindString err_msg "Your bet must be higher than other user's bet!"
+            ob::log::write ERROR {===>User has not placed a bet higher than highest bet}
             tpSetVar err 1
             asPlayFile -nocache war_games/game_page.html
             return
@@ -1534,9 +1550,15 @@ namespace eval WAR_GAME {
 
         catch {inf_close_stmt $stmt}
 
-        set CARD(0,card_value) [db_get_col $rs 0  card_value]
-        set CARD(0,suit_name) [db_get_col $rs 0 suit_name]
-        set CARD(0,card_name) [db_get_col $rs 0 card_name]
+        if {[db_get_nrows $rs] > 0} {
+            set CARD(0,card_value) [db_get_col $rs 0  card_value]
+            set CARD(0,suit_name) [db_get_col $rs 0 suit_name]
+            set CARD(0,card_name) [db_get_col $rs 0 card_name]
+        } else {
+            set CARD(0,card_value) ""
+            set CARD(0,suit_name) ""
+            set CARD(0,card_name) ""
+        }
 
         db_close $rs
 
@@ -1608,9 +1630,7 @@ namespace eval WAR_GAME {
                 new_turn $game_id $other_user_id $current_user_id $room_id 0
             } else {
                 sub_round_create $game_id $other_user_id $current_user_id $turn_number $room_id
-                #do
             }
-
         }
 
         #go to game page again
@@ -1619,8 +1639,6 @@ namespace eval WAR_GAME {
         tpBindString game_id $game_id
 
         go_game_page
-
-
     }
 
     proc random_number {min max} {
@@ -1794,7 +1812,7 @@ namespace eval WAR_GAME {
                 set player1_cards($i) $CARDS($i)
             } else {
                 set offset [expr $i - $each_player_card_number]
-                set player2_cards($offset) $CARDS($i)
+                set player2_cards($offset) $CARDS($offset)
             }
         }
 
