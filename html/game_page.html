@@ -123,9 +123,9 @@
         <div class="other-card" id="their_card"></div>
         <div class="grid-container" id="cards"></div>
 
-        ##TP_IF {[tpGetVar err] == 1}##
+        <!-- ##TP_IF {[tpGetVar err] == 1}##
             <div class="error-message">##TP_err_msg##</div>
-        ##TP_ENDIF##
+        ##TP_ENDIF## -->
 
         <div id="player_turn" style="color: white; text-align-last: center; font-size: 36px; padding: 20px; background-color: rgba(145, 145, 145, 0.9); border-radius: 10px; /* Rounded corners */" ></div>
 
@@ -145,11 +145,9 @@
                 <label for="fold">Fold</label><br>
                 <input type="radio" id="match" name="bet_action" value="MATCH">
                 <label for="match">Match</label><br>
-                <button onClick="handle_bet()" id="login-button" >submit</button>
             </form>
-            ##TP_IF {[tpGetVar err] == 1}##
-                <div class="error-message">##TP_err_msg##</div>
-            ##TP_ENDIF##
+            <button onClick="handle_bet()" id="login-button" >submit</button>
+            <div class="error-message" id="error-message"></div>
         </div>
 		
 		
@@ -158,10 +156,21 @@
 <script>
     var timeout = -1;
     var turn_sleep = -1;
+    var betSubmitButton = document.getElementById("login-button");
+
+    document.getElementById("error-message").style.display = "none";
+
+    betSubmitButton.addEventListener("click", function(event) {
+        // Prevent the default button click behavior (form submission and page refresh)
+        event.preventDefault();
+        handle_bet();
+    });
+
     async function display_game(json){
         //will get json file
         //var json = {"current_turn": 0, "bet_value": 0 "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_location": 1, "specific_card": "king", "suit_name": hearts}, "user2": {"specific_card": "dk", "user2_balance": 50, "user2_card_amount": 5, "bet_value": 0}};
         timeout = timeout - 1;
+        console.log(timeout);
         document.getElementById("their_card").innerHTML = "";
         document.getElementById("this_bet").innerHTML = "";
         document.getElementById("other_bet").innerHTML = "";
@@ -180,7 +189,7 @@
             var value = "0";
         }
 
-        turn_sleep = 0;
+        //turn_sleep = 0;
         if(timeout > 0) {
             document.getElementById("their_card").innerHTML+='<img src=' + card_image(suit, value) + ' alt="card">'
         } else {
@@ -247,9 +256,6 @@
         document.getElementById("my_balance").innerHTML = "<p>Your balance is £" + json["user_balance"].toString() + "</p>"
         document.getElementById("user2_balance").innerHTML = "<p>" + json["user2"]["username"] + "'s balance is £" + json["user2"]["user2_balance"].toString() + "</p>"
             
-
-
-
         if(json["condition"] == "finished"){ //if game has finished
             display_win_lose_screen(json)
             return
@@ -258,7 +264,36 @@
     }
 
     function handle_bet(){
-        document.getElementById("bet-form").submit();
+
+// Get the form element
+        var form = document.getElementById("bet-form");
+        // Create a FormData object from the form
+        var formData = new FormData(form);
+        var bet_action = formData.get("bet_action");
+        var room_id = formData.get("room_id");
+        var game_id = formData.get("game_id");
+        var user_id = formData.get("user_id");
+        var bet_value = formData.get("bet_value");
+
+        fetch("##TP_CGI_URL##?action=WAR_GAME_Inital_bet&room_id=" + room_id + "&game_id=" + game_id + "&user_id=" + user_id + "&bet_value=" + bet_value + "&bet_action=" + bet_action) //gets json from url
+        .then(response => response.text())
+        .then(text => display_error(JSON.parse(text)))
+
+        // const res = await fetch("##TP_CGI_URL##?action=WAR_GAME_Inital_bet&room_id=" + room_id + "&game_id=" + game_id + "&user_id=" + user_id + "&bet_value=" + bet_value + "&bet_action=" + bet_action) 
+        // const json = res.json()
+
+        form.reset();
+        //return {"error": "you haven't picked your card"}
+    }
+
+    async function display_error(json) {
+        document.getElementById("error-message").innerHTML = ""
+        if(json["error"].toString() != "") {
+            document.getElementById("error-message").style.display = "block";
+            document.getElementById("error-message").innerHTML = "<p>" + json["error"].toString() + "</p>";
+        } else {
+            document.getElementById("error-message").style.display = "none";
+        }
     }
 
     function get_game_position(){
