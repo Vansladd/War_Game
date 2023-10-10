@@ -1,6 +1,32 @@
 <!DOCTYPE html>
 <style>
 
+    .card {
+        perspective: 1000px;
+        width: 70px;
+        height: 100px;
+        cursor: pointer; /* Add cursor pointer to indicate it's clickable */
+    }
+
+    .card-inner {
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.6s;
+    }
+
+    .card.flipped .card-inner {
+        transform: rotateY(180deg);
+    }
+
+    .card-front,
+    .card-back {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        backface-visibility: hidden;
+    }
+
     .modal-overlay {
         display: none;
         animation: fadeIn 0.5s ease-in-out;
@@ -202,6 +228,16 @@
     </body>
 </html>
 <script>
+
+    document.getElementById("cards").addEventListener("click", function(event) {
+        var clickedCard = event.target.closest('.card');
+        if (clickedCard) {
+            var cardIndex = clickedCard.getAttribute("data-card-index");
+            click_card(clickedCard, cardIndex);
+        }
+    });
+
+
     async function display_game(json){
         var a = 1;
         //will get json file
@@ -257,8 +293,12 @@
             if(json["viewable_card"]["viewable_location"] == i) {
                 var suit = json["viewable_card"]["suit_name"];
                 var value = json["viewable_card"]["specific_card"];
+                document.getElementById("cards").innerHTML += '<div class="grid-item"><div class="card" data-card-index="' + i + '"><div class="card-inner"><div class="card-front"></div><div class="card-back"><img src="' + card_image(suit, value) + '" alt="card back"></div></div></div></div>'
+            }else{
+                document.getElementById("cards").innerHTML += '<div class="grid-item"><div class="card" data-card-index="' + i + '"><div class="card-inner"><div class="card-front"></div><div class="card-back"><img src="' + card_image("", 0) + '" alt="card back"></div></div></div></div>'    
             }
-            document.getElementById("cards").innerHTML+='<div class="grid-item"><img onClick="click_card(' + i.toString() + ')" src=' + card_image(suit, value) + ' alt="card"></div>';
+            
+            
         }
 
         const gridContainer = document.querySelector('.grid-container');
@@ -294,9 +334,11 @@
         .then(text => display_game(JSON.parse(text)))
     }
 
-    function click_card(location) {
+    function click_card(cardElement, location) {
+        cardElement.classList.toggle('flipped');
         fetch('##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + location) //posts which card was flipped
     }
+
 
     function display_win_lose_screen(json) {
         var winner = json.winner
