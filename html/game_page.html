@@ -156,16 +156,41 @@
     </body>
 </html>
 <script>
+    var timeout = -1;
+    var turn_sleep = -1;
     async function display_game(json){
-        var a = 1;
         //will get json file
         //var json = {"current_turn": 0, "bet_value": 0 "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_location": 1, "specific_card": "king", "suit_name": hearts}, "user2": {"specific_card": "dk", "user2_balance": 50, "user2_card_amount": 5, "bet_value": 0}};
-        document.getElementById("cards").innerHTML = "";
+        timeout = timeout - 1;
         document.getElementById("their_card").innerHTML = "";
         document.getElementById("this_bet").innerHTML = "";
         document.getElementById("other_bet").innerHTML = "";
-        document.getElementById("player_turn").innerHTML = "";
 
+        if(json["user2"]["specific_card"] != "") {
+            var suit = json["user2"]["suit_name"];
+            var value = json["user2"]["specific_card"];
+
+
+            if(turn_sleep != json["current_turn"] && turn_sleep != -1) {
+                timeout = 2;
+                turn_sleep = json["current_turn"];
+            }
+        } else {
+            var suit = "";
+            var value = "0";
+        }
+
+        turn_sleep = 0;
+        if(timeout > 0) {
+            document.getElementById("their_card").innerHTML+='<img src=' + card_image(suit, value) + ' alt="card">'
+        } else {
+            document.getElementById("their_card").innerHTML+='<img src=' + card_image("", "0") + ' alt="card">'
+            document.getElementById("player_turn").innerHTML = "";
+            document.getElementById("cards").innerHTML = "";
+        }
+
+
+    
         if (json["bet_value"] === "") {
             json["bet_value"] = 0;
         }
@@ -193,26 +218,18 @@
         }
 
 
-        if(json["user2"]["specific_card"] != "") {
-            var suit = json["user2"]["suit_name"];
-            var value = json["user2"]["specific_card"];
-        } else {
-            var suit = "";
-            var value = "0";  
-        }
-
-        document.getElementById("their_card").innerHTML+='<img src=' + card_image(suit, value) + ' alt="card">'
-
-        for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
-            console.log(card_image("", 0))
-            //href is "##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'"
-            var suit = "";
-            var value = "0";
-            if(json["viewable_card"]["viewable_location"] == i) {
-                var suit = json["viewable_card"]["suit_name"];
-                var value = json["viewable_card"]["specific_card"];
+        if(timeout <= 0) {
+            for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
+                console.log(card_image("", 0))
+                //href is "##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'"
+                var suit = "";
+                var value = "0";
+                if(json["viewable_card"]["viewable_location"] == i) {
+                    var suit = json["viewable_card"]["suit_name"];
+                    var value = json["viewable_card"]["specific_card"];
+                }
+                document.getElementById("cards").innerHTML+='<div class="grid-item"><img onClick="click_card(' + i.toString() + ')" src=' + card_image(suit, value) + ' alt="card"></div>';
             }
-            document.getElementById("cards").innerHTML+='<div class="grid-item"><img onClick="click_card(' + i.toString() + ')" src=' + card_image(suit, value) + ' alt="card"></div>';
         }
 
         const gridContainer = document.querySelector('.grid-container');
@@ -230,7 +247,9 @@
         document.getElementById("my_balance").innerHTML = "<p>Your balance is £" + json["user_balance"].toString() + "</p>"
         document.getElementById("user2_balance").innerHTML = "<p>" + json["user2"]["username"] + "'s balance is £" + json["user2"]["user2_balance"].toString() + "</p>"
             
-        
+
+
+
         if(json["condition"] == "finished"){ //if game has finished
             display_win_lose_screen(json)
             return

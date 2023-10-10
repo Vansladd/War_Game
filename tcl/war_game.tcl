@@ -1812,7 +1812,7 @@ namespace eval WAR_GAME {
                 set player1_cards($i) $CARDS($i)
             } else {
                 set offset [expr $i - $each_player_card_number]
-                set player2_cards($offset) $CARDS($offset)
+                set player2_cards($offset) $CARDS($i)
             }
         }
 
