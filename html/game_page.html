@@ -76,7 +76,7 @@
     }
 
     .left {
-        position: relative;
+        position: absolute;
         left: 16px;
     }
 
@@ -107,9 +107,9 @@
 	</head>
 	<body>
         <div class="game-navbar">
-            <div style="color: white" id="my_balance"></div>
+            <div style="color: white; font-size: 36px;" id="my_balance"></div>
             <div><button id="login-button" onclick="handle_forfeit()">Forfeit Game</button></div>
-            <div style="color: white" id="user2_balance"></div>
+            <div style="color: white; font-size: 36px;" id="user2_balance"></div>
         </div>
         <div id="turn"></div>
         
@@ -127,6 +127,9 @@
         ##TP_ENDIF##
 
         <div id="player_turn" style="color: white; text-align-last: center; font-size: 20px;" ></div>
+
+        <p class= "left" id="this_bet" style="color: white; font-size: 36px;"></p>
+        <p class= "right" id="other_bet" style="color: white; font-size: 36px;"></p>
 
         <div id="form-container">
             <form action="##TP_CGI_URL##" id="bet-form" method="post">
@@ -147,8 +150,6 @@
                 <div class="error-message">##TP_err_msg##</div>
             ##TP_ENDIF##
         </div>
-        <p class= "left" id="this_bet" style="color: white"></p>
-        <p class= "right" id="other_bet" style="color: white"></p>
 		
 		
     </body>
@@ -173,7 +174,7 @@
         } else {
             document.getElementById("bet-form").style.display = "block";
             document.getElementById("form-container").style.display = "block";
-            
+
             if(json["player_turn"] == "##TP_user_id##") {
                 document.getElementById("player_turn").innerHTML+= "<b>It is your turn to bet</b>"
             } else {
