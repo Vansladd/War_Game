@@ -32,6 +32,11 @@
     pointer-events: none; /* Disable pointer events on the container */
     }
 
+    .disabled-container {
+    background-color: rgba(200, 200, 200, 0.5); /* Greyed out background color with opacity */
+    pointer-events: none; /* Disable mouse interactions */
+    opacity: 0.5; /* Adjust opacity for the disabled look */
+    }
 
     .grid-item {
     display: grid;
@@ -184,11 +189,15 @@
         } else {
             document.getElementById("bet-form").style.display = "block";
             document.getElementById("form-container").style.display = "block";
+            
+            var formContainer = document.getElementById('form-container');
 
             if(json["player_turn"] == "##TP_user_id##") {
                 document.getElementById("player_turn").innerHTML+= "<b>It is your turn to bet</b>"
+                formContainer.classList.remove('disabled-container');
             } else {
                 document.getElementById("player_turn").innerHTML+= "<b>Waiting for other player to bet</b>"
+                formContainer.classList.add('disabled-container');
             }
         }
 
@@ -223,6 +232,7 @@
             } else {
                 document.getElementById("player_turn").innerHTML = "<b>Choose a card!</b>"
             }
+            formContainer.classList.add('disabled-container');
         } else {
             gridContainer.classList.add('disabled');
         }
