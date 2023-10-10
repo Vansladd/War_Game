@@ -369,7 +369,6 @@ namespace eval WAR_GAME {
         set current_turn [get_turn_number $game_id]
         set move_id [get_moves_id $game_id $user_id $current_turn]
 
-
         set sql {
             select
                 game_bal
@@ -377,10 +376,7 @@ namespace eval WAR_GAME {
                 twargamemoves
             where
                 move_id = ?
-
-
         }
-
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
 			tpBindString err_msg "error occured while preparing statement"
@@ -401,7 +397,6 @@ namespace eval WAR_GAME {
 
         catch {inf_close_stmt $stmt}
 
-        
         set game_bal [db_get_col $rs 0 game_bal]
 
         catch {db_close $rs}
@@ -628,11 +623,9 @@ namespace eval WAR_GAME {
 
     proc new_turn {game_id loser_id winner_id room_id bet_val} {
         set loser_current_turn [get_turn_number $game_id]
-
         set winner_current_turn [get_turn_number $game_id]
 
         set loser_move_id [get_moves_id $game_id $loser_id $loser_current_turn]
-
         set loser_balance [game_balance $loser_id $room_id]
 
         array set loser_hand [get_entire_hand $loser_id $loser_move_id]
@@ -641,11 +634,8 @@ namespace eval WAR_GAME {
 
 
         set winner_move_id [get_moves_id $game_id $winner_id $winner_current_turn]
-
         set winner_balance [game_balance $winner_id $room_id]
-
         array set winner_hand [get_entire_hand $winner_id $winner_move_id]
-
         set winner_hand_length [expr [array size winner_hand] / 3]
 
         set loser_card_id [get_turned_card $loser_id $game_id $loser_current_turn]
@@ -1026,10 +1016,7 @@ namespace eval WAR_GAME {
 
 
             set new_hand_id [insert_hand $current_user_id $game_id [array get cards] [array size cards] [expr $turn_number + 1]]
-
             set new_move_id [insert_game_moves $game_id $new_hand_id [expr $turn_number + 1] $balance "" 0]
-
-
 
             #doing cards for other user
             set new_cards_amount 0
@@ -1201,20 +1188,15 @@ namespace eval WAR_GAME {
                 # get loser and winner from tie but with 10 cards 
 
                 set loser_id [sub_round_create $game_id $other_user_id $current_user_id $turn_number $room_id]
-
                 set bet_val [get_latest_bet $other_user_move_id]
 
                 if {$loser_id != -1} {
                     if {$loser_id == $current_user_id} {
                         set winner_id $other_user_id
                     } else {
-                        set loser_id $other_user_id
+                        set winner_id $current_user_id
                     }
-
-
                     new_turn $game_id $loser_id $winner_id $room_id $bet_val
-
-
                 }
                 set draw 1
                 set do_database 1
@@ -1625,7 +1607,7 @@ namespace eval WAR_GAME {
             } elseif {$other_specific_card(0,card_value) < $specific_card(0,card_value)} {
                 new_turn $game_id $other_user_id $current_user_id $room_id 0
             } else {
-                sub_round_create $current_user_id $other_user_id $room_id $game_id $turn_number
+                sub_round_create $game_id $other_user_id $current_user_id $turn_number $room_id
                 #do
             }
 
@@ -2154,10 +2136,7 @@ namespace eval WAR_GAME {
             set suit $specific_card(0,suit_name)
 
             for {set i 0} {$i < $current_user_card_amount} {incr i} {
-                puts "for"
-                puts "------------ card_id: $card_id ------ hand_loc: $entire_hand($i,card_id)"
                 if {$entire_hand($i,card_id) == $card_id} {
-                    puts "in"
                     set viewable_location $i
                     break
                 }
@@ -2191,6 +2170,11 @@ namespace eval WAR_GAME {
 
         set this_balance [game_balance $current_user_id $room_id]
         set other_balance [game_balance $other_user_id $room_id]
+
+        puts "--------------------------> this_balance $this_balance"
+        puts "--------------------------> other_balance $other_balance"
+        puts "--------------------------> current_user_card_amount $current_user_card_amount"
+        puts "--------------------------> other_card_amount $other_card_amount"
 
         if {$this_balance == 0 || $current_user_card_amount == 0} {
             update_win_game $game_id $other_user_id STANDARD
