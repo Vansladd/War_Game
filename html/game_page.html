@@ -22,7 +22,16 @@
     grid-gap: 1em;
     justify-content: center;
     border: 1px solid rgb(0, 0, 0);
+    background-color: rgba(245, 245, 245, 0.9); /* Grey background color with opacity */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px; /* Optional: Add padding to the grid container */
     }
+
+    .grid-container.disabled {
+    background-color: rgba(200, 200, 200, 0.5); /* Light grey background color with opacity */
+    pointer-events: none; /* Disable pointer events on the container */
+    }
+
 
     .grid-item {
     display: grid;
@@ -161,7 +170,7 @@
         if(json["player_turn"] == "##TP_user_id##") {
             document.getElementById("player_turn").innerHTML+= "<b>It is your turn to bet</b>"
         } else {
-            document.getElementById("player_turn").innerHTML+= "<b>It is not your turn to bet</b>"
+            document.getElementById("player_turn").innerHTML+= "<b>Waiting for other player to bet</b>"
         }
 
         if(json["user2"]["specific_card"] != "") {
@@ -185,14 +194,15 @@
                     var value = json["viewable_card"]["specific_card"];
                 }
                 document.getElementById("cards").innerHTML+='<div class="grid-item"><img onClick="click_card(' + i.toString() + ')" src=' + card_image(suit, value) + ' alt="card"></div>';
-            
             }
 
-            //if(json["user2"]["specific_card"] != ""){
-               //document.getElementById("their_card").innerHTML = "<p>User 2 selected card " + json["user2"]["specific_card"].toString() + "</p>"
-            //} else {
-                //document.getElementById("their_card").innerHTML = "<p>User 2 hasn't selected a card yet</p>"
-            //}
+            const gridContainer = document.querySelector('.grid-container');
+            if(json["viewable_card"]["specific_card"] == "") {
+                gridContainer.classList.remove('disabled');
+                document.getElementById("player_turn").innerHTML = "<b>Choose a card!</b>"
+            } else {
+                gridContainer.classList.add('disabled');
+            }
 
             document.getElementById("my_balance").innerHTML = "<p>Your balance is " + json["user_balance"].toString() + "</p>"
             document.getElementById("user2_balance").innerHTML = "<p>User 2 balance is " + json["user2"]["user2_balance"].toString() + "</p>"
