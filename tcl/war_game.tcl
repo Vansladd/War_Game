@@ -1213,6 +1213,7 @@ namespace eval WAR_GAME {
                     }
                     new_turn $game_id $loser_id $winner_id $room_id $bet_val
                 }
+                set bet $bet_val
                 set draw 1
                 set do_database 1
 
@@ -1283,9 +1284,6 @@ namespace eval WAR_GAME {
                 VALUES
                     (?, ?, ?, ?);
             }
-
-                # return json response 
-                # who_betted, how much value the bet was, action, 
 
             if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
                 tpBindString err_msg "error occured while preparing statement"
@@ -2045,9 +2043,6 @@ namespace eval WAR_GAME {
         db_close $rs
 
         return $result
-
-
-
     }
 
     proc get_user_id_in_room {room_id} { 
@@ -2187,13 +2182,13 @@ namespace eval WAR_GAME {
         set bet_value [get_latest_bet $user_move_id]
         set user2_bet_value [get_latest_bet $other_user_move_id]
 
+        puts "----------------> bet_value $bet_value"
+        puts "----------------> user2_bet_value $user2_bet_value"
+        puts "----------------> user_move_id $user_move_id"
+        puts "----------------> other_user_move_id $other_user_move_id"
+
         set this_balance [game_balance $current_user_id $room_id]
         set other_balance [game_balance $other_user_id $room_id]
-
-        puts "--------------------------> this_balance $this_balance"
-        puts "--------------------------> other_balance $other_balance"
-        puts "--------------------------> current_user_card_amount $current_user_card_amount"
-        puts "--------------------------> other_card_amount $other_card_amount"
 
         if {$this_balance == 0 || $current_user_card_amount == 0} {
             update_win_game $game_id $other_user_id STANDARD
@@ -2246,46 +2241,39 @@ namespace eval WAR_GAME {
         }
 
         if {[expr $current_user_card_amount + $other_card_amount] == 10} {
-            set bet_val ""
-            set user2_bet_value ""
-            set back_step 0
+            set prev_winner_move_id ""
+            set prev_loser_move_id ""
 
+            set prev_loser_hand(0,card_id) ""
+            set prev_winner_hand(0,card_id) ""
 
-            set prev_current_move_id ""
-            set prev_other_move_id ""
-
-            set prev_current_hand(0,card_id) ""
-            set prev_other_hand(0,card_id) ""
-
-            set prev_current_hand_length ""
-            set prev_other_hand_length ""
+            set prev_winner_hand_length ""
+            set prev_loser_hand_length ""
 
             set prev_total_hand_length ""
 
+            set back_step 1
             while {1 == 1} {
-                set prev_current_move_id [get_moves_id $game_id $current_user_id [expr $current_turn - $back_step]]
-                set prev_other_move_id [get_moves_id $game_id $other_user_id [expr $current_turn - $back_step]]
+                set prev_winner_move_id [get_moves_id $game_id $user_id [expr $current_turn - $back_step]]
+                set prev_loser_move_id [get_moves_id $game_id $other_user_id [expr $current_turn - $back_step]]
 
-                array set prev_other_hand [get_entire_hand $other_user_id $prev_other_move_id]
-                array set prev_current_hand [get_entire_hand $current_user_id $prev_current_move_id]
+                array set prev_loser_hand [get_entire_hand $other_user_id $prev_loser_move_id]
+                array set prev_winner_hand [get_entire_hand $user_id $prev_winner_move_id]
 
-                set prev_other_hand_length [expr [array size prev_other_hand] / 3]
-                set prev_current_hand_length [expr [array size prev_current_hand] / 3]
+                set prev_loser_hand_length [expr [array size prev_loser_hand] / 3]
+                set prev_winner_hand_length [expr [array size prev_winner_hand] / 3]
 
-                set prev_total_hand_length [expr $prev_other_hand_length + $prev_current_hand_length]
+                set prev_total_hand_length [expr $prev_loser_hand_length + $prev_winner_hand_length]
 
                 if {$prev_total_hand_length == 10} {
                     set back_step [expr $back_step + 1]
                 } else {
-                    set bet_val [get_latest_bet $prev_current_move_id]
-                    
-                    if {$bet_val == ""} {
-                        set bet_val [get_latest_bet $prev_other_move_id]
-                    }
-
                     break
                 }
             }
+
+            set bet_value [get_latest_bet $prev_winner_move_id]
+            set user2_bet_value [get_latest_bet $prev_loser_move_id]
         }
 
         set winner_json $winner
