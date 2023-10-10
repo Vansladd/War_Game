@@ -1,6 +1,51 @@
 <!DOCTYPE html>
 <style>
 
+    .modal-overlay {
+        display: none;
+        animation: fadeIn 0.5s ease-in-out;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+        justify-content: center;
+        align-items: center;
+        z-index: 999; /* Ensure the modal appears on top of other elements */
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .modal-content {
+        background-color: rgba(50, 50, 50, 1); /* Semi-transparent white content background */
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .button-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    }
+
+    .button-link:hover {
+        background-color: #0056b3;
+    }
+
+
+
     #form-container {
     text-align: center;
     background-color: rgba(245, 245, 245, 0.9); /* Slightly transparent background color */
@@ -115,10 +160,11 @@
         <div id="turn"></div>
         
         <!-- Forfeit overlay, initially hidden -->
-        <div id="winLoseOverlay" class="win-lose-overlay" style="display: none;">
-            <div id="overlayContent"></div>     
-            <a href="##TP_CGI_URL##?action=WAR_GAME_Leave_Room&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##">Go to lobby</a>
+        <!-- Add a modal overlay div and content div inside it -->
+        <div class="modal-overlay" id="winLoseOverlay">
+            <div class="modal-content" id="overlayContent"></div>
         </div>
+        
 
         <div class="other-card" id="their_card"></div>
         <div class="grid-container" id="cards"></div>
@@ -259,8 +305,6 @@
         const victory_message = "The winner is: " + winner
         var message = ""
 
-        console.log("win condition: " + win_condition)
-
         if (win_condition === "FORFEIT") {
             message = loser + " has forfeited!"
         } else if (win_condition === "STANDARD") {
@@ -270,10 +314,25 @@
         var winLoseOverlay = document.getElementById("winLoseOverlay");
         var overlayContent = winLoseOverlay.querySelector("#overlayContent");
 
-        var messageHTML = '<p style="color: white; font-size: 36px;">' + message;
-        var victoryMessageHTML = victory_message + "</p><br>";
+        
 
-        overlayContent.innerHTML = messageHTML + victoryMessageHTML;
+        var messageHTML = '<p style="color: white; font-size: 36px; margin-bottom: 10px;">' + message + '</p>';
+        var victoryMessageHTML = '<p style="color: white; font-size: 36px;">' + victory_message + '</p>';
+
+        var modalContent = document.getElementById("overlayContent");
+        modalContent.innerHTML = messageHTML + victoryMessageHTML;
+
+        // Create a new anchor element for the button link
+        var buttonLink = document.createElement("a");
+
+        // Set the attributes for the button link
+        buttonLink.href = '##TP_CGI_URL##?action=WAR_GAME_Leave_Room&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##';
+        buttonLink.classList.add("button-link"); // Add the class for styling
+        buttonLink.textContent = "Go to lobby";
+
+        // Append the button link to the modal content div
+        modalContent.appendChild(buttonLink);
+
         winLoseOverlay.style.display = "flex";
     }
 
