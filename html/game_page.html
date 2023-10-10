@@ -141,8 +141,8 @@
                 <label for="fold">Fold</label><br>
                 <input type="radio" id="match" name="bet_action" value="MATCH">
                 <label for="match">Match</label><br>
+                <button onClick="handle_bet()" id="login-button" >submit</button>
             </form>
-            <button onClick="handle_bet()" id="login-button" >submit</button>
             ##TP_IF {[tpGetVar err] == 1}##
                 <div class="error-message">##TP_err_msg##</div>
             ##TP_ENDIF##
@@ -167,11 +167,20 @@
         document.getElementById("this_bet").innerHTML += "<p>Your bet is " + json["bet_value"].toString() + "</p>"
         document.getElementById("other_bet").innerHTML += "<p>" + json["user2"]["username"] + "'s bet is " + json["user2"]["bet_value"].toString() + "</p>"
 
-        if(json["player_turn"] == "##TP_user_id##") {
-            document.getElementById("player_turn").innerHTML+= "<b>It is your turn to bet</b>"
+        if(json["user_card_amount"] + json["user2"]["user2_card_amount"] != 52) {
+            document.getElementById("bet-form").style.display = "none";
+            document.getElementById("form-container").style.display = "none";
         } else {
-            document.getElementById("player_turn").innerHTML+= "<b>Waiting for other player to bet</b>"
+            document.getElementById("bet-form").style.display = "block";
+            document.getElementById("form-container").style.display = "block";
+            
+            if(json["player_turn"] == "##TP_user_id##") {
+                document.getElementById("player_turn").innerHTML+= "<b>It is your turn to bet</b>"
+            } else {
+                document.getElementById("player_turn").innerHTML+= "<b>Waiting for other player to bet</b>"
+            }
         }
+
 
         if(json["user2"]["specific_card"] != "") {
             var suit = json["user2"]["suit_name"];

@@ -1024,6 +1024,7 @@ namespace eval WAR_GAME {
                 }
             }
 
+
             set new_hand_id [insert_hand $current_user_id $game_id [array get cards] [array size cards] [expr $turn_number + 1]]
 
             set new_move_id [insert_game_moves $game_id $new_hand_id [expr $turn_number + 1] $balance "" 0]
