@@ -165,7 +165,7 @@
         document.getElementById("player_turn").innerHTML = "";
 
         document.getElementById("this_bet").innerHTML += "<p>Your bet is " + json["bet_value"].toString() + "</p>"
-        document.getElementById("other_bet").innerHTML += "<p>User 2 bet is " + json["user2"]["bet_value"].toString() + "</p>"
+        document.getElementById("other_bet").innerHTML += "<p>" + json["user2"]["username"] + "'s bet is " + json["user2"]["bet_value"].toString() + "</p>"
 
         if(json["player_turn"] == "##TP_user_id##") {
             document.getElementById("player_turn").innerHTML+= "<b>It is your turn to bet</b>"
@@ -183,48 +183,31 @@
 
         document.getElementById("their_card").innerHTML+='<img src=' + card_image(suit, value) + ' alt="card">'
 
-        if(json["condition"] == "playing"){ //if game is still going on
-            for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
-                console.log(card_image("", 0))
-                //href is "##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'"
-                var suit = "";
-                var value = "0";
-                if(json["viewable_card"]["viewable_location"] == i) {
-                    var suit = json["viewable_card"]["suit_name"];
-                    var value = json["viewable_card"]["specific_card"];
-                }
-                document.getElementById("cards").innerHTML+='<div class="grid-item"><img onClick="click_card(' + i.toString() + ')" src=' + card_image(suit, value) + ' alt="card"></div>';
+        for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
+            console.log(card_image("", 0))
+            //href is "##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'"
+            var suit = "";
+            var value = "0";
+            if(json["viewable_card"]["viewable_location"] == i) {
+                var suit = json["viewable_card"]["suit_name"];
+                var value = json["viewable_card"]["specific_card"];
             }
+            document.getElementById("cards").innerHTML+='<div class="grid-item"><img onClick="click_card(' + i.toString() + ')" src=' + card_image(suit, value) + ' alt="card"></div>';
+        }
 
-            const gridContainer = document.querySelector('.grid-container');
-            if(json["viewable_card"]["specific_card"] == "") {
-                gridContainer.classList.remove('disabled');
-                document.getElementById("player_turn").innerHTML = "<b>Choose a card!</b>"
-            } else {
-                gridContainer.classList.add('disabled');
-            }
+        const gridContainer = document.querySelector('.grid-container');
+        if(json["viewable_card"]["specific_card"] == "") {
+            gridContainer.classList.remove('disabled');
+            document.getElementById("player_turn").innerHTML = "<b>Choose a card!</b>"
+        } else {
+            gridContainer.classList.add('disabled');
+        }
 
-            document.getElementById("my_balance").innerHTML = "<p>Your balance is " + json["user_balance"].toString() + "</p>"
-            document.getElementById("user2_balance").innerHTML = "<p>User 2 balance is " + json["user2"]["user2_balance"].toString() + "</p>"
+        document.getElementById("my_balance").innerHTML = "<p>Your balance is " + json["user_balance"].toString() + "</p>"
+        document.getElementById("user2_balance").innerHTML = "<p>" + json["user2"]["username"] + "'s balance is " + json["user2"]["user2_balance"].toString() + "</p>"
             
-
-        }else{ //if game has finished
-            // document.getElementById("cards").innerHTML = ""; //blank all other sections
-            // document.getElementById("user2_card").innerHTML = "";
-            // document.getElementById("their_card").innerHTML = "";
-            // document.getElementById("my_card").innerHTML = "";
-            // document.getElementById("console").innerHTML = "";
-            // var message = "The game has finished";
-
-            // if(json["user2"]["user2_balance"] == 0 || json["user2"]["user2_card_amount"] == 0){ //if user definitely wins
-            //     message = "You have won the game";
-            // }else if(json["user_balance"] == 0 || json["user_card_amount"] == 0){ //if user definitely loses
-            //     message = "You have lost the game";
-            // }
-            // message+= "\nYou have " + json["user_balance"].toString() + " left"
-            // message+= "\nThe opponent has " + json["user2"]["user2_balance"].toString() + " left"
-
-            // document.getElementById("cards").innerHTML+='<p>' + message +'</p>';
+        
+        if(json["condition"] == "finished"){ //if game has finished
             display_win_lose_screen(json)
             return
         }
