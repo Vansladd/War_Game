@@ -1087,6 +1087,14 @@ namespace eval WAR_GAME {
         tpBindString user_id $user_id
         tpBindString game_id $game_id
 
+        if {$bet != ""} {
+            set bet [expr {double(round(100*$bet))/100}]
+        }
+
+        puts "----------------------> Bet: $bet"
+
+
+
         set action_id ""
 
         if {$action == ""} {
@@ -1134,6 +1142,11 @@ namespace eval WAR_GAME {
 
         if {$current_user_card_id == ""} {
             display_error_message "You need to select your card first!"
+            return
+        }
+
+        if {$bet <= 0 && $action == "BET"} {
+            display_error_message "Your bet needs be to the nearest pence and above 0!"
             return
         }
 
