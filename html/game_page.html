@@ -243,6 +243,8 @@
 
     var timeout = -1;
     var turn_sleep = 0;
+    var last_balance = 0
+    var didFold = false;
     var betSubmitButton = document.getElementById("login-button");
 
     document.getElementById("error-message").style.display = "none";
@@ -256,6 +258,10 @@
     async function display_game(json){
         //will get json file
         //var json = {"current_turn": 0, "bet_value": 0 "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_location": 1, "specific_card": "king", "suit_name": hearts}, "user2": {"specific_card": "dk", "user2_balance": 50, "user2_card_amount": 5, "bet_value": 0}};
+        if(json["current_turn"] == 0) {
+            last_balance = json["user_balance"];
+        }
+
         timeout = timeout - 1;
         document.getElementById("their_card").innerHTML = "";
         document.getElementById("this_bet").innerHTML = "";
@@ -275,11 +281,19 @@
             var value = "0";
         }
 
-        //turn_sleep = 0;
         if(timeout > 0) {
             document.getElementById("their_card").innerHTML+='<img src=' + card_image(suit, value) + ' alt="card">'
+            if(json["user_balance"] > last_balance && !(didFold)) {
+                document.getElementById("player_turn").innerHTML = "<b>You have won £" + (json["user_balance"] - last_balance).toString() + "<b>";
+            } else if(json["user_balance"] < last_balance && !(didFold)) {
+                document.getElementById("player_turn").innerHTML = "<b>You have lost £" + (last_balance - json["user_balance"]).toString() + "<b>";
+            } else if (didFold){
+                document.getElementById("player_turn").innerHTML = "<b>You have folded. You have lost £" + (last_balance - json["user_balance"]).toString() + "<b>";
+            } else if(json["user_card_amount"] + json["user2"]["user2_card_amount"] != 52){
+                document.getElementById("player_turn").innerHTML = "<b>There was a tie!</b>";
+            }
         } else {
-
+            last_balance = json["user_balance"];
             document.getElementById("their_card").innerHTML+='<img src=' + card_image("", "0") + ' alt="card">'
             document.getElementById("player_turn").innerHTML = "";
             document.getElementById("cards").innerHTML = "";
@@ -342,7 +356,9 @@
             } else if (timeout <= 0){
                 document.getElementById("player_turn").innerHTML = "<b>Choose a card!</b>"
             }
-            formContainer.classList.add('disabled-container');
+            if(json["user_card_amount"] + json["user2"]["user2_card_amount"] == 52){
+                formContainer.classList.add('disabled-container');
+            }
         } else {
             gridContainer.classList.add('disabled');
         }
@@ -358,16 +374,20 @@
     }
 
     function handle_bet(){
-
-// Get the form element
+        // Get the form element
         var form = document.getElementById("bet-form");
-        // Create a FormData object from the form
         var formData = new FormData(form);
         var bet_action = formData.get("bet_action");
         var room_id = formData.get("room_id");
         var game_id = formData.get("game_id");
         var user_id = formData.get("user_id");
         var bet_value = formData.get("bet_value");
+        
+        if(bet_action == "FOLD") {
+            didFold = true;
+        } else {
+            didFold = false;
+        }
 
         fetch("##TP_CGI_URL##?action=WAR_GAME_Inital_bet&room_id=" + room_id + "&game_id=" + game_id + "&user_id=" + user_id + "&bet_value=" + bet_value + "&bet_action=" + bet_action) //gets json from url
         .then(response => response.text())
@@ -422,8 +442,6 @@
         var winLoseOverlay = document.getElementById("winLoseOverlay");
         var overlayContent = winLoseOverlay.querySelector("#overlayContent");
 
-        
-
         var messageHTML = '<p style="color: white; font-size: 36px; margin-bottom: 10px;">' + message + '</p>';
         var victoryMessageHTML = '<p style="color: white; font-size: 36px;">' + victory_message + '</p>';
 
@@ -442,6 +460,7 @@
         modalContent.appendChild(buttonLink);
 
         winLoseOverlay.style.display = "flex";
+        get_game_position();
     }
 
     async function handle_forfeit(){

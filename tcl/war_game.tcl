@@ -1386,8 +1386,6 @@ namespace eval WAR_GAME {
         set user_id [reqGetArg user_id]
         set sess_id [search_active_session $user_id]
 
-
-
         if {$sess_id != ""} {
             tpBindString err_msg "Cannot login to currently logged in user!"
 			ob::log::write ERROR {===>error: $user_id already exists!}
@@ -1402,9 +1400,6 @@ namespace eval WAR_GAME {
         tpBindString user_id $user_id 
         set user_balance [get_user_balance $user_id]
         set username [get_username $user_id]
-
-        puts " ==================================$user_balance"
-        puts " ==================================$username"
 
         tpBindString user_balance $user_balance
         tpBindString username $username
@@ -2159,16 +2154,6 @@ namespace eval WAR_GAME {
             set other_specific_card $specific_card(0,card_name)
             set other_suit $specific_card(0,suit_name)
         }
-        
-
-        #if {$card_id_2 != ""} {
-            #array set specific_card [get_specific_card $card_id_2]
-            #set other_specific_card $specific_card(0,card_name)
-        #}
-
-        #if {$viewable_card == ""} {
-            #set other_specific_card ""
-        #}
 
         set user_move_id [get_moves_id $game_id $current_user_id $current_user_current_turn]
         set other_user_move_id [get_moves_id $game_id $other_user_id $other_current_turn]
@@ -2176,13 +2161,10 @@ namespace eval WAR_GAME {
         set bet_value [get_latest_bet $user_move_id]
         set user2_bet_value [get_latest_bet $other_user_move_id]
 
-        puts "----------------> bet_value $bet_value"
-        puts "----------------> user2_bet_value $user2_bet_value"
-        puts "----------------> user_move_id $user_move_id"
-        puts "----------------> other_user_move_id $other_user_move_id"
-
         set this_balance [game_balance $current_user_id $room_id]
         set other_balance [game_balance $other_user_id $room_id]
+
+
 
         if {$this_balance == 0 || $current_user_card_amount == 0} {
             update_win_game $game_id $other_user_id STANDARD
@@ -2234,6 +2216,7 @@ namespace eval WAR_GAME {
             set player_turn $user_id
         }
 
+        
         if {[expr $current_user_card_amount + $other_card_amount] == 10} {
             set prev_winner_move_id ""
             set prev_loser_move_id ""
