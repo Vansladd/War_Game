@@ -313,9 +313,6 @@
         if(json["user_card_amount"] + json["user2"]["user2_card_amount"] != 52) {
             document.getElementById("bet-form").style.display = "none";
             document.getElementById("form-container").style.display = "none";
-            if(timeout <= 0){
-                document.getElementById("player_turn").innerHTML+= "<b>There was a tie!</b>";
-            }
         } else {
             
             document.getElementById("bet-form").style.display = "block";
@@ -352,7 +349,7 @@
         if(json["viewable_card"]["specific_card"] == "") {
             gridContainer.classList.remove('disabled');
             if(json["user_card_amount"] + json["user2"]["user2_card_amount"] != 52 && timeout <= 0) {
-                document.getElementById("player_turn").innerHTML+= "<br><b>Choose a card!</b>"
+                document.getElementById("player_turn").innerHTML+= "<b>Choose a card!</b>"
             } else if (timeout <= 0){
                 document.getElementById("player_turn").innerHTML = "<b>Choose a card!</b>"
             }
