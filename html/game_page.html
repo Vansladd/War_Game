@@ -1,6 +1,77 @@
 <!DOCTYPE html>
 <style>
 
+    .card {
+        perspective: 1000px;
+        width: 70px;
+        height: 100px;
+        cursor: pointer; /* Add cursor pointer to indicate it's clickable */
+    }
+
+    .card-inner {
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.6s;
+    }
+
+    .card.flipped .card-inner {
+        transform: rotateY(180deg);
+    }
+
+    .card-front,
+    .card-back {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        backface-visibility: hidden;
+    }
+
+    .modal-overlay {
+        display: none;
+        animation: fadeIn 0.5s ease-in-out;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+        justify-content: center;
+        align-items: center;
+        z-index: 999; /* Ensure the modal appears on top of other elements */
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .modal-content {
+        background-color: rgba(50, 50, 50, 1); /* Semi-transparent white content background */
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .button-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    }
+
+    .button-link:hover {
+        background-color: #0056b3;
+    }
+
+
+
     #form-container {
     text-align: center;
     background-color: rgba(245, 245, 245, 0.9); /* Slightly transparent background color */
@@ -120,10 +191,11 @@
         <div id="turn"></div>
         
         <!-- Forfeit overlay, initially hidden -->
-        <div id="winLoseOverlay" class="win-lose-overlay" style="display: none;">
-            <div id="overlayContent"></div>     
-            <a href="##TP_CGI_URL##?action=WAR_GAME_Leave_Room&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##">Go to lobby</a>
+        <!-- Add a modal overlay div and content div inside it -->
+        <div class="modal-overlay" id="winLoseOverlay">
+            <div class="modal-content" id="overlayContent"></div>
         </div>
+        
 
         <div class="other-card" id="their_card"></div>
         <div class="grid-container" id="cards"></div>
@@ -159,6 +231,16 @@
     </body>
 </html>
 <script>
+
+    document.getElementById("cards").addEventListener("click", function(event) {
+        var clickedCard = event.target.closest('.card');
+        if (clickedCard) {
+            var cardIndex = clickedCard.getAttribute("data-card-index");
+            click_card(clickedCard, cardIndex);
+        }
+    });
+
+
     var timeout = -1;
     var turn_sleep = -1;
     var betSubmitButton = document.getElementById("login-button");
@@ -233,9 +315,8 @@
                 document.getElementById("player_turn").innerHTML+= "<b>Waiting for other player to bet</b>"
                 formContainer.classList.add('disabled-container');
             }
-        }
-
-
+        }    
+            
         if(timeout <= 0) {
             for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
                 console.log(card_image("", 0))
@@ -245,8 +326,10 @@
                 if(json["viewable_card"]["viewable_location"] == i) {
                     var suit = json["viewable_card"]["suit_name"];
                     var value = json["viewable_card"]["specific_card"];
+                    document.getElementById("cards").innerHTML += '<div class="grid-item"><div class="card" data-card-index="' + i + '"><div class="card-inner"><div class="card-front"></div><div class="card-back"><img src="' + card_image(suit, value) + '" alt="card back"></div></div></div></div>'
+                }else{
+                    document.getElementById("cards").innerHTML += '<div class="grid-item"><div class="card" data-card-index="' + i + '"><div class="card-inner"><div class="card-front"></div><div class="card-back"><img src="' + card_image("", 0) + '" alt="card back"></div></div></div></div>'    
                 }
-                document.getElementById("cards").innerHTML+='<div class="grid-item"><img onClick="click_card(' + i.toString() + ')" src=' + card_image(suit, value) + ' alt="card"></div>';
             }
         }
 
@@ -312,9 +395,11 @@
         .then(text => display_game(JSON.parse(text)))
     }
 
-    function click_card(location) {
+    function click_card(cardElement, location) {
+        cardElement.classList.toggle('flipped');
         fetch('##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + location) //posts which card was flipped
     }
+
 
     function display_win_lose_screen(json) {
         var winner = json.winner
@@ -322,8 +407,6 @@
         const win_condition = json.win_condition
         const victory_message = "The winner is: " + winner
         var message = ""
-
-        console.log("win condition: " + win_condition)
 
         if (win_condition === "FORFEIT") {
             message = loser + " has forfeited!"
@@ -334,10 +417,25 @@
         var winLoseOverlay = document.getElementById("winLoseOverlay");
         var overlayContent = winLoseOverlay.querySelector("#overlayContent");
 
-        var messageHTML = '<p style="color: white; font-size: 36px;">' + message;
-        var victoryMessageHTML = victory_message + "</p><br>";
+        
 
-        overlayContent.innerHTML = messageHTML + victoryMessageHTML;
+        var messageHTML = '<p style="color: white; font-size: 36px; margin-bottom: 10px;">' + message + '</p>';
+        var victoryMessageHTML = '<p style="color: white; font-size: 36px;">' + victory_message + '</p>';
+
+        var modalContent = document.getElementById("overlayContent");
+        modalContent.innerHTML = messageHTML + victoryMessageHTML;
+
+        // Create a new anchor element for the button link
+        var buttonLink = document.createElement("a");
+
+        // Set the attributes for the button link
+        buttonLink.href = '##TP_CGI_URL##?action=WAR_GAME_Leave_Room&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##';
+        buttonLink.classList.add("button-link"); // Add the class for styling
+        buttonLink.textContent = "Go to lobby";
+
+        // Append the button link to the modal content div
+        modalContent.appendChild(buttonLink);
+
         winLoseOverlay.style.display = "flex";
     }
 
