@@ -1811,7 +1811,7 @@ namespace eval WAR_GAME {
                 set player1_cards($i) $CARDS($i)
             } else {
                 set offset [expr $i - $each_player_card_number]
-                set player2_cards($offset) $CARDS($offset)
+                set player2_cards($offset) $CARDS($i)
             }
         }
 
@@ -2048,10 +2048,8 @@ namespace eval WAR_GAME {
     proc get_user_id_in_room {room_id} { 
         global DB
 
-
         set RESULTS {}
 
-        ;#sql query refactor
         set sql {   
             SELECT
                 user_id
@@ -2060,7 +2058,6 @@ namespace eval WAR_GAME {
             WHERE
                 room_id = ?
         }
-
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
 			tpBindString err_msg "error occured while preparing statement"
@@ -2086,10 +2083,7 @@ namespace eval WAR_GAME {
 
         db_close $rs
 
-
-
         return [list $RESULT(player1_id) $RESULT(player2_id)]
-
     }
 
     proc game_state_json args {

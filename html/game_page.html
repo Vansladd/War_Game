@@ -279,12 +279,11 @@
         if(timeout > 0) {
             document.getElementById("their_card").innerHTML+='<img src=' + card_image(suit, value) + ' alt="card">'
         } else {
+
             document.getElementById("their_card").innerHTML+='<img src=' + card_image("", "0") + ' alt="card">'
             document.getElementById("player_turn").innerHTML = "";
             document.getElementById("cards").innerHTML = "";
         }
-
-
     
         if (json["bet_value"] === "") {
             json["bet_value"] = 0;
@@ -300,17 +299,20 @@
         if(json["user_card_amount"] + json["user2"]["user2_card_amount"] != 52) {
             document.getElementById("bet-form").style.display = "none";
             document.getElementById("form-container").style.display = "none";
-            document.getElementById("player_turn").innerHTML+= "<b>There was a tie!</b>"
+            if(timeout <= 0){
+                document.getElementById("player_turn").innerHTML+= "<b>There was a tie!</b>";
+            }
         } else {
+            
             document.getElementById("bet-form").style.display = "block";
             document.getElementById("form-container").style.display = "block";
             
             var formContainer = document.getElementById('form-container');
 
-            if(json["player_turn"] == "##TP_user_id##") {
+            if(json["player_turn"] == "##TP_user_id##" && timeout <= 0) {
                 document.getElementById("player_turn").innerHTML+= "<b>It is your turn to bet</b>"
                 formContainer.classList.remove('disabled-container');
-            } else {
+            } else if (timeout <= 0) {
                 document.getElementById("player_turn").innerHTML+= "<b>Waiting for other player to bet</b>"
                 formContainer.classList.add('disabled-container');
             }
@@ -335,9 +337,9 @@
         const gridContainer = document.querySelector('.grid-container');
         if(json["viewable_card"]["specific_card"] == "") {
             gridContainer.classList.remove('disabled');
-            if(json["user_card_amount"] + json["user2"]["user2_card_amount"] != 52) {
+            if(json["user_card_amount"] + json["user2"]["user2_card_amount"] != 52 && timeout <= 0) {
                 document.getElementById("player_turn").innerHTML+= "<br><b>Choose a card!</b>"
-            } else {
+            } else if (timeout <= 0){
                 document.getElementById("player_turn").innerHTML = "<b>Choose a card!</b>"
             }
             formContainer.classList.add('disabled-container');
@@ -397,8 +399,10 @@
 
     function click_card(cardElement, location) {
         cardElement.classList.toggle('flipped');
-        fetch('##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + location) //posts which card was flipped
-        .then(get_game_position());
+        if(timeout <= 0){
+            fetch('##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + location) //posts which card was flipped
+            .then(get_game_position());
+        }
     }
 
 
