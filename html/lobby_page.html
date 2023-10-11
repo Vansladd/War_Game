@@ -1,4 +1,35 @@
 <!DOCTYPE html>
+<style>
+    .modal-overlay {
+        display: none;
+        animation: fadeIn 0.5s ease-in-out;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+        justify-content: center;
+        align-items: center;
+        z-index: 999; /* Ensure the modal appears on top of other elements */
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .modal-content {
+        background-color: rgba(50, 50, 50, 1); /* Semi-transparent white content background */
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+    }
+</style>
 <html>
 	<head>
 		<title>Lobby Page</title>
@@ -16,12 +47,22 @@
         </nav>
         <h1 id="lobby-header">Lobby Room</h1>
         <div id="lobbies"></div>
+
+        <div class="modal-overlay" id="timeoutOverlay">
+            <div class="modal-content" id="overlayContent"></div>
+        </div>
+
     </body>
 
 </html>
 
 <script>
     async function display_lobbies(json) {
+        
+        if (json.sess_id == "") {
+            display_timeout_overlay();
+            return;
+        }
 
         const lobbiesContainer = document.getElementById('lobbies')
         lobbiesContainer.innerHTML = '';
@@ -73,6 +114,30 @@
 
             lobbiesContainer.appendChild(lobbyDiv);
         });
+    }
+
+    function display_timeout_overlay(){
+        var message = "You have been disconnected!"
+
+        var timeoutOverlay = document.getElementById("timeoutOverlay");
+        var overlayContent = timeoutOverlay.querySelector("#overlayContent");
+
+        var messageHTML = '<p style="color: white; font-size: 36px; margin-bottom: 10px;">' + message + '</p>';
+
+        var modalContent = document.getElementById("overlayContent");
+        modalContent.innerHTML = messageHTML;
+
+        // Create a new anchor element for the button link
+        var buttonLink = document.createElement("a");
+
+        // Set the attributes for the button link
+        buttonLink.href = '##TP_CGI_URL##?action=WAR_GAME_Login';
+        buttonLink.classList.add("button-link"); // Add the class for styling
+        buttonLink.textContent = "Login";
+
+        // Append the button link to the modal content div
+        modalContent.appendChild(buttonLink);
+        timeoutOverlay.style.display = "flex";
     }
     
     function get_lobbies() {

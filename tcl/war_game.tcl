@@ -25,6 +25,47 @@ namespace eval WAR_GAME {
     asSetAct WAR_GAME_Waiting_Room_JSON     [namespace code get_waiting_room_json]
     asSetAct WAR_GAME_game_state_JSON       [namespace code game_state_json]
 
+    proc get_active_user {user_id} {
+        global DB
+
+        set sql {
+            SELECT 
+                sess_id
+            FROM
+                tactivewaruser
+            where
+                user_id = ?
+        }
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch {set rs [inf_exec_stmt $stmt $user_id]} msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        catch {inf_close_stmt $stmt}
+
+        set sess_id ""
+        if {[db_get_nrows $rs] > 0} {
+            set sess_id [db_get_col $rs 0 sess_id]
+        }
+
+        catch {db_close $rs}
+
+        return $sess_id
+    }
+
     proc update_last_active {user_id} {
         global DB
 
@@ -1275,6 +1316,8 @@ namespace eval WAR_GAME {
         tpBindString user_id $user_id
         tpBindString game_id $game_id
 
+        update_last_active $user_id
+
         if {$bet != ""} {
             set bet [expr {double(round(100*$bet))/100}]
         }
@@ -1770,6 +1813,8 @@ namespace eval WAR_GAME {
         set game_id             [reqGetArg game_id]
         set turn_number         [get_turn_number $game_id]
         set move_id             [get_moves_id $game_id $user_id $turn_number]
+
+        update_last_active $user_id
 
         # Don't flip card if already chosen
         if {[get_turned_card $user_id $game_id $turn_number] != ""} {
@@ -2819,8 +2864,6 @@ namespace eval WAR_GAME {
     
     proc get_lobbies_json args {
         global DB
-        # change sql select statement
-        ;#sql query refactor
 
         set user_id [reqGetArg user_id]
 
@@ -2913,8 +2956,10 @@ namespace eval WAR_GAME {
         }
 
         catch {db_close $rs}
+
+        set sess_id [get_active_user $user_id]
 		
-		set json "\{\"lobbies\": \[$lobbies\]\}"
+		set json "\{\"lobbies\": \[$lobbies\], \"sess_id\": \"$sess_id\"\}"
         tpBindString JSON $json
         
         asPlayFile -nocache war_games/jsonTemplate.json
@@ -3046,6 +3091,8 @@ namespace eval WAR_GAME {
         tpBindString user_id $user_id
         set user_balance [get_user_balance $user_id]
         set username [get_username $user_id]
+
+        update_last_active $user_id
 
         puts " ==================================$user_balance"
         puts " ==================================$username"
@@ -3214,6 +3261,7 @@ namespace eval WAR_GAME {
     }
 
     proc go_game_page args {
+        update_last_active $user_id
         asPlayFile -nocache war_games/game_page.html
     }
     
