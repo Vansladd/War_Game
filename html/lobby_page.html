@@ -5,6 +5,15 @@
         <link rel="stylesheet" type="text/css" href="##TP_CGI_URL##?action=war_game_stylesheet">
 	</head>
     <body>
+        <nav>
+            <div id="navbar">
+                <div id="user-info">
+                    <span id="username">Username: ##TP_username##</span>
+                    <span id="balance">Balance: £##TP_user_balance##</span>
+                </div>
+                <a href="##TP_CGI_URL##?action=WAR_GAME_LOGOUT&user_id=##TP_user_id##" id="logout-button">Logout</a>
+            </div>
+        </nav>
         <h1 id="lobby-header">Lobby Room</h1>
         <div id="lobbies"></div>
     </body>

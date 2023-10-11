@@ -465,7 +465,7 @@ proc main_init {} {
 	# Clear any ongoing sessions in war games
 	#
 	war_game_init
-	#war_game_gc
+	war_game_gc
 
 	set MAIN_INIT_COMPLETE 1
 
@@ -1190,8 +1190,6 @@ proc war_game_init {} {
 
 	ob::log::write 1 {************ WAR GAME INITIALISATION END **************}
 }
-
-
 
 #
 # ----------------------------------------------------------------------------
