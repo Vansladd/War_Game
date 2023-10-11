@@ -242,7 +242,7 @@
 
 
     var timeout = -1;
-    var turn_sleep = -1;
+    var turn_sleep = 0;
     var betSubmitButton = document.getElementById("login-button");
 
     document.getElementById("error-message").style.display = "none";
@@ -257,7 +257,6 @@
         //will get json file
         //var json = {"current_turn": 0, "bet_value": 0 "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_location": 1, "specific_card": "king", "suit_name": hearts}, "user2": {"specific_card": "dk", "user2_balance": 50, "user2_card_amount": 5, "bet_value": 0}};
         timeout = timeout - 1;
-        console.log(timeout);
         document.getElementById("their_card").innerHTML = "";
         document.getElementById("this_bet").innerHTML = "";
         document.getElementById("other_bet").innerHTML = "";
@@ -268,7 +267,7 @@
 
 
             if(turn_sleep != json["current_turn"] && turn_sleep != -1) {
-                timeout = 2;
+                timeout = 4;
                 turn_sleep = json["current_turn"];
             }
         } else {
@@ -316,10 +315,10 @@
                 formContainer.classList.add('disabled-container');
             }
         }    
-            
+        
+        // Refresh cards when no longer waiting for card
         if(timeout <= 0) {
             for(i = 0; i < json["user_card_amount"]; i++){ //displays all the cards the player ought to have (turned over)
-                console.log(card_image("", 0))
                 //href is "##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + i.toString() +'"
                 var suit = "";
                 var value = "0";
@@ -371,6 +370,7 @@
         fetch("##TP_CGI_URL##?action=WAR_GAME_Inital_bet&room_id=" + room_id + "&game_id=" + game_id + "&user_id=" + user_id + "&bet_value=" + bet_value + "&bet_action=" + bet_action) //gets json from url
         .then(response => response.text())
         .then(text => display_error(JSON.parse(text)))
+        .then(get_game_position())
 
         // const res = await fetch("##TP_CGI_URL##?action=WAR_GAME_Inital_bet&room_id=" + room_id + "&game_id=" + game_id + "&user_id=" + user_id + "&bet_value=" + bet_value + "&bet_action=" + bet_action) 
         // const json = res.json()
@@ -398,6 +398,7 @@
     function click_card(cardElement, location) {
         cardElement.classList.toggle('flipped');
         fetch('##TP_CGI_URL##?action=WAR_GAME_Flip_card&game_id=##TP_game_id##&room_id=##TP_room_id##&user_id=##TP_user_id##&card_location=' + location) //posts which card was flipped
+        .then(get_game_position());
     }
 
 
