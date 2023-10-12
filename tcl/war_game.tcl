@@ -121,6 +121,20 @@ namespace eval WAR_GAME {
 
         catch {db_close $rs}
 
+        puts "-------------------------------------------------------------"
+        puts ""
+        puts ""
+        puts ""
+        puts ""
+        puts ""
+        puts "-------------------------------> LOGOUT HAS BEEN CALLED"
+        puts ""
+        puts ""
+        puts ""
+        puts ""
+        puts ""
+        puts "-------------------------------------------------------------"
+
         go_login_page
 
     }
@@ -245,7 +259,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt $new_balance $user_id]} msg]} {
+		if {[catch {inf_exec_stmt $stmt $new_balance $user_id} msg]} {
 			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -318,8 +332,6 @@ namespace eval WAR_GAME {
                 acct_bal = ?
             where
                 user_id = ?
-
-
         }
 
 
@@ -331,7 +343,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt $new_balance $user_id]} msg]} {
+		if {[catch {inf_exec_stmt $stmt $new_balance $user_id} msg]} {
 			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -341,7 +353,6 @@ namespace eval WAR_GAME {
 		}
 
         catch {inf_close_stmt $stmt}
-
     }
 
     proc do_signup args {
@@ -940,7 +951,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt $room_id]} msg]} {
+		if {[catch {inf_exec_stmt $stmt $room_id} msg]} {
 			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -1456,7 +1467,10 @@ namespace eval WAR_GAME {
 
         catch {inf_close_stmt $stmt}
 
-        set card_id [db_get_col $rs 0 card_id]
+        set card_id ""
+        if {[db_get_nrows $rs] > 0} {
+            set card_id [db_get_col $rs 0 card_id]
+        }
 
         db_close $rs
 
@@ -1678,7 +1692,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $game_id $hand_id $turn_number $game_bal $card_id $Final_bet_id]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $game_id $hand_id $turn_number $game_bal $card_id $Final_bet_id} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -1686,6 +1700,8 @@ namespace eval WAR_GAME {
                 asPlayFile -nocache war_games/lobby_page.html
                 return
             }
+
+            catch {inf_close_stmt $stmt}
         } else {
             set sql "
                     Update twargamemoves
@@ -1705,7 +1721,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $card_id $Final_bet_id $game_id $hand_id $turn_number]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $card_id $Final_bet_id $game_id $hand_id $turn_number} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -1713,10 +1729,9 @@ namespace eval WAR_GAME {
                 asPlayFile -nocache war_games/lobby_page.html
                 return
             }
-        }
-
 
             catch {inf_close_stmt $stmt}
+        }
 
             return [last_pk]
     }
@@ -1741,7 +1756,7 @@ namespace eval WAR_GAME {
             return
         }
             
-        if {[catch {set rs [inf_exec_stmt $stmt $player_id]} msg]} {
+        if {[catch {inf_exec_stmt $stmt $player_id} msg]} {
             tpBindString err_msg "error occured while executing query"
             ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -1770,7 +1785,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $hand_id $turn_number $CARDS($i)]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $hand_id $turn_number $CARDS($i)} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -2090,7 +2105,7 @@ namespace eval WAR_GAME {
         set RESULT(player1_id) [db_get_col $rs 0 user_id]
         set RESULT(player2_id) [db_get_col $rs 1 user_id]
 
-        db_close $rs
+        catch {db_close $rs}
 
         return [list $RESULT(player1_id) $RESULT(player2_id)]
     }
@@ -2167,6 +2182,12 @@ namespace eval WAR_GAME {
             array set specific_card [get_specific_card $card_id_2]
             set other_specific_card $specific_card(0,card_name)
             set other_suit $specific_card(0,suit_name)
+        }
+        set card_id_2 [get_turned_card $other_user_id $game_id $other_current_turn]
+        if {$card_id_2 != ""} {
+            set other_specific_card "picked"
+            set other_suit ""
+
         }
 
         set user_move_id [get_moves_id $game_id $current_user_id $current_user_current_turn]
@@ -2773,6 +2794,8 @@ namespace eval WAR_GAME {
             set username "\"[db_get_col $rs 0 username]\""
         }
 
+        catch {db_close $rs}
+
         set json "{\"user_id\": $user_id, \"username\": $username}"
 
         tpBindString JSON $json
@@ -2897,7 +2920,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt]} msg]} {
+            if {[catch {inf_exec_stmt $stmt} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -2909,7 +2932,6 @@ namespace eval WAR_GAME {
             catch {inf_close_stmt $stmt}
 
             set game_id [last_pk]
-
 
             #update room
 
@@ -2927,7 +2949,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $game_id $room_id]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $game_id $room_id} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
