@@ -21,3 +21,15 @@ WHERE room_id = ?;
 
 INSERT INTO twargame (game_id,cr_date)
 VALUES (?, ?);
+
+delete from 
+    tactivewaruser
+where 
+    sess_id in (
+        select 
+            sess_id 
+        from 
+            tactivewaruser 
+        where 
+            dbinfo('utc_current') - last_active > 600
+);

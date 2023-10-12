@@ -464,7 +464,8 @@ proc main_init {} {
 	#
 	# Clear any ongoing sessions in war games
 	#
-	war_game_gc
+	# war_game_gc
+	war_game_init
 
 	set MAIN_INIT_COMPLETE 1
 
@@ -1163,12 +1164,35 @@ proc war_game_gc {} {
 	ob::log::write info {ALL SESSIONS HAVE BEEN CLEARED}
 
 	ob::log::write 1 {************ WAR GAME GARBAGE COLLECTION END **************}
-
-
+	# OT_CfgSet war_game_init 1
+	# puts "-------------> War Game has been initialised: [OT_CfgGet war_game_init]"
+	
 }
 
+#
+# ----------------------------------------------------------------------------
+# Initialise war game server
+# ----------------------------------------------------------------------------
+#
+proc war_game_init {} {
+	ob::log::write 1 {************ WAR GAME INITIALISATION START **************}
 
+	if {![OT_CfgGet APP_IS_PMT 0]} {
 
+		if {[asGetId] == 0 && [asGetGroupId] == 0} {
+			asSetTimeoutProc     WAR_GAME::disconnect_timeout_users
+			asSetTimeoutInterval 1000
+			asSetReqAccept       0
+			asSetReqKillTimeout  10000
+		} else {
+			after 500
+		}
+	}
+
+	ob::log::write info {CHILD PROCESS ASSIGNED TO TIMEOUT USERS}
+
+	ob::log::write 1 {************ WAR GAME INITIALISATION END **************}
+}
 
 #
 # ----------------------------------------------------------------------------
