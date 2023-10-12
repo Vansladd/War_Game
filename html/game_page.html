@@ -72,7 +72,7 @@
 
 
 
-    #form-container {
+    .form-container {
     text-align: center;
     background-color: rgba(245, 245, 245, 0.9); /* Slightly transparent background color */
     border-radius: 10px;
@@ -85,6 +85,7 @@
     /* left: 50%;
     transform: translateX(-50%); */
     font-family: Arial, Helvetica, sans-serif;
+    transition: background-color 0.3s ease;
     }
 
     .grid-container {
@@ -108,6 +109,7 @@
     background-color: rgba(200, 200, 200, 0.5); /* Greyed out background color with opacity */
     pointer-events: none; /* Disable mouse interactions */
     opacity: 0.5; /* Adjust opacity for the disabled look */
+    transition: background-color 0.3s ease;
     }
 
     .grid-item {
@@ -155,11 +157,17 @@
     .left {
         position: absolute;
         left: 16px;
+        background-color: rgba(200, 200, 200, 0.5);
+        border-radius: 10px;
+        padding: 5px;
     }
 
     .right {
         position: absolute;
         right: 16px;
+        background-color: rgba(200, 200, 200, 0.5);
+        border-radius: 10px;
+        padding: 5px;
     }
 
     .centre {
@@ -169,8 +177,12 @@
     
     .other-card {
         position: relative;
-        right: -47.5%;
+        right: -46.5%;
         padding: 20px;
+        background-color: rgba(200, 200, 200, 0.5);
+        width: 70px;
+        border-radius: 10px;
+        
     }
 
     .game-navbar {
@@ -181,6 +193,27 @@
     padding: 10px;
     }
 
+    .instruction-box {
+        color: white; 
+        text-align-last: center; 
+        font-size: 26px; 
+        padding: 20px; 
+        background-color: 
+        rgba(145, 145, 145, 0.9); 
+        border-radius: 10px; /* Rounded corners */
+        transition: background-color 0.3s ease;
+    }
+
+    .instruction-box.other-turn {
+        color: white; 
+        text-align-last: center; 
+        font-size: 26px; 
+        padding: 20px; 
+        background-color: 
+        rgba(0, 0, 0, 0.9); 
+        border-radius: 10px; /* Rounded corners */
+        transition: background-color 0.3s ease;
+    }
 
 </style>
 <html>
@@ -203,19 +236,19 @@
         </div>
         
         <!--<div style="color: white; font-size: 16px;" class="centre" id="other_user_card_notify"></div> -->
-        <div class="other-card" id="their_card"></div>
+        <div class="other-card" id="their_card"></div><br>
         <div class="grid-container" id="cards"></div>
 
         <!-- ##TP_IF {[tpGetVar err] == 1}##
             <div class="error-message">##TP_err_msg##</div>
         ##TP_ENDIF## -->
 
-        <div id="player_turn" style="color: white; text-align-last: center; font-size: 26px; padding: 20px; background-color: rgba(145, 145, 145, 0.9); border-radius: 10px; /* Rounded corners */" ></div>
+        <div id="player_turn" class="instruction-box" ></div>
 
         <p class= "left" id="this_bet" style="color: white; font-size: 26px;"></p>
         <p class= "right" id="other_bet" style="color: white; font-size: 26px;"></p>
 
-        <div id="form-container">
+        <div id="form-container" class="form-container">
             <form action="##TP_CGI_URL##" id="bet-form" method="post">
                 <input type="hidden" name="action" value="WAR_GAME_Inital_bet"/> 
                 <input type="hidden" name="room_id" value="##TP_room_id##"/>
@@ -248,7 +281,7 @@
 
 
     var timeout = -1;
-    var turn_sleep = 0;
+    var turn_sleep = -1;
     var last_balance = 0
     var didFold = false;
     var betSubmitButton = document.getElementById("login-button");
@@ -283,7 +316,7 @@
                 var value = json["user2"]["specific_card"];
             }
 
-            if(turn_sleep != json["current_turn"] && json["current_turn"] != 0) {
+            if(turn_sleep == json["current_turn"] - 1 && json["current_turn"] != 0) {
                 timeout = 4;
                 turn_sleep = json["current_turn"];
                 flip_their_card();
@@ -389,6 +422,9 @@
         if(json["condition"] == "finished"){ //if game has finished
             display_win_lose_screen(json)
             return
+        }
+        if(turn_sleep == -1) {
+            turn_sleep = json["current_turn"];
         }
 
     }
