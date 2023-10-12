@@ -107,12 +107,13 @@ namespace eval WAR_GAME {
 
         set sql {
             select 
-                sess_id, user_id
+                sess_id, user_id, room_id
             from 
                 tactivewaruser
             where
                 dbinfo('utc_current') - last_active > 600;
         }
+
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
 			tpBindString err_msg "error occured while preparing statement"
@@ -139,13 +140,57 @@ namespace eval WAR_GAME {
         for {set i 0} {$i < $num_users} {incr i} {
             set SESSION($i,sess_id) [db_get_col $rs $i sess_id]
             set SESSION($i,user_id) [db_get_col $rs $i user_id]
+            set SESSION($i,room_id) [db_get_col $rs $i room_id]
         }
 
         disconnect_users_in_games $num_users
+        disconnect_users_in_room  $num_users
         disconnect_active_users   $num_users
         
         catch {unset $SESSION}
         db_close $rs
+    }
+
+    proc disconnect_users_in_room {num_users} {
+        global SESSION 
+        global DB
+        if {$num_users <= 0} {return}
+
+        set where "room_id = $SESSION(0,room_id)"
+
+        for {set i 1} {$i < $num_users} {incr i} {
+            set where "$where OR room_id = $SESSION($i,room_id)"            
+        }
+
+        set sql [subst {
+            update 
+                tactivewaruser
+            set
+                room_id = NULL
+            where 
+                $where  
+        }]
+
+        if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
+			tpBindString err_msg "error occured while preparing statement"
+			ob::log::write ERROR {===>error: $msg}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+		
+		if {[catch [inf_exec_stmt $stmt] msg]} {
+			tpBindString err_msg "error occured while executing query"
+			ob::log::write ERROR {===>error: $msg}
+            catch {inf_close_stmt $stmt}
+			tpSetVar err 1
+			asPlayFile -nocache war_games/login.html
+			return
+		}
+
+        puts "-------------------------> EXECUTE DISCONNECT FROM USERS IN ROOM!!"
+
+        catch {inf_close_stmt $stmt}
     }
 
     proc disconnect_active_users {num_users} {
@@ -209,19 +254,21 @@ namespace eval WAR_GAME {
             SELECT DISTINCT
                 tu.room_id,
                 tr.game_id,
-                tu.user_id AS other_player_user_id
+                CASE 
+                    WHEN tu2.user_id IN ($user_id_list) THEN tu.user_id
+                    ELSE tu2.user_id
+                END AS other_player_user_id
             FROM
                 tactivewaruser tu
             INNER JOIN
                 tactivewarroom tr
                 ON tu.room_id = tr.room_id
-            INNER JOIN
+            LEFT JOIN
                 tactivewaruser tu2
                 ON tu.room_id = tu2.room_id
-                AND tu2.user_id IN ($user_id_list)
+                AND tu.user_id != tu2.user_id
             WHERE
-                tu.user_id IN ($user_id_list)
-                AND tu.user_id != tu2.user_id;
+                tu.user_id IN ($user_id_list) OR tu2.user_id IN ($user_id_list);
         }]
 
         if {[catch {set stmt [inf_prep_sql $DB $sql]} msg]} {
@@ -243,7 +290,7 @@ namespace eval WAR_GAME {
 
         catch {inf_close_stmt $stmt}
 
-        puts "---------------------------> $sql"
+        puts "---------------------------------------> $sql"
 
         for {set i 0} {$i < [db_get_nrows $rs]} {incr i} {
             update_win_game [db_get_col $rs $i game_id] [db_get_col $rs $i other_player_user_id] DISCONNECT 
@@ -2320,8 +2367,16 @@ namespace eval WAR_GAME {
 
         catch {inf_close_stmt $stmt}
 
-        set RESULT(player1_id) [db_get_col $rs 0 user_id]
-        set RESULT(player2_id) [db_get_col $rs 1 user_id]
+        set RESULT(player1_id) ""
+        set RESULT(player2_id) ""
+
+        if {[db_get_nrows $rs] > 0} {
+            set RESULT(player1_id) [db_get_col $rs 0 user_id]
+        } 
+        
+        if {[db_get_nrows $rs] > 1} {
+            set RESULT(player2_id) [db_get_col $rs 1 user_id]
+        } 
 
         db_close $rs
 
@@ -2343,11 +2398,25 @@ namespace eval WAR_GAME {
         set PLAYERS(player1_id) [lindex $ret_players 0]
         set PLAYERS(player2_id) [lindex $ret_players 1]
 
+        set sess_id [get_active_user $user_id]
+
         if {$PLAYERS(player1_id) == $user_id} {
             set other_user_id $PLAYERS(player2_id)
         } elseif {$PLAYERS(player2_id) == $user_id} {
             set other_user_id $PLAYERS(player1_id)
-        } else {
+        } else { #players have disconnected!
+
+            set winner_details [get_winner $game_id]
+            set WINNER(winner_id) [lindex $winner_details 0]
+            set WINNER(winner_username) [lindex $winner_details 1]
+            set WINNER(win_condition) [lindex $winner_details 2]
+
+            set winner $WINNER(winner_username)
+            set win_condition $WINNER(win_condition)
+            set loser "The opponent"
+
+            tpBindString JSON "\{\"sess_id\": \"$sess_id\"\, \"condition\": \"finished\", \"winner\": \"$winner\", \"loser\": \"$loser\", \"win_condition\": \"$win_condition\"\}"
+            asPlayFile -nocache war_games/jsonTemplate.json
             return
         }
 
@@ -2509,7 +2578,7 @@ namespace eval WAR_GAME {
         set json "\{\"username\": \"$user_username\", \"bet_value\": \"$bet_value\", \"current_turn\": $current_turn, \"user_balance\": $this_balance, \"user_card_amount\" : $current_user_card_amount, \
             \"viewable_card\": \{\"viewable_turn\": $current_user_current_turn, \"viewable_location\": $viewable_location, \"specific_card\": \"$viewable_card\", \"suit_name\": \"$suit\"\}, \
             \"user2\": \{\"username\": \"$other_user_username\", \"bet_value\": \"$user2_bet_value\", \"specific_card\": \"$other_specific_card\", \"suit_name\": \"$other_suit\", \"viewable_turn\": $other_current_turn, \"user2_balance\": $other_balance, \"user2_card_amount\": $other_card_amount\},
-            \"condition\": \"$condition\", \"winner\": \"$winner_json\", \"loser\": \"$loser_json\", \"win_condition\": \"$win_condition_json\", \"player_turn\": \"$player_turn\"\}"
+            \"condition\": \"$condition\", \"winner\": \"$winner_json\", \"loser\": \"$loser_json\", \"win_condition\": \"$win_condition_json\", \"player_turn\": \"$player_turn\", \"sess_id\": $sess_id\}"
 
         tpBindString JSON $json
 
@@ -2777,7 +2846,6 @@ namespace eval WAR_GAME {
 
         set room_id [reqGetArg room_id]
 
-        ;#sql query refactor
         set sql {
             select 
                 user_id
@@ -2810,11 +2878,12 @@ namespace eval WAR_GAME {
         set player2_id ""
         if {[db_get_nrows $rs] > 0} {
             set player1_id [db_get_col $rs 0 user_id]
-
+            update_last_active $player1_id
         }
 
         if {[db_get_nrows $rs] > 1} {
             set player2_id [db_get_col $rs 1 user_id]
+            update_last_active $player2_id
         }
         
 
