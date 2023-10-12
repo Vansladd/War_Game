@@ -87,6 +87,12 @@
     font-family: Arial, Helvetica, sans-serif;
     }
 
+    .disabled-container {
+    background-color: rgba(200, 200, 200, 0.5); /* Greyed out background color with opacity */
+    pointer-events: none; /* Disable mouse interactions */
+    opacity: 0.5; /* Adjust opacity for the disabled look */
+    }
+
     .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, 90px);
@@ -102,12 +108,6 @@
     .grid-container.disabled {
     background-color: rgba(200, 200, 200, 0.5); /* Light grey background color with opacity */
     pointer-events: none; /* Disable pointer events on the container */
-    }
-
-    .disabled-container {
-    background-color: rgba(200, 200, 200, 0.5); /* Greyed out background color with opacity */
-    pointer-events: none; /* Disable mouse interactions */
-    opacity: 0.5; /* Adjust opacity for the disabled look */
     }
 
     .grid-item {
@@ -265,6 +265,17 @@
         //will get json file
         //var json = {"current_turn": 0, "bet_value": 0 "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_location": 1, "specific_card": "king", "suit_name": hearts}, "user2": {"specific_card": "dk", "user2_balance": 50, "user2_card_amount": 5, "bet_value": 0}};
         //document.getElementById("other_user_card_notify").innerHTML = '<p>' + json["user2"]["username"] + 's card</p>'
+
+        if (json["sess_id"] == "") { // If user has dced
+            display_disconnect_screen()
+            return
+        }
+
+        if(json["condition"] == "finished"){ //if game has finished
+            display_win_lose_screen(json)
+            return
+        }
+
         if(json["current_turn"] == 0) {
             last_balance = json["user_balance"];
         }
@@ -375,12 +386,36 @@
 
         document.getElementById("my_balance").innerHTML = "<p>Your balance is £" + json["user_balance"].toString() + "</p>"
         document.getElementById("user2_balance").innerHTML = "<p>" + json["user2"]["username"] + "'s balance is £" + json["user2"]["user2_balance"].toString() + "</p>"
-            
-        if(json["condition"] == "finished"){ //if game has finished
-            display_win_lose_screen(json)
-            return
-        }
 
+        // if(json["condition"] == "finished"){ //if game has finished
+        //     display_win_lose_screen(json)
+        //     return
+        // }
+    }
+
+    function display_disconnect_screen() {
+        const message = "You have disconnected for being AFK!"
+
+        var winLoseOverlay = document.getElementById("winLoseOverlay");
+        var overlayContent = winLoseOverlay.querySelector("#overlayContent");
+
+        var messageHTML = '<p style="color: white; font-size: 36px; margin-bottom: 10px;">' + message + '</p>';
+
+        var modalContent = document.getElementById("overlayContent");
+        modalContent.innerHTML = messageHTML;
+
+        // Create a new anchor element for the button link
+        var buttonLink = document.createElement("a");
+
+        // Set the attributes for the button link
+        buttonLink.href = '##TP_CGI_URL##?action=WAR_GAME_Login';
+        buttonLink.classList.add("button-link"); // Add the class for styling
+        buttonLink.textContent = "Go to Login";
+
+        // Append the button link to the modal content div
+        modalContent.appendChild(buttonLink);
+
+        winLoseOverlay.style.display = "flex";
     }
 
     function handle_bet(){
@@ -447,11 +482,15 @@
         const win_condition = json.win_condition
         const victory_message = "The winner is: " + winner
         var message = ""
+        var buttonhref = "##TP_CGI_URL##?action=WAR_GAME_Leave_Room&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##"
 
         if (win_condition === "FORFEIT") {
             message = loser + " has forfeited!"
         } else if (win_condition === "STANDARD") {
             message = loser + " has lost the game!"
+        } else if (win_condition === "DISCONNECT") {
+            message = loser + " has disconnected!"
+            buttonhref = "##TP_CGI_URL##?action=WAR_GAME_Lobby&user_id=##TP_user_id##"
         }
 
         var winLoseOverlay = document.getElementById("winLoseOverlay");
@@ -467,7 +506,7 @@
         var buttonLink = document.createElement("a");
 
         // Set the attributes for the button link
-        buttonLink.href = '##TP_CGI_URL##?action=WAR_GAME_Leave_Room&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##';
+        buttonLink.href = buttonhref;
         buttonLink.classList.add("button-link"); // Add the class for styling
         buttonLink.textContent = "Go to lobby";
 
@@ -480,8 +519,6 @@
 
     async function handle_forfeit(){
         await fetch('##TP_CGI_URL##?action=WAR_GAME_Forfeit&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##')
-        // var forfeitOverlay = document.getElementById("forfeitOverlay");
-        // forfeitOverlay.style.display = "flex";
     }
 
 	function card_image (suit, value) { //"spades" "clubs" "hearts" "diamonds"
