@@ -100,8 +100,6 @@ namespace eval WAR_GAME {
 
     proc disconnect_timeout_users args {
 
-        puts "---------------------------------------------> RUNNING SQL DELETE ACTIVE STATEMENTS!"
-
         global DB
         global SESSION
 
@@ -188,8 +186,6 @@ namespace eval WAR_GAME {
 			return
 		}
 
-        puts "-------------------------> EXECUTE DISCONNECT FROM USERS IN ROOM!!"
-
         catch {inf_close_stmt $stmt}
     }
 
@@ -229,8 +225,6 @@ namespace eval WAR_GAME {
 			return
 		}
 
-        puts "-------------------------> EXECUTE DISCONNECT FROM ACTIVEUSERS!"
-
         catch {inf_close_stmt $stmt}
     }
 
@@ -241,8 +235,6 @@ namespace eval WAR_GAME {
         global SESSION
         
         if {$num_users <= 0} {return}
-
-        puts "---------------------------------> EXECUTING DISCONNECT USERS FROM GAME"
 
         set user_id_list $SESSION(0,user_id)
 
@@ -289,8 +281,6 @@ namespace eval WAR_GAME {
 		}
 
         catch {inf_close_stmt $stmt}
-
-        puts "---------------------------------------> $sql"
 
         for {set i 0} {$i < [db_get_nrows $rs]} {incr i} {
             update_win_game [db_get_col $rs $i game_id] [db_get_col $rs $i other_player_user_id] DISCONNECT 
@@ -521,7 +511,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt $new_balance $user_id]} msg]} {
+		if {[catch {inf_exec_stmt $stmt $new_balance $user_id} msg]} {
 			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -594,8 +584,6 @@ namespace eval WAR_GAME {
                 acct_bal = ?
             where
                 user_id = ?
-
-
         }
 
 
@@ -607,7 +595,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt $new_balance $user_id]} msg]} {
+		if {[catch {inf_exec_stmt $stmt $new_balance $user_id} msg]} {
 			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -617,7 +605,6 @@ namespace eval WAR_GAME {
 		}
 
         catch {inf_close_stmt $stmt}
-
     }
 
     proc do_signup args {
@@ -630,9 +617,6 @@ namespace eval WAR_GAME {
         tpBindString user_id $user_id
         set user_balance [get_user_balance $user_id]
         set username [get_username $user_id]
-
-        puts " ==================================$user_balance"
-        puts " ==================================$username"
 
         tpBindString user_balance $user_balance
         tpBindString username $username
@@ -934,7 +918,6 @@ namespace eval WAR_GAME {
             set prev_total_hand_length ""
 
             set back_step 1
-            puts "=============================== before $winner_current_turn"
             while {1 == 1} {
                 set prev_winner_move_id [get_moves_id $game_id $winner_id [expr $winner_current_turn - $back_step]]
                 set prev_loser_move_id [get_moves_id $game_id $loser_id [expr $loser_current_turn - $back_step]]
@@ -954,14 +937,10 @@ namespace eval WAR_GAME {
                 }
             }
 
-            puts "=============================== after [expr $winner_current_turn -  $back_step]"
             set bet_val [get_latest_bet $prev_winner_move_id]
             if {$bet_val == ""} {
                 set bet_val [get_latest_bet $prev_loser_move_id]
             }
-            puts "------------------> prev_winner_move_id $prev_winner_move_id"
-            puts "------------------> bet_value $bet_val"
-            puts "------------------> other_bet_value [get_latest_bet $prev_loser_move_id]"
 
             #reshuffling the winner
             set winner_hand_compatible(0) ""
@@ -1216,7 +1195,7 @@ namespace eval WAR_GAME {
 			return
 		}
 		
-		if {[catch {set rs [inf_exec_stmt $stmt $room_id]} msg]} {
+		if {[catch {inf_exec_stmt $stmt $room_id} msg]} {
 			tpBindString err_msg "Please enter a non-empty username!"
 			ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -1239,8 +1218,6 @@ namespace eval WAR_GAME {
 
         set other_balance [game_balance $other_user_id $room_id]
 
-        puts " ============================================ entering"
-        puts "============================================= $room_id"
         end_game_update_user_balance $current_user_id $room_id
         end_game_update_user_balance $other_user_id $room_id
         if {$room == 1} {
@@ -1369,20 +1346,12 @@ namespace eval WAR_GAME {
             set bet [expr {double(round(100*$bet))/100}]
         }
 
-        puts "----------------------> Bet: $bet"
-
-
-
         set action_id ""
 
-        if {$action == ""} {
-            set json "
-                \{\"error\" : \"You need to select your action first for bet!\"\}
-            "   
-            tpBindString JSON $json
-            ob::log::write ERROR {===>User has not selected a card!}
-            tpSetVar err 1
-            asPlayFile -nocache war_games/jsonTemplate
+        puts "---------------------------------> $action"
+
+        if {$action == "null"} {
+            display_error_message "You need to select your action first for bet!"
             return
         } else {
             set action_id       [to_action_id $action]
@@ -1444,10 +1413,6 @@ namespace eval WAR_GAME {
             display_error_message "You need to place a higher bet!"
             return
         }
-
-        #get_first_user {$current_move_id $other_move_id} "current" or "other"
-
-        #set first_bet_user [get_first_user $user_move_id $other_user_move_id]
 
         # Alternate turns so players take turn taking the first bet
         if {[expr $turn_number % 2] == 1} {
@@ -1564,9 +1529,19 @@ namespace eval WAR_GAME {
             set user_balance [game_balance $current_user_id $room_id]
             set other_balance [game_balance $other_user_id $room_id]
 
-            if {$last_user_bet < $bet &&  $last_other_user_bet < $bet && $user_balance >= $bet && $other_balance >= $bet} {
-                set do_database 1
+            if {$bet > $user_balance} {
+                display_error_message "Cannot bet more money than what you have!"
+                return
             }
+
+            if {$bet > $other_balance} {
+                display_error_message "Cannot bet more money than what the opponent has!"
+                return
+            }
+
+            if {$last_user_bet < $bet && $last_other_user_bet < $bet && $user_balance >= $bet && $other_balance >= $bet} {
+                set do_database 1
+            } 
         }
 
         if {$do_database == 1} {
@@ -1734,7 +1709,10 @@ namespace eval WAR_GAME {
 
         catch {inf_close_stmt $stmt}
 
-        set card_id [db_get_col $rs 0 card_id]
+        set card_id ""
+        if {[db_get_nrows $rs] > 0} {
+            set card_id [db_get_col $rs 0 card_id]
+        }
 
         db_close $rs
 
@@ -1958,7 +1936,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $game_id $hand_id $turn_number $game_bal $card_id $Final_bet_id]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $game_id $hand_id $turn_number $game_bal $card_id $Final_bet_id} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -1966,6 +1944,8 @@ namespace eval WAR_GAME {
                 asPlayFile -nocache war_games/lobby_page.html
                 return
             }
+
+            catch {inf_close_stmt $stmt}
         } else {
             set sql "
                     Update twargamemoves
@@ -1985,7 +1965,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $card_id $Final_bet_id $game_id $hand_id $turn_number]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $card_id $Final_bet_id $game_id $hand_id $turn_number} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -1993,10 +1973,9 @@ namespace eval WAR_GAME {
                 asPlayFile -nocache war_games/lobby_page.html
                 return
             }
-        }
-
 
             catch {inf_close_stmt $stmt}
+        }
 
             return [last_pk]
     }
@@ -2021,7 +2000,7 @@ namespace eval WAR_GAME {
             return
         }
             
-        if {[catch {set rs [inf_exec_stmt $stmt $player_id]} msg]} {
+        if {[catch {inf_exec_stmt $stmt $player_id} msg]} {
             tpBindString err_msg "error occured while executing query"
             ob::log::write ERROR {===>error: $msg}
             catch {inf_close_stmt $stmt}
@@ -2050,7 +2029,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $hand_id $turn_number $CARDS($i)]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $hand_id $turn_number $CARDS($i)} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -2378,7 +2357,7 @@ namespace eval WAR_GAME {
             set RESULT(player2_id) [db_get_col $rs 1 user_id]
         } 
 
-        db_close $rs
+        catch {db_close $rs}
 
         return [list $RESULT(player1_id) $RESULT(player2_id)]
     }
@@ -2469,6 +2448,12 @@ namespace eval WAR_GAME {
             array set specific_card [get_specific_card $card_id_2]
             set other_specific_card $specific_card(0,card_name)
             set other_suit $specific_card(0,suit_name)
+        }
+        set card_id_2 [get_turned_card $other_user_id $game_id $other_current_turn]
+        if {$card_id_2 != ""} {
+            set other_specific_card "picked"
+            set other_suit ""
+
         }
 
         set user_move_id [get_moves_id $game_id $current_user_id $current_user_current_turn]
@@ -2633,10 +2618,6 @@ namespace eval WAR_GAME {
         }
 
         catch {db_close $rs}
-
-        puts "----------------------------> user_id $user_id"
-        puts "----------------------------> username $username"
-        puts "----------------------------> win_condition $win_condition"
 
         return [list $user_id $username $win_condition]
     }
@@ -3081,6 +3062,8 @@ namespace eval WAR_GAME {
             set username "\"[db_get_col $rs 0 username]\""
         }
 
+        catch {db_close $rs}
+
         set json "{\"user_id\": $user_id, \"username\": $username}"
 
         tpBindString JSON $json
@@ -3163,9 +3146,6 @@ namespace eval WAR_GAME {
 
         update_last_active $user_id
 
-        puts " ==================================$user_balance"
-        puts " ==================================$username"
-
         tpBindString user_balance $user_balance
         tpBindString username $username
 
@@ -3207,7 +3187,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt]} msg]} {
+            if {[catch {inf_exec_stmt $stmt} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -3219,7 +3199,6 @@ namespace eval WAR_GAME {
             catch {inf_close_stmt $stmt}
 
             set game_id [last_pk]
-
 
             #update room
 
@@ -3237,7 +3216,7 @@ namespace eval WAR_GAME {
                 return
             }
                 
-            if {[catch {set rs [inf_exec_stmt $stmt $game_id $room_id]} msg]} {
+            if {[catch {inf_exec_stmt $stmt $game_id $room_id} msg]} {
                 tpBindString err_msg "error occured while executing query"
                 ob::log::write ERROR {===>error: $msg}
                 catch {inf_close_stmt $stmt}
@@ -3249,7 +3228,6 @@ namespace eval WAR_GAME {
 
 
         tpBindString room_id $room_id
-        puts " ================================== $room_id"
         asPlayFile -nocache war_games/waiting_room.html
     }
 
