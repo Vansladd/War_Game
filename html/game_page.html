@@ -279,12 +279,15 @@
         }
     });
 
-
     var timeout = -1;
     var turn_sleep = -1;
     var last_balance = 0
     var didFold = false;
     var betSubmitButton = document.getElementById("login-button");
+    var interval_id = -1;
+
+    get_game_position();
+    interval_id = setInterval(get_game_position, 1000); //updates game position every 10th of a second
 
     document.getElementById("error-message").style.display = "none";
 
@@ -298,13 +301,17 @@
         //will get json file
         //var json = {"current_turn": 0, "bet_value": 0 "user_balance": 50, "user_card_amount" : 5, "condition": "playing", "viewable_card": {"viewable_location": 1, "specific_card": "king", "suit_name": hearts}, "user2": {"specific_card": "dk", "user2_balance": 50, "user2_card_amount": 5, "bet_value": 0}};
         //document.getElementById("other_user_card_notify").innerHTML = '<p>' + json["user2"]["username"] + 's card</p>'
+        
+        console.log(interval_id)
 
         if (json["sess_id"] == "") { // If user has dced
+            //clearInterval(interval_id);
             display_disconnect_screen()
             return
         }
 
         if(json["condition"] == "finished"){ //if game has finished
+            //clearInterval(interval_id);
             display_win_lose_screen(json)
             return
         }
@@ -433,14 +440,10 @@
         if(turn_sleep == -1) {
             turn_sleep = json["current_turn"];
         }
-
-        // if(json["condition"] == "finished"){ //if game has finished
-        //     display_win_lose_screen(json)
-        //     return
-        // }
     }
 
     function display_disconnect_screen() {
+        clearInterval(interval_id)
         const message = "You have disconnected for being AFK!"
 
         var winLoseOverlay = document.getElementById("winLoseOverlay");
@@ -524,6 +527,7 @@
 
 
     function display_win_lose_screen(json) {
+        clearInterval(interval_id)
         var winner = json.winner
         var loser = json.loser
         const win_condition = json.win_condition
@@ -561,10 +565,10 @@
         modalContent.appendChild(buttonLink);
 
         winLoseOverlay.style.display = "flex";
-        get_game_position();
     }
 
     async function handle_forfeit(){
+        clearInterval(interval_id)
         await fetch('##TP_CGI_URL##?action=WAR_GAME_Forfeit&user_id=##TP_user_id##&room_id=##TP_room_id##&game_id=##TP_game_id##')
     }
 
@@ -620,9 +624,4 @@
             document.getElementById("cards").innerHTML += '<div class="grid-item"><div class="card" data-card-index="' + loc + '"><div class="card-inner"><div class="card-front"></div><div class="card-back"><img src="' + start + '" alt="card back"></div></div></div></div>'
         }
 	}
-
-    get_game_position();
-    setInterval(get_game_position, 1000); //updates game position every 10th of a second
-
-
 </script>
